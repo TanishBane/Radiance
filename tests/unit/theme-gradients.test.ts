@@ -1,11 +1,38 @@
 import { describe, it, expect } from "vitest";
-import { COLOR_THEMES } from "@/lib/types/theme";
+import { COLOR_THEMES, ATMOSPHERE_ENGINES } from "@/lib/types/theme";
 
 describe("Theme Gradients Configuration & Mathematical Invariants", () => {
   const themes = Object.values(COLOR_THEMES);
 
-  it("should define exactly 12 atmospheric themes", () => {
-    expect(themes.length).toBe(12);
+  it("should define exactly 28 atmospheric themes across 5 categories", () => {
+    expect(themes.length).toBe(28);
+
+    const categories = new Set(themes.map((t) => t.category));
+    expect(categories.has("signature")).toBe(true);
+    expect(categories.has("elemental")).toBe(true);
+    expect(categories.has("cyber")).toBe(true);
+    expect(categories.has("organic")).toBe(true);
+    expect(categories.has("cosmic")).toBe(true);
+  });
+
+  it("should define exactly 13 unique atmosphere engines", () => {
+    expect(ATMOSPHERE_ENGINES.length).toBe(13);
+    const engineIds = new Set(ATMOSPHERE_ENGINES.map((e) => e.id));
+    expect(engineIds.size).toBe(13);
+
+    expect(engineIds.has("bloom")).toBe(true);
+    expect(engineIds.has("waves")).toBe(true);
+    expect(engineIds.has("cosmic")).toBe(true);
+    expect(engineIds.has("aurora-curtains")).toBe(true);
+    expect(engineIds.has("warp-speed")).toBe(true);
+    expect(engineIds.has("cyber-grid")).toBe(true);
+    expect(engineIds.has("quantum-field")).toBe(true);
+    expect(engineIds.has("liquid-lava")).toBe(true);
+    expect(engineIds.has("matrix-rain")).toBe(true);
+    expect(engineIds.has("zen-minimal")).toBe(true);
+    expect(engineIds.has("radial-pulse")).toBe(true);
+    expect(engineIds.has("particle-vortex")).toBe(true);
+    expect(engineIds.has("bokeh-blur")).toBe(true);
   });
 
   it("should provide exactly 6 bloom colors and 4 ribbon colors for every theme", () => {

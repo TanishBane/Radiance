@@ -1,11 +1,12 @@
 export interface ColorTheme {
   id: string;
   label: string;
+  category: "signature" | "elemental" | "cyber" | "organic" | "cosmic";
   accent: string;
   accentD: string;
   accentG: string;
   accentB: string;
-  accentC: string; // Tertiary highlight / chromatic shift (e.g., #d4883a for Crimson!)
+  accentC: string; // Tertiary highlight / chromatic shift (e.g. #d4883a for Crimson!)
   userBg: string;
   userBorder: string;
   bgGradient: string | null;
@@ -18,10 +19,27 @@ export interface ColorTheme {
   ribbonAngle?: number;
 }
 
+export type GradientStyle =
+  | "bloom"
+  | "waves"
+  | "cosmic"
+  | "aurora-curtains"
+  | "warp-speed"
+  | "cyber-grid"
+  | "quantum-field"
+  | "liquid-lava"
+  | "matrix-rain"
+  | "zen-minimal"
+  | "radial-pulse"
+  | "particle-vortex"
+  | "bokeh-blur";
+
 export const COLOR_THEMES: Record<string, ColorTheme> = {
+  // ══ 1. SIGNATURE & ATMOSPHERIC ══
   default: {
     id: "default",
     label: "Void",
+    category: "signature",
     swatchGradient: "linear-gradient(135deg, #e8a849, #d4883a, #c06828)",
     accent: "#e8a849",
     accentD: "rgba(232,168,73,0.12)",
@@ -39,6 +57,7 @@ export const COLOR_THEMES: Record<string, ColorTheme> = {
   violet: {
     id: "violet",
     label: "Violet Aurora",
+    category: "signature",
     swatchGradient: "linear-gradient(135deg, #6a1b9a, #ab47bc, #e040fb)",
     accent: "#6D4AFF",
     accentD: "rgba(109,74,255,0.14)",
@@ -49,15 +68,14 @@ export const COLOR_THEMES: Record<string, ColorTheme> = {
     userBg: "rgba(109,74,255,0.07)",
     userBorder: "rgba(109,74,255,0.20)",
     bgGradient: "linear-gradient(135deg, #0a0418 0%, #140B2E 50%, #0c051a 100%)",
-    // Exact Reference Palette from 21st.dev Violet Aurora
     bloomColors: ["#140B2E", "#140B2E", "#6D4AFF", "#3C02A4", "#6D4AFF", "#C4A0FF"],
-    // Exact Reference Palette from 21st.dev Purple Animated Waves
     ribbonColors: ["#1B1035", "#4A3A8C", "#B58AC9", "#F5D6E6"],
     ribbonAngle: 155,
   },
   emerald: {
     id: "emerald",
     label: "Emerald",
+    category: "signature",
     swatchGradient: "linear-gradient(135deg, #00c853, #00e676, #69f0ae)",
     accent: "#49e87a",
     accentD: "rgba(73,232,122,0.12)",
@@ -75,6 +93,7 @@ export const COLOR_THEMES: Record<string, ColorTheme> = {
   ocean: {
     id: "ocean",
     label: "Ocean",
+    category: "signature",
     swatchGradient: "linear-gradient(135deg, #1565c0, #42a5f5, #80d8ff)",
     accent: "#49a8e8",
     accentD: "rgba(73,168,232,0.12)",
@@ -92,6 +111,7 @@ export const COLOR_THEMES: Record<string, ColorTheme> = {
   crimson: {
     id: "crimson",
     label: "Crimson",
+    category: "signature",
     swatchGradient: "linear-gradient(135deg, #b71c1c, #e53935, #ff8a80)",
     accent: "#e85555",
     accentD: "rgba(232,85,85,0.12)",
@@ -109,6 +129,7 @@ export const COLOR_THEMES: Record<string, ColorTheme> = {
   amber: {
     id: "amber",
     label: "Amber",
+    category: "signature",
     swatchGradient: "linear-gradient(135deg, #e65100, #ff6d00, #ffab40)",
     accent: "#ff8a3c",
     accentD: "rgba(255,138,60,0.12)",
@@ -123,9 +144,12 @@ export const COLOR_THEMES: Record<string, ColorTheme> = {
     ribbonColors: ["#140802", "#9a3412", "#ff8a3c", "#fff7ed"],
     ribbonAngle: 155,
   },
+
+  // ══ 2. ELEMENTAL & LUMINOUS ══
   golden: {
     id: "golden",
     label: "Golden",
+    category: "elemental",
     swatchGradient: "linear-gradient(135deg, #f9a825, #ffee58, #fff9c4)",
     accent: "#e8d449",
     accentD: "rgba(232,212,73,0.12)",
@@ -143,6 +167,7 @@ export const COLOR_THEMES: Record<string, ColorTheme> = {
   rose: {
     id: "rose",
     label: "Rose",
+    category: "elemental",
     swatchGradient: "linear-gradient(135deg, #880e4f, #e91e8c, #f48fb1)",
     accent: "#f06292",
     accentD: "rgba(240,98,146,0.12)",
@@ -160,6 +185,7 @@ export const COLOR_THEMES: Record<string, ColorTheme> = {
   teal: {
     id: "teal",
     label: "Teal",
+    category: "elemental",
     swatchGradient: "linear-gradient(135deg, #004d40, #00bfa5, #64ffda)",
     accent: "#1de9b6",
     accentD: "rgba(29,233,182,0.12)",
@@ -177,6 +203,7 @@ export const COLOR_THEMES: Record<string, ColorTheme> = {
   neon: {
     id: "neon",
     label: "Neon",
+    category: "elemental",
     swatchGradient: "linear-gradient(135deg, #0d0d0d, #39ff14, #00f5ff)",
     accent: "#39ff14",
     accentD: "rgba(57,255,20,0.12)",
@@ -194,6 +221,7 @@ export const COLOR_THEMES: Record<string, ColorTheme> = {
   sunset: {
     id: "sunset",
     label: "Sunset",
+    category: "elemental",
     swatchGradient: "linear-gradient(135deg, #b71c1c, #ff6f00, #ffd600)",
     accent: "#ff7043",
     accentD: "rgba(255,112,67,0.12)",
@@ -211,6 +239,7 @@ export const COLOR_THEMES: Record<string, ColorTheme> = {
   ice: {
     id: "ice",
     label: "Ice",
+    category: "elemental",
     swatchGradient: "linear-gradient(135deg, #b3e5fc, #e0f7fa, #f8fbff)",
     accent: "#81d4fa",
     accentD: "rgba(129,212,250,0.12)",
@@ -225,8 +254,403 @@ export const COLOR_THEMES: Record<string, ColorTheme> = {
     ribbonColors: ["#030d18", "#0369a1", "#38bdf8", "#f0f9ff"],
     ribbonAngle: 155,
   },
+
+  // ══ 3. CRYSTAL & CYBER (NEW) ══
+  amethyst: {
+    id: "amethyst",
+    label: "Amethyst",
+    category: "cyber",
+    swatchGradient: "linear-gradient(135deg, #7e22ce, #a855f7, #f472b6)",
+    accent: "#a855f7",
+    accentD: "rgba(168,85,247,0.12)",
+    accentG: "rgba(168,85,247,0.25)",
+    accentB: "#d8b4fe",
+    accentC: "#ec4899",
+    textGradient: "linear-gradient(135deg, #d8b4fe 0%, #a855f7 50%, #ec4899 100%)",
+    userBg: "rgba(168,85,247,0.06)",
+    userBorder: "rgba(168,85,247,0.20)",
+    bgGradient: "linear-gradient(135deg, #0c0416 0%, #1a082e 50%, #10041f 100%)",
+    bloomColors: ["#12081f", "#1c0d2e", "#a855f7", "#581c87", "#c084fc", "#f5d0fe"],
+    ribbonColors: ["#12081f", "#581c87", "#a855f7", "#fae8ff"],
+    ribbonAngle: 155,
+  },
+  cyberpunk: {
+    id: "cyberpunk",
+    label: "Cyberpunk",
+    category: "cyber",
+    swatchGradient: "linear-gradient(135deg, #e11d48, #00f5ff, #facc15)",
+    accent: "#f43f5e",
+    accentD: "rgba(244,63,94,0.14)",
+    accentG: "rgba(244,63,94,0.28)",
+    accentB: "#fb7185",
+    accentC: "#00f5ff",
+    textGradient: "linear-gradient(135deg, #fb7185 0%, #f43f5e 50%, #00f5ff 100%)",
+    userBg: "rgba(244,63,94,0.07)",
+    userBorder: "rgba(244,63,94,0.22)",
+    bgGradient: "linear-gradient(135deg, #14020a 0%, #200412 50%, #041018 100%)",
+    bloomColors: ["#16040e", "#25081a", "#f43f5e", "#881337", "#00f5ff", "#fef08a"],
+    ribbonColors: ["#16040e", "#be123c", "#00f5ff", "#fef9c3"],
+    ribbonAngle: 155,
+  },
+  monochrome: {
+    id: "monochrome",
+    label: "Platinum",
+    category: "cyber",
+    swatchGradient: "linear-gradient(135deg, #0f172a, #64748b, #f8fafc)",
+    accent: "#e2e8f0",
+    accentD: "rgba(226,232,240,0.10)",
+    accentG: "rgba(226,232,240,0.20)",
+    accentB: "#ffffff",
+    accentC: "#94a3b8",
+    textGradient: "linear-gradient(135deg, #ffffff 0%, #e2e8f0 50%, #94a3b8 100%)",
+    userBg: "rgba(255,255,255,0.05)",
+    userBorder: "rgba(255,255,255,0.18)",
+    bgGradient: "linear-gradient(135deg, #050608 0%, #0c0e12 50%, #060709 100%)",
+    bloomColors: ["#08090c", "#11141a", "#94a3b8", "#334155", "#cbd5e1", "#ffffff"],
+    ribbonColors: ["#08090c", "#334155", "#cbd5e1", "#ffffff"],
+    ribbonAngle: 155,
+  },
+  midnight: {
+    id: "midnight",
+    label: "Midnight",
+    category: "cyber",
+    swatchGradient: "linear-gradient(135deg, #1e1b4b, #4338ca, #06b6d4)",
+    accent: "#6366f1",
+    accentD: "rgba(99,102,241,0.12)",
+    accentG: "rgba(99,102,241,0.25)",
+    accentB: "#a5b4fc",
+    accentC: "#06b6d4",
+    textGradient: "linear-gradient(135deg, #a5b4fc 0%, #6366f1 50%, #06b6d4 100%)",
+    userBg: "rgba(99,102,241,0.06)",
+    userBorder: "rgba(99,102,241,0.20)",
+    bgGradient: "linear-gradient(135deg, #030310 0%, #080820 50%, #030b14 100%)",
+    bloomColors: ["#060618", "#0d0c2b", "#6366f1", "#312e81", "#06b6d4", "#c7d2fe"],
+    ribbonColors: ["#060618", "#3730a3", "#6366f1", "#e0e7ff"],
+    ribbonAngle: 155,
+  },
+  volcanic: {
+    id: "volcanic",
+    label: "Volcanic",
+    category: "cyber",
+    swatchGradient: "linear-gradient(135deg, #7f1d1d, #ea580c, #facc15)",
+    accent: "#ea580c",
+    accentD: "rgba(234,88,12,0.12)",
+    accentG: "rgba(234,88,12,0.25)",
+    accentB: "#fb923c",
+    accentC: "#facc15",
+    textGradient: "linear-gradient(135deg, #fb923c 0%, #ea580c 50%, #facc15 100%)",
+    userBg: "rgba(234,88,12,0.06)",
+    userBorder: "rgba(234,88,12,0.20)",
+    bgGradient: "linear-gradient(135deg, #120303 0%, #200603 50%, #150802 100%)",
+    bloomColors: ["#160303", "#280806", "#ea580c", "#7c2d12", "#ff4500", "#fef08a"],
+    ribbonColors: ["#160303", "#991b1b", "#ea580c", "#fef9c3"],
+    ribbonAngle: 155,
+  },
+  synthwave: {
+    id: "synthwave",
+    label: "Synthwave",
+    category: "cyber",
+    swatchGradient: "linear-gradient(135deg, #c026d3, #ec4899, #06b6d4)",
+    accent: "#d946ef",
+    accentD: "rgba(217,70,239,0.12)",
+    accentG: "rgba(217,70,239,0.25)",
+    accentB: "#f0abfc",
+    accentC: "#06b6d4",
+    textGradient: "linear-gradient(135deg, #f0abfc 0%, #d946ef 50%, #06b6d4 100%)",
+    userBg: "rgba(217,70,239,0.06)",
+    userBorder: "rgba(217,70,239,0.20)",
+    bgGradient: "linear-gradient(135deg, #100215 0%, #1f0426 50%, #031018 100%)",
+    bloomColors: ["#15031b", "#270830", "#d946ef", "#701a75", "#06b6d4", "#fae8ff"],
+    ribbonColors: ["#15031b", "#86198f", "#d946ef", "#cffafe"],
+    ribbonAngle: 155,
+  },
+
+  // ══ 4. ORGANIC & EARTH (NEW) ══
+  solarpunk: {
+    id: "solarpunk",
+    label: "Solarpunk",
+    category: "organic",
+    swatchGradient: "linear-gradient(135deg, #4d7c0f, #84cc16, #f59e0b)",
+    accent: "#84cc16",
+    accentD: "rgba(132,204,22,0.12)",
+    accentG: "rgba(132,204,22,0.25)",
+    accentB: "#bef264",
+    accentC: "#f59e0b",
+    textGradient: "linear-gradient(135deg, #bef264 0%, #84cc16 50%, #f59e0b 100%)",
+    userBg: "rgba(132,204,22,0.06)",
+    userBorder: "rgba(132,204,22,0.18)",
+    bgGradient: "linear-gradient(135deg, #050b02 0%, #0e1704 50%, #151202 100%)",
+    bloomColors: ["#091203", "#122108", "#84cc16", "#3f6212", "#eab308", "#fef08a"],
+    ribbonColors: ["#091203", "#4d7c0f", "#84cc16", "#fef9c3"],
+    ribbonAngle: 155,
+  },
+  sakura: {
+    id: "sakura",
+    label: "Sakura",
+    category: "organic",
+    swatchGradient: "linear-gradient(135deg, #be123c, #fb7185, #ffe4e6)",
+    accent: "#fb7185",
+    accentD: "rgba(251,113,133,0.12)",
+    accentG: "rgba(251,113,133,0.25)",
+    accentB: "#fda4af",
+    accentC: "#f43f5e",
+    textGradient: "linear-gradient(135deg, #fda4af 0%, #fb7185 50%, #f43f5e 100%)",
+    userBg: "rgba(251,113,133,0.06)",
+    userBorder: "rgba(251,113,133,0.20)",
+    bgGradient: "linear-gradient(135deg, #100307 0%, #1d070f 50%, #14040a 100%)",
+    bloomColors: ["#17040a", "#260a14", "#f43f5e", "#9f1239", "#fda4af", "#fff1f2"],
+    ribbonColors: ["#17040a", "#be123c", "#fb7185", "#ffe4e6"],
+    ribbonAngle: 155,
+  },
+  matcha: {
+    id: "matcha",
+    label: "Matcha Zen",
+    category: "organic",
+    swatchGradient: "linear-gradient(135deg, #365314, #65a30d, #bef264)",
+    accent: "#65a30d",
+    accentD: "rgba(101,163,13,0.12)",
+    accentG: "rgba(101,163,13,0.25)",
+    accentB: "#a3e635",
+    accentC: "#ca8a04",
+    textGradient: "linear-gradient(135deg, #a3e635 0%, #65a30d 50%, #ca8a04 100%)",
+    userBg: "rgba(101,163,13,0.06)",
+    userBorder: "rgba(101,163,13,0.18)",
+    bgGradient: "linear-gradient(135deg, #070e03 0%, #101905 50%, #0b1202 100%)",
+    bloomColors: ["#0b1204", "#152009", "#65a30d", "#365314", "#84cc16", "#ecfccb"],
+    ribbonColors: ["#0b1204", "#3f6212", "#65a30d", "#f7fee7"],
+    ribbonAngle: 155,
+  },
+  copper: {
+    id: "copper",
+    label: "Copper",
+    category: "organic",
+    swatchGradient: "linear-gradient(135deg, #78350f, #b45309, #14b8a6)",
+    accent: "#b45309",
+    accentD: "rgba(180,83,9,0.12)",
+    accentG: "rgba(180,83,9,0.25)",
+    accentB: "#f59e0b",
+    accentC: "#14b8a6",
+    textGradient: "linear-gradient(135deg, #f59e0b 0%, #b45309 50%, #14b8a6 100%)",
+    userBg: "rgba(180,83,9,0.06)",
+    userBorder: "rgba(180,83,9,0.20)",
+    bgGradient: "linear-gradient(135deg, #0f0502 0%, #1d0b04 50%, #03100f 100%)",
+    bloomColors: ["#140803", "#231106", "#b45309", "#78350f", "#14b8a6", "#fef3c7"],
+    ribbonColors: ["#140803", "#78350f", "#b45309", "#ccfbf1"],
+    ribbonAngle: 155,
+  },
+  sahara: {
+    id: "sahara",
+    label: "Sahara",
+    category: "organic",
+    swatchGradient: "linear-gradient(135deg, #78350f, #d97706, #fb7185)",
+    accent: "#d97706",
+    accentD: "rgba(217,119,6,0.12)",
+    accentG: "rgba(217,119,6,0.25)",
+    accentB: "#fbbf24",
+    accentC: "#f43f5e",
+    textGradient: "linear-gradient(135deg, #fbbf24 0%, #d97706 50%, #f43f5e 100%)",
+    userBg: "rgba(217,119,6,0.06)",
+    userBorder: "rgba(217,119,6,0.20)",
+    bgGradient: "linear-gradient(135deg, #100602 0%, #1e0d04 50%, #160408 100%)",
+    bloomColors: ["#160a03", "#261307", "#d97706", "#92400e", "#fb7185", "#fef3c7"],
+    ribbonColors: ["#160a03", "#92400e", "#d97706", "#ffe4e6"],
+    ribbonAngle: 155,
+  },
+
+  // ══ 5. COSMIC & POLAR (NEW) ══
+  nordic: {
+    id: "nordic",
+    label: "Nordic Fjord",
+    category: "cosmic",
+    swatchGradient: "linear-gradient(135deg, #0c4a6e, #0284c7, #93c5fd)",
+    accent: "#38bdf8",
+    accentD: "rgba(56,189,248,0.12)",
+    accentG: "rgba(56,189,248,0.25)",
+    accentB: "#7dd3fc",
+    accentC: "#a5b4fc",
+    textGradient: "linear-gradient(135deg, #7dd3fc 0%, #38bdf8 50%, #a5b4fc 100%)",
+    userBg: "rgba(56,189,248,0.06)",
+    userBorder: "rgba(56,189,248,0.18)",
+    bgGradient: "linear-gradient(135deg, #020912 0%, #051422 50%, #030a16 100%)",
+    bloomColors: ["#040d16", "#091929", "#0284c7", "#075985", "#38bdf8", "#e0f2fe"],
+    ribbonColors: ["#040d16", "#0369a1", "#7dd3fc", "#f0f9ff"],
+    ribbonAngle: 155,
+  },
+  "aurora-green": {
+    id: "aurora-green",
+    label: "Borealis",
+    category: "cosmic",
+    swatchGradient: "linear-gradient(135deg, #064e3b, #10b981, #60a5fa)",
+    accent: "#10b981",
+    accentD: "rgba(16,185,129,0.12)",
+    accentG: "rgba(16,185,129,0.25)",
+    accentB: "#6ee7b7",
+    accentC: "#3b82f6",
+    textGradient: "linear-gradient(135deg, #6ee7b7 0%, #10b981 50%, #3b82f6 100%)",
+    userBg: "rgba(16,185,129,0.06)",
+    userBorder: "rgba(16,185,129,0.18)",
+    bgGradient: "linear-gradient(135deg, #020e0a 0%, #051c14 50%, #020918 100%)",
+    bloomColors: ["#03140e", "#07241a", "#10b981", "#047857", "#3b82f6", "#d1fae5"],
+    ribbonColors: ["#03140e", "#065f46", "#10b981", "#dbeafe"],
+    ribbonAngle: 155,
+  },
+  celestial: {
+    id: "celestial",
+    label: "Celestial",
+    category: "cosmic",
+    swatchGradient: "linear-gradient(135deg, #2e1065, #7c3aed, #f472b6)",
+    accent: "#8b5cf6",
+    accentD: "rgba(139,92,246,0.12)",
+    accentG: "rgba(139,92,246,0.25)",
+    accentB: "#c4b5fd",
+    accentC: "#f472b6",
+    textGradient: "linear-gradient(135deg, #c4b5fd 0%, #8b5cf6 50%, #f472b6 100%)",
+    userBg: "rgba(139,92,246,0.06)",
+    userBorder: "rgba(139,92,246,0.20)",
+    bgGradient: "linear-gradient(135deg, #090414 0%, #140924 50%, #150410 100%)",
+    bloomColors: ["#0d061c", "#170c30", "#8b5cf6", "#4c1d95", "#f472b6", "#ede9fe"],
+    ribbonColors: ["#0d061c", "#5b21b6", "#8b5cf6", "#fce7f3"],
+    ribbonAngle: 155,
+  },
+  hyperborea: {
+    id: "hyperborea",
+    label: "Hyperborea",
+    category: "cosmic",
+    swatchGradient: "linear-gradient(135deg, #164e63, #06b6d4, #c084fc)",
+    accent: "#06b6d4",
+    accentD: "rgba(6,182,212,0.12)",
+    accentG: "rgba(6,182,212,0.25)",
+    accentB: "#67e8f9",
+    accentC: "#a855f7",
+    textGradient: "linear-gradient(135deg, #67e8f9 0%, #06b6d4 50%, #a855f7 100%)",
+    userBg: "rgba(6,182,212,0.06)",
+    userBorder: "rgba(6,182,212,0.18)",
+    bgGradient: "linear-gradient(135deg, #020c10 0%, #051820 50%, #0c0418 100%)",
+    bloomColors: ["#031117", "#07202b", "#06b6d4", "#0e7490", "#a855f7", "#cffafe"],
+    ribbonColors: ["#031117", "#155e75", "#06b6d4", "#f3e8ff"],
+    ribbonAngle: 155,
+  },
+  "nebula-drift": {
+    id: "nebula-drift",
+    label: "Nebula Drift",
+    category: "cosmic",
+    swatchGradient: "linear-gradient(135deg, #831843, #db2777, #facc15)",
+    accent: "#ec4899",
+    accentD: "rgba(236,72,153,0.12)",
+    accentG: "rgba(236,72,153,0.25)",
+    accentB: "#f472b6",
+    accentC: "#eab308",
+    textGradient: "linear-gradient(135deg, #f472b6 0%, #ec4899 50%, #eab308 100%)",
+    userBg: "rgba(236,72,153,0.06)",
+    userBorder: "rgba(236,72,153,0.20)",
+    bgGradient: "linear-gradient(135deg, #10020a 0%, #1f0414 50%, #161001 100%)",
+    bloomColors: ["#170410", "#28091d", "#ec4899", "#9d174d", "#eab308", "#fce7f3"],
+    ribbonColors: ["#170410", "#9d174d", "#ec4899", "#fef9c3"],
+    ribbonAngle: 155,
+  },
 };
 
 export type ThemeId = string;
 export const THEMES = COLOR_THEMES;
-export type GradientStyle = "bloom" | "waves" | "cosmic";
+
+export interface AtmosphereEngineInfo {
+  id: GradientStyle;
+  label: string;
+  tag: string;
+  description: string;
+  iconName: string;
+}
+
+export const ATMOSPHERE_ENGINES: AtmosphereEngineInfo[] = [
+  {
+    id: "bloom",
+    label: "Bloom Mesh",
+    tag: "Gradient 1",
+    description: "21st.dev 6-blob radial mesh with unquantized continuous phase modulation.",
+    iconName: "SunMedium",
+  },
+  {
+    id: "waves",
+    label: "Ribbon Waves",
+    tag: "Gradient 2",
+    description: "21st.dev dynamic stripe bands swaying along harmonic sinusoidal angles.",
+    iconName: "Waves",
+  },
+  {
+    id: "cosmic",
+    label: "Cosmic 3D",
+    tag: "WebGL",
+    description: "Procedural 3D starfield and volumetric Three.js shader nebula.",
+    iconName: "Orbit",
+  },
+  {
+    id: "aurora-curtains",
+    label: "Aurora Curtains",
+    tag: "Atmospheric",
+    description: "Fluctuating polar light curtains waving vertically with harmonic distortion.",
+    iconName: "Wind",
+  },
+  {
+    id: "warp-speed",
+    label: "Hyper Warp",
+    tag: "Interstellar",
+    description: "High-speed 3D star streaks traveling outward from the optical center.",
+    iconName: "Zap",
+  },
+  {
+    id: "cyber-grid",
+    label: "Tron Grid",
+    tag: "Retro 3D",
+    description: "3D perspective wireframe horizon with forward motion and neon horizon glow.",
+    iconName: "Grid3X3",
+  },
+  {
+    id: "quantum-field",
+    label: "Quantum Nodes",
+    tag: "Interactive",
+    description: "Constellation nodes and particle swarm connected by dynamic proximity lines.",
+    iconName: "Share2",
+  },
+  {
+    id: "liquid-lava",
+    label: "Molten Metablobs",
+    tag: "Organic",
+    description: "Viscous fluid metaballs colliding and fusing with smooth convection blending.",
+    iconName: "Flame",
+  },
+  {
+    id: "matrix-rain",
+    label: "Digital Glyphs",
+    tag: "Cyber",
+    description: "Atmospheric falling data streams in active theme accent with phosphor tails.",
+    iconName: "Terminal",
+  },
+  {
+    id: "zen-minimal",
+    label: "Zen Obsidian",
+    tag: "Minimalist",
+    description: "Distraction-free pure deep void with slow, breathing ambient focal glow.",
+    iconName: "Sparkles",
+  },
+  {
+    id: "radial-pulse",
+    label: "Harmonic Pulse",
+    tag: "Resonance",
+    description: "Concentric sonar atmospheric ripples expanding smoothly from screen center.",
+    iconName: "Radio",
+  },
+  {
+    id: "particle-vortex",
+    label: "Stellar Vortex",
+    tag: "Galactic",
+    description: "Swirling particle spiral orbiting around a gravitational singularity.",
+    iconName: "Disc",
+  },
+  {
+    id: "bokeh-blur",
+    label: "Cinematic Bokeh",
+    tag: "Optical",
+    description: "Soft out-of-focus luminous optical circles drifting with layered focal depth.",
+    iconName: "Eye",
+  },
+];
