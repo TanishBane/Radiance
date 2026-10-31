@@ -120,7 +120,7 @@ export default function RadianceApp() {
   };
 
   return (
-    <div className="relative flex flex-col h-screen w-screen overflow-hidden bg-[var(--void)] text-[var(--txt)] font-sans select-none">
+    <div className="relative flex flex-col h-[100dvh] w-screen overflow-hidden bg-[var(--void)] text-[var(--txt)] font-sans select-none">
       {/* Background Engines: 21st.dev Bloom Mesh / Waves or Three.js Nebula */}
       {gradientStyle === "cosmic" && (
         <AmbientCanvas accentColor={selectedTheme.accent} />
