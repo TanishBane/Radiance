@@ -28,21 +28,20 @@ export function RadianceLogo({ size = "md", className, onClick }: LogoProps) {
       <div
         className={cn(
           "rounded-xl font-mono font-bold flex items-center justify-center transition-all duration-300",
-          "border border-[var(--border)] shadow-[0_0_20px_rgba(232,168,73,0.15)]",
-          "group-hover:border-[var(--accent)] group-hover:shadow-[0_0_25px_var(--accent-g)]",
+          "border border-[var(--border)] shadow-[0_0_20px_var(--accent-g)]",
+          "group-hover:border-[var(--accent)] group-hover:scale-105",
           sizeClasses[size]
         )}
         style={{
-          background: "linear-gradient(135deg, rgba(232,168,73,0.22), rgba(212,136,58,0.08))",
-          color: "var(--accent-b)",
+          background: "linear-gradient(135deg, var(--accent-d), rgba(255, 255, 255, 0.02))",
         }}
       >
-        RD
+        <span className="gradient-text-brand">RD</span>
       </div>
       <div className="flex flex-col">
         <span
           className={cn(
-            "font-serif tracking-[0.12em] font-bold text-[var(--txt)] transition-colors",
+            "font-serif tracking-[0.14em] font-bold text-[var(--txt)] transition-colors",
             "group-hover:text-[var(--accent-b)]",
             textSizes[size]
           )}

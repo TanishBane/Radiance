@@ -82,8 +82,10 @@ export default function RadianceApp() {
     const root = document.documentElement;
     root.style.setProperty("--accent", selectedTheme.accent);
     root.style.setProperty("--accent-b", selectedTheme.accentB);
+    root.style.setProperty("--accent-c", selectedTheme.accentC);
     root.style.setProperty("--accent-d", selectedTheme.accentD);
     root.style.setProperty("--accent-g", selectedTheme.accentG);
+    root.style.setProperty("--text-gradient", selectedTheme.textGradient);
     if (selectedTheme.bgGradient) {
       root.style.setProperty("--bg-gradient", selectedTheme.bgGradient);
     }
