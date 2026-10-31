@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from "react";
 import { PersonaMode, ToneKey, Attachment, ModelOption } from "@/lib/types/chat";
-import { ThemeId, THEMES } from "@/lib/types/theme";
+import { ThemeId, THEMES, GradientStyle } from "@/lib/types/theme";
 import { DEFAULT_MODEL_ID, getModelById } from "@/lib/ai/models";
 
 // Background & Branding
@@ -25,7 +25,8 @@ import { ChatWorkspace } from "@/features/chat/components/chat-workspace";
 
 export default function RadianceApp() {
   const [showSplash, setShowSplash] = useState(true);
-  const [theme, setTheme] = useState<ThemeId>("default");
+  const [theme, setTheme] = useState<ThemeId>("violet");
+  const [gradientStyle, setGradientStyle] = useState<GradientStyle>("bloom");
   const [modelId, setModelId] = useState(DEFAULT_MODEL_ID);
   const [mode, setMode] = useState<PersonaMode>("default");
   const [tone, setTone] = useState<ToneKey>("default");
@@ -73,7 +74,7 @@ export default function RadianceApp() {
     onError: handleStreamError,
   });
 
-  const selectedTheme = THEMES[theme] || THEMES.default;
+  const selectedTheme = THEMES[theme] || THEMES.violet;
   const selectedModel = getModelById(modelId);
 
   // Apply Theme CSS Tokens
@@ -118,9 +119,15 @@ export default function RadianceApp() {
 
   return (
     <div className="relative flex flex-col h-screen w-screen overflow-hidden bg-[var(--void)] text-[var(--txt)] font-sans select-none">
-      {/* Three.js Shader Nebula Background */}
-      <AmbientCanvas accentColor={selectedTheme.accent} />
-      <BackgroundLayers />
+      {/* Background Engines: 21st.dev Bloom Mesh / Waves or Three.js Nebula */}
+      {gradientStyle === "cosmic" && (
+        <AmbientCanvas accentColor={selectedTheme.accent} />
+      )}
+      <BackgroundLayers
+        theme={selectedTheme}
+        gradientStyle={gradientStyle}
+        bgGradient={selectedTheme.bgGradient}
+      />
 
       {/* Intro Splash Animation */}
       {showSplash && <IntroSplash onComplete={() => setShowSplash(false)} />}
@@ -144,11 +151,12 @@ export default function RadianceApp() {
           onToggleHistory={() => setHistoryOpen((h) => !h)}
           onToggleSettings={() => setSettingsOpen((s) => !s)}
           onOpenShortcuts={() => setShortcutsOpen(true)}
+          onOpenLegacyImport={() => setLegacyImportOpen(true)}
           currentMode={mode}
           onSelectMode={setMode}
         />
 
-        <div className="flex-1 flex flex-col pl-14 md:pl-16">
+        <div className="flex-1 flex flex-col min-w-0">
           <ChatWorkspace
             messages={messages}
             streamingContent={streamingContent}
@@ -189,6 +197,8 @@ export default function RadianceApp() {
         onSelectTone={setTone}
         activeTheme={theme}
         onSelectTheme={setTheme}
+        gradientStyle={gradientStyle}
+        onSelectGradientStyle={setGradientStyle}
       />
 
       <ShortcutsDialog isOpen={shortcutsOpen} onClose={() => setShortcutsOpen(false)} />
