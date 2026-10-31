@@ -1,15 +1,36 @@
-import React from "react";
+"use client";
 
-export function BackgroundLayers({ bgGradient }: { bgGradient?: string | null }) {
+import React from "react";
+import { ColorTheme, GradientStyle } from "@/lib/types/theme";
+import { AuroraGradientBackground } from "./aurora-gradient-background";
+
+interface BackgroundLayersProps {
+  bgGradient?: string | null;
+  theme?: ColorTheme;
+  gradientStyle?: GradientStyle;
+}
+
+export function BackgroundLayers({
+  bgGradient,
+  theme,
+  gradientStyle = "bloom",
+}: BackgroundLayersProps) {
   return (
     <>
-      {/* ══ AMBIENT GRADIENT MESH ══ */}
-      <div
-        className="fixed inset-0 pointer-events-none z-0 transition-all duration-700"
-        style={{
-          background: bgGradient || undefined,
-        }}
-      />
+      {/* ══ 21st.dev ANIMATED GRADIENT ENGINE (Bloom Field or Ribbon Waves) ══ */}
+      {theme && gradientStyle !== "cosmic" && (
+        <AuroraGradientBackground theme={theme} styleMode={gradientStyle} />
+      )}
+
+      {/* ══ AMBIENT FALLBACK GRADIENT (for Cosmic 3D mode) ══ */}
+      {gradientStyle === "cosmic" && (
+        <div
+          className="fixed inset-0 pointer-events-none z-0 transition-all duration-700"
+          style={{
+            background: bgGradient || undefined,
+          }}
+        />
+      )}
 
       {/* ══ PROCEDURAL FILM GRAIN NOISE ══ */}
       <div
@@ -25,7 +46,8 @@ export function BackgroundLayers({ bgGradient }: { bgGradient?: string | null })
       <div
         className="fixed inset-0 pointer-events-none z-[2]"
         style={{
-          background: "radial-gradient(ellipse 75% 75% at 50% 50%, transparent 40%, rgba(0, 0, 0, 0.6) 100%)",
+          background:
+            "radial-gradient(ellipse 75% 75% at 50% 50%, transparent 40%, rgba(0, 0, 0, 0.6) 100%)",
         }}
         aria-hidden="true"
       />

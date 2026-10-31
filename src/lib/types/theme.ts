@@ -9,6 +9,11 @@ export interface ColorTheme {
   userBorder: string;
   bgGradient: string | null;
   swatchGradient: string;
+  // Gradient 1: Bloom Field (Mesh) exact 6-color palette
+  bloomColors: [string, string, string, string, string, string]; // [backdrop, darkBase, primary, deepAccent, secondary, highlight]
+  // Gradient 2: Ribbon Field (Stripes) exact 4-color wave palette
+  ribbonColors: [string, string, string, string]; // [night, iris, lilac, petal]
+  ribbonAngle?: number;
 }
 
 export const COLOR_THEMES: Record<string, ColorTheme> = {
@@ -23,6 +28,26 @@ export const COLOR_THEMES: Record<string, ColorTheme> = {
     userBg: "rgba(232,168,73,0.06)",
     userBorder: "rgba(232,168,73,0.18)",
     bgGradient: null,
+    bloomColors: ["#120c04", "#1a1006", "#e8a849", "#784408", "#c06828", "#ffd899"],
+    ribbonColors: ["#120c04", "#784408", "#e8a849", "#fef08a"],
+    ribbonAngle: 155,
+  },
+  violet: {
+    id: "violet",
+    label: "Violet Aurora",
+    swatchGradient: "linear-gradient(135deg, #6a1b9a, #ab47bc, #e040fb)",
+    accent: "#6D4AFF",
+    accentD: "rgba(109,74,255,0.14)",
+    accentG: "rgba(109,74,255,0.28)",
+    accentB: "#C4A0FF",
+    userBg: "rgba(109,74,255,0.07)",
+    userBorder: "rgba(109,74,255,0.20)",
+    bgGradient: "linear-gradient(135deg, #0a0418 0%, #140B2E 50%, #0c051a 100%)",
+    // Exact Reference Palette from 21st.dev Violet Aurora
+    bloomColors: ["#140B2E", "#140B2E", "#6D4AFF", "#3C02A4", "#6D4AFF", "#C4A0FF"],
+    // Exact Reference Palette from 21st.dev Purple Animated Waves
+    ribbonColors: ["#1B1035", "#4A3A8C", "#B58AC9", "#F5D6E6"],
+    ribbonAngle: 155,
   },
   emerald: {
     id: "emerald",
@@ -35,6 +60,9 @@ export const COLOR_THEMES: Record<string, ColorTheme> = {
     userBg: "rgba(73,232,122,0.06)",
     userBorder: "rgba(73,232,122,0.18)",
     bgGradient: "linear-gradient(135deg, #040e08 0%, #081c0e 50%, #050f06 100%)",
+    bloomColors: ["#041208", "#071c0e", "#00c853", "#004d20", "#49e87a", "#bbf7d0"],
+    ribbonColors: ["#041208", "#004d20", "#00c853", "#dcfce7"],
+    ribbonAngle: 155,
   },
   ocean: {
     id: "ocean",
@@ -47,6 +75,9 @@ export const COLOR_THEMES: Record<string, ColorTheme> = {
     userBg: "rgba(73,168,232,0.06)",
     userBorder: "rgba(73,168,232,0.18)",
     bgGradient: "linear-gradient(135deg, #020810 0%, #051428 50%, #020a1a 100%)",
+    bloomColors: ["#020b18", "#041528", "#1565c0", "#0a2d60", "#49a8e8", "#bae6fd"],
+    ribbonColors: ["#020b18", "#0d47a1", "#42a5f5", "#e0f2fe"],
+    ribbonAngle: 155,
   },
   crimson: {
     id: "crimson",
@@ -59,18 +90,9 @@ export const COLOR_THEMES: Record<string, ColorTheme> = {
     userBg: "rgba(232,85,85,0.06)",
     userBorder: "rgba(232,85,85,0.18)",
     bgGradient: "linear-gradient(135deg, #0f0305 0%, #220508 50%, #150305 100%)",
-  },
-  violet: {
-    id: "violet",
-    label: "Violet",
-    swatchGradient: "linear-gradient(135deg, #6a1b9a, #ab47bc, #e040fb)",
-    accent: "#b478ff",
-    accentD: "rgba(180,120,255,0.12)",
-    accentG: "rgba(180,120,255,0.25)",
-    accentB: "#d0a8ff",
-    userBg: "rgba(180,120,255,0.06)",
-    userBorder: "rgba(180,120,255,0.18)",
-    bgGradient: "linear-gradient(135deg, #07040f 0%, #130828 50%, #090514 100%)",
+    bloomColors: ["#150305", "#220508", "#e53935", "#6e0a0a", "#ff5252", "#fecaca"],
+    ribbonColors: ["#150305", "#b71c1c", "#ff5252", "#fee2e2"],
+    ribbonAngle: 155,
   },
   amber: {
     id: "amber",
@@ -83,6 +105,9 @@ export const COLOR_THEMES: Record<string, ColorTheme> = {
     userBg: "rgba(255,138,60,0.06)",
     userBorder: "rgba(255,138,60,0.18)",
     bgGradient: "linear-gradient(135deg, #0f0702 0%, #281205 50%, #160901 100%)",
+    bloomColors: ["#140802", "#220e03", "#ff6d00", "#7c2d12", "#ff8a3c", "#ffedd5"],
+    ribbonColors: ["#140802", "#9a3412", "#ff8a3c", "#fff7ed"],
+    ribbonAngle: 155,
   },
   golden: {
     id: "golden",
@@ -95,6 +120,9 @@ export const COLOR_THEMES: Record<string, ColorTheme> = {
     userBg: "rgba(232,212,73,0.06)",
     userBorder: "rgba(232,212,73,0.18)",
     bgGradient: "linear-gradient(135deg, #0f0f02 0%, #1e1a01 50%, #100f01 100%)",
+    bloomColors: ["#121202", "#1e1a02", "#f9a825", "#785b00", "#e8d449", "#fef9c3"],
+    ribbonColors: ["#121202", "#a16207", "#facc15", "#fefce8"],
+    ribbonAngle: 155,
   },
   rose: {
     id: "rose",
@@ -107,6 +135,9 @@ export const COLOR_THEMES: Record<string, ColorTheme> = {
     userBg: "rgba(240,98,146,0.06)",
     userBorder: "rgba(240,98,146,0.22)",
     bgGradient: "linear-gradient(135deg, #0f0208 0%, #220512 50%, #150309 100%)",
+    bloomColors: ["#16030c", "#240514", "#e91e8c", "#700a40", "#f06292", "#fce7f3"],
+    ribbonColors: ["#16030c", "#9d174d", "#f472b6", "#fdf2f8"],
+    ribbonAngle: 155,
   },
   teal: {
     id: "teal",
@@ -119,6 +150,9 @@ export const COLOR_THEMES: Record<string, ColorTheme> = {
     userBg: "rgba(29,233,182,0.06)",
     userBorder: "rgba(29,233,182,0.18)",
     bgGradient: "linear-gradient(135deg, #020f0c 0%, #041e18 50%, #030f0d 100%)",
+    bloomColors: ["#02120f", "#041e18", "#00bfa5", "#004d40", "#1de9b6", "#ccfbf1"],
+    ribbonColors: ["#02120f", "#0f766e", "#2dd4bf", "#f0fdfa"],
+    ribbonAngle: 155,
   },
   neon: {
     id: "neon",
@@ -131,6 +165,9 @@ export const COLOR_THEMES: Record<string, ColorTheme> = {
     userBg: "rgba(57,255,20,0.05)",
     userBorder: "rgba(57,255,20,0.20)",
     bgGradient: "linear-gradient(135deg, #010801 0%, #001a00 50%, #010a01 100%)",
+    bloomColors: ["#020a02", "#051605", "#39ff14", "#0a4005", "#80ff55", "#bbf7d0"],
+    ribbonColors: ["#020a02", "#15803d", "#4ade80", "#f0fdf4"],
+    ribbonAngle: 155,
   },
   sunset: {
     id: "sunset",
@@ -143,6 +180,9 @@ export const COLOR_THEMES: Record<string, ColorTheme> = {
     userBg: "rgba(255,112,67,0.06)",
     userBorder: "rgba(255,112,67,0.20)",
     bgGradient: "linear-gradient(135deg, #100402 0%, #1f0a00 50%, #140600 100%)",
+    bloomColors: ["#180503", "#280a04", "#ff5722", "#871505", "#ff8a50", "#ffedd5"],
+    ribbonColors: ["#180503", "#c2410c", "#fb923c", "#fff7ed"],
+    ribbonAngle: 155,
   },
   ice: {
     id: "ice",
@@ -155,8 +195,12 @@ export const COLOR_THEMES: Record<string, ColorTheme> = {
     userBg: "rgba(129,212,250,0.06)",
     userBorder: "rgba(129,212,250,0.18)",
     bgGradient: "linear-gradient(135deg, #02080f 0%, #041528 50%, #020b1a 100%)",
+    bloomColors: ["#030d18", "#05182a", "#0284c7", "#03456b", "#81d4fa", "#e0f2fe"],
+    ribbonColors: ["#030d18", "#0369a1", "#38bdf8", "#f0f9ff"],
+    ribbonAngle: 155,
   },
 };
 
 export type ThemeId = string;
 export const THEMES = COLOR_THEMES;
+export type GradientStyle = "bloom" | "waves" | "cosmic";
