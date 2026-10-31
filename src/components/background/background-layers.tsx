@@ -3,6 +3,7 @@
 import React from "react";
 import { ColorTheme, GradientStyle } from "@/lib/types/theme";
 import { AuroraGradientBackground } from "./aurora-gradient-background";
+import { AtmosphereCanvasEngine } from "./atmosphere-canvas-engine";
 
 interface BackgroundLayersProps {
   bgGradient?: string | null;
@@ -15,15 +16,23 @@ export function BackgroundLayers({
   theme,
   gradientStyle = "bloom",
 }: BackgroundLayersProps) {
+  const isBloomOrWaves = gradientStyle === "bloom" || gradientStyle === "waves";
+  const isCosmic = gradientStyle === "cosmic";
+
   return (
     <>
       {/* ══ 21st.dev ANIMATED GRADIENT ENGINE (Bloom Field or Ribbon Waves) ══ */}
-      {theme && gradientStyle !== "cosmic" && (
+      {theme && isBloomOrWaves && (
         <AuroraGradientBackground theme={theme} styleMode={gradientStyle} />
       )}
 
+      {/* ══ DIVERSE ATMOSPHERE CANVAS ENGINES (10 Distinct Interactive Modes) ══ */}
+      {theme && !isBloomOrWaves && !isCosmic && (
+        <AtmosphereCanvasEngine theme={theme} engine={gradientStyle} />
+      )}
+
       {/* ══ AMBIENT FALLBACK GRADIENT (for Cosmic 3D mode) ══ */}
-      {gradientStyle === "cosmic" && (
+      {isCosmic && (
         <div
           className="fixed inset-0 pointer-events-none z-0 transition-all duration-700"
           style={{
