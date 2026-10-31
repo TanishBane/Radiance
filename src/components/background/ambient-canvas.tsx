@@ -214,11 +214,19 @@ export function AmbientCanvas({ accentColor = "#e8a849" }: AmbientCanvasProps) {
       }
     };
 
+    const handleContextLost = (e: Event) => {
+      e.preventDefault();
+      running = false;
+      cancelAnimationFrame(animId);
+    };
+
+    canvas.addEventListener("webglcontextlost", handleContextLost, false);
     document.addEventListener("visibilitychange", handleVisibility);
 
     return () => {
       running = false;
       cancelAnimationFrame(animId);
+      canvas.removeEventListener("webglcontextlost", handleContextLost);
       window.removeEventListener("resize", resize);
       window.removeEventListener("mousemove", handlePointerMove);
       document.removeEventListener("visibilitychange", handleVisibility);

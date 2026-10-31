@@ -1,0 +1,48 @@
+import { describe, it, expect } from "vitest";
+import {
+  checkRateLimit,
+  getTrustedClientIp,
+} from "@/lib/security/rate-limiter";
+
+describe("Distributed & Layered Rate Limiting", () => {
+  it("extracts trusted edge IP headers and avoids spoofed forwarded headers", () => {
+    // Edge header: x-real-ip takes highest priority
+    const headers1 = new Headers({
+      "x-real-ip": "203.0.113.195",
+      "x-forwarded-for": "10.0.0.1, 10.0.0.2",
+    });
+    expect(getTrustedClientIp(headers1)).toBe("203.0.113.195");
+
+    // Vercel edge forwarded for
+    const headers2 = new Headers({
+      "x-vercel-forwarded-for": "198.51.100.44, 10.0.0.1",
+    });
+    expect(getTrustedClientIp(headers2)).toBe("198.51.100.44");
+
+    // Default fallback
+    const headersEmpty = new Headers();
+    expect(getTrustedClientIp(headersEmpty)).toBe("127.0.0.1");
+  });
+
+  it("permits initial requests within token burst capacity", async () => {
+    const testId = `test_client_${Date.now()}`;
+    const result = await checkRateLimit(testId, "chat");
+
+    expect(result.success).toBe(true);
+    expect(result.remaining).toBeGreaterThan(0);
+  });
+
+  it("enforces limit and returns retryAfter when tokens are exhausted", async () => {
+    const testId = `burst_exhaust_${Date.now()}`;
+
+    // Exhaust 35 requests rapidly
+    let lastResult;
+    for (let i = 0; i < 35; i++) {
+      lastResult = await checkRateLimit(testId, "chat");
+    }
+
+    expect(lastResult?.success).toBe(false);
+    expect(lastResult?.remaining).toBe(0);
+    expect(lastResult?.retryAfter).toBeGreaterThan(0);
+  });
+});
