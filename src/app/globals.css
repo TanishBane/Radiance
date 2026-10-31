@@ -13,6 +13,8 @@
     --accent-d: rgba(232, 168, 73, 0.12);
     --accent-g: rgba(232, 168, 73, 0.25);
     --accent-b: #f5c77e;
+    --accent-c: #d4883a;
+    --text-gradient: linear-gradient(135deg, var(--accent-b), var(--accent), var(--accent-c));
 
     --danger: #e85555;
     --warn: #e8c849;
@@ -48,6 +50,20 @@
     overflow: hidden;
     -webkit-font-smoothing: antialiased;
   }
+}
+
+/* ══ FONT FAMILIES ══ */
+.font-serif {
+  font-family: var(--font-serif), "Cormorant Garamond", Georgia, serif;
+}
+
+/* ══ SIGNATURE TEXT GRADIENTS (from TanixAI legacy .w-title em) ══ */
+.gradient-text-brand {
+  background: var(--text-gradient, linear-gradient(135deg, var(--accent-b), var(--accent), var(--accent-c, #d4883a)));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  display: inline-block;
 }
 
 /* ══ SCROLLBARS ══ */

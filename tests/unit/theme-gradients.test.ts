@@ -23,6 +23,27 @@ describe("Theme Gradients Configuration & Mathematical Invariants", () => {
     });
   });
 
+  it("should define accentC and textGradient for every theme", () => {
+    themes.forEach((theme) => {
+      expect(theme.accentC).toMatch(/^#[0-9a-fA-F]{6}$/);
+      expect(theme.textGradient).toContain("linear-gradient");
+      expect(theme.textGradient).toContain(theme.accentB);
+      expect(theme.textGradient).toContain(theme.accent);
+      expect(theme.textGradient).toContain(theme.accentC);
+    });
+  });
+
+  it("should provide the exact signature amber chromatic shift (#d4883a) for Crimson theme", () => {
+    const crimson = COLOR_THEMES.crimson;
+    expect(crimson).toBeDefined();
+    expect(crimson.accent).toBe("#e85555");
+    expect(crimson.accentB).toBe("#f57e7e");
+    expect(crimson.accentC).toBe("#d4883a"); // Matches legacy TanixAI style.css:928
+    expect(crimson.textGradient).toBe(
+      "linear-gradient(135deg, #f57e7e 0%, #e85555 50%, #d4883a 100%)"
+    );
+  });
+
   it("should match 21st.dev reference palette exactly for violet theme", () => {
     const violet = COLOR_THEMES.violet;
     expect(violet).toBeDefined();

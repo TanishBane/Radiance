@@ -5,10 +5,12 @@ export interface ColorTheme {
   accentD: string;
   accentG: string;
   accentB: string;
+  accentC: string; // Tertiary highlight / chromatic shift (e.g., #d4883a for Crimson!)
   userBg: string;
   userBorder: string;
   bgGradient: string | null;
   swatchGradient: string;
+  textGradient: string; // Signature 3-stop chromatic text gradient
   // Gradient 1: Bloom Field (Mesh) exact 6-color palette
   bloomColors: [string, string, string, string, string, string]; // [backdrop, darkBase, primary, deepAccent, secondary, highlight]
   // Gradient 2: Ribbon Field (Stripes) exact 4-color wave palette
@@ -25,6 +27,8 @@ export const COLOR_THEMES: Record<string, ColorTheme> = {
     accentD: "rgba(232,168,73,0.12)",
     accentG: "rgba(232,168,73,0.25)",
     accentB: "#f5c77e",
+    accentC: "#d4883a",
+    textGradient: "linear-gradient(135deg, #f5c77e 0%, #e8a849 50%, #d4883a 100%)",
     userBg: "rgba(232,168,73,0.06)",
     userBorder: "rgba(232,168,73,0.18)",
     bgGradient: null,
@@ -40,6 +44,8 @@ export const COLOR_THEMES: Record<string, ColorTheme> = {
     accentD: "rgba(109,74,255,0.14)",
     accentG: "rgba(109,74,255,0.28)",
     accentB: "#C4A0FF",
+    accentC: "#ff70a6",
+    textGradient: "linear-gradient(135deg, #C4A0FF 0%, #6D4AFF 50%, #ff70a6 100%)",
     userBg: "rgba(109,74,255,0.07)",
     userBorder: "rgba(109,74,255,0.20)",
     bgGradient: "linear-gradient(135deg, #0a0418 0%, #140B2E 50%, #0c051a 100%)",
@@ -57,6 +63,8 @@ export const COLOR_THEMES: Record<string, ColorTheme> = {
     accentD: "rgba(73,232,122,0.12)",
     accentG: "rgba(73,232,122,0.25)",
     accentB: "#7ef5a8",
+    accentC: "#38bdf8",
+    textGradient: "linear-gradient(135deg, #7ef5a8 0%, #49e87a 50%, #38bdf8 100%)",
     userBg: "rgba(73,232,122,0.06)",
     userBorder: "rgba(73,232,122,0.18)",
     bgGradient: "linear-gradient(135deg, #040e08 0%, #081c0e 50%, #050f06 100%)",
@@ -72,6 +80,8 @@ export const COLOR_THEMES: Record<string, ColorTheme> = {
     accentD: "rgba(73,168,232,0.12)",
     accentG: "rgba(73,168,232,0.25)",
     accentB: "#7ec5f5",
+    accentC: "#a78bfa",
+    textGradient: "linear-gradient(135deg, #7ec5f5 0%, #49a8e8 50%, #a78bfa 100%)",
     userBg: "rgba(73,168,232,0.06)",
     userBorder: "rgba(73,168,232,0.18)",
     bgGradient: "linear-gradient(135deg, #020810 0%, #051428 50%, #020a1a 100%)",
@@ -87,6 +97,8 @@ export const COLOR_THEMES: Record<string, ColorTheme> = {
     accentD: "rgba(232,85,85,0.12)",
     accentG: "rgba(232,85,85,0.25)",
     accentB: "#f57e7e",
+    accentC: "#d4883a", // The signature warm amber tone from TanixAI legacy style.css
+    textGradient: "linear-gradient(135deg, #f57e7e 0%, #e85555 50%, #d4883a 100%)",
     userBg: "rgba(232,85,85,0.06)",
     userBorder: "rgba(232,85,85,0.18)",
     bgGradient: "linear-gradient(135deg, #0f0305 0%, #220508 50%, #150305 100%)",
@@ -102,6 +114,8 @@ export const COLOR_THEMES: Record<string, ColorTheme> = {
     accentD: "rgba(255,138,60,0.12)",
     accentG: "rgba(255,138,60,0.25)",
     accentB: "#ffab6e",
+    accentC: "#f43f5e",
+    textGradient: "linear-gradient(135deg, #ffab6e 0%, #ff8a3c 50%, #f43f5e 100%)",
     userBg: "rgba(255,138,60,0.06)",
     userBorder: "rgba(255,138,60,0.18)",
     bgGradient: "linear-gradient(135deg, #0f0702 0%, #281205 50%, #160901 100%)",
@@ -117,6 +131,8 @@ export const COLOR_THEMES: Record<string, ColorTheme> = {
     accentD: "rgba(232,212,73,0.12)",
     accentG: "rgba(232,212,73,0.25)",
     accentB: "#f5ea7e",
+    accentC: "#f97316",
+    textGradient: "linear-gradient(135deg, #f5ea7e 0%, #e8d449 50%, #f97316 100%)",
     userBg: "rgba(232,212,73,0.06)",
     userBorder: "rgba(232,212,73,0.18)",
     bgGradient: "linear-gradient(135deg, #0f0f02 0%, #1e1a01 50%, #100f01 100%)",
@@ -132,6 +148,8 @@ export const COLOR_THEMES: Record<string, ColorTheme> = {
     accentD: "rgba(240,98,146,0.12)",
     accentG: "rgba(240,98,146,0.25)",
     accentB: "#f8a5c4",
+    accentC: "#fb923c",
+    textGradient: "linear-gradient(135deg, #f8a5c4 0%, #f06292 50%, #fb923c 100%)",
     userBg: "rgba(240,98,146,0.06)",
     userBorder: "rgba(240,98,146,0.22)",
     bgGradient: "linear-gradient(135deg, #0f0208 0%, #220512 50%, #150309 100%)",
@@ -147,6 +165,8 @@ export const COLOR_THEMES: Record<string, ColorTheme> = {
     accentD: "rgba(29,233,182,0.12)",
     accentG: "rgba(29,233,182,0.25)",
     accentB: "#6effd9",
+    accentC: "#60a5fa",
+    textGradient: "linear-gradient(135deg, #6effd9 0%, #1de9b6 50%, #60a5fa 100%)",
     userBg: "rgba(29,233,182,0.06)",
     userBorder: "rgba(29,233,182,0.18)",
     bgGradient: "linear-gradient(135deg, #020f0c 0%, #041e18 50%, #030f0d 100%)",
@@ -162,6 +182,8 @@ export const COLOR_THEMES: Record<string, ColorTheme> = {
     accentD: "rgba(57,255,20,0.12)",
     accentG: "rgba(57,255,20,0.22)",
     accentB: "#80ff55",
+    accentC: "#00f5ff",
+    textGradient: "linear-gradient(135deg, #80ff55 0%, #39ff14 50%, #00f5ff 100%)",
     userBg: "rgba(57,255,20,0.05)",
     userBorder: "rgba(57,255,20,0.20)",
     bgGradient: "linear-gradient(135deg, #010801 0%, #001a00 50%, #010a01 100%)",
@@ -177,6 +199,8 @@ export const COLOR_THEMES: Record<string, ColorTheme> = {
     accentD: "rgba(255,112,67,0.12)",
     accentG: "rgba(255,112,67,0.25)",
     accentB: "#ff9e80",
+    accentC: "#ffd600",
+    textGradient: "linear-gradient(135deg, #ff9e80 0%, #ff7043 50%, #ffd600 100%)",
     userBg: "rgba(255,112,67,0.06)",
     userBorder: "rgba(255,112,67,0.20)",
     bgGradient: "linear-gradient(135deg, #100402 0%, #1f0a00 50%, #140600 100%)",
@@ -192,6 +216,8 @@ export const COLOR_THEMES: Record<string, ColorTheme> = {
     accentD: "rgba(129,212,250,0.12)",
     accentG: "rgba(129,212,250,0.22)",
     accentB: "#b3e5fc",
+    accentC: "#c084fc",
+    textGradient: "linear-gradient(135deg, #b3e5fc 0%, #81d4fa 50%, #c084fc 100%)",
     userBg: "rgba(129,212,250,0.06)",
     userBorder: "rgba(129,212,250,0.18)",
     bgGradient: "linear-gradient(135deg, #02080f 0%, #041528 50%, #020b1a 100%)",

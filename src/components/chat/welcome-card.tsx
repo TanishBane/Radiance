@@ -2,6 +2,7 @@
 
 import React, { useMemo } from "react";
 import { Sparkles } from "lucide-react";
+import { PersonaMode } from "@/lib/types/chat";
 
 const CHIP_POOL = [
   "What is Radiance and how does it work?",
@@ -34,9 +35,10 @@ const FACTS = [
 
 interface WelcomeCardProps {
   onSelectPrompt: (prompt: string) => void;
+  mode?: PersonaMode;
 }
 
-export function WelcomeCard({ onSelectPrompt }: WelcomeCardProps) {
+export function WelcomeCard({ onSelectPrompt, mode = "default" }: WelcomeCardProps) {
   const chips = useMemo(() => {
     return [...CHIP_POOL].sort(() => Math.random() - 0.5).slice(0, 4);
   }, []);
@@ -45,38 +47,52 @@ export function WelcomeCard({ onSelectPrompt }: WelcomeCardProps) {
     return FACTS[Math.floor(Math.random() * FACTS.length)];
   }, []);
 
+  const titleName =
+    mode === "portfolio"
+      ? "Tanish Bane"
+      : mode === "student"
+      ? "Mumbai Student AI"
+      : "Radiance";
+
+  const description =
+    mode === "portfolio"
+      ? "Explore AI & Data Science engineering projects, full-stack architectures, published research, and technical credentials."
+      : mode === "student"
+      ? "Mumbai collegiate academic guide, syllabus navigator, engineering career strategies, and collegiate resources."
+      : "Illuminate what is possible. Stream real-time reasoning, analyze documents, generate Flux visuals, or explore dedicated persona modes.";
+
   return (
     <div className="flex flex-col items-center justify-center max-w-2xl mx-auto px-4 py-8 text-center gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-      {/* Brand Icon Gem */}
+      {/* Brand Icon Gem with Chromatic Border & Glow */}
       <div
-        className="w-16 h-16 rounded-2xl flex items-center justify-center border border-[var(--border)] shadow-[0_0_35px_rgba(232,168,73,0.12)]"
+        className="w-16 h-16 rounded-2xl flex items-center justify-center border border-[var(--border)] shadow-[0_0_35px_var(--accent-g)] transition-transform duration-300 hover:scale-105"
         style={{
-          background: "linear-gradient(135deg, rgba(232,168,73,0.18), rgba(212,136,58,0.06))",
+          background: "linear-gradient(135deg, var(--accent-d), rgba(255, 255, 255, 0.02))",
         }}
       >
-        <span className="font-mono text-2xl font-bold text-[var(--accent-b)]">RD</span>
+        <span className="font-mono text-2xl font-bold gradient-text-brand">RD</span>
       </div>
 
-      {/* Hero Title */}
-      <div className="flex flex-col gap-2">
-        <h1 className="font-serif text-4xl md:text-5xl font-light text-[var(--txt)] tracking-tight">
-          Welcome to <span className="font-bold text-[var(--accent)]">RADIANCE</span>
+      {/* Hero Title (Signature TanixAI Cormorant Garamond + 3-Stop Chromatic Gradient) */}
+      <div className="flex flex-col gap-2.5">
+        <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl font-light text-[var(--txt)] tracking-tight leading-tight select-none">
+          Hello, I Am <em className="not-italic font-bold gradient-text-brand drop-shadow-sm">{titleName}</em>
         </h1>
-        <p className="text-sm md:text-base text-[var(--txt-dim)] font-light max-w-lg leading-relaxed">
-          Illuminate what is possible. Stream real-time reasoning, analyze documents, generate Flux visuals, or explore dedicated persona modes.
+        <p className="text-sm md:text-base text-[var(--txt-dim)] font-light max-w-lg leading-relaxed mx-auto">
+          {description}
         </p>
       </div>
 
       {/* Divider */}
       <div className="flex items-center gap-3 w-full max-w-xs my-1">
         <div className="flex-1 h-[1px] bg-gradient-to-r from-transparent via-[var(--border)] to-transparent" />
-        <span className="font-mono text-[10px] tracking-[0.2em] uppercase text-[var(--txt-muted)]">
+        <span className="font-mono text-[9px] tracking-[0.25em] uppercase text-[var(--txt-muted)]">
           Quick Inception
         </span>
         <div className="flex-1 h-[1px] bg-gradient-to-r from-transparent via-[var(--border)] to-transparent" />
       </div>
 
-      {/* Chips */}
+      {/* Suggestion Chips */}
       <div className="flex flex-wrap gap-2.5 justify-center max-w-xl">
         {chips.map((prompt) => (
           <button
@@ -91,7 +107,7 @@ export function WelcomeCard({ onSelectPrompt }: WelcomeCardProps) {
 
       {/* Fact of the Day Card */}
       <div className="w-full max-w-md mt-4 p-3.5 rounded-xl bg-[var(--surface)] border border-[var(--border)] text-left relative overflow-hidden">
-        <div className="absolute left-0 top-2 bottom-2 w-[2px] bg-gradient-to-b from-[var(--accent)] to-transparent" />
+        <div className="absolute left-0 top-2 bottom-2 w-[2px] bg-gradient-to-b from-[var(--accent)] to-[var(--accent-c)]" />
         <div className="flex items-center gap-1.5 font-mono text-[9px] uppercase tracking-wider text-[var(--accent)] mb-1">
           <Sparkles className="w-3 h-3" />
           <span>Cognitive Insight</span>
