@@ -28,19 +28,18 @@ export async function generateFollowupQuestions(
         "Return ONLY a raw JSON array of 3 strings with zero markdown, preamble, or commentary.",
       prompt,
       temperature: 0.4,
-      maxTokens: 200,
     });
 
-    const match = result.text.match(/\[[\s\S]*?\]/);
-    if (!match) return [];
-
-    const parsed = JSON.parse(match[0]);
-    if (Array.isArray(parsed)) {
-      return parsed.filter((q): q is string => typeof q === "string" && q.trim().length > 0).slice(0, 3);
+    const clean = result.text.trim();
+    const parsed = JSON.parse(clean);
+    if (Array.isArray(parsed) && parsed.length > 0) {
+      return parsed.slice(0, 3).map((q) => String(q).trim());
     }
     return [];
-  } catch (err) {
-    console.warn("[Radiance AI] Follow-up question generation skipped:", err);
+  } catch {
     return [];
   }
 }
+
+export const generateFollowUpQuestions = (reply: string, _tone?: string, _language?: string) =>
+  generateFollowupQuestions("", reply);

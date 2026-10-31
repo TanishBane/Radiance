@@ -61,5 +61,10 @@ export interface ModelOption {
   icon: string;
   supportsVision: boolean;
   supportsPdf: boolean;
+  supportsTools?: boolean;
+  contextWindow?: number;
   maxTokens: number;
+  status: "active" | "deprecated" | "maintenance";
+  verifiedDate: string;
+  pricingTier?: "free" | "paid" | "standard";
 }

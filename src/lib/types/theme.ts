@@ -157,3 +157,6 @@ export const COLOR_THEMES: Record<string, ColorTheme> = {
     bgGradient: "linear-gradient(135deg, #02080f 0%, #041528 50%, #020b1a 100%)",
   },
 };
+
+export type ThemeId = string;
+export const THEMES = COLOR_THEMES;

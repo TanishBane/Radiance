@@ -3,6 +3,7 @@
 import React, { useRef, useState, useEffect } from "react";
 import { Paperclip, Mic, MicOff, Send, Square, X, FileText } from "lucide-react";
 import { Attachment } from "@/lib/types/chat";
+import { createAttachmentFromFile } from "@/lib/documents/parser";
 
 // TypeScript declarations for Web Speech API
 interface SpeechRecognitionEventLike {
@@ -51,18 +52,9 @@ export function ChatComposer({ onSend, onStop, isGenerating, disabled = false }:
     }
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      handleSubmit();
-    }
-  };
-
   const handleSubmit = () => {
-    const trimmed = input.trim();
-    if ((!trimmed && attachments.length === 0) || isGenerating || disabled) return;
-
-    onSend(trimmed, attachments);
+    if ((!input.trim() && attachments.length === 0) || isGenerating || disabled) return;
+    onSend(input.trim(), attachments);
     setInput("");
     setAttachments([]);
     if (textareaRef.current) {
@@ -70,11 +62,18 @@ export function ChatComposer({ onSend, onStop, isGenerating, disabled = false }:
     }
   };
 
-  // ── Voice Input using Web Speech API ──
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleSubmit();
+    }
+  };
+
+  // ── Web Speech API Handler ──
   const toggleVoice = () => {
-    if (typeof window === "undefined") return;
-    const win = window as unknown as WindowWithSpeech;
-    const SpeechRecognition = win.SpeechRecognition || win.webkitSpeechRecognition;
+    const windowWithSpeech = window as unknown as WindowWithSpeech;
+    const SpeechRecognition =
+      windowWithSpeech.SpeechRecognition || windowWithSpeech.webkitSpeechRecognition;
 
     if (!SpeechRecognition) {
       alert("Voice input is supported in Google Chrome, Edge, and Safari.");
@@ -114,7 +113,7 @@ export function ChatComposer({ onSend, onStop, isGenerating, disabled = false }:
     }
   };
 
-  // ── File Ingestion Handler ──
+  // ── Document Ingestion with Mammoth & Magic Bytes Verification ──
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -124,46 +123,11 @@ export function ChatComposer({ onSend, onStop, isGenerating, disabled = false }:
       return;
     }
 
-    const isImage = file.type.startsWith("image/");
-    const isPDF = file.type === "application/pdf" || file.name.endsWith(".pdf");
-    const isText = file.type === "text/plain" || file.name.endsWith(".txt");
-    const isCSV = file.type === "text/csv" || file.name.endsWith(".csv");
-    const isDoc = file.name.endsWith(".docx") || file.name.endsWith(".doc");
-
-    const reader = new FileReader();
-
-    if (isText || isCSV) {
-      reader.onload = (event) => {
-        const text = String(event.target?.result || "");
-        setAttachments((prev) => [
-          ...prev,
-          {
-            id: `att_${Date.now()}`,
-            name: file.name,
-            type: isCSV ? "csv" : "text",
-            mime: file.type || "text/plain",
-            size: file.size,
-            extractedText: text,
-          },
-        ]);
-      };
-      reader.readAsText(file);
-    } else {
-      reader.onload = (event) => {
-        const dataUrl = String(event.target?.result || "");
-        setAttachments((prev) => [
-          ...prev,
-          {
-            id: `att_${Date.now()}`,
-            name: file.name,
-            type: isImage ? "image" : isPDF ? "pdf" : "doc",
-            mime: file.type || (isPDF ? "application/pdf" : "application/octet-stream"),
-            size: file.size,
-            dataUrl: isImage ? dataUrl : undefined,
-          },
-        ]);
-      };
-      reader.readAsDataURL(file);
+    try {
+      const attachment = await createAttachmentFromFile(file);
+      setAttachments((prev) => [...prev, attachment]);
+    } catch (err) {
+      alert(`Failed to parse file: ${err instanceof Error ? err.message : "Unknown error"}`);
     }
 
     e.target.value = "";
