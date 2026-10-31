@@ -30,7 +30,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`dark ${cormorant.variable}`}>
-      <body className="antialiased font-sans bg-[#06060a] text-[#f0ede6] h-screen overflow-hidden selection:bg-[var(--accent)] selection:text-[var(--void)]">
+      <body className="antialiased font-sans bg-[#06060a] text-[#f0ede6] h-[100dvh] overflow-hidden selection:bg-[var(--accent)] selection:text-[var(--void)]">
         {children}
       </body>
     </html>

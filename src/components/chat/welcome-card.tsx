@@ -1,25 +1,61 @@
 "use client";
 
-import React, { useMemo } from "react";
-import { Sparkles } from "lucide-react";
+import React, { useState, useMemo } from "react";
+import { Sparkles, Terminal, BookOpen, Image as ImageIcon, BrainCircuit, ArrowUpRight } from "lucide-react";
 import { PersonaMode } from "@/lib/types/chat";
 
-const CHIP_POOL = [
-  "What is Radiance and how does it work?",
-  "Who is Tanish Bane?",
-  "Explain transformer architecture simply",
-  "Generate a cyberpunk skyline over Mumbai",
-  "Compare NM College vs UPG SVKM for AI & Data Science",
-  "What is the attention mechanism in LLMs?",
-  "Help me write an engineering SOP",
-  "Explain gradient descent with intuition",
-  "Generate a minimalist golden nebula",
-  "What is RAG in AI systems?",
-  "Best free resources to master Python and PyTorch",
-  "How to build production-grade agentic workflows?",
-  "Explain neural networks like I am 15",
-  "What tech career opportunities exist in Mumbai?",
-  "Write clean TypeScript code for a LRU Cache",
+interface PromptCategory {
+  id: string;
+  label: string;
+  icon: React.ReactNode;
+  prompts: string[];
+}
+
+const PROMPT_CATEGORIES: PromptCategory[] = [
+  {
+    id: "reasoning",
+    label: "Reasoning & Systems",
+    icon: <BrainCircuit className="w-3.5 h-3.5" />,
+    prompts: [
+      "Explain transformer attention mechanism with geometric intuition",
+      "What is RAG and how to eliminate retrieval hallucinations?",
+      "How to design production-grade autonomous agent loops?",
+      "Compare gradient descent optimizations: Adam vs Sophia",
+    ],
+  },
+  {
+    id: "engineering",
+    label: "Code & Architecture",
+    icon: <Terminal className="w-3.5 h-3.5" />,
+    prompts: [
+      "Write a strictly-typed concurrent LRU cache in TypeScript",
+      "Explain React 19 concurrent rendering and useTransition",
+      "Design an RFC 7807 problem details error handling middleware",
+      "How to implement zero-downtime PostgreSQL schema migrations?",
+    ],
+  },
+  {
+    id: "mumbai",
+    label: "Mumbai & Academics",
+    icon: <BookOpen className="w-3.5 h-3.5" />,
+    prompts: [
+      "Compare NM College vs UPG SVKM for AI & Data Science",
+      "What tech engineering internship opportunities exist in BKC and Powai?",
+      "Create a structured semester study roadmap for Machine Learning",
+      "Who is Tanish Bane and what are his open-source AI projects?",
+    ],
+  },
+  {
+    id: "visuals",
+    label: "Flux Visuals",
+    icon: <ImageIcon className="w-3.5 h-3.5" />,
+    prompts: [
+      "Generate a cyberpunk rainy neon skyline over Marine Drive Mumbai",
+      "Generate a minimalist golden nebula with celestial particle rings",
+      "Generate an editorial brutalist architectural studio in Tokyo",
+      "Generate an ethereal glowing violet aurora over crystalline mountains",
+    ],
+  },
 ];
 
 const FACTS = [
@@ -39,9 +75,11 @@ interface WelcomeCardProps {
 }
 
 export function WelcomeCard({ onSelectPrompt, mode = "default" }: WelcomeCardProps) {
-  const chips = useMemo(() => {
-    return [...CHIP_POOL].sort(() => Math.random() - 0.5).slice(0, 4);
-  }, []);
+  const [activeTab, setActiveTab] = useState<string>("reasoning");
+
+  const currentCategory = useMemo(() => {
+    return PROMPT_CATEGORIES.find((c) => c.id === activeTab) || PROMPT_CATEGORIES[0];
+  }, [activeTab]);
 
   const fact = useMemo(() => {
     return FACTS[Math.floor(Math.random() * FACTS.length)];
@@ -65,7 +103,7 @@ export function WelcomeCard({ onSelectPrompt, mode = "default" }: WelcomeCardPro
     <div className="flex flex-col items-center justify-center max-w-2xl mx-auto px-4 py-8 text-center gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
       {/* Brand Icon Gem with Chromatic Border & Glow */}
       <div
-        className="w-16 h-16 rounded-2xl flex items-center justify-center border border-[var(--border)] shadow-[0_0_35px_var(--accent-g)] transition-transform duration-300 hover:scale-105"
+        className="w-16 h-16 rounded-2xl flex items-center justify-center border border-[var(--border)] shadow-[0_0_35px_var(--accent-g)] transition-transform duration-300 hover:scale-105 select-none"
         style={{
           background: "linear-gradient(135deg, var(--accent-d), rgba(255, 255, 255, 0.02))",
         }}
@@ -83,30 +121,50 @@ export function WelcomeCard({ onSelectPrompt, mode = "default" }: WelcomeCardPro
         </p>
       </div>
 
-      {/* Divider */}
-      <div className="flex items-center gap-3 w-full max-w-xs my-1">
-        <div className="flex-1 h-[1px] bg-gradient-to-r from-transparent via-[var(--border)] to-transparent" />
-        <span className="font-mono text-[9px] tracking-[0.25em] uppercase text-[var(--txt-muted)]">
-          Quick Inception
-        </span>
-        <div className="flex-1 h-[1px] bg-gradient-to-r from-transparent via-[var(--border)] to-transparent" />
-      </div>
+      {/* Categorized Prompt Explorer */}
+      <div className="w-full max-w-xl flex flex-col gap-3 mt-2">
+        {/* Category Filter Pills */}
+        <div className="flex items-center justify-center gap-1.5 p-1 rounded-xl bg-[var(--surface)] border border-[var(--border)] max-w-full overflow-x-auto">
+          {PROMPT_CATEGORIES.map((cat) => {
+            const isActive = activeTab === cat.id;
+            return (
+              <button
+                key={cat.id}
+                type="button"
+                onClick={() => setActiveTab(cat.id)}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono transition-all whitespace-nowrap touch-target ${
+                  isActive
+                    ? "bg-[var(--accent-d)] text-[var(--accent)] font-semibold border border-[var(--accent)]/40 shadow-[0_0_12px_var(--accent-d)]"
+                    : "text-[var(--txt-muted)] hover:text-[var(--txt)] hover:bg-[var(--surface-hover)] border border-transparent"
+                }`}
+              >
+                {cat.icon}
+                <span>{cat.label}</span>
+              </button>
+            );
+          })}
+        </div>
 
-      {/* Suggestion Chips */}
-      <div className="flex flex-wrap gap-2.5 justify-center max-w-xl">
-        {chips.map((prompt) => (
-          <button
-            key={prompt}
-            onClick={() => onSelectPrompt(prompt)}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs text-[var(--txt-dim)] bg-[var(--surface)] border border-[var(--border)] border-l-2 border-l-[var(--accent)] hover:bg-[var(--accent-d)] hover:border-[var(--accent)] hover:text-[var(--txt)] hover:translate-x-0.5 transition-all duration-200 text-left"
-          >
-            <span>{prompt}</span>
-          </button>
-        ))}
+        {/* Suggestion Prompt Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-left">
+          {currentCategory.prompts.map((prompt) => (
+            <button
+              key={prompt}
+              type="button"
+              onClick={() => onSelectPrompt(prompt)}
+              className="group flex items-start justify-between gap-2 p-3 rounded-xl bg-[var(--surface)] border border-[var(--border)] hover:bg-[var(--surface-hover)] hover:border-[var(--accent)] transition-all duration-200 text-left min-h-[52px]"
+            >
+              <span className="text-xs text-[var(--txt-dim)] group-hover:text-[var(--txt)] leading-snug">
+                {prompt}
+              </span>
+              <ArrowUpRight className="w-3.5 h-3.5 text-[var(--txt-muted)] group-hover:text-[var(--accent)] shrink-0 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform mt-0.5" />
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Fact of the Day Card */}
-      <div className="w-full max-w-md mt-4 p-3.5 rounded-xl bg-[var(--surface)] border border-[var(--border)] text-left relative overflow-hidden">
+      <div className="w-full max-w-xl mt-2 p-3.5 rounded-xl bg-[var(--surface)] border border-[var(--border)] text-left relative overflow-hidden glass-panel">
         <div className="absolute left-0 top-2 bottom-2 w-[2px] bg-gradient-to-b from-[var(--accent)] to-[var(--accent-c)]" />
         <div className="flex items-center gap-1.5 font-mono text-[9px] uppercase tracking-wider text-[var(--accent)] mb-1">
           <Sparkles className="w-3 h-3" />
