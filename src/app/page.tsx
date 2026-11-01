@@ -16,7 +16,6 @@ import { SidebarDock } from "@/components/navigation/sidebar-dock";
 import { HistoryDrawer } from "@/components/navigation/history-drawer";
 import { SettingsDrawer } from "@/components/navigation/settings-drawer";
 import { ShortcutsDialog } from "@/components/modals/shortcuts-dialog";
-import { LegacyImportDialog } from "@/components/modals/legacy-import-dialog";
 
 // Feature Modules
 import { useChatSession } from "@/features/chat/hooks/use-chat-session";
@@ -36,7 +35,6 @@ export default function RadianceApp() {
   const [historyOpen, setHistoryOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [shortcutsOpen, setShortcutsOpen] = useState(false);
-  const [legacyImportOpen, setLegacyImportOpen] = useState(false);
 
   // Feature Hooks
   const {
@@ -51,7 +49,6 @@ export default function RadianceApp() {
     deleteAllConversations,
     appendUserMessage,
     appendAssistantMessage,
-    setConversations,
   } = useChatSession();
 
   const handleStreamComplete = useCallback(
@@ -107,7 +104,6 @@ export default function RadianceApp() {
         setHistoryOpen(false);
         setSettingsOpen(false);
         setShortcutsOpen(false);
-        setLegacyImportOpen(false);
       }
     };
     window.addEventListener("keydown", handleKey);
@@ -142,7 +138,6 @@ export default function RadianceApp() {
         onToggleHistory={() => setHistoryOpen((h) => !h)}
         onToggleSettings={() => setSettingsOpen((s) => !s)}
         onOpenShortcuts={() => setShortcutsOpen(true)}
-        onOpenLegacyImport={() => setLegacyImportOpen(true)}
       />
 
       {/* Right: Main Application Pane (Topbar + ChatWorkspace) */}
@@ -184,10 +179,6 @@ export default function RadianceApp() {
         onTogglePin={togglePin}
         onDeleteConversation={deleteConversation}
         onDeleteAll={deleteAllConversations}
-        onOpenLegacyImport={() => {
-          setHistoryOpen(false);
-          setLegacyImportOpen(true);
-        }}
       />
 
       <SettingsDrawer
@@ -202,15 +193,6 @@ export default function RadianceApp() {
       />
 
       <ShortcutsDialog isOpen={shortcutsOpen} onClose={() => setShortcutsOpen(false)} />
-      <LegacyImportDialog
-        isOpen={legacyImportOpen}
-        onClose={() => setLegacyImportOpen(false)}
-        onImportSuccess={async () => {
-          setLegacyImportOpen(false);
-          const list = await import("@/lib/db/conversations").then((m) => m.conversationService.list());
-          setConversations(list);
-        }}
-      />
     </div>
   );
 }

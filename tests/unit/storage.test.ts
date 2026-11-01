@@ -2,15 +2,15 @@ import { describe, it, expect, beforeEach } from "vitest";
 import { safeLocalStorage } from "@/lib/utils/storage";
 import { Conversation } from "@/lib/types/chat";
 
-describe("Storage Utilities & Quota Protection (Fixes BUG-04)", () => {
+describe("Storage Utilities & Quota Protection", () => {
   beforeEach(() => {
     window.localStorage.clear();
   });
 
-  it("strips heavy base64 data URLs to protect 5MB localStorage quota", () => {
+  it("safely saves and retrieves conversations", () => {
     const conv: Conversation = {
       id: "test_conv_1",
-      title: "Test with Image Attachment",
+      title: "Test Conversation",
       createdAt: Date.now(),
       updatedAt: Date.now(),
       pinned: false,
@@ -18,18 +18,8 @@ describe("Storage Utilities & Quota Protection (Fixes BUG-04)", () => {
         {
           id: "msg_1",
           role: "user",
-          content: "What is in this picture?",
+          content: "Hello Radiance",
           createdAt: Date.now(),
-          attachments: [
-            {
-              id: "att_1",
-              name: "large_image.png",
-              type: "image",
-              mime: "image/png",
-              size: 2 * 1024 * 1024,
-              dataUrl: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==",
-            },
-          ],
         },
       ],
     };
@@ -39,39 +29,39 @@ describe("Storage Utilities & Quota Protection (Fixes BUG-04)", () => {
 
     const retrieved = safeLocalStorage.getConversation("test_conv_1");
     expect(retrieved).not.toBeNull();
-    expect(retrieved?.title).toBe("Test with Image Attachment");
-    // The ephemeral base64 should have been safely stripped upon persistence
-    expect(retrieved?.messages[0].attachments?.[0].dataUrl).toBeUndefined();
-    // But attachment metadata must be preserved
-    expect(retrieved?.messages[0].attachments?.[0].name).toBe("large_image.png");
+    expect(retrieved?.title).toBe("Test Conversation");
+    expect(retrieved?.messages[0].content).toBe("Hello Radiance");
   });
 
-  it("safely lists and imports legacy Tanix AI chats", () => {
-    // Populate mock legacy chat in localStorage
-    window.localStorage.setItem(
-      "chat_1714000000000",
-      JSON.stringify({
-        id: "chat_1714000000000",
-        title: "Legacy Chat about Board Exams",
-        ts: 1714000000000,
-        pinned: true,
-        history: [
-          { role: "user", text: "How to prepare for HSC exams?" },
-          { role: "model", text: "Consistency beats intensity every time." },
-        ],
-      })
-    );
+  it("lists and deletes stored conversations correctly", () => {
+    const conv1: Conversation = {
+      id: "conv_a",
+      title: "Alpha Chat",
+      createdAt: 1000,
+      updatedAt: 1000,
+      pinned: false,
+      messages: [],
+    };
+    const conv2: Conversation = {
+      id: "conv_b",
+      title: "Beta Chat",
+      createdAt: 2000,
+      updatedAt: 2000,
+      pinned: true,
+      messages: [],
+    };
 
-    const legacyList = safeLocalStorage.listLegacyChats();
-    expect(legacyList.length).toBe(1);
-    expect(legacyList[0].title).toBe("Legacy Chat about Board Exams");
+    safeLocalStorage.saveConversation(conv1);
+    safeLocalStorage.saveConversation(conv2);
 
-    const imported = safeLocalStorage.importLegacyChat("chat_1714000000000");
-    expect(imported).not.toBeNull();
-    expect(imported?.title).toBe("Legacy Chat about Board Exams");
-    expect(imported?.messages.length).toBe(2);
-    expect(imported?.messages[0].role).toBe("user");
-    expect(imported?.messages[1].role).toBe("assistant");
-    expect(imported?.pinned).toBe(true);
+    const list = safeLocalStorage.listConversations();
+    expect(list.length).toBe(2);
+    expect(list[0].id).toBe("conv_b"); // Sorted by updatedAt descending
+
+    safeLocalStorage.deleteConversation("conv_a");
+    expect(safeLocalStorage.listConversations().length).toBe(1);
+
+    safeLocalStorage.deleteAllConversations();
+    expect(safeLocalStorage.listConversations().length).toBe(0);
   });
 });

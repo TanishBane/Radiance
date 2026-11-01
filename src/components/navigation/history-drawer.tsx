@@ -3,7 +3,7 @@
 import React, { useState, useMemo } from "react";
 import { Conversation } from "@/lib/types/chat";
 import { formatRelativeTime } from "@/lib/utils/format";
-import { X, Search, Pin, Trash2, MessageSquare, Download } from "lucide-react";
+import { X, Search, Pin, Trash2, MessageSquare } from "lucide-react";
 
 interface HistoryDrawerProps {
   isOpen: boolean;
@@ -14,7 +14,6 @@ interface HistoryDrawerProps {
   onTogglePin: (id: string) => void;
   onDeleteConversation: (id: string) => void;
   onDeleteAll: () => void;
-  onOpenLegacyImport: () => void;
 }
 
 export function HistoryDrawer({
@@ -26,7 +25,6 @@ export function HistoryDrawer({
   onTogglePin,
   onDeleteConversation,
   onDeleteAll,
-  onOpenLegacyImport,
 }: HistoryDrawerProps) {
   const [search, setSearch] = useState("");
 
@@ -97,22 +95,6 @@ export function HistoryDrawer({
 
         {/* Content List */}
         <div className="flex-1 overflow-y-auto p-2 flex flex-col gap-1">
-          {/* Legacy Import Banner */}
-          <button
-            onClick={onOpenLegacyImport}
-            className="flex items-center justify-between p-2.5 mb-2 rounded-xl bg-[var(--accent-d)]/40 border border-[var(--accent)]/30 text-left hover:bg-[var(--accent-d)] transition-colors group"
-          >
-            <div className="flex flex-col">
-              <span className="font-mono text-[10px] uppercase font-bold text-[var(--accent)]">
-                Legacy Tanix AI Migration
-              </span>
-              <span className="text-[11px] text-[var(--txt-dim)]">
-                Import saved chats from browser
-              </span>
-            </div>
-            <Download className="w-4 h-4 text-[var(--accent)] group-hover:translate-y-0.5 transition-transform" />
-          </button>
-
           {filtered.length === 0 ? (
             <div className="py-12 text-center text-xs text-[var(--txt-muted)] font-mono">
               {search ? "No matching conversations found." : "No saved conversations yet."}
