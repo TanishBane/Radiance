@@ -29,7 +29,7 @@ export function Topbar({
   const [modelDropdownOpen, setModelDropdownOpen] = useState(false);
 
   return (
-    <header className="relative z-30 flex items-center justify-between px-4 py-2.5 bg-[var(--void)]/80 backdrop-blur-xl border-b border-[var(--border)] select-none shrink-0 w-full">
+    <header className="sticky top-0 z-30 flex items-center justify-between px-4 py-2.5 bg-[var(--void)]/80 backdrop-blur-xl border-b border-[var(--border)] select-none shrink-0 w-full">
       {/* Left: Mobile Menu Toggle & Desktop Context Indicator */}
       <div className="flex items-center gap-3">
         {/* On Mobile: Hamburger button to open sidebar drawer */}
