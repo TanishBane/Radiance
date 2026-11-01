@@ -12,12 +12,8 @@ import {
   IconHistory,
   IconAdjustmentsHorizontal,
   IconCommand,
-  IconSparkles,
-  IconUser,
-  IconSchool,
   IconDownload,
 } from "@tabler/icons-react";
-import { PersonaMode } from "@/lib/types/chat";
 import { motion } from "motion/react";
 
 interface SidebarDockProps {
@@ -26,8 +22,8 @@ interface SidebarDockProps {
   onToggleSettings: () => void;
   onOpenShortcuts: () => void;
   onOpenLegacyImport?: () => void;
-  currentMode: PersonaMode;
-  onSelectMode: (mode: PersonaMode) => void;
+  open?: boolean;
+  setOpen?: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export function SidebarDock({
@@ -36,10 +32,12 @@ export function SidebarDock({
   onToggleSettings,
   onOpenShortcuts,
   onOpenLegacyImport,
-  currentMode,
-  onSelectMode,
+  open: controlledOpen,
+  setOpen: controlledSetOpen,
 }: SidebarDockProps) {
-  const [open, setOpen] = useState(false);
+  const [internalOpen, setInternalOpen] = useState(false);
+  const open = controlledOpen !== undefined ? controlledOpen : internalOpen;
+  const setOpen = controlledSetOpen !== undefined ? controlledSetOpen : setInternalOpen;
 
   const mainLinks: SidebarLinkItem[] = [
     {
@@ -78,39 +76,20 @@ export function SidebarDock({
     });
   }
 
-  const modeLinks: SidebarLinkItem[] = [
-    {
-      label: "Default Assistant",
-      icon: <IconSparkles className="w-4 h-4 shrink-0" />,
-      active: currentMode === "default",
-      onClick: () => onSelectMode("default"),
-    },
-    {
-      label: "Portfolio Profile",
-      icon: <IconUser className="w-4 h-4 shrink-0" />,
-      active: currentMode === "portfolio",
-      onClick: () => onSelectMode("portfolio"),
-    },
-    {
-      label: "Mumbai Student",
-      icon: <IconSchool className="w-4 h-4 shrink-0" />,
-      active: currentMode === "student",
-      onClick: () => onSelectMode("student"),
-    },
-  ];
-
   return (
     <Sidebar open={open} setOpen={setOpen}>
       <SidebarBody className="justify-between gap-6">
         <div className="flex flex-1 flex-col overflow-x-hidden overflow-y-auto">
-          {/* Logo Header */}
+          {/* Logo Header - Unified Brand Anchor */}
           <div className="py-2 mb-2 flex items-center gap-3">
             <button
+              type="button"
               onClick={onNewChat}
-              className="w-8 h-8 rounded-xl bg-gradient-to-br from-[var(--accent)] to-[var(--accent-b)] flex items-center justify-center text-[var(--void)] font-serif font-black text-sm shrink-0 shadow-[0_0_15px_var(--accent-g)]"
-              title="Radiance"
+              className="w-8 h-8 rounded-xl bg-gradient-to-br from-[var(--accent)] to-[var(--accent-b)] flex items-center justify-center text-[var(--void)] font-serif font-black text-xs shrink-0 shadow-[0_0_15px_var(--accent-g)] hover:scale-105 transition-transform"
+              title="Radiance (New Chat)"
+              aria-label="Radiance home"
             >
-              ✦
+              RD
             </button>
             <motion.div
               animate={{
@@ -119,9 +98,14 @@ export function SidebarDock({
               }}
               className="flex flex-col"
             >
-              <span className="font-serif font-bold text-sm text-[var(--txt)] tracking-wider">
-                RADIANCE
-              </span>
+              <div className="flex items-center gap-2">
+                <span className="font-serif font-bold text-sm text-[var(--txt)] tracking-wider">
+                  RADIANCE
+                </span>
+                <span className="font-mono text-[8px] uppercase tracking-widest px-1.5 py-0.2 rounded-full border border-[var(--accent)]/30 text-[var(--accent)] bg-[var(--accent-d)]">
+                  v1.0
+                </span>
+              </div>
               <span className="font-mono text-[9px] uppercase tracking-widest text-[var(--accent)]">
                 AI Platform
               </span>
@@ -133,26 +117,6 @@ export function SidebarDock({
           {/* Primary Action Links */}
           <div className="flex flex-col gap-1.5">
             {mainLinks.map((link, idx) => (
-              <SidebarLink key={idx} link={link} />
-            ))}
-          </div>
-
-          <div className="h-[1px] bg-[var(--border)] my-3" />
-
-          {/* Persona Modes Label (when expanded) */}
-          <motion.div
-            animate={{
-              display: open ? "block" : "none",
-              opacity: open ? 1 : 0,
-            }}
-            className="px-2 py-1 text-[9px] font-mono uppercase tracking-widest text-[var(--txt-muted)]"
-          >
-            Persona Modes
-          </motion.div>
-
-          {/* Persona Mode Links */}
-          <div className="flex flex-col gap-1">
-            {modeLinks.map((link, idx) => (
               <SidebarLink key={idx} link={link} />
             ))}
           </div>

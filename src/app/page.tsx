@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from "react";
-import { PersonaMode, ToneKey, Attachment, ModelOption } from "@/lib/types/chat";
+import { ToneKey, Attachment, ModelOption } from "@/lib/types/chat";
 import { ThemeId, THEMES, GradientStyle } from "@/lib/types/theme";
 import { DEFAULT_MODEL_ID, getModelById } from "@/lib/ai/models";
 
@@ -28,11 +28,11 @@ export default function RadianceApp() {
   const [theme, setTheme] = useState<ThemeId>("violet");
   const [gradientStyle, setGradientStyle] = useState<GradientStyle>("bloom");
   const [modelId, setModelId] = useState(DEFAULT_MODEL_ID);
-  const [mode, setMode] = useState<PersonaMode>("default");
   const [tone, setTone] = useState<ToneKey>("default");
   const [language, setLanguage] = useState<"en" | "hi">("en");
 
   // Drawers & Modals State
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [historyOpen, setHistoryOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [shortcutsOpen, setShortcutsOpen] = useState(false);
@@ -67,7 +67,6 @@ export default function RadianceApp() {
 
   const { isGenerating, streamingContent, send, stop } = useChatStream({
     modelId,
-    mode,
     tone,
     language,
     onStreamComplete: handleStreamComplete,
@@ -104,6 +103,7 @@ export default function RadianceApp() {
         e.preventDefault();
         setHistoryOpen((prev) => !prev);
       } else if (e.key === "Escape") {
+        setMobileSidebarOpen(false);
         setHistoryOpen(false);
         setSettingsOpen(false);
         setShortcutsOpen(false);
@@ -120,7 +120,7 @@ export default function RadianceApp() {
   };
 
   return (
-    <div className="relative flex flex-col h-[100dvh] w-screen overflow-hidden bg-[var(--void)] text-[var(--txt)] font-sans select-none">
+    <div className="relative flex flex-row h-[100dvh] w-screen overflow-hidden bg-[var(--void)] text-[var(--txt)] font-sans select-none">
       {/* Background Engines: 21st.dev Bloom Mesh / Waves or Three.js Nebula */}
       {gradientStyle === "cosmic" && (
         <AmbientCanvas accentColor={selectedTheme.accent} />
@@ -134,44 +134,42 @@ export default function RadianceApp() {
       {/* Intro Splash Animation */}
       {showSplash && <IntroSplash onComplete={() => setShowSplash(false)} />}
 
-      {/* Top Application Bar */}
-      <Topbar
-        selectedModel={selectedModel}
-        onSelectModel={(m: ModelOption) => setModelId(m.id)}
-        mode={mode}
-        onClearMode={() => setMode("default")}
-        language={language}
-        onToggleLanguage={(l) => setLanguage(l)}
-        onClearChat={newChat}
+      {/* Left: Full-Height Sidebar Dock */}
+      <SidebarDock
+        open={mobileSidebarOpen}
+        setOpen={setMobileSidebarOpen}
         onNewChat={newChat}
+        onToggleHistory={() => setHistoryOpen((h) => !h)}
+        onToggleSettings={() => setSettingsOpen((s) => !s)}
+        onOpenShortcuts={() => setShortcutsOpen(true)}
+        onOpenLegacyImport={() => setLegacyImportOpen(true)}
       />
 
-      {/* Main Workspace Frame */}
-      <div className="flex-1 flex overflow-hidden relative">
-        <SidebarDock
+      {/* Right: Main Application Pane (Topbar + ChatWorkspace) */}
+      <main className="flex-1 flex flex-col min-w-0 h-full overflow-hidden relative z-10">
+        <Topbar
+          selectedModel={selectedModel}
+          onSelectModel={(m: ModelOption) => setModelId(m.id)}
+          language={language}
+          onToggleLanguage={(l) => setLanguage(l)}
+          onClearChat={newChat}
           onNewChat={newChat}
-          onToggleHistory={() => setHistoryOpen((h) => !h)}
-          onToggleSettings={() => setSettingsOpen((s) => !s)}
-          onOpenShortcuts={() => setShortcutsOpen(true)}
-          onOpenLegacyImport={() => setLegacyImportOpen(true)}
-          currentMode={mode}
-          onSelectMode={setMode}
+          onToggleMobileMenu={() => setMobileSidebarOpen((prev) => !prev)}
         />
 
-        <div className="flex-1 flex flex-col min-w-0">
+        <div className="flex-1 flex flex-col min-w-0 overflow-hidden relative">
           <ChatWorkspace
             messages={messages}
             streamingContent={streamingContent}
             isGenerating={isGenerating}
             activeFollowUps={activeFollowUps}
-            mode={mode}
             onSend={handleSend}
             onStop={stop}
             onSelectSuggestion={handleSend}
             onOpenSettings={() => setSettingsOpen(true)}
           />
         </div>
-      </div>
+      </main>
 
       {/* Slide-out Navigation Drawers & Dialogs */}
       <HistoryDrawer

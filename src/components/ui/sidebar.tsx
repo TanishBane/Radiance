@@ -115,46 +115,42 @@ export const MobileSidebar = ({
 }: React.ComponentProps<"div">) => {
   const { open, setOpen } = useSidebar();
   return (
-    <div
-      className={cn(
-        "h-12 px-4 flex flex-row md:hidden items-center justify-between bg-[var(--void)]/90 backdrop-blur-xl border-b border-[var(--border)] w-full z-40 fixed top-0 left-0"
-      )}
-      {...props}
-    >
-      <div className="flex justify-end z-20 w-full">
-        <button
-          type="button"
-          aria-label={open ? "Close menu" : "Open menu"}
-          className="p-1.5 rounded-lg text-[var(--txt-dim)] hover:text-[var(--txt)] hover:bg-[var(--surface-hover)] transition-colors"
-          onClick={() => setOpen(!open)}
-        >
-          {open ? <IconX className="h-5 w-5" /> : <IconMenu2 className="h-5 w-5" />}
-        </button>
-      </div>
+    <div className="md:hidden" {...props}>
       <AnimatePresence>
         {open && (
-          <motion.div
-            initial={{ x: "-100%", opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            exit={{ x: "-100%", opacity: 0 }}
-            transition={{
-              duration: 0.25,
-              ease: "easeInOut",
-            }}
-            className={cn(
-              "fixed h-full w-[280px] max-w-[85vw] inset-y-0 left-0 bg-[var(--void)]/95 backdrop-blur-2xl border-r border-[var(--border)] p-6 z-[100] flex flex-col justify-between shadow-2xl",
-              className
-            )}
-          >
-            <div
-              className="absolute right-4 top-4 z-50 text-[var(--txt-muted)] hover:text-[var(--txt)] cursor-pointer p-1"
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
               onClick={() => setOpen(false)}
-              aria-label="Close drawer"
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[90]"
+              aria-hidden="true"
+            />
+            <motion.div
+              initial={{ x: "-100%", opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              exit={{ x: "-100%", opacity: 0 }}
+              transition={{
+                duration: 0.25,
+                ease: "easeInOut",
+              }}
+              className={cn(
+                "fixed h-full w-[280px] max-w-[85vw] inset-y-0 left-0 bg-[var(--void)]/95 backdrop-blur-2xl border-r border-[var(--border)] p-6 z-[100] flex flex-col justify-between shadow-2xl",
+                className
+              )}
             >
-              <IconX className="h-5 w-5" />
-            </div>
-            {children}
-          </motion.div>
+              <div
+                className="absolute right-4 top-4 z-50 text-[var(--txt-muted)] hover:text-[var(--txt)] cursor-pointer p-1 rounded-lg hover:bg-[var(--surface-hover)] transition-colors"
+                onClick={() => setOpen(false)}
+                aria-label="Close drawer"
+              >
+                <IconX className="h-5 w-5" />
+              </div>
+              {children}
+            </motion.div>
+          </>
         )}
       </AnimatePresence>
     </div>

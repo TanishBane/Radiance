@@ -71,8 +71,8 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  // 5. Construct System Prompt
-  const systemPrompt = composeSystemPrompt(mode, tone, language);
+  // 5. Construct System Prompt (Default Assistant + Tone + Language)
+  const systemPrompt = composeSystemPrompt(tone, language);
 
   // 6. Map Messages to CoreMessage Format With Attachment Injection
   const coreMessages: CoreMessage[] = messages.map((m) => {

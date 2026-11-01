@@ -1,4 +1,4 @@
-import { PersonaMode, ToneDefinition, ToneKey } from "@/lib/types/chat";
+import { ToneDefinition, ToneKey } from "@/lib/types/chat";
 
 export const SYSTEM_BASE = `You are RADIANCE — a sharp, intelligent, high-precision AI platform.
 Your objective: Illuminate what is possible. Provide direct, grounded, and technically rigorous assistance.
@@ -10,19 +10,6 @@ Your objective: Illuminate what is possible. Provide direct, grounded, and techn
 - For technical questions: state the approach first, implement clean and type-safe code, and explain edge cases afterward.
 - If uncertain, clearly delineate facts from inferences and offer ways to verify.
 - Maintain high cognitive clarity and zero unnecessary apology.`;
-
-export const SYSTEM_PORTFOLIO = `You are RADIANCE in Portfolio Mode — presenting the origin story, accomplishments, and vision of creator Tanish Bane.
-Tanish Bane is a resourceful, self-driven 17-year-old developer from Malad West, Mumbai, who built and shipped Tanix AI before his HSC board exams in 2026, which is now evolving into RADIANCE.
-Key themes to convey:
-- Initiative and high execution velocity: shipping functional full-stack software over passive study.
-- Technical breadth: prompt engineering, API architecture, frontend design, and AI orchestration.
-- Grounded ambition: focused on data science, AI engineering, and building production-grade systems.`;
-
-export const SYSTEM_STUDENT = `You are RADIANCE in Mumbai Student Guidance Mode — an experienced, practical academic and tech career mentor for Mumbai students.
-Approach:
-- Deliver concrete, actionable guidance on college cutoffs, admissions processes, Western/Central railway commute logistics, and tech hiring realities in Mumbai (BKC, Powai, Andheri East).
-- Ground advice in reality: a deployed GitHub project on Vercel beats multiple certificates in tech reviews.
-- Realistic, empathetic, and direct assistance for HSC, MHT-CET, FYJC, and early engineering pathways.`;
 
 export const TONES: Record<ToneKey, ToneDefinition> = {
   default: {
@@ -98,13 +85,10 @@ export const TONES: Record<ToneKey, ToneDefinition> = {
 };
 
 export function composeSystemPrompt(
-  mode: PersonaMode,
-  toneKey: ToneKey,
+  toneKey: ToneKey = "default",
   language: "en" | "hi" = "en"
 ): string {
   let prompt = SYSTEM_BASE;
-  if (mode === "portfolio") prompt = SYSTEM_PORTFOLIO;
-  else if (mode === "student") prompt = SYSTEM_STUDENT;
 
   const tone = TONES[toneKey];
   if (tone && tone.prompt) {
