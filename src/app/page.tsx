@@ -1,9 +1,10 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
-import { ToneKey, Attachment, ModelOption } from "@/lib/types/chat";
+import React, { useState, useEffect, useCallback, useRef } from "react";
+import { ToneKey, Attachment, ModelOption, ChatMessage, FeedbackRating } from "@/lib/types/chat";
 import { ThemeId, THEMES, GradientStyle } from "@/lib/types/theme";
 import { DEFAULT_MODEL_ID, getModelById } from "@/lib/ai/models";
+import { conversationService } from "@/lib/db/conversations";
 
 // Background & Branding
 import { AmbientCanvas } from "@/components/background/ambient-canvas";
@@ -49,20 +50,31 @@ export default function RadianceApp() {
     deleteAllConversations,
     appendUserMessage,
     appendAssistantMessage,
+    deleteMessage,
+    editUserMessage,
+    setMessageFeedback,
+    setMessages,
+    setConversations,
   } = useChatSession();
 
+  // Defensive ref synchronization to eliminate stale closure bugs
+  const messagesRef = useRef<ChatMessage[]>(messages);
+  useEffect(() => {
+    messagesRef.current = messages;
+  }, [messages]);
+
   const handleStreamComplete = useCallback(
-    (assistantMsg: any) => {
-      appendAssistantMessage(assistantMsg, messages, tone, language);
+    (assistantMsg: ChatMessage) => {
+      appendAssistantMessage(assistantMsg, messagesRef.current, tone, language);
     },
-    [appendAssistantMessage, messages, tone, language]
+    [appendAssistantMessage, tone, language]
   );
 
   const handleStreamError = useCallback((error: Error) => {
-    alert(`Inference error: ${error.message}`);
+    console.error("[Radiance] Inference stream error:", error);
   }, []);
 
-  const { isGenerating, streamingContent, send, stop } = useChatStream({
+  const { isGenerating, streamingContent, streamError, send, stop, retryLast } = useChatStream({
     modelId,
     tone,
     language,
@@ -87,12 +99,27 @@ export default function RadianceApp() {
     }
   }, [selectedTheme]);
 
+  // Safe Conversation Navigation (prevents cross-session stream contamination)
+  const handleNewChat = useCallback(() => {
+    if (isGenerating) stop();
+    newChat();
+  }, [isGenerating, stop, newChat]);
+
+  const handleSelectConversation = useCallback(
+    (id: string) => {
+      if (isGenerating) stop();
+      selectConversation(id);
+      setHistoryOpen(false);
+    },
+    [isGenerating, stop, selectConversation]
+  );
+
   // Global Keyboard Shortcuts
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === "N") {
         e.preventDefault();
-        newChat();
+        handleNewChat();
       } else if ((e.ctrlKey || e.metaKey) && e.key === "k") {
         e.preventDefault();
         setShortcutsOpen((prev) => !prev);
@@ -108,16 +135,99 @@ export default function RadianceApp() {
     };
     window.addEventListener("keydown", handleKey);
     return () => window.removeEventListener("keydown", handleKey);
-  }, [newChat]);
+  }, [handleNewChat]);
 
-  const handleSend = (text: string, attachments: Attachment[] = []) => {
-    const nextMessages = appendUserMessage(text, attachments);
-    send(nextMessages);
-  };
+  // ── Action Handlers ──
+
+  const handleSend = useCallback(
+    (text: string, attachments: Attachment[] = []) => {
+      const nextMessages = appendUserMessage(text, attachments);
+      send(nextMessages);
+    },
+    [appendUserMessage, send]
+  );
+
+  const handleRegenerate = useCallback(
+    async (messageId: string) => {
+      if (isGenerating) {
+        stop();
+      }
+
+      const current = messagesRef.current;
+      const targetIndex = current.findIndex((m) => m.id === messageId);
+      if (targetIndex === -1) return;
+
+      // Find nearest preceding user prompt
+      let userIndex = targetIndex;
+      while (userIndex >= 0 && current[userIndex].role !== "user") {
+        userIndex--;
+      }
+      if (userIndex < 0) return;
+
+      const prunedMessages = current.slice(0, userIndex + 1);
+      messagesRef.current = prunedMessages;
+      setMessages(prunedMessages);
+
+      if (activeConvId) {
+        const list = await conversationService.list();
+        const existing = list.find((c) => c.id === activeConvId);
+        if (existing) {
+          const updatedConv = {
+            ...existing,
+            updatedAt: Date.now(),
+            messages: prunedMessages,
+          };
+          await conversationService.save(updatedConv);
+          const updatedList = await conversationService.list();
+          setConversations(updatedList);
+        }
+      }
+
+      await send(prunedMessages);
+    },
+    [isGenerating, stop, activeConvId, setMessages, setConversations, send]
+  );
+
+  const handleEditUserMessage = useCallback(
+    async (messageId: string, newContent: string) => {
+      if (!newContent.trim()) return;
+      if (isGenerating) {
+        stop();
+      }
+
+      const truncatedMessages = await editUserMessage(messageId, newContent);
+      if (truncatedMessages && truncatedMessages.length > 0) {
+        await send(truncatedMessages);
+      }
+    },
+    [isGenerating, stop, editUserMessage, send]
+  );
+
+  const handleDeleteMessage = useCallback(
+    async (messageId: string) => {
+      if (isGenerating) {
+        stop();
+      }
+      await deleteMessage(messageId);
+    },
+    [isGenerating, stop, deleteMessage]
+  );
+
+  const handleFeedback = useCallback(
+    async (messageId: string, rating: FeedbackRating) => {
+      await setMessageFeedback(messageId, rating);
+    },
+    [setMessageFeedback]
+  );
+
+  const handleRetry = useCallback(async () => {
+    if (isGenerating) return;
+    await retryLast();
+  }, [isGenerating, retryLast]);
 
   return (
     <div className="relative flex flex-row h-[100dvh] w-screen overflow-hidden bg-[var(--void)] text-[var(--txt)] font-sans select-none">
-      {/* Background Engines: 21st.dev Bloom Mesh / Waves or Three.js Nebula */}
+      {/* Background Engines */}
       {gradientStyle === "cosmic" && (
         <AmbientCanvas accentColor={selectedTheme.accent} />
       )}
@@ -134,21 +244,21 @@ export default function RadianceApp() {
       <SidebarDock
         open={mobileSidebarOpen}
         setOpen={setMobileSidebarOpen}
-        onNewChat={newChat}
+        onNewChat={handleNewChat}
         onToggleHistory={() => setHistoryOpen((h) => !h)}
         onToggleSettings={() => setSettingsOpen((s) => !s)}
         onOpenShortcuts={() => setShortcutsOpen(true)}
       />
 
-      {/* Right: Main Application Pane (Topbar + ChatWorkspace) */}
+      {/* Right: Main Application Pane */}
       <main className="flex-1 flex flex-col min-w-0 h-full overflow-hidden relative z-10">
         <Topbar
           selectedModel={selectedModel}
           onSelectModel={(m: ModelOption) => setModelId(m.id)}
           language={language}
           onToggleLanguage={(l) => setLanguage(l)}
-          onClearChat={newChat}
-          onNewChat={newChat}
+          onClearChat={handleNewChat}
+          onNewChat={handleNewChat}
           onToggleMobileMenu={() => setMobileSidebarOpen((prev) => !prev)}
         />
 
@@ -157,11 +267,17 @@ export default function RadianceApp() {
             messages={messages}
             streamingContent={streamingContent}
             isGenerating={isGenerating}
+            streamError={streamError}
             activeFollowUps={activeFollowUps}
             onSend={handleSend}
             onStop={stop}
             onSelectSuggestion={handleSend}
             onOpenSettings={() => setSettingsOpen(true)}
+            onRegenerate={handleRegenerate}
+            onEditUserMessage={handleEditUserMessage}
+            onDeleteMessage={handleDeleteMessage}
+            onFeedback={handleFeedback}
+            onRetry={handleRetry}
           />
         </div>
       </main>
@@ -172,10 +288,7 @@ export default function RadianceApp() {
         onClose={() => setHistoryOpen(false)}
         conversations={conversations}
         activeConversationId={activeConvId || undefined}
-        onSelectConversation={(id: string) => {
-          selectConversation(id);
-          setHistoryOpen(false);
-        }}
+        onSelectConversation={handleSelectConversation}
         onTogglePin={togglePin}
         onDeleteConversation={deleteConversation}
         onDeleteAll={deleteAllConversations}

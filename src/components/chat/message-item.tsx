@@ -2,18 +2,38 @@
 
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
-import { ChatMessage } from "@/lib/types/chat";
+import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
+import { ChatMessage, FeedbackRating } from "@/lib/types/chat";
 import { formatMarkdown, formatRelativeTime } from "@/lib/utils/format";
 import { FollowUpChips } from "./follow-up-chips";
-import { Copy, Check, RotateCcw, Edit2, FileText, Download, Volume2, VolumeX } from "lucide-react";
+import {
+  Copy,
+  Check,
+  RotateCcw,
+  Edit2,
+  FileText,
+  Download,
+  Volume2,
+  VolumeX,
+  Trash2,
+  ThumbsUp,
+  ThumbsDown,
+  MoreHorizontal,
+  AlertCircle,
+  RefreshCw,
+  Clock,
+} from "lucide-react";
 
-interface MessageItemProps {
+export interface MessageItemProps {
   message: ChatMessage;
   isStreaming?: boolean;
   followUps?: string[];
   onSelectFollowUp?: (q: string) => void;
   onRegenerate?: () => void;
-  onEdit?: (text: string) => void;
+  onEdit?: (newContent: string) => void;
+  onDelete?: (messageId: string) => void;
+  onFeedback?: (messageId: string, feedback: FeedbackRating) => void;
+  onRetry?: () => void;
 }
 
 export function MessageItem({
@@ -23,15 +43,82 @@ export function MessageItem({
   onSelectFollowUp,
   onRegenerate,
   onEdit,
+  onDelete,
+  onFeedback,
+  onRetry,
 }: MessageItemProps) {
   const isUser = message.role === "user";
   const [copied, setCopied] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editContent, setEditContent] = useState(message.content);
+
+  useEffect(() => {
+    setEditContent(message.content);
+  }, [message.content]);
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(message.content);
+    try {
+      if (typeof navigator !== "undefined" && navigator.clipboard) {
+        navigator.clipboard.writeText(message.content);
+      }
+    } catch {
+      // Fallback silently if clipboard is restricted
+    }
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  // ── Safe Client-Side Export (Markdown Blob Download) ──
+  const handleExportMarkdown = () => {
+    try {
+      const filename = `radiance-message-${message.id || Date.now()}.md`;
+      const blob = new Blob([message.content], { type: "text/markdown;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    } catch {
+      // Fallback: clipboard copy if blob URL creation is restricted
+      if (typeof navigator !== "undefined" && navigator.clipboard) {
+        navigator.clipboard.writeText(message.content);
+      }
+    }
+  };
+
+  const handleFeedback = (rating: FeedbackRating) => {
+    if (!onFeedback) return;
+    const nextRating = message.feedback === rating ? null : rating;
+    onFeedback(message.id, nextRating);
+  };
+
+  const handleDelete = () => {
+    onDelete?.(message.id);
+  };
+
+  const handleSaveEdit = () => {
+    if (!editContent.trim()) return;
+    onEdit?.(editContent.trim());
+    setIsEditing(false);
+  };
+
+  const handleCancelEdit = () => {
+    setEditContent(message.content);
+    setIsEditing(false);
+  };
+
+  const handleEditKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleSaveEdit();
+    } else if (e.key === "Escape") {
+      e.preventDefault();
+      handleCancelEdit();
+    }
   };
 
   // ── Web Speech Synthesis (Text-to-Speech) ──
@@ -48,7 +135,6 @@ export function MessageItem({
     }
 
     window.speechSynthesis.cancel(); // Stop any pending utterances
-    // Strip markdown symbols for clean audio speech
     const cleanText = message.content.replace(/[#*`_~\[\]()]/g, "");
     const utterance = new SpeechSynthesisUtterance(cleanText);
     utterance.lang = "en-US";
@@ -74,7 +160,7 @@ export function MessageItem({
     const target = e.target as HTMLElement;
     if (target.classList.contains("code-copy-btn")) {
       const code = target.getAttribute("data-code");
-      if (code) {
+      if (code && typeof navigator !== "undefined" && navigator.clipboard) {
         navigator.clipboard.writeText(code);
         target.textContent = "Copied!";
         setTimeout(() => {
@@ -86,7 +172,7 @@ export function MessageItem({
 
   return (
     <div
-      className={`flex gap-3 max-w-3xl w-full mx-auto my-3.5 group transition-all duration-300 ${
+      className={`flex gap-3 max-w-3xl w-full mx-auto my-3.5 group transition-all duration-300 min-w-0 ${
         isUser ? "flex-row-reverse self-end" : "self-start"
       }`}
     >
@@ -95,18 +181,28 @@ export function MessageItem({
         className={`w-8 h-8 rounded-xl shrink-0 flex items-center justify-center font-mono text-[10px] font-bold border transition-transform duration-200 group-hover:scale-105 select-none ${
           isUser
             ? "bg-[var(--user-bg)] border-[var(--user-border)] text-[var(--accent-b)] shadow-[0_0_15px_var(--accent-d)]"
+            : message.isError
+            ? "bg-red-950/40 border-red-500/40 text-red-400 shadow-sm"
             : "bg-[var(--surface-raised)] border-[var(--border)] text-[var(--txt)] shadow-sm"
         }`}
       >
-        {isUser ? "YOU" : <span className="gradient-text-brand">RD</span>}
+        {isUser ? "YOU" : message.isError ? "!" : <span className="gradient-text-brand">RD</span>}
       </div>
 
       {/* Bubble Container */}
-      <div className="flex flex-col gap-1 max-w-[calc(100%-44px)]">
+      <div
+        className={`flex flex-col gap-1 min-w-0 ${
+          isUser
+            ? "items-end w-fit max-w-[85%] sm:max-w-[75%]"
+            : "items-start w-full max-w-full sm:max-w-[90%]"
+        }`}
+      >
         <div
-          className={`px-4 py-3 rounded-2xl text-sm leading-relaxed border transition-all ${
+          className={`px-4 py-3 rounded-2xl text-sm leading-relaxed border transition-all w-full min-w-0 ${
             isUser
               ? "bg-[var(--user-bg)] border-[var(--user-border)] rounded-tr-sm text-[var(--txt)]"
+              : message.isError
+              ? "bg-red-950/20 border-red-500/40 border-l-2 border-l-red-500 rounded-tl-sm text-red-200 shadow-[0_4px_24px_rgba(0,0,0,0.25)]"
               : "bg-[var(--ai-bg)] border-[var(--ai-border)] border-l-2 border-l-[var(--accent)] rounded-tl-sm text-[var(--txt)] shadow-[0_4px_24px_rgba(0,0,0,0.25)] glass-panel"
           }`}
         >
@@ -132,20 +228,80 @@ export function MessageItem({
                 .filter((a) => a.type === "image" && a.dataUrl)
                 .map((img) => (
                   <div key={img.id} className="relative rounded-lg overflow-hidden border border-[var(--border)] max-w-xs shadow-md">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src={img.dataUrl} alt={img.name} className="max-h-60 object-cover" />
                   </div>
                 ))}
             </div>
           )}
 
-          {/* Text Message Content */}
-          <div
-            className="prose prose-invert max-w-none break-words text-[13.5px] leading-relaxed select-text"
-            onClick={handleContentClick}
-            dangerouslySetInnerHTML={{
-              __html: formatMarkdown(message.content),
-            }}
-          />
+          {/* Inline Edit Form for User Message */}
+          {isEditing ? (
+            <div className="flex flex-col gap-2 w-full pt-1">
+              <textarea
+                value={editContent}
+                onChange={(e) => setEditContent(e.target.value)}
+                onKeyDown={handleEditKeyDown}
+                rows={3}
+                aria-label="Edit message prompt"
+                data-testid="edit-message-textarea"
+                className="w-full bg-[var(--deep)] border border-[var(--border)] rounded-lg p-2.5 text-xs text-[var(--txt)] focus:border-[var(--accent)] outline-none resize-y min-h-[70px] font-sans"
+                autoFocus
+              />
+              <div className="flex items-center justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={handleCancelEdit}
+                  className="px-2.5 py-1 text-xs rounded-md border border-[var(--border)] text-[var(--txt-muted)] hover:text-[var(--txt)] hover:bg-[var(--surface-hover)] transition-colors cursor-pointer"
+                  data-testid="cancel-edit-button"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={handleSaveEdit}
+                  disabled={!editContent.trim()}
+                  className="px-3 py-1 text-xs rounded-md bg-[var(--accent)] text-[var(--deep)] font-medium hover:opacity-90 disabled:opacity-40 transition-opacity cursor-pointer"
+                  data-testid="save-edit-button"
+                >
+                  Save & Resubmit
+                </button>
+              </div>
+            </div>
+          ) : message.isError ? (
+            /* Structured Error Card */
+            <div className="flex flex-col gap-2" data-testid="in-message-error-card">
+              <div className="flex items-center gap-2 text-xs font-semibold text-red-400">
+                <AlertCircle className="w-4 h-4 shrink-0" />
+                <span>Generation failed</span>
+              </div>
+              <p className="text-xs text-red-300 leading-relaxed break-words font-mono">
+                {message.errorDetails || message.content || "An unexpected inference error occurred. Please try again."}
+              </p>
+              {onRetry && (
+                <div className="mt-2 pt-2 border-t border-red-500/20 flex justify-end">
+                  <button
+                    type="button"
+                    onClick={onRetry}
+                    className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg bg-red-500/20 hover:bg-red-500/30 text-red-200 border border-red-500/30 transition-colors cursor-pointer"
+                    data-testid="error-retry-button"
+                  >
+                    <RotateCcw className="w-3.5 h-3.5" />
+                    <span>Retry generation</span>
+                  </button>
+                </div>
+              )}
+            </div>
+          ) : (
+            /* Standard Text Message Content */
+            <div
+              className="prose prose-invert max-w-none break-words text-[13.5px] leading-relaxed select-text min-w-0"
+              onClick={handleContentClick}
+              dangerouslySetInnerHTML={{
+                __html: formatMarkdown(message.content, { isStreaming }),
+              }}
+            />
+          )}
 
           {/* Streaming Cursor */}
           {isStreaming && <span className="stream-cursor" />}
@@ -194,58 +350,279 @@ export function MessageItem({
             isUser ? "justify-end" : "justify-start"
           }`}
         >
-          <span className="tabular-nums">{formatRelativeTime(message.createdAt)}</span>
+          {/* Accessible Semantic Timestamp Display */}
+          <time
+            dateTime={new Date(message.createdAt).toISOString()}
+            title={new Date(message.createdAt).toISOString()}
+            aria-label={`Sent at ${new Date(message.createdAt).toISOString()}`}
+            data-testid="message-timestamp"
+            className="tabular-nums cursor-default select-none hover:text-[var(--txt)] transition-colors"
+          >
+            {formatRelativeTime(message.createdAt)}
+          </time>
 
-          <div className="opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
+          {/* ══ Desktop Hover/Focus-Within Action Toolbar ══ */}
+          <div className="opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 focus-within:opacity-100 transition-opacity duration-200 hidden sm:flex items-center gap-1">
+            {/* Copy Button */}
             <button
               type="button"
               onClick={handleCopy}
-              className="p-1.5 rounded-md hover:bg-[var(--surface-hover)] hover:text-[var(--txt)] transition-colors touch-target"
-              title="Copy message"
-              aria-label="Copy message"
+              className="p-1.5 rounded-md hover:bg-[var(--surface-hover)] hover:text-[var(--txt)] transition-colors touch-target cursor-pointer"
+              title={copied ? "Copied to clipboard" : "Copy message"}
+              aria-label={copied ? "Copied to clipboard" : "Copy message"}
+              data-testid="copy-message-button"
             >
               {copied ? <Check className="w-3.5 h-3.5 text-[var(--success)]" /> : <Copy className="w-3.5 h-3.5" />}
             </button>
 
-            {!isUser && (
+            {/* Read Aloud (Assistant only) */}
+            {!isUser && !message.isError && (
               <button
                 type="button"
                 onClick={toggleSpeech}
-                className={`p-1.5 rounded-md transition-colors touch-target ${
+                className={`p-1.5 rounded-md transition-colors touch-target cursor-pointer ${
                   isSpeaking
                     ? "text-[var(--accent)] bg-[var(--accent-d)] animate-pulse"
                     : "hover:bg-[var(--surface-hover)] hover:text-[var(--txt)] text-[var(--txt-muted)]"
                 }`}
                 title={isSpeaking ? "Stop speech" : "Read aloud"}
                 aria-label={isSpeaking ? "Stop speech" : "Read aloud"}
+                data-testid="read-aloud-button"
               >
                 {isSpeaking ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
               </button>
             )}
 
+            {/* Edit User Message */}
             {isUser && onEdit && (
               <button
                 type="button"
-                onClick={() => onEdit(message.content)}
-                className="p-1.5 rounded-md hover:bg-[var(--surface-hover)] hover:text-[var(--txt)] transition-colors touch-target"
+                onClick={() => setIsEditing(true)}
+                className="p-1.5 rounded-md hover:bg-[var(--surface-hover)] hover:text-[var(--txt)] transition-colors touch-target cursor-pointer"
                 title="Edit message"
                 aria-label="Edit message"
+                data-testid="edit-message-button"
               >
                 <Edit2 className="w-3.5 h-3.5" />
               </button>
             )}
 
-            {!isUser && onRegenerate && (
+            {/* Regenerate Assistant Response */}
+            {!isUser && !message.isError && onRegenerate && !isStreaming && (
               <button
                 type="button"
                 onClick={onRegenerate}
-                className="p-1.5 rounded-md hover:bg-[var(--surface-hover)] hover:text-[var(--txt)] transition-colors touch-target"
+                className="p-1.5 rounded-md hover:bg-[var(--surface-hover)] hover:text-[var(--txt)] transition-colors touch-target cursor-pointer"
                 title="Regenerate response"
                 aria-label="Regenerate response"
+                data-testid="regenerate-message-button"
               >
                 <RotateCcw className="w-3.5 h-3.5" />
               </button>
             )}
+
+            {/* Retry Failed Generation */}
+            {message.isError && onRetry && (
+              <button
+                type="button"
+                onClick={onRetry}
+                className="p-1.5 rounded-md hover:bg-red-500/20 text-red-400 hover:text-red-300 transition-colors touch-target cursor-pointer"
+                title="Retry generation"
+                aria-label="Retry generation"
+                data-testid="retry-message-button"
+              >
+                <RefreshCw className="w-3.5 h-3.5" />
+              </button>
+            )}
+
+            {/* Feedback Sentiment: Thumbs Up */}
+            {!isUser && !message.isError && onFeedback && (
+              <>
+                <button
+                  type="button"
+                  onClick={() => handleFeedback("positive")}
+                  className={`p-1.5 rounded-md transition-colors touch-target cursor-pointer ${
+                    message.feedback === "positive"
+                      ? "text-[var(--accent)] bg-[var(--accent-d)]"
+                      : "hover:bg-[var(--surface-hover)] hover:text-[var(--txt)] text-[var(--txt-muted)]"
+                  }`}
+                  title={message.feedback === "positive" ? "Helpful response (selected)" : "Good response"}
+                  aria-label="Good response"
+                  aria-pressed={message.feedback === "positive"}
+                  data-testid="feedback-positive-button"
+                >
+                  <ThumbsUp className={`w-3.5 h-3.5 ${message.feedback === "positive" ? "fill-current" : ""}`} />
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => handleFeedback("negative")}
+                  className={`p-1.5 rounded-md transition-colors touch-target cursor-pointer ${
+                    message.feedback === "negative"
+                      ? "text-red-400 bg-red-500/10"
+                      : "hover:bg-[var(--surface-hover)] hover:text-[var(--txt)] text-[var(--txt-muted)]"
+                  }`}
+                  title={message.feedback === "negative" ? "Unhelpful response (selected)" : "Poor response"}
+                  aria-label="Poor response"
+                  aria-pressed={message.feedback === "negative"}
+                  data-testid="feedback-negative-button"
+                >
+                  <ThumbsDown className={`w-3.5 h-3.5 ${message.feedback === "negative" ? "fill-current" : ""}`} />
+                </button>
+              </>
+            )}
+
+            {/* Safe Client-Side Export (Markdown Download) */}
+            <button
+              type="button"
+              onClick={handleExportMarkdown}
+              className="p-1.5 rounded-md hover:bg-[var(--surface-hover)] hover:text-[var(--txt)] transition-colors touch-target cursor-pointer"
+              title="Export message as Markdown"
+              aria-label="Export message as Markdown"
+              data-testid="export-message-button"
+            >
+              <Download className="w-3.5 h-3.5" />
+            </button>
+
+            {/* Delete Message */}
+            {onDelete && (
+              <button
+                type="button"
+                onClick={handleDelete}
+                className="p-1.5 rounded-md hover:bg-red-500/15 hover:text-red-400 text-[var(--txt-muted)] transition-colors touch-target cursor-pointer"
+                title="Delete message"
+                aria-label="Delete message"
+                data-testid="delete-message-button"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+              </button>
+            )}
+          </div>
+
+          {/* ══ Mobile Accessible Action Menu (Radix Dropdown, >=44x44px touch targets) ══ */}
+          <div className="flex sm:hidden items-center">
+            <DropdownMenu.Root>
+              <DropdownMenu.Trigger asChild>
+                <button
+                  type="button"
+                  className="min-w-[44px] min-h-[44px] p-2 rounded-lg flex items-center justify-center text-[var(--txt-muted)] hover:text-[var(--txt)] hover:bg-[var(--surface-hover)] active:bg-[var(--surface-raised)] transition-colors touch-target focus-visible:ring-2 focus-visible:ring-[var(--accent)] cursor-pointer"
+                  aria-label="Message actions"
+                  data-testid="mobile-action-menu-trigger"
+                >
+                  <MoreHorizontal className="w-4 h-4" />
+                </button>
+              </DropdownMenu.Trigger>
+
+              <DropdownMenu.Portal>
+                <DropdownMenu.Content
+                  className="z-50 min-w-[210px] p-1.5 rounded-xl bg-[var(--deep)]/95 backdrop-blur-xl border border-[var(--border)] shadow-[0_12px_36px_rgba(0,0,0,0.6)] text-[var(--txt)] animate-in fade-in-50 zoom-in-95 data-[side=bottom]:slide-in-from-top-2"
+                  sideOffset={6}
+                  align={isUser ? "end" : "start"}
+                >
+                  {/* Copy */}
+                  <DropdownMenu.Item
+                    onSelect={handleCopy}
+                    className="min-h-[44px] flex items-center gap-2.5 px-3 py-2 text-xs font-medium rounded-lg cursor-pointer outline-none hover:bg-[var(--surface-hover)] focus:bg-[var(--surface-hover)] text-[var(--txt)] transition-colors select-none"
+                    data-testid="mobile-action-copy"
+                  >
+                    {copied ? <Check className="w-4 h-4 text-[var(--success)] shrink-0" /> : <Copy className="w-4 h-4 text-[var(--txt-muted)] shrink-0" />}
+                    <span>{copied ? "Copied to clipboard" : "Copy text"}</span>
+                  </DropdownMenu.Item>
+
+                  {/* Edit (User only) */}
+                  {isUser && onEdit && (
+                    <DropdownMenu.Item
+                      onSelect={() => setIsEditing(true)}
+                      className="min-h-[44px] flex items-center gap-2.5 px-3 py-2 text-xs font-medium rounded-lg cursor-pointer outline-none hover:bg-[var(--surface-hover)] focus:bg-[var(--surface-hover)] text-[var(--txt)] transition-colors select-none"
+                      data-testid="mobile-action-edit"
+                    >
+                      <Edit2 className="w-4 h-4 text-[var(--txt-muted)] shrink-0" />
+                      <span>Edit prompt</span>
+                    </DropdownMenu.Item>
+                  )}
+
+                  {/* Regenerate (Assistant only) */}
+                  {!isUser && !message.isError && onRegenerate && (
+                    <DropdownMenu.Item
+                      onSelect={onRegenerate}
+                      className="min-h-[44px] flex items-center gap-2.5 px-3 py-2 text-xs font-medium rounded-lg cursor-pointer outline-none hover:bg-[var(--surface-hover)] focus:bg-[var(--surface-hover)] text-[var(--txt)] transition-colors select-none"
+                      data-testid="mobile-action-regenerate"
+                    >
+                      <RotateCcw className="w-4 h-4 text-[var(--txt-muted)] shrink-0" />
+                      <span>Regenerate response</span>
+                    </DropdownMenu.Item>
+                  )}
+
+                  {/* Retry (Error only) */}
+                  {message.isError && onRetry && (
+                    <DropdownMenu.Item
+                      onSelect={onRetry}
+                      className="min-h-[44px] flex items-center gap-2.5 px-3 py-2 text-xs font-medium rounded-lg cursor-pointer outline-none hover:bg-red-500/15 focus:bg-red-500/15 text-red-400 transition-colors select-none"
+                      data-testid="mobile-action-retry"
+                    >
+                      <RefreshCw className="w-4 h-4 text-red-400 shrink-0" />
+                      <span>Retry generation</span>
+                    </DropdownMenu.Item>
+                  )}
+
+                  {/* Sentiment Feedback (Assistant only) */}
+                  {!isUser && !message.isError && onFeedback && (
+                    <>
+                      <DropdownMenu.Item
+                        onSelect={() => handleFeedback("positive")}
+                        className="min-h-[44px] flex items-center gap-2.5 px-3 py-2 text-xs font-medium rounded-lg cursor-pointer outline-none hover:bg-[var(--surface-hover)] focus:bg-[var(--surface-hover)] text-[var(--txt)] transition-colors select-none"
+                        data-testid="mobile-action-feedback-positive"
+                      >
+                        <ThumbsUp className={`w-4 h-4 shrink-0 ${message.feedback === "positive" ? "text-[var(--accent)] fill-current" : "text-[var(--txt-muted)]"}`} />
+                        <span>{message.feedback === "positive" ? "Liked response (toggle off)" : "Helpful response"}</span>
+                      </DropdownMenu.Item>
+
+                      <DropdownMenu.Item
+                        onSelect={() => handleFeedback("negative")}
+                        className="min-h-[44px] flex items-center gap-2.5 px-3 py-2 text-xs font-medium rounded-lg cursor-pointer outline-none hover:bg-[var(--surface-hover)] focus:bg-[var(--surface-hover)] text-[var(--txt)] transition-colors select-none"
+                        data-testid="mobile-action-feedback-negative"
+                      >
+                        <ThumbsDown className={`w-4 h-4 shrink-0 ${message.feedback === "negative" ? "text-red-400 fill-current" : "text-[var(--txt-muted)]"}`} />
+                        <span>{message.feedback === "negative" ? "Disliked response (toggle off)" : "Unhelpful response"}</span>
+                      </DropdownMenu.Item>
+                    </>
+                  )}
+
+                  {/* Safe Client-Side Export */}
+                  <DropdownMenu.Item
+                    onSelect={handleExportMarkdown}
+                    className="min-h-[44px] flex items-center gap-2.5 px-3 py-2 text-xs font-medium rounded-lg cursor-pointer outline-none hover:bg-[var(--surface-hover)] focus:bg-[var(--surface-hover)] text-[var(--txt)] transition-colors select-none"
+                    data-testid="mobile-action-export"
+                  >
+                    <Download className="w-4 h-4 text-[var(--txt-muted)] shrink-0" />
+                    <span>Export Markdown (.md)</span>
+                  </DropdownMenu.Item>
+
+                  <DropdownMenu.Separator className="h-px my-1 bg-[var(--border)]" />
+
+                  {/* ISO Timestamp Info Item */}
+                  <div className="px-3 py-2 text-[11px] font-mono text-[var(--txt-muted)] flex items-center gap-2 select-none" data-testid="mobile-timestamp-item">
+                    <Clock className="w-3.5 h-3.5 shrink-0" />
+                    <span>{new Date(message.createdAt).toISOString()}</span>
+                  </div>
+
+                  {/* Delete */}
+                  {onDelete && (
+                    <>
+                      <DropdownMenu.Separator className="h-px my-1 bg-[var(--border)]" />
+                      <DropdownMenu.Item
+                        onSelect={handleDelete}
+                        className="min-h-[44px] flex items-center gap-2.5 px-3 py-2 text-xs font-medium rounded-lg cursor-pointer outline-none hover:bg-red-500/15 focus:bg-red-500/15 text-red-400 transition-colors select-none"
+                        data-testid="mobile-action-delete"
+                      >
+                        <Trash2 className="w-4 h-4 text-red-400 shrink-0" />
+                        <span>Delete message</span>
+                      </DropdownMenu.Item>
+                    </>
+                  )}
+                </DropdownMenu.Content>
+              </DropdownMenu.Portal>
+            </DropdownMenu.Root>
           </div>
         </div>
       </div>

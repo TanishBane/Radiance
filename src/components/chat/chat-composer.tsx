@@ -41,6 +41,11 @@ export function ChatComposer({ onSend, onStop, isGenerating, disabled = false }:
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const recognitionRef = useRef<SpeechRecognitionInstance | null>(null);
+  const isSubmittingRef = useRef<boolean>(false);
+
+  useEffect(() => {
+    isSubmittingRef.current = false;
+  }, [input, isGenerating]);
 
   // Auto-resize textarea
   const handleInput = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -53,16 +58,34 @@ export function ChatComposer({ onSend, onStop, isGenerating, disabled = false }:
   };
 
   const handleSubmit = () => {
-    if ((!input.trim() && attachments.length === 0) || isGenerating || disabled) return;
-    onSend(input.trim(), attachments);
-    setInput("");
-    setAttachments([]);
-    if (textareaRef.current) {
-      textareaRef.current.style.height = "auto";
+    if (isSubmittingRef.current) return;
+    const trimmed = input.trim();
+    if ((!trimmed && attachments.length === 0) || isGenerating || disabled) return;
+
+    isSubmittingRef.current = true;
+    try {
+      onSend(trimmed, attachments);
+      setInput("");
+      setAttachments([]);
+      if (textareaRef.current) {
+        textareaRef.current.style.height = "auto";
+      }
+    } catch (err) {
+      isSubmittingRef.current = false;
+      throw err;
     }
+
+    // Safety fallback timeout to ensure ref is never locked if React render is skipped
+    setTimeout(() => {
+      isSubmittingRef.current = false;
+    }, 300);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    // Prevent premature Enter submission during CJK IME candidate selection
+    if (e.nativeEvent.isComposing || e.keyCode === 229) {
+      return;
+    }
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       handleSubmit();
@@ -215,6 +238,8 @@ export function ChatComposer({ onSend, onStop, isGenerating, disabled = false }:
             <button
               type="button"
               onClick={onStop}
+              aria-label="Stop response generation"
+              data-testid="stop-button"
               className="p-2.5 rounded-xl bg-[var(--danger)] text-white hover:bg-[var(--danger)]/90 transition-all shadow-[0_0_15px_rgba(232,85,85,0.3)] shrink-0"
               title="Stop response generation"
             >
@@ -225,6 +250,8 @@ export function ChatComposer({ onSend, onStop, isGenerating, disabled = false }:
               type="button"
               onClick={handleSubmit}
               disabled={(!input.trim() && attachments.length === 0) || disabled}
+              aria-label="Send message"
+              data-testid="send-button"
               className="p-2.5 rounded-xl bg-gradient-to-br from-[var(--accent-b)] to-[var(--accent)] text-[var(--void)] font-bold transition-all disabled:opacity-30 disabled:pointer-events-none hover:scale-105 shadow-[0_0_20px_var(--accent-g)] shrink-0"
               title="Send message (Enter)"
             >

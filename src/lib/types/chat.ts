@@ -1,4 +1,8 @@
+import type { Dispatch, SetStateAction } from "react";
+
 export type Role = "user" | "assistant" | "system";
+
+export type FeedbackRating = "positive" | "negative" | null;
 
 export interface Attachment {
   id: string;
@@ -19,6 +23,8 @@ export interface ChatMessage {
   attachments?: Attachment[];
   generatedImageUrl?: string;
   isError?: boolean;
+  errorDetails?: string;
+  feedback?: FeedbackRating;
 }
 
 export interface Conversation {
@@ -68,3 +74,55 @@ export interface ModelOption {
   verifiedDate: string;
   pricingTier?: "free" | "paid" | "standard";
 }
+
+/**
+ * Generates a collision-resistant unique message ID.
+ * Combines Unix millisecond timestamp with a 7-character base36 pseudo-random string.
+ * Format: msg_${Date.now()}_${Math.random().toString(36).slice(2, 9)}
+ */
+export function generateMessageId(): string {
+  return `msg_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`;
+}
+
+/**
+ * Generates a collision-resistant unique conversation ID.
+ * Combines Unix millisecond timestamp with a 7-character base36 pseudo-random string.
+ * Format: conv_${Date.now()}_${Math.random().toString(36).slice(2, 9)}
+ */
+export function generateConversationId(): string {
+  return `conv_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`;
+}
+
+export interface UseChatStreamReturn {
+  isGenerating: boolean;
+  streamingContent: string;
+  streamError: Error | null;
+  send: (messages: ChatMessage[], modelId?: string) => Promise<void>;
+  stop: () => void;
+  retryLast: () => Promise<void>;
+}
+
+export interface UseChatSessionReturn {
+  conversations: Conversation[];
+  activeConvId: string | null;
+  messages: ChatMessage[];
+  activeFollowUps: string[];
+  selectConversation: (id: string) => void;
+  newChat: () => void;
+  togglePin: (id: string) => Promise<void>;
+  deleteConversation: (id: string) => Promise<void>;
+  deleteAllConversations: () => Promise<void>;
+  appendUserMessage: (text: string, attachments?: Attachment[]) => ChatMessage[];
+  appendAssistantMessage: (
+    assistantMessage: ChatMessage,
+    currentMessages: ChatMessage[],
+    tone: string,
+    language: string
+  ) => Promise<void>;
+  deleteMessage: (messageId: string) => Promise<void>;
+  editUserMessage: (messageId: string, newContent: string) => Promise<ChatMessage[]>;
+  setMessageFeedback: (messageId: string, feedback: FeedbackRating) => Promise<void>;
+  setConversations: Dispatch<SetStateAction<Conversation[]>>;
+  setMessages: Dispatch<SetStateAction<ChatMessage[]>>;
+}
+
