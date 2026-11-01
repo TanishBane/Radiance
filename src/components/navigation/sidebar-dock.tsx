@@ -12,7 +12,6 @@ import {
   IconHistory,
   IconAdjustmentsHorizontal,
   IconCommand,
-  IconDownload,
 } from "@tabler/icons-react";
 import { motion } from "motion/react";
 
@@ -21,7 +20,6 @@ interface SidebarDockProps {
   onToggleHistory: () => void;
   onToggleSettings: () => void;
   onOpenShortcuts: () => void;
-  onOpenLegacyImport?: () => void;
   open?: boolean;
   setOpen?: React.Dispatch<React.SetStateAction<boolean>>;
 }
@@ -31,7 +29,6 @@ export function SidebarDock({
   onToggleHistory,
   onToggleSettings,
   onOpenShortcuts,
-  onOpenLegacyImport,
   open: controlledOpen,
   setOpen: controlledSetOpen,
 }: SidebarDockProps) {
@@ -67,14 +64,6 @@ export function SidebarDock({
       badge: "Ctrl+K",
     },
   ];
-
-  if (onOpenLegacyImport) {
-    mainLinks.push({
-      label: "Import Legacy Data",
-      icon: <IconDownload className="w-5 h-5 shrink-0" />,
-      onClick: onOpenLegacyImport,
-    });
-  }
 
   return (
     <Sidebar open={open} setOpen={setOpen}>
