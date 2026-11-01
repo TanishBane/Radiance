@@ -50,7 +50,7 @@ export interface ToneDefinition {
   prompt: string;
 }
 
-export type PersonaMode = "default" | "portfolio" | "student";
+export type PersonaMode = "default";
 
 export interface ModelOption {
   id: string;

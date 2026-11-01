@@ -2,7 +2,6 @@
 
 import React, { useState, useMemo } from "react";
 import { Sparkles, Terminal, BookOpen, Image as ImageIcon, BrainCircuit, ArrowUpRight } from "lucide-react";
-import { PersonaMode } from "@/lib/types/chat";
 
 interface PromptCategory {
   id: string;
@@ -71,10 +70,9 @@ const FACTS = [
 
 interface WelcomeCardProps {
   onSelectPrompt: (prompt: string) => void;
-  mode?: PersonaMode;
 }
 
-export function WelcomeCard({ onSelectPrompt, mode = "default" }: WelcomeCardProps) {
+export function WelcomeCard({ onSelectPrompt }: WelcomeCardProps) {
   const [activeTab, setActiveTab] = useState<string>("reasoning");
 
   const currentCategory = useMemo(() => {
@@ -85,19 +83,9 @@ export function WelcomeCard({ onSelectPrompt, mode = "default" }: WelcomeCardPro
     return FACTS[Math.floor(Math.random() * FACTS.length)];
   }, []);
 
-  const titleName =
-    mode === "portfolio"
-      ? "Tanish Bane"
-      : mode === "student"
-      ? "Mumbai Student AI"
-      : "Radiance";
-
+  const titleName = "Radiance";
   const description =
-    mode === "portfolio"
-      ? "Explore AI & Data Science engineering projects, full-stack architectures, published research, and technical credentials."
-      : mode === "student"
-      ? "Mumbai collegiate academic guide, syllabus navigator, engineering career strategies, and collegiate resources."
-      : "Illuminate what is possible. Stream real-time reasoning, analyze documents, generate Flux visuals, or explore dedicated persona modes.";
+    "Illuminate what is possible. Stream real-time reasoning, analyze documents, generate Flux visuals, and explore complex ideas.";
 
   return (
     <div className="flex flex-col items-center justify-center max-w-2xl mx-auto px-4 py-8 text-center gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500">

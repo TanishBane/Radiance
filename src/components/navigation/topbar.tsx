@@ -3,65 +3,66 @@
 import React, { useState } from "react";
 import { RadianceLogo } from "@/components/branding/logo";
 import { AVAILABLE_MODELS } from "@/lib/ai/models";
-import { ModelOption, PersonaMode } from "@/lib/types/chat";
-import { ChevronDown, Trash2, Cpu, Globe2 } from "lucide-react";
+import { ModelOption } from "@/lib/types/chat";
+import { ChevronDown, Trash2, Cpu } from "lucide-react";
+import { IconMenu2 } from "@tabler/icons-react";
 
 interface TopbarProps {
   selectedModel: ModelOption;
   onSelectModel: (model: ModelOption) => void;
-  mode: PersonaMode;
-  onClearMode: () => void;
   language: "en" | "hi";
   onToggleLanguage: (lang: "en" | "hi") => void;
   onClearChat: () => void;
   onNewChat: () => void;
+  onToggleMobileMenu?: () => void;
 }
 
 export function Topbar({
   selectedModel,
   onSelectModel,
-  mode,
-  onClearMode,
   language,
   onToggleLanguage,
   onClearChat,
   onNewChat,
+  onToggleMobileMenu,
 }: TopbarProps) {
   const [modelDropdownOpen, setModelDropdownOpen] = useState(false);
 
   return (
-    <header className="relative z-30 flex items-center justify-between px-4 py-2.5 bg-[var(--void)]/80 backdrop-blur-xl border-b border-[var(--border)] select-none">
-      {/* Left: Brand Logo & Mode Badge */}
+    <header className="relative z-30 flex items-center justify-between px-4 py-2.5 bg-[var(--void)]/80 backdrop-blur-xl border-b border-[var(--border)] select-none shrink-0 w-full">
+      {/* Left: Mobile Menu Toggle & Desktop Context Indicator */}
       <div className="flex items-center gap-3">
-        <RadianceLogo size="sm" onClick={onNewChat} />
-        <span className="hidden sm:inline-block font-mono text-[9px] uppercase tracking-widest px-2 py-0.5 rounded-full border border-[var(--accent)]/30 text-[var(--accent)] bg-[var(--accent-d)]">
-          v1.0
-        </span>
-
-        {/* Active Mode Pill */}
-        {mode !== "default" && (
-          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-mono tracking-wider text-[var(--accent-b)] bg-[var(--accent-d)] border border-[var(--accent)]/30 animate-in fade-in duration-200">
-            <span>
-              {mode === "portfolio"
-                ? "Portfolio Mode"
-                : mode === "student"
-                ? "Mumbai Student Mode"
-                : "Active Mode"}
-            </span>
-            <button
-              type="button"
-              onClick={onClearMode}
-              className="text-[var(--txt-muted)] hover:text-[var(--danger)] ml-0.5 p-0.5"
-              title="Exit persona mode"
-              aria-label="Exit persona mode"
-            >
-              ✕
-            </button>
-          </div>
+        {/* On Mobile: Hamburger button to open sidebar drawer */}
+        {onToggleMobileMenu && (
+          <button
+            type="button"
+            onClick={onToggleMobileMenu}
+            className="md:hidden p-1.5 rounded-xl border border-[var(--border)] text-[var(--txt-dim)] hover:text-[var(--txt)] hover:bg-[var(--surface-hover)] transition-colors"
+            title="Open navigation menu"
+            aria-label="Open navigation menu"
+          >
+            <IconMenu2 className="w-5 h-5" />
+          </button>
         )}
+
+        {/* On Mobile: Compact brand logo */}
+        <div className="md:hidden">
+          <RadianceLogo size="sm" onClick={onNewChat} />
+        </div>
+
+        {/* On Desktop: Clean Context Badge (Default Assistant) */}
+        <div className="hidden md:flex items-center gap-2 px-2.5 py-1 rounded-xl bg-[var(--surface)] border border-[var(--border)]">
+          <span className="w-2 h-2 rounded-full bg-[var(--accent)] shadow-[0_0_8px_var(--accent-g)] animate-pulse" />
+          <span className="font-mono text-xs font-semibold text-[var(--txt)] tracking-wide">
+            Default Assistant
+          </span>
+          <span className="font-mono text-[9px] uppercase tracking-widest px-1.5 py-0.2 rounded-full border border-[var(--accent)]/30 text-[var(--accent)] bg-[var(--accent-d)]">
+            v1.0
+          </span>
+        </div>
       </div>
 
-      {/* Right: Model Switcher, Language Toggle, Status & Clear */}
+      {/* Right: Model Switcher, Language Toggle, & Clear Conversation */}
       <div className="flex items-center gap-2">
         {/* Model Switcher Dropdown */}
         <div className="relative">

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useRef, useEffect } from "react";
-import { ChatMessage, Attachment, PersonaMode } from "@/lib/types/chat";
+import { ChatMessage, Attachment } from "@/lib/types/chat";
 import { MessageItem } from "@/components/chat/message-item";
 import { WelcomeCard } from "@/components/chat/welcome-card";
 import { FollowUpChips } from "@/components/chat/follow-up-chips";
@@ -12,7 +12,6 @@ interface ChatWorkspaceProps {
   streamingContent: string;
   isGenerating: boolean;
   activeFollowUps: string[];
-  mode: PersonaMode;
   onSend: (text: string, attachments?: Attachment[]) => void;
   onStop: () => void;
   onSelectSuggestion: (text: string) => void;
@@ -24,7 +23,6 @@ export function ChatWorkspace({
   streamingContent,
   isGenerating,
   activeFollowUps,
-  mode,
   onSend,
   onStop,
   onSelectSuggestion,
@@ -44,7 +42,7 @@ export function ChatWorkspace({
       {/* Scrollable Message List */}
       <div ref={chatScrollRef} className="flex-1 overflow-y-auto px-4 py-6 scroll-smooth">
         {messages.length === 0 ? (
-          <WelcomeCard mode={mode} onSelectPrompt={onSelectSuggestion} />
+          <WelcomeCard onSelectPrompt={onSelectSuggestion} />
         ) : (
           <div className="max-w-3xl mx-auto space-y-6 pb-6">
             {messages.map((msg) => (

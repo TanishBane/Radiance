@@ -5,7 +5,6 @@ import { ChatMessage, Attachment } from "@/lib/types/chat";
 
 interface UseChatStreamOptions {
   modelId: string;
-  mode: string;
   tone: string;
   language: string;
   onStreamComplete: (assistantMessage: ChatMessage) => void;
@@ -14,7 +13,6 @@ interface UseChatStreamOptions {
 
 export function useChatStream({
   modelId,
-  mode,
   tone,
   language,
   onStreamComplete,
@@ -55,7 +53,7 @@ export function useChatStream({
               attachments: m.attachments,
             })),
             modelId,
-            mode,
+            mode: "default",
             tone,
             language,
           }),
@@ -122,7 +120,7 @@ export function useChatStream({
         onError(error);
       }
     },
-    [isGenerating, modelId, mode, tone, language, onStreamComplete, onError]
+    [isGenerating, modelId, tone, language, onStreamComplete, onError]
   );
 
   return {
