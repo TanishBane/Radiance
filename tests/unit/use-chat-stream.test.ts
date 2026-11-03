@@ -344,6 +344,129 @@ describe("useChatStream — Streaming Lifecycle, Buffer & Error State Specificat
       expect(result.current.streamingContent).toBe("");
       expect(onStreamComplete).not.toHaveBeenCalled();
     });
+
+    it("discards accumulated partial tokens when stop(true) is explicitly invoked", async () => {
+      const onStreamComplete = vi.fn();
+      const chunks = ['0:"Token 1 "\n', '0:"Token 2 "\n'];
+      const { stream, abort } = createDelayedStream(chunks, 30);
+
+      global.fetch = vi.fn().mockImplementation((_url, options) => {
+        options.signal?.addEventListener("abort", () => abort());
+        return Promise.resolve({ ok: true, status: 200, body: stream });
+      });
+
+      const { result } = renderHook(() =>
+        useChatStream({
+          modelId: "groq-llama-3.3-70b",
+          tone: "default",
+          language: "en",
+          onStreamComplete,
+        })
+      );
+
+      act(() => {
+        result.current.send([sampleUserMessage]);
+      });
+
+      await act(async () => {
+        await new Promise((r) => setTimeout(r, 45));
+      });
+
+      // Explicit discardPartial = true
+      act(() => {
+        result.current.stop(true);
+      });
+
+      await act(async () => {
+        await new Promise((r) => setTimeout(r, 20));
+      });
+
+      expect(result.current.isGenerating).toBe(false);
+      expect(result.current.streamingContent).toBe("");
+      // onStreamComplete MUST NOT be called when discardPartial is true
+      expect(onStreamComplete).not.toHaveBeenCalled();
+    });
+
+    it("preserves accumulated partial tokens when stop(false) is explicitly invoked", async () => {
+      const onStreamComplete = vi.fn();
+      const chunks = ['0:"Token 1 "\n', '0:"Token 2 "\n'];
+      const { stream, abort } = createDelayedStream(chunks, 30);
+
+      global.fetch = vi.fn().mockImplementation((_url, options) => {
+        options.signal?.addEventListener("abort", () => abort());
+        return Promise.resolve({ ok: true, status: 200, body: stream });
+      });
+
+      const { result } = renderHook(() =>
+        useChatStream({
+          modelId: "groq-llama-3.3-70b",
+          tone: "default",
+          language: "en",
+          onStreamComplete,
+        })
+      );
+
+      act(() => {
+        result.current.send([sampleUserMessage]);
+      });
+
+      await act(async () => {
+        await new Promise((r) => setTimeout(r, 45));
+      });
+
+      // Explicit discardPartial = false
+      act(() => {
+        result.current.stop(false);
+      });
+
+      await act(async () => {
+        await new Promise((r) => setTimeout(r, 20));
+      });
+
+      expect(onStreamComplete).toHaveBeenCalledTimes(1);
+      expect(onStreamComplete.mock.calls[0][0].content).toContain("Token 1");
+    });
+
+    it("preserves accumulated partial tokens when stop is passed a truthy non-boolean object", async () => {
+      const onStreamComplete = vi.fn();
+      const chunks = ['0:"Token 1 "\n', '0:"Token 2 "\n'];
+      const { stream, abort } = createDelayedStream(chunks, 30);
+
+      global.fetch = vi.fn().mockImplementation((_url, options) => {
+        options.signal?.addEventListener("abort", () => abort());
+        return Promise.resolve({ ok: true, status: 200, body: stream });
+      });
+
+      const { result } = renderHook(() =>
+        useChatStream({
+          modelId: "groq-llama-3.3-70b",
+          tone: "default",
+          language: "en",
+          onStreamComplete,
+        })
+      );
+
+      act(() => {
+        result.current.send([sampleUserMessage]);
+      });
+
+      await act(async () => {
+        await new Promise((r) => setTimeout(r, 45));
+      });
+
+      // Simulate accidental DOM event pass: { type: "click" }
+      act(() => {
+        (result.current.stop as any)({ type: "click", preventDefault: () => {} });
+      });
+
+      await act(async () => {
+        await new Promise((r) => setTimeout(r, 20));
+      });
+
+      // Hook must strictly verify discardPartial === true, preserving tokens despite truthy object
+      expect(onStreamComplete).toHaveBeenCalledTimes(1);
+      expect(onStreamComplete.mock.calls[0][0].content).toContain("Token 1");
+    });
   });
 
   describe("3. Structured Error States & In-Stream Error Recovery", () => {

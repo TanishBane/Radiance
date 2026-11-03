@@ -26,8 +26,12 @@ export function useChatStream({
   const isGeneratingRef = useRef(false);
   const lastMessagesRef = useRef<ChatMessage[] | null>(null);
   const lastModelIdRef = useRef<string | undefined>(undefined);
+  const discardPartialRef = useRef(false);
 
-  const stop = useCallback(() => {
+  const stop = useCallback((discardPartial: boolean | unknown = false) => {
+    if (discardPartial === true) {
+      discardPartialRef.current = true;
+    }
     if (abortControllerRef.current) {
       abortControllerRef.current.abort();
       abortControllerRef.current = null;
@@ -44,6 +48,7 @@ export function useChatStream({
       lastMessagesRef.current = messagesToSend;
       lastModelIdRef.current = overrideModelId;
 
+      discardPartialRef.current = false;
       isGeneratingRef.current = true;
       setIsGenerating(true);
       setStreamingContent("");
@@ -138,6 +143,15 @@ export function useChatStream({
           buffer = "";
         }
 
+        if (controller.signal.aborted || discardPartialRef.current) {
+          discardPartialRef.current = false;
+          setStreamingContent("");
+          isGeneratingRef.current = false;
+          setIsGenerating(false);
+          abortControllerRef.current = null;
+          return;
+        }
+
         const assistantMsg: ChatMessage = {
           id: generateMessageId(),
           role: "assistant",
@@ -152,12 +166,15 @@ export function useChatStream({
         onStreamComplete(assistantMsg);
       } catch (err: unknown) {
         const isAbort =
+          controller.signal.aborted ||
           (typeof DOMException !== "undefined" && err instanceof DOMException && err.name === "AbortError") ||
           (err instanceof Error && (err.name === "AbortError" || err.message.toLowerCase().includes("aborted")));
 
         if (isAbort) {
-          // Preserve accumulated tokens if any were generated before abort
-          if (accumulated.trim().length > 0) {
+          const shouldDiscard = discardPartialRef.current;
+          discardPartialRef.current = false;
+
+          if (!shouldDiscard && accumulated.trim().length > 0) {
             const assistantMsg: ChatMessage = {
               id: generateMessageId(),
               role: "assistant",

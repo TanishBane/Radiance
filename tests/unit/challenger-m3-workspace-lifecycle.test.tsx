@@ -579,6 +579,334 @@ describe("Milestone 3 Challenger 2: Workspace Lifecycle, TTFT & Session Contamin
         expect(c.messages.some((m) => m.content === "*(No response generated)*")).toBe(false);
       });
     });
+
+    it("immediately aborts active stream when deleting active conversation from history drawer", async () => {
+      // 1. Seed existing active conversation
+      const conv = {
+        id: "conv_active_del",
+        title: "Active Chat",
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+        pinned: false,
+        messages: [{ id: "m1", role: "user" as const, content: "Hello", createdAt: Date.now() }],
+      };
+      await conversationService.save(conv);
+
+      const streamControl = createControllableStream();
+      let fetchSignal: AbortSignal | undefined;
+
+      global.fetch = vi.fn().mockImplementation((_url, options) => {
+        fetchSignal = options?.signal;
+        options?.signal?.addEventListener("abort", () => {
+          streamControl.abort();
+        });
+        return Promise.resolve({
+          ok: true,
+          status: 200,
+          body: streamControl.stream,
+        });
+      });
+
+      render(<RadianceApp />);
+
+      // Wait for app mount
+      await waitFor(() => expect(screen.getByPlaceholderText(/Ask RADIANCE anything/i)).toBeDefined());
+
+      // Open history drawer & select conversation
+      await act(async () => {
+        fireEvent.click(screen.getByTitle(/History/i));
+      });
+      const convItem = await screen.findByText("Active Chat");
+      await act(async () => {
+        fireEvent.click(convItem);
+      });
+
+      // Start stream
+      const textarea = screen.getByPlaceholderText(/Ask RADIANCE anything/i);
+      fireEvent.change(textarea, { target: { value: "Continue story" } });
+      await act(async () => {
+        fireEvent.click(screen.getByTestId("send-button"));
+      });
+
+      // Push partial token
+      await act(async () => {
+        streamControl.pushToken("Once ");
+      });
+
+      expect(fetchSignal?.aborted).toBe(false);
+
+      // Open history drawer again and click delete on this active conversation
+      await act(async () => {
+        fireEvent.click(screen.getByTitle(/History/i));
+      });
+      const deleteButtons = screen.getAllByTitle("Delete chat");
+      await act(async () => {
+        fireEvent.click(deleteButtons[0]);
+      });
+
+      // Assert fetch signal is immediately aborted!
+      expect(fetchSignal?.aborted).toBe(true);
+
+      // Workspace must be reset cleanly
+      await waitFor(() => {
+        expect(screen.queryByTestId("streaming-message")).toBeNull();
+      });
+    });
+
+    it("immediately aborts active stream when deleting all conversations from history drawer", async () => {
+      // Seed a conversation so conversations.length > 0 and Delete All button renders
+      const conv = {
+        id: "conv_all_del",
+        title: "Chat to delete",
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+        pinned: false,
+        messages: [{ id: "m1", role: "user" as const, content: "Hello", createdAt: Date.now() }],
+      };
+      await conversationService.save(conv);
+
+      const streamControl = createControllableStream();
+      let fetchSignal: AbortSignal | undefined;
+
+      global.fetch = vi.fn().mockImplementation((_url, options) => {
+        fetchSignal = options?.signal;
+        options?.signal?.addEventListener("abort", () => {
+          streamControl.abort();
+        });
+        return Promise.resolve({
+          ok: true,
+          status: 200,
+          body: streamControl.stream,
+        });
+      });
+
+      render(<RadianceApp />);
+      await waitFor(() => expect(screen.getByPlaceholderText(/Ask RADIANCE anything/i)).toBeDefined());
+
+      // Send prompt to start stream
+      const textarea = screen.getByPlaceholderText(/Ask RADIANCE anything/i);
+      fireEvent.change(textarea, { target: { value: "Delete all test" } });
+      await act(async () => {
+        fireEvent.click(screen.getByTestId("send-button"));
+      });
+
+      await act(async () => {
+        streamControl.pushToken("Testing ");
+      });
+
+      expect(fetchSignal?.aborted).toBe(false);
+
+      // Open history drawer and click Delete All
+      await act(async () => {
+        fireEvent.click(screen.getByTitle(/History/i));
+      });
+      const deleteAllBtn = screen.getByTitle("Delete all conversations");
+      await act(async () => {
+        fireEvent.click(deleteAllBtn);
+      });
+
+      // Assert fetch signal is immediately aborted!
+      expect(fetchSignal?.aborted).toBe(true);
+
+      // Workspace is clean
+      await waitFor(() => {
+        expect(screen.queryByTestId("streaming-message")).toBeNull();
+      });
+    });
+
+    it("leaves active stream running unaffected when deleting an inactive conversation from history drawer", async () => {
+      // 1. Pre-seed two conversations: active and inactive
+      const activeConv = {
+        id: "conv_stay_active",
+        title: "Active Chat Should Keep Running",
+        createdAt: Date.now() - 1000,
+        updatedAt: Date.now() - 1000,
+        pinned: false,
+        messages: [{ id: "m_act", role: "user" as const, content: "Active prompt", createdAt: Date.now() - 1000 }],
+      };
+      const inactiveConv = {
+        id: "conv_to_delete",
+        title: "Inactive Chat To Delete",
+        createdAt: Date.now() - 5000,
+        updatedAt: Date.now() - 5000,
+        pinned: false,
+        messages: [{ id: "m_inact", role: "user" as const, content: "Inactive prompt", createdAt: Date.now() - 5000 }],
+      };
+      await conversationService.save(activeConv);
+      await conversationService.save(inactiveConv);
+
+      const streamControl = createControllableStream();
+      let fetchSignal: AbortSignal | undefined;
+
+      global.fetch = vi.fn().mockImplementation((_url, options) => {
+        fetchSignal = options?.signal;
+        options?.signal?.addEventListener("abort", () => {
+          streamControl.abort();
+        });
+        return Promise.resolve({
+          ok: true,
+          status: 200,
+          body: streamControl.stream,
+        });
+      });
+
+      render(<RadianceApp />);
+      await waitFor(() => expect(screen.getByPlaceholderText(/Ask RADIANCE anything/i)).toBeDefined());
+
+      // Open history drawer and select active conversation
+      await act(async () => {
+        fireEvent.click(screen.getByTitle(/History/i));
+      });
+      const activeItem = await screen.findByText("Active Chat Should Keep Running");
+      await act(async () => {
+        fireEvent.click(activeItem);
+      });
+
+      // Start stream in active conversation
+      const textarea = screen.getByPlaceholderText(/Ask RADIANCE anything/i);
+      fireEvent.change(textarea, { target: { value: "Continue active work" } });
+      await act(async () => {
+        fireEvent.click(screen.getByTestId("send-button"));
+      });
+
+      // Push first token
+      await act(async () => {
+        streamControl.pushToken("Active token 1 ");
+      });
+
+      expect(fetchSignal?.aborted).toBe(false);
+      expect(screen.getByTestId("streaming-message")).toBeDefined();
+
+      // Open history drawer again
+      await act(async () => {
+        fireEvent.click(screen.getByTitle(/History/i));
+      });
+      const inactiveEl = await screen.findByText("Inactive Chat To Delete");
+      const inactiveContainer = inactiveEl.closest(".group");
+      const deleteInactiveBtn = inactiveContainer?.querySelector('button[title="Delete chat"]');
+      expect(deleteInactiveBtn).toBeDefined();
+
+      // Click delete on INACTIVE conversation
+      await act(async () => {
+        fireEvent.click(deleteInactiveBtn!);
+      });
+
+      // Critical Assertion 1: Fetch signal for active conversation MUST NOT be aborted!
+      expect(fetchSignal?.aborted).toBe(false);
+
+      // Critical Assertion 2: Streaming message must still be mounted and alive
+      expect(screen.getByTestId("streaming-message")).toBeDefined();
+
+      // Push second token and close stream normally
+      await act(async () => {
+        streamControl.pushToken("Active token 2 complete");
+        streamControl.close();
+      });
+
+      // Allow async completion to commit message
+      await waitFor(() => {
+        expect(screen.getByText(/Active token 1 Active token 2 complete/i)).toBeDefined();
+        expect(screen.queryByTestId("streaming-message")).toBeNull();
+      });
+
+      // Critical Assertion 3: Storage state
+      const list = await conversationService.list();
+      expect(list.find((c) => c.id === "conv_to_delete")).toBeUndefined();
+      const updatedActive = list.find((c) => c.id === "conv_stay_active");
+      expect(updatedActive).toBeDefined();
+      expect(updatedActive?.messages.some((m) => m.content.includes("Active token 1"))).toBe(true);
+    });
+
+    it("prevents token resurrects during rapid race between newChat, history deletion, and stream events", async () => {
+      const conv = {
+        id: "conv_rapid_race",
+        title: "Rapid Race Chat",
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+        pinned: false,
+        messages: [{ id: "m_r", role: "user" as const, content: "Initial prompt", createdAt: Date.now() }],
+      };
+      await conversationService.save(conv);
+
+      const streamControl = createControllableStream();
+      let fetchSignal: AbortSignal | undefined;
+
+      global.fetch = vi.fn().mockImplementation((_url, options) => {
+        fetchSignal = options?.signal;
+        options?.signal?.addEventListener("abort", () => {
+          streamControl.abort();
+        });
+        return Promise.resolve({
+          ok: true,
+          status: 200,
+          body: streamControl.stream,
+        });
+      });
+
+      render(<RadianceApp />);
+      await waitFor(() => expect(screen.getByPlaceholderText(/Ask RADIANCE anything/i)).toBeDefined());
+
+      // Open history drawer & select conversation
+      await act(async () => {
+        fireEvent.click(screen.getByTitle(/History/i));
+      });
+      const convItem = await screen.findByText("Rapid Race Chat");
+      await act(async () => {
+        fireEvent.click(convItem);
+      });
+
+      // Send prompt to initiate active stream
+      const textarea = screen.getByPlaceholderText(/Ask RADIANCE anything/i);
+      fireEvent.change(textarea, { target: { value: "Trigger race condition" } });
+      await act(async () => {
+        fireEvent.click(screen.getByTestId("send-button"));
+      });
+
+      // Push partial token
+      await act(async () => {
+        streamControl.pushToken("Resurrect candidate token");
+      });
+
+      expect(screen.getByTestId("streaming-message")).toBeDefined();
+
+      // RAPID RACE: Trigger newChat while simultaneously deleting the conversation
+      await act(async () => {
+        // 1. Click New Chat
+        fireEvent.click(screen.getByRole("button", { name: "New Chat" }));
+        // 2. Open History drawer and delete the conversation
+        fireEvent.click(screen.getByTitle(/History/i));
+      });
+
+      const delButtons = screen.queryAllByTitle("Delete chat");
+      if (delButtons.length > 0) {
+        await act(async () => {
+          fireEvent.click(delButtons[0]);
+        });
+      }
+
+      // Microtask delay simulating delayed reader cleanup and event dispatch
+      await act(async () => {
+        streamControl.close();
+        await new Promise((r) => setTimeout(r, 100));
+      });
+
+      // Critical Assertions:
+      // 1. Fetch signal must have aborted immediately
+      expect(fetchSignal?.aborted).toBe(true);
+
+      // 2. No tokens must resurrect into the clean newChat workspace
+      await waitFor(() => {
+        expect(screen.queryByTestId("streaming-message")).toBeNull();
+        expect(screen.queryByTestId("active-inference-indicator")).toBeNull();
+        expect(screen.queryByText(/Resurrect candidate token/i)).toBeNull();
+      });
+
+      // 3. Storage invariant: zero phantom conversations with resurrect candidate tokens
+      const remaining = await conversationService.list();
+      remaining.forEach((c) => {
+        expect(c.messages.some((m) => m.content.includes("Resurrect candidate token"))).toBe(false);
+      });
+    });
   });
 
   // =========================================================================

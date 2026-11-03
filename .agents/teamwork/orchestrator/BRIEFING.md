@@ -26,8 +26,8 @@ Implement production-grade enhancements to chat message presentation, interactiv
   5. Milestone 3: Interactive Actions & Workspace Integration [pending]
   6. Milestone 4: Dual-Track Parallel E2E Test Suite (Tiers 1–4) [pending]
   7. Milestone 5: Final Milestone 100% E2E Pass & Tier 5 Hardening [pending]
-- **Current phase**: 2B (Milestone 3 Gate Verification)
-- **Current focus**: Milestone 3 Gate Check (Reviewer 1, Reviewer 2, Challenger 1, Challenger 2, Forensic Auditor)
+- **Current phase**: 2B (Milestone 3 Iteration 3 Remediation)
+- **Current focus**: Milestone 3 Remediation: Fix composer Stop button token retention regression (Feature 18) and drawer conversation deletion
 
 ## 🔒 Key Constraints
 - Never write, modify, or create source code files directly — delegate to subagents.
@@ -45,23 +45,24 @@ Implement production-grade enhancements to chat message presentation, interactiv
 ## Key Decisions Made
 - Milestone 1 successfully concluded: Gate Iteration 2 passed with unanimous Reviewer & Challenger APPROVE and Auditor CLEAN.
 - Milestone 2 successfully concluded: Gate Iteration 1 passed with unanimous Reviewers (2) & Challengers (2) APPROVE and Auditor CLEAN.
-- Milestone 3 implementation completed by worker_m3 (293/293 tests pass, 0 typecheck, 0 lint).
-- Dispatched 5 parallel gate agents for Milestone 3 verification.
+- Milestone 3 Gate Iteration 1: Failed due to cross-session stream contamination on newChat() mid-stream.
+- Milestone 3 Gate Iteration 2: Auditor reported CLEAN. However, Reviewer and Challenger independently discovered a regression: React onClick event passed to onStop in ChatComposer evaluates truthy in `if (discardPartial)`, setting `discardPartialRef.current = true` and discarding tokens instead of preserving them. Gate Result: FAIL.
+- Initiating Milestone 3 Iteration 3 to fix the Stop button callback truthiness and HistoryDrawer stream abort.
 
 ## Team Roster
 | Agent | Type | Work Item | Status | Conv ID |
 |-------|------|-----------|--------|---------|
-| worker_m3 | teamwork_worker | M3 Implementation | completed | 66da8291-c96b-4f94-b736-c82abbb6717d |
-| reviewer_m3_1 | teamwork_reviewer | M3 Message Item Review | in-progress | b8ad602b-0a38-4b8f-a087-c91374ab3d4f |
-| reviewer_m3_2 | teamwork_reviewer | M3 Workspace & Wiring Review | in-progress | 6503ee5a-68a7-4321-b7be-40e266037179 |
-| challenger_m3_1 | teamwork_challenger | M3 UI Actions Adversarial Stress | in-progress | c3439b43-4025-45f1-81d7-b9ebbb4c62fc |
-| challenger_m3_2 | teamwork_challenger | M3 Lifecycle Adversarial Stress | in-progress | 8db17cca-ecbd-46dd-a54a-5228c89a99a6 |
-| auditor_m3_1 | teamwork_auditor | M3 Forensic Audit | in-progress | 6e6b7554-eac5-4d5e-9ba4-bdc371e1ccfe |
+| worker_m3_iter3 | teamwork_worker | M3 Iter3 Remediation Implementation | completed | a9070f7e-7e83-40de-8bcd-e11c207b6859 |
+| reviewer_m3_iter3_1 | teamwork_reviewer | M3 Iter3 Stop Token Review | in-progress | 0fbf891f-460d-44f8-b1cc-621669e815cb |
+| reviewer_m3_iter3_2 | teamwork_reviewer | M3 Iter3 Drawer Lifecycle Review | in-progress | 2737d355-3748-4c68-8a46-454eb224c648 |
+| challenger_m3_iter3_1 | teamwork_challenger | M3 Iter3 Stop Token Stress | in-progress | ee969f7a-5d19-4e94-b2c0-f7b52c4cde20 |
+| challenger_m3_iter3_2 | teamwork_challenger | M3 Iter3 Drawer Lifecycle Stress | in-progress | 7d2903dd-e800-4c8c-9a0c-4a98d5eb9d00 |
+| auditor_m3_iter3 | teamwork_auditor | M3 Iter3 Forensic Audit | in-progress | 16a618bf-a6bc-4c73-8a6d-f4347a8341b4 |
 
 ## Succession Status
 - Succession required: no
-- Spawn count: 36 / 128
-- Pending subagents: b8ad602b-0a38-4b8f-a087-c91374ab3d4f, 6503ee5a-68a7-4321-b7be-40e266037179, c3439b43-4025-45f1-81d7-b9ebbb4c62fc, 8db17cca-ecbd-46dd-a54a-5228c89a99a6, 6e6b7554-eac5-4d5e-9ba4-bdc371e1ccfe
+- Spawn count: 50 / 128
+- Pending subagents: 0fbf891f-460d-44f8-b1cc-621669e815cb, 2737d355-3748-4c68-8a46-454eb224c648, ee969f7a-5d19-4e94-b2c0-f7b52c4cde20, 7d2903dd-e800-4c8c-9a0c-4a98d5eb9d00, 16a618bf-a6bc-4c73-8a6d-f4347a8341b4
 - Predecessor: none
 - Successor: none
 

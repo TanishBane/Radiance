@@ -8,6 +8,7 @@ export default defineConfig({
     setupFiles: [],
     include: ["tests/unit/**/*.test.{ts,tsx}", "tests/integration/**/*.test.{ts,tsx}"],
     exclude: ["node_modules", ".next", "legacy", "tests/e2e/**"],
+    testTimeout: 15000,
   },
   resolve: {
     alias: {

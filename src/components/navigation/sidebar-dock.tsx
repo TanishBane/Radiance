@@ -52,7 +52,11 @@ export function SidebarDock({
       onClick: onToggleHistory,
       badge: "Ctrl+L",
     },
-
+    {
+      label: "Personalization",
+      icon: <IconAdjustmentsHorizontal className="w-5 h-5 shrink-0" />,
+      onClick: onToggleSettings,
+    },
     {
       label: "Shortcuts",
       icon: <IconCommand className="w-5 h-5 shrink-0" />,
