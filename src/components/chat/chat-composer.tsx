@@ -189,13 +189,13 @@ export function ChatComposer({ onSend, onStop, isGenerating, disabled = false }:
       )}
 
       {/* Main Composer Box */}
-      <div className="relative rounded-2xl bg-[var(--surface)] border border-[var(--border)] focus-within:border-[var(--accent)] focus-within:shadow-[0_0_25px_var(--accent-g)] transition-all duration-300">
+      <div className="relative rounded-2xl bg-[var(--surface-raised)] border border-[var(--border)] focus-within:border-[var(--border-accent)] focus-within:shadow-card transition-all duration-200 backdrop-blur-2xl shadow-card">
         <div className="flex items-end gap-2 p-3">
           {/* File Upload Trigger */}
           <button
             type="button"
             onClick={() => fileInputRef.current?.click()}
-            className="p-2 rounded-xl text-[var(--txt-muted)] hover:text-[var(--txt)] hover:bg-[var(--surface-hover)] transition-colors shrink-0"
+            className="p-2 rounded-xl text-[var(--txt-muted)] hover:text-[var(--txt)] hover:bg-[var(--surface-hover)] transition-colors shrink-0 touch-target"
             title="Attach file (image, PDF, CSV, text, document)"
           >
             <Paperclip className="w-4 h-4" />
@@ -216,16 +216,16 @@ export function ChatComposer({ onSend, onStop, isGenerating, disabled = false }:
             onChange={handleInput}
             onKeyDown={handleKeyDown}
             placeholder="Ask RADIANCE anything... (Shift+Enter for newline)"
-            className="flex-1 bg-transparent border-0 outline-none resize-none text-sm text-[var(--txt)] placeholder:text-[var(--txt-muted)] py-1.5 max-h-[140px] leading-relaxed"
+            className="flex-1 bg-transparent border-0 outline-none resize-none text-sm text-[var(--txt)] placeholder:text-[var(--txt-muted)] py-1.5 max-h-[140px] leading-relaxed font-sans"
           />
 
           {/* Microphone Voice Toggle */}
           <button
             type="button"
             onClick={toggleVoice}
-            className={`p-2 rounded-xl transition-all shrink-0 ${
+            className={`p-2 rounded-xl transition-all shrink-0 touch-target ${
               isRecording
-                ? "bg-[var(--danger)]/20 text-[var(--danger)] animate-pulse shadow-[0_0_15px_rgba(232,85,85,0.4)]"
+                ? "bg-[var(--danger)]/20 text-[var(--danger)] animate-pulse shadow-sm"
                 : "text-[var(--txt-muted)] hover:text-[var(--txt)] hover:bg-[var(--surface-hover)]"
             }`}
             title={isRecording ? "Stop voice recording" : "Voice input"}
@@ -240,7 +240,7 @@ export function ChatComposer({ onSend, onStop, isGenerating, disabled = false }:
               onClick={() => onStop()}
               aria-label="Stop response generation"
               data-testid="stop-button"
-              className="p-2.5 rounded-xl bg-[var(--danger)] text-white hover:bg-[var(--danger)]/90 transition-all shadow-[0_0_15px_rgba(232,85,85,0.3)] shrink-0"
+              className="w-9 h-9 rounded-xl bg-[var(--danger)] text-white hover:bg-[var(--danger)]/90 transition-all shadow-sm shrink-0 flex items-center justify-center touch-target"
               title="Stop response generation"
             >
               <Square className="w-4 h-4 fill-white" />
@@ -252,7 +252,7 @@ export function ChatComposer({ onSend, onStop, isGenerating, disabled = false }:
               disabled={(!input.trim() && attachments.length === 0) || disabled}
               aria-label="Send message"
               data-testid="send-button"
-              className="p-2.5 rounded-xl bg-gradient-to-br from-[var(--accent-b)] to-[var(--accent)] text-[var(--void)] font-bold transition-all disabled:opacity-30 disabled:pointer-events-none hover:scale-105 shadow-[0_0_20px_var(--accent-g)] shrink-0"
+              className="w-9 h-9 rounded-xl bg-gradient-to-br from-[var(--accent-b)] to-[var(--accent)] text-[var(--void)] font-bold transition-all disabled:opacity-30 disabled:pointer-events-none hover:bg-[var(--accent-b)] shadow-sm shrink-0 flex items-center justify-center touch-target"
               title="Send message (Enter)"
             >
               <Send className="w-4 h-4" />

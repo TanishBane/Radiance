@@ -180,7 +180,7 @@ export function MessageItem({
       <div
         className={`w-8 h-8 rounded-xl shrink-0 flex items-center justify-center font-mono text-[10px] font-bold border transition-transform duration-200 group-hover:scale-105 select-none ${
           isUser
-            ? "bg-[var(--user-bg)] border-[var(--user-border)] text-[var(--accent-b)] shadow-[0_0_15px_var(--accent-d)]"
+            ? "bg-[var(--user-bg)] border-[var(--user-border)] text-[var(--accent-b)] shadow-sm"
             : message.isError
             ? "bg-red-950/40 border-red-500/40 text-red-400 shadow-sm"
             : "bg-[var(--surface-raised)] border-[var(--border)] text-[var(--txt)] shadow-sm"
@@ -198,12 +198,12 @@ export function MessageItem({
         }`}
       >
         <div
-          className={`px-4 py-3 rounded-2xl text-sm leading-relaxed border transition-all w-full min-w-0 ${
+          className={`px-4 py-3 rounded-2xl text-sm leading-relaxed border transition-all w-full min-w-0 font-sans ${
             isUser
-              ? "bg-[var(--user-bg)] border-[var(--user-border)] rounded-tr-sm text-[var(--txt)]"
+              ? "bg-[var(--user-bg)] border-[var(--user-border)] text-[var(--txt)] shadow-card backdrop-blur-xl"
               : message.isError
-              ? "bg-red-950/20 border-red-500/40 border-l-2 border-l-red-500 rounded-tl-sm text-red-200 shadow-[0_4px_24px_rgba(0,0,0,0.25)]"
-              : "bg-[var(--ai-bg)] border-[var(--ai-border)] border-l-2 border-l-[var(--accent)] rounded-tl-sm text-[var(--txt)] shadow-[0_4px_24px_rgba(0,0,0,0.25)] glass-panel"
+              ? "bg-red-950/30 border-red-500/40 border-l-2 border-l-red-500 text-red-200 shadow-card backdrop-blur-xl"
+              : "bg-[var(--ai-bg)] border-[var(--ai-border)] border-l-2 border-l-[var(--accent)] text-[var(--txt)] shadow-card backdrop-blur-2xl"
           }`}
         >
           {/* User Attachments */}

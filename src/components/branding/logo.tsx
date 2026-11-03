@@ -28,7 +28,7 @@ export function RadianceLogo({ size = "md", className, onClick }: LogoProps) {
       <div
         className={cn(
           "rounded-xl font-mono font-bold flex items-center justify-center transition-all duration-300",
-          "border border-[var(--border)] shadow-[0_0_20px_var(--accent-g)]",
+          "border border-[var(--border)] shadow-sm",
           "group-hover:border-[var(--accent)] group-hover:scale-105",
           sizeClasses[size]
         )}

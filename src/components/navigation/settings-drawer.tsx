@@ -129,7 +129,7 @@ export function SettingsDrawer({
                           onClick={() => onSelectGradientStyle(engine.id)}
                           className={`flex flex-col items-center justify-between p-2.5 rounded-xl border text-center transition-all ${
                             isActive
-                              ? "bg-[var(--accent-d)] border-[var(--accent)] text-[var(--txt)] shadow-[0_0_15px_var(--accent-d)]"
+                              ? "bg-[var(--accent-d)] border-[var(--accent)] text-[var(--txt)] ring-1 ring-[var(--accent)]/50 shadow-sm"
                               : "bg-[var(--surface)] border-[var(--border)] text-[var(--txt-muted)] hover:text-[var(--txt)] hover:bg-[var(--surface-hover)]"
                           }`}
                         >
@@ -194,7 +194,7 @@ export function SettingsDrawer({
                         onClick={() => onSelectTheme(theme.id)}
                         className={`flex flex-col items-center gap-2 p-2 rounded-xl border text-center transition-all ${
                           isActive
-                            ? "bg-[var(--accent-d)] border-[var(--accent)] shadow-[0_0_15px_var(--accent-d)]"
+                            ? "bg-[var(--accent-d)] border-[var(--accent)] ring-1 ring-[var(--accent)]/50 shadow-sm"
                             : "bg-[var(--surface)] border-[var(--border)] hover:bg-[var(--surface-hover)]"
                         }`}
                       >
