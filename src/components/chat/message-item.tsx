@@ -3,7 +3,9 @@
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
+import { motion, useReducedMotion } from "motion/react";
 import { ChatMessage, FeedbackRating } from "@/lib/types/chat";
+import { getMotionTransition } from "@/lib/motion/presets";
 import { formatMarkdown, formatRelativeTime } from "@/lib/utils/format";
 import { FollowUpChips } from "./follow-up-chips";
 import {
@@ -48,6 +50,7 @@ export function MessageItem({
   onRetry,
 }: MessageItemProps) {
   const isUser = message.role === "user";
+  const prefersReducedMotion = useReducedMotion() ?? false;
   const [copied, setCopied] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -250,8 +253,11 @@ export function MessageItem({
   };
 
   return (
-    <div
-      className={`flex gap-3 max-w-3xl w-full mx-auto my-3.5 group transition-all duration-300 min-w-0 ${
+    <motion.div
+      initial={{ opacity: 0, y: prefersReducedMotion ? 0 : 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={getMotionTransition("entrance", prefersReducedMotion)}
+      className={`flex gap-3 max-w-3xl w-full mx-auto my-3.5 group min-w-0 ${
         isUser ? "flex-row-reverse self-end" : "self-start"
       }`}
     >
@@ -710,6 +716,6 @@ export function MessageItem({
           </div>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }

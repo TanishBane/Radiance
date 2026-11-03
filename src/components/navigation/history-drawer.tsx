@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
+import * as Dialog from "@radix-ui/react-dialog";
 import { Conversation } from "@/lib/types/chat";
 import { formatRelativeTime } from "@/lib/utils/format";
 import { X, Search, Pin, Trash2, MessageSquare } from "lucide-react";
@@ -41,23 +42,18 @@ export function HistoryDrawer({
   const pinned = filtered.filter((c) => c.pinned);
   const unpinned = filtered.filter((c) => !c.pinned);
 
-  if (!isOpen) return null;
-
   return (
-    <>
-      {/* Backdrop */}
-      <div
-        className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200"
-        onClick={onClose}
-      />
+    <Dialog.Root open={isOpen} onOpenChange={(open) => !open && onClose()}>
+      <Dialog.Portal>
+      <Dialog.Overlay className="radiance-dialog-overlay fixed inset-0 z-40 bg-black/60 backdrop-blur-sm" />
 
-      {/* Drawer Panel */}
-      <div className="fixed right-0 top-0 bottom-0 w-80 max-w-[85vw] z-50 flex flex-col bg-[var(--deep)]/95 backdrop-blur-2xl border-l border-[var(--border)] shadow-[-20px_0_50px_rgba(0,0,0,0.6)] animate-in slide-in-from-right duration-250">
+      <Dialog.Content className="radiance-dialog-panel radiance-dialog-right fixed right-0 top-0 bottom-0 w-80 max-w-[85vw] z-50 flex flex-col bg-[var(--deep)]/95 backdrop-blur-2xl border-l border-[var(--border)] shadow-[-20px_0_50px_rgba(0,0,0,0.6)] outline-none">
+        <Dialog.Description className="sr-only">Search, select, and manage saved conversations.</Dialog.Description>
         {/* Header */}
         <div className="flex items-center justify-between px-4 py-3.5 border-b border-[var(--border)]">
           <div className="flex items-center gap-2">
             <MessageSquare className="w-4 h-4 text-[var(--accent)]" />
-            <span className="font-serif font-bold text-base text-[var(--txt)]">Conversations</span>
+            <Dialog.Title className="font-serif font-bold text-base text-[var(--txt)]">Conversations</Dialog.Title>
           </div>
           <div className="flex items-center gap-1">
             {conversations.length > 0 && (
@@ -69,13 +65,15 @@ export function HistoryDrawer({
                 <Trash2 className="w-4 h-4" />
               </button>
             )}
+            <Dialog.Close asChild>
             <button
-              onClick={onClose}
+              type="button"
               className="p-1.5 rounded-lg text-[var(--txt-muted)] hover:text-[var(--txt)] hover:bg-[var(--surface-hover)] transition-colors"
-              title="Close drawer"
+              aria-label="Close conversation history"
             >
               <X className="w-4 h-4" />
             </button>
+            </Dialog.Close>
           </div>
         </div>
 
@@ -143,8 +141,9 @@ export function HistoryDrawer({
             </>
           )}
         </div>
-      </div>
-    </>
+      </Dialog.Content>
+      </Dialog.Portal>
+    </Dialog.Root>
   );
 }
 

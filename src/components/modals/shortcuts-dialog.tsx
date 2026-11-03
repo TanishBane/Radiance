@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import * as Dialog from "@radix-ui/react-dialog";
 import { X, Command } from "lucide-react";
 
 interface ShortcutsDialogProps {
@@ -18,26 +19,26 @@ const SHORTCUTS = [
 ];
 
 export function ShortcutsDialog({ isOpen, onClose }: ShortcutsDialogProps) {
-  if (!isOpen) return null;
-
   return (
-    <>
-      <div
-        className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm animate-in fade-in duration-150"
-        onClick={onClose}
-      />
-      <div className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-96 max-w-[90vw] z-50 rounded-2xl bg-[var(--deep)]/95 backdrop-blur-2xl border border-[var(--border)] shadow-[0_20px_60px_rgba(0,0,0,0.8)] p-5 animate-in zoom-in-95 duration-150">
+    <Dialog.Root open={isOpen} onOpenChange={(open) => !open && onClose()}>
+      <Dialog.Portal>
+      <Dialog.Overlay className="radiance-dialog-overlay fixed inset-0 z-50 bg-black/70 backdrop-blur-sm" />
+      <Dialog.Content className="radiance-dialog-panel radiance-dialog-center fixed left-1/2 top-1/2 w-96 max-w-[90vw] z-50 rounded-2xl bg-[var(--deep)]/95 backdrop-blur-2xl border border-[var(--border)] shadow-[0_20px_60px_rgba(0,0,0,0.8)] p-5 outline-none">
+        <Dialog.Description className="sr-only">Keyboard shortcuts for common Radiance actions.</Dialog.Description>
         <div className="flex items-center justify-between pb-3 mb-3 border-b border-[var(--border)]">
           <div className="flex items-center gap-2">
             <Command className="w-4 h-4 text-[var(--accent)]" />
-            <span className="font-serif font-bold text-base text-[var(--txt)]">Keyboard Shortcuts</span>
+            <Dialog.Title className="font-serif font-bold text-base text-[var(--txt)]">Keyboard Shortcuts</Dialog.Title>
           </div>
+          <Dialog.Close asChild>
           <button
-            onClick={onClose}
-            className="p-1 rounded-lg text-[var(--txt-muted)] hover:text-[var(--txt)]"
+            type="button"
+            aria-label="Close keyboard shortcuts"
+            className="p-1 rounded-lg text-[var(--txt-muted)] hover:text-[var(--txt)] touch-target"
           >
             <X className="w-4 h-4" />
           </button>
+          </Dialog.Close>
         </div>
 
         <div className="flex flex-col gap-2.5">
@@ -50,7 +51,8 @@ export function ShortcutsDialog({ isOpen, onClose }: ShortcutsDialogProps) {
             </div>
           ))}
         </div>
-      </div>
-    </>
+      </Dialog.Content>
+      </Dialog.Portal>
+    </Dialog.Root>
   );
 }

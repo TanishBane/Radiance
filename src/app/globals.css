@@ -41,6 +41,11 @@
 
     --sidebar-w: 64px;
     --sidebar-expanded: 260px;
+
+    --motion-feedback: 150ms;
+    --motion-interaction: 200ms;
+    --motion-entrance: 280ms;
+    --motion-ease-standard: cubic-bezier(0.2, 0.8, 0.2, 1);
   }
 
   *, *::before, *::after {
@@ -724,4 +729,47 @@ li {
   border-radius: 1px;
   box-shadow: 0 0 8px var(--accent);
   animation: cursorBlink 0.7s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+.radiance-dialog-overlay[data-state="open"] {
+  animation: radiance-overlay-in var(--motion-interaction) ease-out both;
+}
+.radiance-dialog-overlay[data-state="closed"] {
+  animation: radiance-overlay-out var(--motion-feedback) ease-in both;
+}
+.radiance-dialog-right[data-state="open"] {
+  animation: radiance-drawer-in var(--motion-entrance) var(--motion-ease-standard) both;
+}
+.radiance-dialog-right[data-state="closed"] {
+  animation: radiance-drawer-out var(--motion-feedback) ease-in both;
+}
+.radiance-dialog-center[data-state="open"] {
+  animation: radiance-dialog-in var(--motion-interaction) var(--motion-ease-standard) both;
+}
+.radiance-dialog-center[data-state="closed"] {
+  animation: radiance-dialog-out var(--motion-feedback) ease-in both;
+}
+
+@keyframes radiance-overlay-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes radiance-overlay-out { from { opacity: 1; } to { opacity: 0; } }
+@keyframes radiance-drawer-in { from { opacity: 0; transform: translateX(14px); } to { opacity: 1; transform: translateX(0); } }
+@keyframes radiance-drawer-out { from { opacity: 1; transform: translateX(0); } to { opacity: 0; transform: translateX(14px); } }
+@keyframes radiance-dialog-in { from { opacity: 0; transform: translate(-50%, -50%) scale(0.97); } to { opacity: 1; transform: translate(-50%, -50%) scale(1); } }
+@keyframes radiance-dialog-out { from { opacity: 1; transform: translate(-50%, -50%) scale(1); } to { opacity: 0; transform: translate(-50%, -50%) scale(0.97); } }
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --motion-feedback: 1ms;
+    --motion-interaction: 1ms;
+    --motion-entrance: 1ms;
+  }
+
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+  }
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
+import * as Dialog from "@radix-ui/react-dialog";
 import { COLOR_THEMES, ATMOSPHERE_ENGINES, GradientStyle } from "@/lib/types/theme";
 import { ToneKey } from "@/lib/types/chat";
 import {
@@ -67,39 +68,35 @@ export function SettingsDrawer({
     return list.filter((t) => t.category === paletteCategory);
   }, [paletteCategory]);
 
-  if (!isOpen) return null;
-
   return (
-    <>
-      {/* Backdrop */}
-      <div
-        className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200"
-        onClick={onClose}
-      />
+    <Dialog.Root open={isOpen} onOpenChange={(open) => !open && onClose()}>
+      <Dialog.Portal>
+      <Dialog.Overlay className="radiance-dialog-overlay fixed inset-0 z-40 bg-black/60 backdrop-blur-sm" />
 
-      {/* Drawer */}
-      <div className="fixed right-0 top-0 bottom-0 w-[420px] max-w-[92vw] z-50 flex flex-col bg-[var(--deep)]/95 backdrop-blur-2xl border-l border-[var(--border)] shadow-[-20px_0_50px_rgba(0,0,0,0.6)] animate-in slide-in-from-right duration-250">
+      <Dialog.Content className="radiance-dialog-panel radiance-dialog-right fixed right-0 top-0 bottom-0 w-[420px] max-w-[92vw] z-50 flex flex-col bg-[var(--deep)]/95 backdrop-blur-2xl border-l border-[var(--border)] shadow-[-20px_0_50px_rgba(0,0,0,0.6)] outline-none">
+        <Dialog.Description className="sr-only">Choose your conversation tone, atmosphere, and color theme.</Dialog.Description>
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-[var(--border)]">
           <div className="flex items-center gap-2.5">
             <Sliders className="w-4 h-4 text-[var(--accent)]" />
             <div>
-              <span className="font-serif font-bold text-base text-[var(--txt)] tracking-wide block">
+              <Dialog.Title className="font-serif font-bold text-base text-[var(--txt)] tracking-wide block">
                 Personalization
-              </span>
+              </Dialog.Title>
               <span className="text-[10px] font-mono text-[var(--txt-muted)]">
                 Atmospheric Themes & Engines
               </span>
             </div>
           </div>
+          <Dialog.Close asChild>
           <button
             type="button"
-            onClick={onClose}
             className="p-2 rounded-xl text-[var(--txt-muted)] hover:text-[var(--txt)] hover:bg-[var(--surface-hover)] transition-colors touch-target"
             aria-label="Close settings"
           >
             <X className="w-4 h-4" />
           </button>
+          </Dialog.Close>
         </div>
 
         {/* Content Body */}
@@ -217,7 +214,8 @@ export function SettingsDrawer({
                 </div>
               </div>
         </div>
-      </div>
-    </>
+      </Dialog.Content>
+      </Dialog.Portal>
+    </Dialog.Root>
   );
 }

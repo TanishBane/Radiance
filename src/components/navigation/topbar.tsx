@@ -1,9 +1,11 @@
 "use client";
 
 import React, { useState } from "react";
+import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { RadianceLogo } from "@/components/branding/logo";
 import { AVAILABLE_MODELS } from "@/lib/ai/models";
 import { ModelOption } from "@/lib/types/chat";
+import { getMotionTransition } from "@/lib/motion/presets";
 import { ChevronDown, Trash2, Cpu } from "lucide-react";
 import { IconMenu2 } from "@tabler/icons-react";
 
@@ -27,11 +29,12 @@ export function Topbar({
   onToggleMobileMenu,
 }: TopbarProps) {
   const [modelDropdownOpen, setModelDropdownOpen] = useState(false);
+  const prefersReducedMotion = useReducedMotion() ?? false;
 
   return (
-    <header className="sticky top-0 z-30 flex items-center justify-between px-4 py-2.5 bg-[var(--void)]/80 backdrop-blur-xl border-b border-[var(--border)] select-none shrink-0 w-full">
+    <header className="sticky top-0 z-30 flex items-center justify-between gap-2 px-2.5 sm:px-4 py-2.5 bg-[var(--void)]/80 backdrop-blur-xl border-b border-[var(--border)] select-none shrink-0 w-full">
       {/* Left: Mobile Menu Toggle & Desktop Context Indicator */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2 sm:gap-3 min-w-0">
         {/* On Mobile: Hamburger button to open sidebar drawer */}
         {onToggleMobileMenu && (
           <button
@@ -47,7 +50,7 @@ export function Topbar({
 
         {/* On Mobile: Compact brand logo */}
         <div className="md:hidden">
-          <RadianceLogo size="sm" onClick={onNewChat} />
+            <RadianceLogo size="sm" onClick={onNewChat} showWordmark={false} />
         </div>
 
         {/* On Desktop: Clean Context Badge (Default Assistant) */}
@@ -63,7 +66,7 @@ export function Topbar({
       </div>
 
       {/* Right: Model Switcher, Language Toggle, & Clear Conversation */}
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
         {/* Model Switcher Dropdown */}
         <div className="relative">
           <button
@@ -71,10 +74,21 @@ export function Topbar({
             onClick={() => setModelDropdownOpen(!modelDropdownOpen)}
             aria-expanded={modelDropdownOpen}
             aria-haspopup="listbox"
-            className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-[var(--surface)] border border-[var(--border)] hover:border-[var(--border-hover)] text-xs font-mono text-[var(--txt-dim)] hover:text-[var(--txt)] transition-all touch-target"
+            className="flex items-center gap-1.5 sm:gap-2 max-w-[116px] sm:max-w-none px-2 sm:px-3 py-1.5 rounded-xl bg-[var(--surface)] border border-[var(--border)] hover:border-[var(--border-hover)] text-xs font-mono text-[var(--txt-dim)] hover:text-[var(--txt)] transition-all touch-target whitespace-nowrap shrink"
           >
             <Cpu className="w-3.5 h-3.5 text-[var(--accent)]" />
-            <span className="font-medium">{selectedModel.name}</span>
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.span
+                key={selectedModel.id}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={getMotionTransition("feedback", prefersReducedMotion)}
+                className="font-medium max-w-[60px] sm:max-w-none truncate whitespace-nowrap"
+              >
+                {selectedModel.name}
+              </motion.span>
+            </AnimatePresence>
             <ChevronDown
               className={`w-3 h-3 text-[var(--txt-muted)] transition-transform duration-200 ${
                 modelDropdownOpen ? "rotate-180" : ""
@@ -82,13 +96,29 @@ export function Topbar({
             />
           </button>
 
-          {modelDropdownOpen && (
-            <>
-              <div
-                className="fixed inset-0 z-40"
+          <AnimatePresence>
+            {modelDropdownOpen && (
+              <motion.button
+                key="model-dropdown-dismiss"
+                type="button"
+                aria-label="Close model selector"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={getMotionTransition("feedback", prefersReducedMotion)}
+                className="fixed inset-0 z-40 cursor-default"
                 onClick={() => setModelDropdownOpen(false)}
               />
-              <div className="absolute right-0 top-full mt-2 w-72 rounded-2xl bg-[var(--deep)]/95 backdrop-blur-2xl border border-[var(--border)] shadow-[0_20px_50px_rgba(0,0,0,0.7)] p-2 z-50 flex flex-col gap-1 animate-in fade-in zoom-in-95 duration-150 glass-panel-raised">
+            )}
+            {modelDropdownOpen && (
+              <motion.div
+                key="model-dropdown-panel"
+                initial={{ opacity: 0, scale: prefersReducedMotion ? 1 : 0.98, y: prefersReducedMotion ? 0 : -4 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: prefersReducedMotion ? 1 : 0.98, y: prefersReducedMotion ? 0 : -4 }}
+                transition={getMotionTransition("interaction", prefersReducedMotion)}
+                className="absolute right-0 top-full mt-2 w-72 rounded-2xl bg-[var(--deep)]/95 backdrop-blur-2xl border border-[var(--border)] shadow-[0_20px_50px_rgba(0,0,0,0.7)] p-2 z-50 flex flex-col gap-1 glass-panel-raised"
+              >
                 <div className="px-3 py-1.5 text-[9px] font-mono uppercase tracking-widest text-[var(--txt-muted)] border-b border-[var(--border)] flex items-center justify-between">
                   <span>Frontier Inference Models</span>
                   <span className="text-[8px] text-[var(--accent)]">Multi-Provider</span>
@@ -124,9 +154,9 @@ export function Topbar({
                     );
                   })}
                 </div>
-              </div>
-            </>
-          )}
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
 
         {/* Language Switcher */}

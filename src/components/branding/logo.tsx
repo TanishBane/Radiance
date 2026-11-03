@@ -5,9 +5,10 @@ interface LogoProps {
   size?: "sm" | "md" | "lg";
   className?: string;
   onClick?: () => void;
+  showWordmark?: boolean;
 }
 
-export function RadianceLogo({ size = "md", className, onClick }: LogoProps) {
+export function RadianceLogo({ size = "md", className, onClick, showWordmark = true }: LogoProps) {
   const sizeClasses = {
     sm: "w-6 h-6 text-[10px]",
     md: "w-8 h-8 text-[11px]",
@@ -21,9 +22,11 @@ export function RadianceLogo({ size = "md", className, onClick }: LogoProps) {
   };
 
   return (
-    <div
+    <button
+      type="button"
       onClick={onClick}
-      className={cn("flex items-center gap-2.5 cursor-pointer select-none group", className)}
+      aria-label="Radiance home"
+      className={cn("flex items-center gap-2.5 cursor-pointer select-none group bg-transparent border-0 p-0", className)}
     >
       <div
         className={cn(
@@ -38,7 +41,7 @@ export function RadianceLogo({ size = "md", className, onClick }: LogoProps) {
       >
         <span className="gradient-text-brand">RD</span>
       </div>
-      <div className="flex flex-col">
+      {showWordmark && <div className="flex flex-col">
         <span
           className={cn(
             "font-serif tracking-[0.14em] font-bold text-[var(--txt)] transition-colors",
@@ -48,7 +51,7 @@ export function RadianceLogo({ size = "md", className, onClick }: LogoProps) {
         >
           RADIANCE
         </span>
-      </div>
-    </div>
+      </div>}
+    </button>
   );
 }

@@ -2,6 +2,8 @@
 
 import React, { useState, useMemo } from "react";
 import { Sparkles, Terminal, BookOpen, Image as ImageIcon, BrainCircuit, ArrowUpRight } from "lucide-react";
+import { motion, useReducedMotion } from "motion/react";
+import { getMotionTransition } from "@/lib/motion/presets";
 
 interface PromptCategory {
   id: string;
@@ -74,6 +76,7 @@ interface WelcomeCardProps {
 
 export function WelcomeCard({ onSelectPrompt }: WelcomeCardProps) {
   const [activeTab, setActiveTab] = useState<string>("reasoning");
+  const prefersReducedMotion = useReducedMotion() ?? false;
 
   const currentCategory = useMemo(() => {
     return PROMPT_CATEGORIES.find((c) => c.id === activeTab) || PROMPT_CATEGORIES[0];
@@ -88,7 +91,12 @@ export function WelcomeCard({ onSelectPrompt }: WelcomeCardProps) {
     "Illuminate what is possible. Stream real-time reasoning, analyze documents, generate Flux visuals, and explore complex ideas.";
 
   return (
-    <div className="flex flex-col items-center justify-center max-w-2xl mx-auto px-4 py-8 text-center gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+    <motion.div
+      initial={{ opacity: 0, y: prefersReducedMotion ? 0 : 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={getMotionTransition("entrance", prefersReducedMotion)}
+      className="flex flex-col items-center justify-center max-w-2xl mx-auto px-4 py-8 text-center gap-6"
+    >
       {/* Brand Icon Gem with Restrained Border & Clean Elevation */}
       <div
         className="w-16 h-16 rounded-2xl flex items-center justify-center border border-[var(--border)] shadow-card transition-transform duration-300 hover:scale-105 select-none"
@@ -112,7 +120,7 @@ export function WelcomeCard({ onSelectPrompt }: WelcomeCardProps) {
       {/* Categorized Prompt Explorer */}
       <div className="w-full max-w-xl flex flex-col gap-3 mt-2">
         {/* Category Filter Pills */}
-        <div className="flex items-center justify-center gap-1.5 p-1 rounded-2xl bg-[var(--surface-raised)] border border-[var(--border)] shadow-sm max-w-full overflow-x-auto">
+        <div data-testid="prompt-categories" className="w-full max-w-[640px] mx-auto flex items-center justify-start sm:justify-center gap-0.5 p-1 rounded-2xl bg-[var(--surface-raised)] border border-[var(--border)] shadow-sm overflow-x-auto overscroll-x-contain [scrollbar-width:none]">
           {PROMPT_CATEGORIES.map((cat) => {
             const isActive = activeTab === cat.id;
             return (
@@ -120,7 +128,7 @@ export function WelcomeCard({ onSelectPrompt }: WelcomeCardProps) {
                 key={cat.id}
                 type="button"
                 onClick={() => setActiveTab(cat.id)}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-mono transition-all whitespace-nowrap touch-target ${
+                className={`flex items-center gap-1 px-2 py-1.5 rounded-xl text-[11px] font-mono transition-all whitespace-nowrap shrink-0 touch-target ${
                   isActive
                     ? "bg-[var(--accent-d)] text-[var(--accent)] font-semibold border border-[var(--accent)]/40 shadow-chip"
                     : "text-[var(--txt-muted)] hover:text-[var(--txt)] hover:bg-[var(--surface-hover)] border border-transparent"
@@ -160,6 +168,6 @@ export function WelcomeCard({ onSelectPrompt }: WelcomeCardProps) {
         </div>
         <p className="text-xs text-[var(--txt-dim)] leading-relaxed font-light">{fact}</p>
       </div>
-    </div>
+    </motion.div>
   );
 }
