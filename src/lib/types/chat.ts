@@ -98,7 +98,7 @@ export interface UseChatStreamReturn {
   streamingContent: string;
   streamError: Error | null;
   send: (messages: ChatMessage[], modelId?: string) => Promise<void>;
-  stop: () => void;
+  stop: (discardPartial?: boolean) => void;
   retryLast: () => Promise<void>;
 }
 

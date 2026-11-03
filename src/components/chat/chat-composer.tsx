@@ -237,7 +237,7 @@ export function ChatComposer({ onSend, onStop, isGenerating, disabled = false }:
           {isGenerating ? (
             <button
               type="button"
-              onClick={onStop}
+              onClick={() => onStop()}
               aria-label="Stop response generation"
               data-testid="stop-button"
               className="p-2.5 rounded-xl bg-[var(--danger)] text-white hover:bg-[var(--danger)]/90 transition-all shadow-[0_0_15px_rgba(232,85,85,0.3)] shrink-0"

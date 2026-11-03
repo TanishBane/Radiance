@@ -1,13 +1,11 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
-import { TONES } from "@/lib/ai/prompts";
 import { COLOR_THEMES, ATMOSPHERE_ENGINES, GradientStyle } from "@/lib/types/theme";
 import { ToneKey } from "@/lib/types/chat";
 import {
   X,
   Check,
-  Palette,
   Sparkles,
   Sliders,
   SunMedium,
@@ -27,8 +25,8 @@ import {
 interface SettingsDrawerProps {
   isOpen: boolean;
   onClose: () => void;
-  activeTone: ToneKey;
-  onSelectTone: (tone: ToneKey) => void;
+  activeTone?: ToneKey;
+  onSelectTone?: (tone: ToneKey) => void;
   activeTheme: string;
   onSelectTheme: (themeId: string) => void;
   gradientStyle?: GradientStyle;
@@ -56,14 +54,11 @@ type CategoryFilter = "all" | "signature" | "elemental" | "cyber" | "organic" | 
 export function SettingsDrawer({
   isOpen,
   onClose,
-  activeTone,
-  onSelectTone,
   activeTheme,
   onSelectTheme,
   gradientStyle = "bloom",
   onSelectGradientStyle,
 }: SettingsDrawerProps) {
-  const [tab, setTab] = useState<"themes" | "tones">("themes");
   const [paletteCategory, setPaletteCategory] = useState<CategoryFilter>("all");
 
   const themesList = useMemo(() => {
@@ -88,9 +83,14 @@ export function SettingsDrawer({
         <div className="flex items-center justify-between px-5 py-4 border-b border-[var(--border)]">
           <div className="flex items-center gap-2.5">
             <Sliders className="w-4 h-4 text-[var(--accent)]" />
-            <span className="font-serif font-bold text-base text-[var(--txt)] tracking-wide">
-              Personalization
-            </span>
+            <div>
+              <span className="font-serif font-bold text-base text-[var(--txt)] tracking-wide block">
+                Personalization
+              </span>
+              <span className="text-[10px] font-mono text-[var(--txt-muted)]">
+                Atmospheric Themes & Engines
+              </span>
+            </div>
           </div>
           <button
             type="button"
@@ -102,39 +102,9 @@ export function SettingsDrawer({
           </button>
         </div>
 
-        {/* Tabs */}
-        <div className="flex border-b border-[var(--border)] px-4 pt-2 gap-2 text-xs font-mono">
-          <button
-            type="button"
-            onClick={() => setTab("themes")}
-            className={`flex items-center gap-1.5 px-3.5 py-2.5 rounded-t-xl transition-colors border-b-2 touch-target ${
-              tab === "themes"
-                ? "text-[var(--accent)] border-[var(--accent)] bg-[var(--accent-d)]/40 font-bold"
-                : "text-[var(--txt-muted)] border-transparent hover:text-[var(--txt-dim)]"
-            }`}
-          >
-            <Palette className="w-3.5 h-3.5" />
-            <span>Atmospheric Themes</span>
-          </button>
-          <button
-            type="button"
-            onClick={() => setTab("tones")}
-            className={`flex items-center gap-1.5 px-3.5 py-2.5 rounded-t-xl transition-colors border-b-2 touch-target ${
-              tab === "tones"
-                ? "text-[var(--accent)] border-[var(--accent)] bg-[var(--accent-d)]/40 font-bold"
-                : "text-[var(--txt-muted)] border-transparent hover:text-[var(--txt-dim)]"
-            }`}
-          >
-            <Sparkles className="w-3.5 h-3.5" />
-            <span>Response Tones</span>
-          </button>
-        </div>
-
         {/* Content Body */}
         <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-5">
-          {tab === "themes" ? (
-            <>
-              {/* Background Engine Selector (13 Distinct Engines) */}
+          {/* Background Engine Selector (13 Distinct Engines) */}
               {onSelectGradientStyle && (
                 <div className="flex flex-col gap-2.5">
                   <div className="flex items-center justify-between">
@@ -246,40 +216,6 @@ export function SettingsDrawer({
                   })}
                 </div>
               </div>
-            </>
-          ) : (
-            <>
-              <p className="text-xs text-[var(--txt-muted)] leading-relaxed">
-                Shape how Radiance reasons and formats replies. Tones persist across sessions.
-              </p>
-              <div className="flex flex-col gap-2 mt-1">
-                {Object.values(TONES).map((t) => {
-                  const isActive = activeTone === t.id;
-                  return (
-                    <button
-                      key={t.id}
-                      type="button"
-                      onClick={() => onSelectTone(t.id)}
-                      className={`flex items-center justify-between p-3 rounded-xl border text-left transition-all ${
-                        isActive
-                          ? "bg-[var(--accent-d)] border-[var(--accent)] text-[var(--txt)] shadow-[0_0_15px_var(--accent-d)]"
-                          : "bg-[var(--surface)] border-[var(--border)] hover:bg-[var(--surface-hover)] hover:border-[var(--border-hover)] text-[var(--txt-dim)]"
-                      }`}
-                    >
-                      <div className="flex items-center gap-3 min-w-0 pr-2">
-                        <span className="text-base shrink-0">{t.icon}</span>
-                        <div className="flex flex-col">
-                          <span className="text-xs font-semibold font-sans">{t.label}</span>
-                          <span className="text-[10px] text-[var(--txt-muted)] truncate">{t.desc}</span>
-                        </div>
-                      </div>
-                      {isActive && <Check className="w-4 h-4 text-[var(--accent)] shrink-0" />}
-                    </button>
-                  );
-                })}
-              </div>
-            </>
-          )}
         </div>
       </div>
     </>

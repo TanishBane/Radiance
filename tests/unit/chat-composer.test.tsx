@@ -167,13 +167,14 @@ describe("ChatComposer Component & Deduplication Controls", () => {
       expect(stopButton.getAttribute("aria-label")).toBe("Stop response generation");
     });
 
-    it("invokes onStop when Stop button is clicked", () => {
+    it("invokes onStop with zero arguments when Stop button is clicked", () => {
       render(<ChatComposer onSend={onSend} onStop={onStop} isGenerating={true} />);
 
       const stopButton = screen.getByTestId("stop-button");
       fireEvent.click(stopButton);
 
       expect(onStop).toHaveBeenCalledTimes(1);
+      expect(onStop).toHaveBeenCalledWith();
     });
 
     it("switches back to Send button when isGenerating becomes false", () => {

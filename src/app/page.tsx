@@ -65,6 +65,9 @@ export default function RadianceApp() {
 
   const handleStreamComplete = useCallback(
     (assistantMsg: ChatMessage) => {
+      if (messagesRef.current.length === 0) {
+        return;
+      }
       appendAssistantMessage(assistantMsg, messagesRef.current, tone, language);
     },
     [appendAssistantMessage, tone, language]
@@ -101,17 +104,43 @@ export default function RadianceApp() {
 
   // Safe Conversation Navigation (prevents cross-session stream contamination)
   const handleNewChat = useCallback(() => {
-    if (isGenerating) stop();
+    if (isGenerating) stop(true);
     newChat();
   }, [isGenerating, stop, newChat]);
 
   const handleSelectConversation = useCallback(
     (id: string) => {
-      if (isGenerating) stop();
+      if (isGenerating) stop(true);
       selectConversation(id);
       setHistoryOpen(false);
     },
     [isGenerating, stop, selectConversation]
+  );
+
+  // Safe Stop Handler for Composer (explicit partial token retention, Feature 18)
+  const handleStop = useCallback(() => {
+    stop(false);
+  }, [stop]);
+
+  // Safe History Drawer Conversation Deletion (halts active inference on deletion)
+  const handleDeleteConversation = useCallback(
+    async (id: string) => {
+      if (isGenerating && activeConvId === id) {
+        stop(true);
+      }
+      await deleteConversation(id);
+    },
+    [isGenerating, activeConvId, stop, deleteConversation]
+  );
+
+  const handleDeleteAllConversations = useCallback(
+    async () => {
+      if (isGenerating) {
+        stop(true);
+      }
+      await deleteAllConversations();
+    },
+    [isGenerating, stop, deleteAllConversations]
   );
 
   // Global Keyboard Shortcuts
@@ -150,7 +179,7 @@ export default function RadianceApp() {
   const handleRegenerate = useCallback(
     async (messageId: string) => {
       if (isGenerating) {
-        stop();
+        stop(true);
       }
 
       const current = messagesRef.current;
@@ -192,7 +221,7 @@ export default function RadianceApp() {
     async (messageId: string, newContent: string) => {
       if (!newContent.trim()) return;
       if (isGenerating) {
-        stop();
+        stop(true);
       }
 
       const truncatedMessages = await editUserMessage(messageId, newContent);
@@ -206,7 +235,7 @@ export default function RadianceApp() {
   const handleDeleteMessage = useCallback(
     async (messageId: string) => {
       if (isGenerating) {
-        stop();
+        stop(true);
       }
       await deleteMessage(messageId);
     },
@@ -270,7 +299,7 @@ export default function RadianceApp() {
             streamError={streamError}
             activeFollowUps={activeFollowUps}
             onSend={handleSend}
-            onStop={stop}
+            onStop={handleStop}
             onSelectSuggestion={handleSend}
             onOpenSettings={() => setSettingsOpen(true)}
             onRegenerate={handleRegenerate}
@@ -290,8 +319,8 @@ export default function RadianceApp() {
         activeConversationId={activeConvId || undefined}
         onSelectConversation={handleSelectConversation}
         onTogglePin={togglePin}
-        onDeleteConversation={deleteConversation}
-        onDeleteAll={deleteAllConversations}
+        onDeleteConversation={handleDeleteConversation}
+        onDeleteAll={handleDeleteAllConversations}
       />
 
       <SettingsDrawer
