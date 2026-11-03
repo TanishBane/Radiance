@@ -193,7 +193,7 @@ export const SidebarLink = ({
   const baseClasses = cn(
     "flex items-center justify-start gap-3 group/sidebar py-2 px-2 rounded-xl transition-all duration-200 cursor-pointer select-none",
     link.active
-      ? "bg-[var(--accent-d)] text-[var(--accent)] border border-[var(--accent)]/30 shadow-[0_0_15px_var(--accent-g)]"
+      ? "bg-[var(--accent-d)] text-[var(--accent)] border border-[var(--accent)]/30 shadow-sm"
       : "text-[var(--txt-dim)] hover:text-[var(--txt)] hover:bg-[var(--surface-hover)] border border-transparent",
     className
   );

@@ -40,7 +40,7 @@ export function SidebarDock({
     {
       label: "New Chat",
       icon: (
-        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[var(--accent-b)] to-[var(--accent)] text-[var(--void)] flex items-center justify-center shadow-[0_0_15px_var(--accent-g)] shrink-0">
+        <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-[var(--accent-b)] to-[var(--accent)] text-[var(--void)] flex items-center justify-center shadow-sm shrink-0">
           <IconPlus className="w-4 h-4 stroke-[2.5]" />
         </div>
       ),
@@ -74,7 +74,7 @@ export function SidebarDock({
             <button
               type="button"
               onClick={onNewChat}
-              className="w-8 h-8 rounded-xl bg-gradient-to-br from-[var(--accent)] to-[var(--accent-b)] flex items-center justify-center text-[var(--void)] font-serif font-black text-xs shrink-0 shadow-[0_0_15px_var(--accent-g)] hover:scale-105 transition-transform"
+              className="w-8 h-8 rounded-xl bg-gradient-to-br from-[var(--accent)] to-[var(--accent-b)] flex items-center justify-center text-[var(--void)] font-serif font-black text-xs shrink-0 shadow-sm hover:scale-105 transition-transform"
               title="Radiance (New Chat)"
               aria-label="Radiance home"
             >
@@ -118,7 +118,7 @@ export function SidebarDock({
               label: "Radiance Session",
               href: "#",
               icon: (
-                <div className="w-8 h-8 rounded-full bg-[var(--accent-d)] border border-[var(--accent)]/40 text-[var(--accent)] flex items-center justify-center font-mono font-bold text-xs shrink-0 shadow-[0_0_10px_var(--accent-d)]">
+                <div className="w-8 h-8 rounded-full bg-[var(--accent-d)] border border-[var(--accent)]/40 text-[var(--accent)] flex items-center justify-center font-mono font-bold text-xs shrink-0 shadow-sm">
                   R
                 </div>
               ),

@@ -89,11 +89,11 @@ export function WelcomeCard({ onSelectPrompt }: WelcomeCardProps) {
 
   return (
     <div className="flex flex-col items-center justify-center max-w-2xl mx-auto px-4 py-8 text-center gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-      {/* Brand Icon Gem with Chromatic Border & Glow */}
+      {/* Brand Icon Gem with Restrained Border & Clean Elevation */}
       <div
-        className="w-16 h-16 rounded-2xl flex items-center justify-center border border-[var(--border)] shadow-[0_0_35px_var(--accent-g)] transition-transform duration-300 hover:scale-105 select-none"
+        className="w-16 h-16 rounded-2xl flex items-center justify-center border border-[var(--border)] shadow-card transition-transform duration-300 hover:scale-105 select-none"
         style={{
-          background: "linear-gradient(135deg, var(--accent-d), rgba(255, 255, 255, 0.02))",
+          background: "linear-gradient(135deg, var(--surface-raised), rgba(255, 255, 255, 0.02))",
         }}
       >
         <span className="font-mono text-2xl font-bold gradient-text-brand">RD</span>
@@ -104,7 +104,7 @@ export function WelcomeCard({ onSelectPrompt }: WelcomeCardProps) {
         <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl font-light text-[var(--txt)] tracking-tight leading-tight select-none">
           Hello, I Am <em className="not-italic font-bold gradient-text-brand drop-shadow-sm">{titleName}</em>
         </h1>
-        <p className="text-sm md:text-base text-[var(--txt-dim)] font-light max-w-lg leading-relaxed mx-auto">
+        <p className="text-sm md:text-base text-[var(--txt-dim)] font-light max-w-lg leading-relaxed mx-auto font-sans">
           {description}
         </p>
       </div>
@@ -112,7 +112,7 @@ export function WelcomeCard({ onSelectPrompt }: WelcomeCardProps) {
       {/* Categorized Prompt Explorer */}
       <div className="w-full max-w-xl flex flex-col gap-3 mt-2">
         {/* Category Filter Pills */}
-        <div className="flex items-center justify-center gap-1.5 p-1 rounded-xl bg-[var(--surface)] border border-[var(--border)] max-w-full overflow-x-auto">
+        <div className="flex items-center justify-center gap-1.5 p-1 rounded-2xl bg-[var(--surface-raised)] border border-[var(--border)] shadow-sm max-w-full overflow-x-auto">
           {PROMPT_CATEGORIES.map((cat) => {
             const isActive = activeTab === cat.id;
             return (
@@ -120,9 +120,9 @@ export function WelcomeCard({ onSelectPrompt }: WelcomeCardProps) {
                 key={cat.id}
                 type="button"
                 onClick={() => setActiveTab(cat.id)}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono transition-all whitespace-nowrap touch-target ${
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-mono transition-all whitespace-nowrap touch-target ${
                   isActive
-                    ? "bg-[var(--accent-d)] text-[var(--accent)] font-semibold border border-[var(--accent)]/40 shadow-[0_0_12px_var(--accent-d)]"
+                    ? "bg-[var(--accent-d)] text-[var(--accent)] font-semibold border border-[var(--accent)]/40 shadow-chip"
                     : "text-[var(--txt-muted)] hover:text-[var(--txt)] hover:bg-[var(--surface-hover)] border border-transparent"
                 }`}
               >
@@ -134,15 +134,15 @@ export function WelcomeCard({ onSelectPrompt }: WelcomeCardProps) {
         </div>
 
         {/* Suggestion Prompt Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-left">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-left">
           {currentCategory.prompts.map((prompt) => (
             <button
               key={prompt}
               type="button"
               onClick={() => onSelectPrompt(prompt)}
-              className="group flex items-start justify-between gap-2 p-3 rounded-xl bg-[var(--surface)] border border-[var(--border)] hover:bg-[var(--surface-hover)] hover:border-[var(--accent)] transition-all duration-200 text-left min-h-[52px]"
+              className="group flex items-start justify-between gap-2 p-3.5 rounded-2xl bg-[var(--surface-raised)] border border-[var(--border)] hover:bg-[var(--surface-hover)] hover:border-[var(--border-hover)] shadow-card transition-all duration-200 text-left min-h-[58px]"
             >
-              <span className="text-xs text-[var(--txt-dim)] group-hover:text-[var(--txt)] leading-snug">
+              <span className="text-xs text-[var(--txt-dim)] group-hover:text-[var(--txt)] leading-relaxed font-sans">
                 {prompt}
               </span>
               <ArrowUpRight className="w-3.5 h-3.5 text-[var(--txt-muted)] group-hover:text-[var(--accent)] shrink-0 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform mt-0.5" />
@@ -152,7 +152,7 @@ export function WelcomeCard({ onSelectPrompt }: WelcomeCardProps) {
       </div>
 
       {/* Fact of the Day Card */}
-      <div className="w-full max-w-xl mt-2 p-3.5 rounded-xl bg-[var(--surface)] border border-[var(--border)] text-left relative overflow-hidden glass-panel">
+      <div className="w-full max-w-xl mt-2 p-3.5 rounded-2xl bg-[var(--surface-raised)] border border-[var(--border)] text-left relative overflow-hidden shadow-card">
         <div className="absolute left-0 top-2 bottom-2 w-[2px] bg-gradient-to-b from-[var(--accent)] to-[var(--accent-c)]" />
         <div className="flex items-center gap-1.5 font-mono text-[9px] uppercase tracking-wider text-[var(--accent)] mb-1">
           <Sparkles className="w-3 h-3" />

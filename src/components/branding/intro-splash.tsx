@@ -45,7 +45,7 @@ export function IntroSplash({ onComplete }: { onComplete?: () => void }) {
             transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
             className="flex flex-col items-center gap-3"
           >
-            <div className="font-mono text-5xl md:text-6xl font-bold tracking-[0.2em] text-[var(--accent)] drop-shadow-[0_0_50px_rgba(232,168,73,0.35)]">
+            <div className="font-mono text-5xl md:text-6xl font-bold tracking-[0.2em] text-[var(--accent)] drop-shadow-[0_4px_24px_rgba(0,0,0,0.8)]">
               RD
             </div>
             <div className="font-mono text-xs md:text-sm tracking-[0.4em] uppercase text-[var(--txt-muted)]">
