@@ -1,3 +1,4 @@
+import katex from "katex";
 import { escapeHtml } from "./format";
 
 // Greek symbols and standard math operators
@@ -48,9 +49,12 @@ const SYMBOL_MAP: Record<string, string> = {
   "\\ge": "≥",
   "\\geq": "≥",
   "\\pm": "±",
+  "\\mp": "∓",
   "\\times": "×",
   "\\div": "÷",
   "\\cdot": "·",
+  "\\circ": "∘",
+  "\\bullet": "•",
   "\\in": "∈",
   "\\notin": "∉",
   "\\subset": "⊂",
@@ -65,6 +69,11 @@ const SYMBOL_MAP: Record<string, string> = {
   "\\Rightarrow": "⇒",
   "\\Leftarrow": "⇐",
   "\\iff": "⟺",
+  "\\cdots": "…",
+  "\\ldots": "…",
+  "\\dots": "…",
+  "\\quad": "&emsp;",
+  "\\qquad": "&emsp;&emsp;",
 };
 
 /**
@@ -80,26 +89,44 @@ export function renderFallbackMath(latex: string, displayMode: boolean): string 
     formatted = formatted.replaceAll(escapedCmd, symbol);
   }
 
-  // 2. Fractions: \frac{a}{b}
+  // 2. Clear LaTeX sizing wrappers \left and \right
+  formatted = formatted
+    .replace(/\\left\(/g, "(")
+    .replace(/\\right\)/g, ")")
+    .replace(/\\left\[/g, "[")
+    .replace(/\\right\]/g, "]")
+    .replace(/\\left\\\{/g, "{")
+    .replace(/\\right\\\}/g, "}")
+    .replace(/\\left\./g, "")
+    .replace(/\\right\./g, "");
+
+  // 3. Fractions: \frac{a}{b}
   formatted = formatted.replace(
     /\\frac\{([^{}]+)\}\{([^{}]+)\}/g,
     '<span class="math-frac"><span class="math-num">$1</span><span class="math-denom">$2</span></span>'
   );
 
-  // 3. Exponents & Subscripts: x^{2} -> x<sup>2</sup>, x_{i} -> x<sub>i</sub>
+  // 4. Exponents & Subscripts: x^{2} -> x<sup>2</sup>, x_{i} -> x<sub>i</sub>
   formatted = formatted.replace(/\^\{([^{}]+)\}/g, "<sup>$1</sup>");
   formatted = formatted.replace(/\^([0-9a-zA-Z])/g, "<sup>$1</sup>");
   formatted = formatted.replace(/_\{([^{}]+)\}/g, "<sub>$1</sub>");
   formatted = formatted.replace(/_([0-9a-zA-Z])/g, "<sub>$1</sub>");
 
-  // 4. Square roots: \sqrt{x}
+  // 5. Square roots: \sqrt{x}
   formatted = formatted.replace(
     /\\sqrt\{([^{}]+)\}/g,
     '<span class="math-sqrt-wrap">√<span class="math-sqrt">$1</span></span>'
   );
 
-  // 5. Text blocks: \text{text}
-  formatted = formatted.replace(/\\text\{([^{}]+)\}/g, '<span class="math-text">$1</span>');
+  // 6. Text blocks: \text{text}, \operatorname{name}, \mathrm{text}
+  formatted = formatted.replace(
+    /\\(?:text|operatorname|mathrm)\{([^{}]+)\}/g,
+    '<span class="math-text">$1</span>'
+  );
+  formatted = formatted.replace(
+    /\\mathbf\{([^{}]+)\}/g,
+    '<strong class="math-bold">$1</strong>'
+  );
 
   if (displayMode) {
     return `<div class="math-block" data-math="${escapeHtml(latex)}"><span class="math-display">${formatted}</span></div>`;
@@ -116,14 +143,18 @@ export function renderMath(expression: string, displayMode: boolean): string {
   if (!trimmed) return "";
 
   try {
-    // Check for KaTeX on globalThis if loaded in browser/node environment
-    const katex = (globalThis as unknown as { katex?: { renderToString: (tex: string, opts: unknown) => string } }).katex;
-    if (katex && typeof katex.renderToString === "function") {
-      return katex.renderToString(trimmed, {
+    if (typeof katex !== "undefined" && typeof katex.renderToString === "function") {
+      const rendered = katex.renderToString(trimmed, {
         displayMode,
         throwOnError: false,
         output: "htmlAndMathml",
+        trust: false,
       });
+
+      if (displayMode) {
+        return `<div class="math-block" data-math="${escapeHtml(trimmed)}"><span class="math-display">${rendered}</span></div>`;
+      }
+      return `<span class="math-inline" data-math="${escapeHtml(trimmed)}">${rendered}</span>`;
     }
   } catch (err) {
     console.warn("KaTeX renderToString error, falling back:", err);

@@ -155,18 +155,97 @@ export function MessageItem({
     };
   }, []);
 
-  // Delegate click for dynamically rendered code copy buttons
+  // Delegate click for dynamically rendered code block interactive buttons
   const handleContentClick = (e: React.MouseEvent<HTMLDivElement>) => {
     const target = e.target as HTMLElement;
-    if (target.classList.contains("code-copy-btn")) {
-      const code = target.getAttribute("data-code");
+
+    // 1. Copy code to clipboard
+    const copyBtn = target.closest(".code-copy-btn") as HTMLElement | null;
+    if (copyBtn) {
+      const code = copyBtn.getAttribute("data-code");
       if (code && typeof navigator !== "undefined" && navigator.clipboard) {
         navigator.clipboard.writeText(code);
-        target.textContent = "Copied!";
+        copyBtn.textContent = "Copied!";
         setTimeout(() => {
-          target.textContent = "Copy";
+          copyBtn.textContent = "Copy";
         }, 1800);
       }
+      return;
+    }
+
+    // 2. Download code snippet
+    const downloadBtn = target.closest(".code-download-btn") as HTMLElement | null;
+    if (downloadBtn) {
+      const code = downloadBtn.getAttribute("data-code");
+      const lang = (downloadBtn.getAttribute("data-lang") || "txt").toLowerCase();
+      if (code) {
+        const EXT_MAP: Record<string, string> = {
+          typescript: "ts",
+          ts: "ts",
+          tsx: "tsx",
+          javascript: "js",
+          js: "js",
+          jsx: "jsx",
+          python: "py",
+          py: "py",
+          sql: "sql",
+          json: "json",
+          html: "html",
+          css: "css",
+          scss: "scss",
+          bash: "sh",
+          sh: "sh",
+          shell: "sh",
+          rust: "rs",
+          rs: "rs",
+          go: "go",
+          golang: "go",
+          c: "c",
+          cpp: "cpp",
+          "c++": "cpp",
+          java: "java",
+          yaml: "yaml",
+          yml: "yaml",
+          markdown: "md",
+          md: "md",
+        };
+        const ext = EXT_MAP[lang] || "txt";
+        const filename = `snippet-${Date.now()}.${ext}`;
+        try {
+          const blob = new Blob([code], { type: "text/plain;charset=utf-8" });
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement("a");
+          link.href = url;
+          link.download = filename;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          URL.revokeObjectURL(url);
+          downloadBtn.textContent = "Saved!";
+          setTimeout(() => {
+            downloadBtn.textContent = "Download";
+          }, 1800);
+        } catch {
+          if (typeof navigator !== "undefined" && navigator.clipboard) {
+            navigator.clipboard.writeText(code);
+          }
+        }
+      }
+      return;
+    }
+
+    // 3. Toggle expand / collapse code block
+    const collapseBtn = target.closest(".code-collapse-btn") as HTMLElement | null;
+    if (collapseBtn) {
+      const wrapper = collapseBtn.closest(".code-block-wrapper");
+      if (wrapper) {
+        wrapper.classList.toggle("is-collapsed");
+        const icon = collapseBtn.querySelector(".collapse-icon");
+        if (icon) {
+          icon.textContent = wrapper.classList.contains("is-collapsed") ? "+" : "−";
+        }
+      }
+      return;
     }
   };
 
@@ -361,13 +440,13 @@ export function MessageItem({
             {formatRelativeTime(message.createdAt)}
           </time>
 
-          {/* ══ Desktop Hover/Focus-Within Action Toolbar ══ */}
-          <div className="opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 focus-within:opacity-100 transition-opacity duration-200 hidden sm:flex items-center gap-1">
-            {/* Copy Button */}
+          {/* ══ Desktop Hover/Focus-Within Action Toolbar (Hierarchically Structured) ══ */}
+          <div className="opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 focus-within:opacity-100 transition-opacity duration-200 hidden sm:flex items-center gap-0.5 px-1.5 py-0.5 rounded-xl bg-[var(--surface-raised)] border border-[var(--border)] shadow-sm backdrop-blur-md">
+            {/* Primary Actions Cluster: Copy & Edit / Regenerate */}
             <button
               type="button"
               onClick={handleCopy}
-              className="p-1.5 rounded-md hover:bg-[var(--surface-hover)] hover:text-[var(--txt)] transition-colors touch-target cursor-pointer"
+              className="p-1.5 rounded-lg hover:bg-[var(--surface-hover)] hover:text-[var(--txt)] transition-colors touch-target cursor-pointer"
               title={copied ? "Copied to clipboard" : "Copy message"}
               aria-label={copied ? "Copied to clipboard" : "Copy message"}
               data-testid="copy-message-button"
@@ -375,30 +454,12 @@ export function MessageItem({
               {copied ? <Check className="w-3.5 h-3.5 text-[var(--success)]" /> : <Copy className="w-3.5 h-3.5" />}
             </button>
 
-            {/* Read Aloud (Assistant only) */}
-            {!isUser && !message.isError && (
-              <button
-                type="button"
-                onClick={toggleSpeech}
-                className={`p-1.5 rounded-md transition-colors touch-target cursor-pointer ${
-                  isSpeaking
-                    ? "text-[var(--accent)] bg-[var(--accent-d)] animate-pulse"
-                    : "hover:bg-[var(--surface-hover)] hover:text-[var(--txt)] text-[var(--txt-muted)]"
-                }`}
-                title={isSpeaking ? "Stop speech" : "Read aloud"}
-                aria-label={isSpeaking ? "Stop speech" : "Read aloud"}
-                data-testid="read-aloud-button"
-              >
-                {isSpeaking ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
-              </button>
-            )}
-
             {/* Edit User Message */}
             {isUser && onEdit && (
               <button
                 type="button"
                 onClick={() => setIsEditing(true)}
-                className="p-1.5 rounded-md hover:bg-[var(--surface-hover)] hover:text-[var(--txt)] transition-colors touch-target cursor-pointer"
+                className="p-1.5 rounded-lg hover:bg-[var(--surface-hover)] hover:text-[var(--txt)] transition-colors touch-target cursor-pointer"
                 title="Edit message"
                 aria-label="Edit message"
                 data-testid="edit-message-button"
@@ -412,7 +473,7 @@ export function MessageItem({
               <button
                 type="button"
                 onClick={onRegenerate}
-                className="p-1.5 rounded-md hover:bg-[var(--surface-hover)] hover:text-[var(--txt)] transition-colors touch-target cursor-pointer"
+                className="p-1.5 rounded-lg hover:bg-[var(--surface-hover)] hover:text-[var(--txt)] transition-colors touch-target cursor-pointer"
                 title="Regenerate response"
                 aria-label="Regenerate response"
                 data-testid="regenerate-message-button"
@@ -421,12 +482,69 @@ export function MessageItem({
               </button>
             )}
 
+            {/* Evaluation & Audio Cluster (Assistant only) */}
+            {!isUser && !message.isError && (
+              <>
+                <span className="w-[1px] h-3 bg-[var(--border)] mx-0.5" />
+                <button
+                  type="button"
+                  onClick={toggleSpeech}
+                  className={`p-1.5 rounded-lg transition-colors touch-target cursor-pointer ${
+                    isSpeaking
+                      ? "text-[var(--accent)] bg-[var(--accent-d)] animate-pulse"
+                      : "hover:bg-[var(--surface-hover)] hover:text-[var(--txt)] text-[var(--txt-muted)]"
+                  }`}
+                  title={isSpeaking ? "Stop speech" : "Read aloud"}
+                  aria-label={isSpeaking ? "Stop speech" : "Read aloud"}
+                  data-testid="read-aloud-button"
+                >
+                  {isSpeaking ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
+                </button>
+
+                {onFeedback && (
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => handleFeedback("positive")}
+                      className={`p-1.5 rounded-lg transition-colors touch-target cursor-pointer ${
+                        message.feedback === "positive"
+                          ? "text-[var(--accent)] bg-[var(--accent-d)]"
+                          : "hover:bg-[var(--surface-hover)] hover:text-[var(--txt)] text-[var(--txt-muted)]"
+                      }`}
+                      title={message.feedback === "positive" ? "Helpful response (selected)" : "Good response"}
+                      aria-label="Good response"
+                      aria-pressed={message.feedback === "positive"}
+                      data-testid="feedback-positive-button"
+                    >
+                      <ThumbsUp className={`w-3.5 h-3.5 ${message.feedback === "positive" ? "fill-current" : ""}`} />
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => handleFeedback("negative")}
+                      className={`p-1.5 rounded-lg transition-colors touch-target cursor-pointer ${
+                        message.feedback === "negative"
+                          ? "text-red-400 bg-red-500/10"
+                          : "hover:bg-[var(--surface-hover)] hover:text-[var(--txt)] text-[var(--txt-muted)]"
+                      }`}
+                      title={message.feedback === "negative" ? "Unhelpful response (selected)" : "Poor response"}
+                      aria-label="Poor response"
+                      aria-pressed={message.feedback === "negative"}
+                      data-testid="feedback-negative-button"
+                    >
+                      <ThumbsDown className={`w-3.5 h-3.5 ${message.feedback === "negative" ? "fill-current" : ""}`} />
+                    </button>
+                  </>
+                )}
+              </>
+            )}
+
             {/* Retry Failed Generation */}
             {message.isError && onRetry && (
               <button
                 type="button"
                 onClick={onRetry}
-                className="p-1.5 rounded-md hover:bg-red-500/20 text-red-400 hover:text-red-300 transition-colors touch-target cursor-pointer"
+                className="p-1.5 rounded-lg hover:bg-red-500/20 text-red-400 hover:text-red-300 transition-colors touch-target cursor-pointer"
                 title="Retry generation"
                 aria-label="Retry generation"
                 data-testid="retry-message-button"
@@ -435,48 +553,14 @@ export function MessageItem({
               </button>
             )}
 
-            {/* Feedback Sentiment: Thumbs Up */}
-            {!isUser && !message.isError && onFeedback && (
-              <>
-                <button
-                  type="button"
-                  onClick={() => handleFeedback("positive")}
-                  className={`p-1.5 rounded-md transition-colors touch-target cursor-pointer ${
-                    message.feedback === "positive"
-                      ? "text-[var(--accent)] bg-[var(--accent-d)]"
-                      : "hover:bg-[var(--surface-hover)] hover:text-[var(--txt)] text-[var(--txt-muted)]"
-                  }`}
-                  title={message.feedback === "positive" ? "Helpful response (selected)" : "Good response"}
-                  aria-label="Good response"
-                  aria-pressed={message.feedback === "positive"}
-                  data-testid="feedback-positive-button"
-                >
-                  <ThumbsUp className={`w-3.5 h-3.5 ${message.feedback === "positive" ? "fill-current" : ""}`} />
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => handleFeedback("negative")}
-                  className={`p-1.5 rounded-md transition-colors touch-target cursor-pointer ${
-                    message.feedback === "negative"
-                      ? "text-red-400 bg-red-500/10"
-                      : "hover:bg-[var(--surface-hover)] hover:text-[var(--txt)] text-[var(--txt-muted)]"
-                  }`}
-                  title={message.feedback === "negative" ? "Unhelpful response (selected)" : "Poor response"}
-                  aria-label="Poor response"
-                  aria-pressed={message.feedback === "negative"}
-                  data-testid="feedback-negative-button"
-                >
-                  <ThumbsDown className={`w-3.5 h-3.5 ${message.feedback === "negative" ? "fill-current" : ""}`} />
-                </button>
-              </>
-            )}
+            {/* Utility & Destructive Cluster */}
+            <span className="w-[1px] h-3 bg-[var(--border)] mx-0.5" />
 
             {/* Safe Client-Side Export (Markdown Download) */}
             <button
               type="button"
               onClick={handleExportMarkdown}
-              className="p-1.5 rounded-md hover:bg-[var(--surface-hover)] hover:text-[var(--txt)] transition-colors touch-target cursor-pointer"
+              className="p-1.5 rounded-lg hover:bg-[var(--surface-hover)] hover:text-[var(--txt)] transition-colors touch-target cursor-pointer"
               title="Export message as Markdown"
               aria-label="Export message as Markdown"
               data-testid="export-message-button"
@@ -489,7 +573,7 @@ export function MessageItem({
               <button
                 type="button"
                 onClick={handleDelete}
-                className="p-1.5 rounded-md hover:bg-red-500/15 hover:text-red-400 text-[var(--txt-muted)] transition-colors touch-target cursor-pointer"
+                className="p-1.5 rounded-lg hover:bg-red-500/15 hover:text-red-400 text-[var(--txt-muted)] transition-colors touch-target cursor-pointer"
                 title="Delete message"
                 aria-label="Delete message"
                 data-testid="delete-message-button"

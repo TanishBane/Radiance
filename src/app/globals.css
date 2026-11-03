@@ -168,6 +168,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
   max-width: 100%;
   width: 100%;
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  transition: all 0.2s ease;
 }
 
 .code-block-header {
@@ -179,6 +180,18 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
 
+.code-block-header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.code-block-header-right {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
 .code-block-lang {
   font-size: 11px;
   letter-spacing: 0.06em;
@@ -187,7 +200,16 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
   font-weight: 600;
 }
 
-.code-copy-btn {
+.code-block-line-count {
+  font-size: 10px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  color: var(--txt-muted);
+  opacity: 0.7;
+}
+
+.code-copy-btn,
+.code-download-btn,
+.code-collapse-btn {
   display: inline-flex;
   align-items: center;
   gap: 5px;
@@ -196,13 +218,19 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
   color: var(--txt-dim);
   font-size: 10px;
   font-weight: 500;
-  padding: 3px 10px;
+  padding: 3px 9px;
   border-radius: 6px;
   cursor: pointer;
   transition: all 0.15s ease;
   user-select: none;
 }
-.code-copy-btn:hover {
+.code-collapse-btn {
+  padding: 3px 6px;
+  font-weight: bold;
+}
+.code-copy-btn:hover,
+.code-download-btn:hover,
+.code-collapse-btn:hover {
   background: var(--accent-d);
   border-color: var(--accent);
   color: var(--accent);
@@ -213,9 +241,13 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
   color: var(--success);
 }
 
+.code-block-wrapper.is-collapsed pre {
+  display: none;
+}
+
 .code-block-wrapper pre {
   margin: 0;
-  padding: 16px;
+  padding: 14px 16px;
   overflow-x: auto;
   max-width: 100%;
   white-space: pre;
@@ -225,6 +257,28 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
   font-size: 13px;
   line-height: 1.65;
   -webkit-overflow-scrolling: touch;
+}
+
+.code-line {
+  display: flex;
+  min-width: fit-content;
+}
+
+.code-line-num {
+  user-select: none;
+  min-width: 26px;
+  text-align: right;
+  padding-right: 12px;
+  margin-right: 10px;
+  border-right: 1px solid rgba(255, 255, 255, 0.07);
+  color: var(--txt-muted);
+  opacity: 0.55;
+  font-size: 11px;
+}
+
+.code-line-text {
+  flex: 1;
+  white-space: pre;
 }
 
 .code-block-wrapper pre::-webkit-scrollbar {
@@ -598,6 +652,60 @@ li {
 .math-text {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   font-style: normal;
+}
+
+/* ══ MARKDOWN IMAGES & MEDIA ══ */
+.markdown-image-wrapper {
+  display: block;
+  margin: 14px 0;
+}
+.markdown-image {
+  max-width: 100%;
+  max-height: 480px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-card);
+  object-fit: contain;
+  background: rgba(0, 0, 0, 0.2);
+}
+.unsafe-image-placeholder {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #ef4444;
+  font-size: 11px;
+  font-family: monospace;
+}
+
+/* ══ CITATIONS & FOOTNOTES ══ */
+.citation-ref {
+  font-size: 0.72em;
+  vertical-align: super;
+  line-height: 0;
+  margin-left: 2px;
+}
+.citation-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1px 4.5px;
+  border-radius: 4px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--accent);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-weight: 600;
+  font-size: 0.88em;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-decoration: none;
+}
+.citation-badge:hover {
+  background: var(--accent-d);
+  border-color: var(--accent);
+  color: var(--accent-b);
 }
 
 /* ══ TYPING STREAM CURSOR ══ */

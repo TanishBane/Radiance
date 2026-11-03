@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Cormorant_Garamond } from "next/font/google";
+import "katex/dist/katex.min.css";
 import "./globals.css";
 
 const cormorant = Cormorant_Garamond({

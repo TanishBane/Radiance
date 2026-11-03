@@ -173,36 +173,102 @@ export function formatMarkdown(raw: string, options?: FormatMarkdownOptions): st
   content = content.replace(/```([a-zA-Z0-9_+-]*)\n?([\s\S]*?)```/g, (_, lang, code) => {
     const rawTrimmed = code.trimEnd();
     const cleanLang = (lang || "").trim();
+
+    // Check if block is specifically designated as math or latex
+    if (cleanLang === "math" || cleanLang === "latex" || cleanLang === "katex") {
+      const mathHtml = renderMath(rawTrimmed, true);
+      return tokenManager.register(mathHtml);
+    }
+
     const normalizedBadge = normalizeLanguageBadge(cleanLang);
     const highlightedCode = highlightCode(rawTrimmed, cleanLang);
     const langAttr = cleanLang ? ` data-language="${escapeHtml(cleanLang.toLowerCase())}"` : "";
 
+    const lineCount = rawTrimmed.split("\n").length;
+    const lines = highlightedCode.split("\n");
+    const codeBody =
+      lineCount > 1
+        ? lines
+            .map(
+              (line, idx) =>
+                `<span class="code-line"><span class="code-line-num" aria-hidden="true">${idx + 1}</span><span class="code-line-text">${line || " "}</span></span>`
+            )
+            .join("\n")
+        : highlightedCode;
+
     const blockHtml =
       `<div class="code-block-wrapper"${langAttr}>` +
         `<div class="code-block-header">` +
-          `<span class="code-block-lang">${escapeHtml(normalizedBadge)}</span>` +
-          `<button class="code-copy-btn" data-code="${escapeHtml(rawTrimmed)}" aria-label="Copy code to clipboard" title="Copy code">Copy</button>` +
+          `<div class="code-block-header-left">` +
+            `<span class="code-block-lang">${escapeHtml(normalizedBadge)}</span>` +
+            `<span class="code-block-line-count">${lineCount} ${lineCount === 1 ? "line" : "lines"}</span>` +
+          `</div>` +
+          `<div class="code-block-header-right">` +
+            `<button class="code-collapse-btn" aria-label="Toggle code collapse" title="Collapse code block"><span class="collapse-icon">−</span></button>` +
+            `<button class="code-download-btn" data-code="${escapeHtml(rawTrimmed)}" data-lang="${escapeHtml(cleanLang)}" aria-label="Download code snippet" title="Download code">Download</button>` +
+            `<button class="code-copy-btn" data-code="${escapeHtml(rawTrimmed)}" aria-label="Copy code to clipboard" title="Copy code">Copy</button>` +
+          `</div>` +
         `</div>` +
-        `<pre><code>${highlightedCode}</code></pre>` +
+        `<pre><code>${codeBody}</code></pre>` +
       `</div>`;
 
     return tokenManager.register(blockHtml);
   });
 
-  // 3. Extract inline code
+  // 3. Extract inline code with automatic mathematical formula detection
+  // (Prevents formulas like Attention(Q,K,V) = softmax(...) from rendering as plain inline code badges,
+  // while preserving explicit inline code containing LaTeX snippets like `$E = mc^2$`)
+  const isMathFormula = (str: string): boolean => {
+    const trimmed = str.trim();
+    if (trimmed.startsWith("$") && trimmed.endsWith("$")) {
+      return false;
+    }
+    // LaTeX backslash commands
+    if (
+      /\\(?:frac|sqrt|sum|prod|int|partial|alpha|beta|gamma|delta|epsilon|theta|lambda|mu|nu|xi|pi|rho|sigma|tau|phi|chi|psi|omega|Gamma|Delta|Theta|Lambda|Xi|Pi|Sigma|Phi|Psi|Omega|infty|approx|neq|le|ge|pm|times|div|cdot|in|notin|subset|forall|exists|to|leftarrow|rightarrow|Rightarrow|Leftarrow|iff|left|right|text|operatorname|mathrm|mathbf)\b/.test(
+        trimmed
+      )
+    ) {
+      return true;
+    }
+    // Attention or softmax formulas with mathematical notation
+    if (
+      /(?:Attention|softmax|argmax|argmin)\s*\([^\)]*\)/i.test(trimmed) &&
+      /(?:[\^_\/\\=]|sqrt|frac)/i.test(trimmed)
+    ) {
+      return true;
+    }
+    return false;
+  };
+
   content = content.replace(/`([^`\n]+)`/g, (_, code) => {
+    if (isMathFormula(code)) {
+      const cleanExpr = code.trim().replace(/^\$+|\$+$/g, "").trim();
+      const mathHtml = renderMath(cleanExpr, cleanExpr.length > 50 || cleanExpr.includes("\n"));
+      return tokenManager.register(mathHtml);
+    }
     const inlineHtml = `<code>${escapeHtml(code)}</code>`;
     return tokenManager.register(inlineHtml);
   });
 
-  // 4. Extract Block LaTeX Math ($$math$$)
-  content = content.replace(/\$\$([\s\S]+?)\$\$/g, (_, math) => {
+  // 4. Extract Block LaTeX Math ($$math$$, \[math\], and \begin{equation} environments)
+  content = content.replace(/(?:\$\$|\\\[)([\s\S]+?)(?:\$\$|\\\])/g, (_, math) => {
     const mathHtml = renderMath(math, true);
     return tokenManager.register(mathHtml);
   });
 
-  // 5. Extract Inline LaTeX Math ($math$), currency-safe
+  content = content.replace(/\\begin\{(?:equation|align|gather)\*?\}([\s\S]+?)\\end\{(?:equation|align|gather)\*?\}/g, (fullMatch) => {
+    const mathHtml = renderMath(fullMatch, true);
+    return tokenManager.register(mathHtml);
+  });
+
+  // 5. Extract Inline LaTeX Math ($math$ and \(math\)), currency-safe
   content = content.replace(/(?<!\\|\$)\$([^\$\s](?:[^$\n]*?[^\$\s])?)\$(?!\$|[0-9])/g, (_, math) => {
+    const mathHtml = renderMath(math, false);
+    return tokenManager.register(mathHtml);
+  });
+
+  content = content.replace(/\\\(([\s\S]+?)\\\)/g, (_, math) => {
     const mathHtml = renderMath(math, false);
     return tokenManager.register(mathHtml);
   });
@@ -210,9 +276,20 @@ export function formatMarkdown(raw: string, options?: FormatMarkdownOptions): st
   // Unescape escaped dollar signs (\$ -> $)
   content = content.replace(/\\(\$)/g, "$1");
 
-  // Helper for inline markdown transforms (Bold, Italic, Strikethrough, Hyperlinks)
+  // Helper for inline markdown transforms (Images, Bold, Italic, Strikethrough, Hyperlinks, Citations)
   const formatInline = (str: string): string => {
     return str
+      // Images: ![alt](url) with nested parentheses URL support
+      .replace(
+        /!\[([^\]\n]*)\]\(\s*([^()\n]*(?:\((?:[^()\n]|\([^()\n]*\))*\)[^()\n]*)*)\s*\)/g,
+        (_, alt, url) => {
+          const cleanUrl = url.trim();
+          if (isSafeUrl(cleanUrl)) {
+            return `<span class="markdown-image-wrapper"><img src="${escapeHtml(cleanUrl)}" alt="${escapeHtml(alt)}" loading="lazy" class="markdown-image" /></span>`;
+          }
+          return `<span class="unsafe-image-placeholder">[Image blocked: unsafe protocol]</span>`;
+        }
+      )
       .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
       .replace(/\*(.+?)\*/g, "<em>$1</em>")
       .replace(/~~(.+?)~~/g, "<del>$1</del>")
@@ -222,7 +299,9 @@ export function formatMarkdown(raw: string, options?: FormatMarkdownOptions): st
           return `<a href="${cleanUrl}" target="_blank" rel="noopener noreferrer" class="markdown-link">${label}</a>`;
         }
         return `<span class="unsafe-link">${label}</span>`;
-      });
+      })
+      // Citations: [^1] or [1]
+      .replace(/\[\^?(\d+)\]/g, `<sup class="citation-ref"><span class="citation-badge" title="Citation $1">[$1]</span></sup>`);
   };
 
   // 6. Extract and parse Markdown Tables (GFM syntax)
