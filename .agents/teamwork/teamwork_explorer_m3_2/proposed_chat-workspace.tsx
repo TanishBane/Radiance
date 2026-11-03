@@ -1,0 +1,234 @@
+"use client";
+
+import React, { useRef, useEffect } from "react";
+import { ChatMessage, Attachment, FeedbackRating } from "@/lib/types/chat";
+import { MessageItem } from "@/components/chat/message-item";
+import { WelcomeCard } from "@/components/chat/welcome-card";
+import { FollowUpChips } from "@/components/chat/follow-up-chips";
+import { ChatComposer } from "@/components/chat/chat-composer";
+import { formatMarkdown } from "@/lib/utils/format";
+import { AlertCircle, RotateCcw } from "lucide-react";
+
+export interface ChatWorkspaceProps {
+  messages: ChatMessage[];
+  streamingContent: string;
+  isGenerating: boolean;
+  activeFollowUps: string[];
+  onSend: (text: string, attachments?: Attachment[]) => void;
+  onStop: () => void;
+  onSelectSuggestion: (text: string) => void;
+  onOpenSettings?: () => void;
+
+  // Milestone 3 Extensions: Inference, Errors & Actions
+  streamError?: Error | null;
+  onRetry?: () => void;
+  onRegenerate?: (messageId: string) => void;
+  onEditMessage?: (messageId: string, newContent: string) => void;
+  onDeleteMessage?: (messageId: string) => void;
+  onFeedback?: (messageId: string, feedback: FeedbackRating) => void;
+}
+
+interface ChatErrorCardProps {
+  error: string | Error;
+  errorDetails?: string;
+  onRetry?: () => void;
+}
+
+/**
+ * In-Message Structured Error Card.
+ * Replaces disruptive window.alert() with an accessible, in-chat visual error state and prominent Retry button.
+ */
+export function ChatErrorCard({ error, errorDetails, onRetry }: ChatErrorCardProps) {
+  const errorMessage =
+    typeof error === "string" ? error : error?.message || "An error occurred during response generation.";
+
+  return (
+    <div
+      data-testid="in-message-error-card"
+      role="alert"
+      aria-live="assertive"
+      className="flex gap-3 max-w-3xl w-full mx-auto my-3.5 self-start"
+    >
+      {/* Error State Avatar */}
+      <div className="w-8 h-8 rounded-xl shrink-0 flex items-center justify-center font-mono text-[10px] font-bold border border-[var(--danger)]/30 bg-[var(--danger-d)] text-[var(--danger)] shadow-sm select-none">
+        <AlertCircle className="w-4 h-4 text-[var(--danger)]" aria-hidden="true" />
+      </div>
+
+      {/* Error Bubble Card */}
+      <div className="flex flex-col gap-1 max-w-[calc(100%-44px)] w-full">
+        <div className="px-4 py-3.5 rounded-2xl rounded-tl-sm text-sm border bg-[var(--danger-d)]/40 border-[var(--danger)]/30 border-l-4 border-l-[var(--danger)] text-[var(--txt)] shadow-[0_4px_24px_rgba(232,85,85,0.08)] glass-panel">
+          <div className="flex items-center gap-2 mb-1.5">
+            <span className="font-semibold text-xs uppercase tracking-wider text-[var(--danger)]">
+              Generation Error
+            </span>
+          </div>
+
+          <p className="text-[13px] leading-relaxed text-[var(--txt-dim)] break-words">
+            {errorMessage}
+          </p>
+
+          {errorDetails && errorDetails !== errorMessage && (
+            <p className="mt-2 text-xs font-mono text-[var(--txt-muted)] bg-black/20 p-2 rounded border border-[var(--border)] break-all">
+              {errorDetails}
+            </p>
+          )}
+
+          {onRetry && (
+            <div className="mt-3 pt-2.5 border-t border-[var(--danger)]/20 flex items-center gap-2">
+              <button
+                type="button"
+                onClick={onRetry}
+                data-testid="error-retry-button"
+                aria-label="Retry failed generation"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-[var(--danger)] hover:bg-[var(--danger)]/85 text-white shadow-sm transition-all duration-200 active:scale-95 touch-target focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--danger)] cursor-pointer"
+              >
+                <RotateCcw className="w-3.5 h-3.5" aria-hidden="true" />
+                <span>Retry</span>
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export function ChatWorkspace({
+  messages,
+  streamingContent,
+  isGenerating,
+  activeFollowUps,
+  onSend,
+  onStop,
+  onSelectSuggestion,
+  onOpenSettings: _onOpenSettings,
+  streamError,
+  onRetry,
+  onRegenerate,
+  onEditMessage,
+  onDeleteMessage,
+  onFeedback,
+}: ChatWorkspaceProps) {
+  const chatScrollRef = useRef<HTMLDivElement | null>(null);
+
+  // Auto-scroll to bottom of chat when messages, stream tokens, generation status, or errors update
+  useEffect(() => {
+    if (chatScrollRef.current) {
+      chatScrollRef.current.scrollTop = chatScrollRef.current.scrollHeight;
+    }
+  }, [messages, streamingContent, isGenerating, streamError]);
+
+  const hasContent = messages.length > 0 || isGenerating || Boolean(streamingContent) || Boolean(streamError);
+
+  return (
+    <div className="flex-1 flex flex-col relative overflow-hidden z-10">
+      {/* Scrollable Message List */}
+      <div ref={chatScrollRef} className="flex-1 overflow-y-auto px-4 py-6 scroll-smooth">
+        {!hasContent ? (
+          <WelcomeCard onSelectPrompt={onSelectSuggestion} />
+        ) : (
+          <div className="max-w-3xl mx-auto space-y-6 pb-6">
+            {messages.map((msg) =>
+              msg.isError ? (
+                <ChatErrorCard
+                  key={msg.id}
+                  error={msg.content || "An error occurred during response generation."}
+                  errorDetails={msg.errorDetails}
+                  onRetry={onRetry}
+                />
+              ) : (
+                <MessageItem
+                  key={msg.id}
+                  message={msg}
+                  onRegenerate={onRegenerate ? () => onRegenerate(msg.id) : undefined}
+                  onEdit={onEditMessage ? (newText) => onEditMessage(msg.id, newText) : undefined}
+                  onDelete={onDeleteMessage ? () => onDeleteMessage(msg.id) : undefined}
+                  onFeedback={onFeedback ? (rating) => onFeedback(msg.id, rating) : undefined}
+                />
+              )
+            )}
+
+            {/* Active Inference Indicator during TTFT (isGenerating is true but streamingContent is empty) */}
+            {isGenerating && !streamingContent && (
+              <div
+                data-testid="active-inference-indicator"
+                className="flex gap-3 max-w-3xl w-full mx-auto my-3.5 self-start animate-fade-in"
+              >
+                <div className="w-8 h-8 rounded-xl shrink-0 flex items-center justify-center font-mono text-[10px] font-bold border select-none bg-[var(--surface-raised)] border-[var(--border)] text-[var(--txt)] shadow-sm">
+                  <span className="gradient-text-brand">RD</span>
+                </div>
+                <div className="flex flex-col gap-1 max-w-[calc(100%-44px)]">
+                  <div
+                    role="status"
+                    aria-live="polite"
+                    aria-label="Generating response"
+                    className="px-4 py-3 rounded-2xl rounded-tl-sm text-sm leading-relaxed border transition-all bg-[var(--ai-bg)] border-[var(--ai-border)] border-l-2 border-l-[var(--accent)] text-[var(--txt)] shadow-[0_4px_24px_rgba(0,0,0,0.25)] glass-panel inline-flex items-center gap-2.5"
+                  >
+                    <span className="flex items-center gap-1.5 py-0.5" aria-hidden="true">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent)] animate-pulse" />
+                      <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent)] animate-pulse [animation-delay:200ms]" />
+                      <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent)] animate-pulse [animation-delay:400ms]" />
+                    </span>
+                    <span className="font-mono text-xs text-[var(--txt-muted)] tracking-wide">
+                      Thinking...
+                    </span>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Active SSE Streaming Placeholder with Progressive Markdown and Active Stream Cursor */}
+            {streamingContent ? (
+              <div
+                data-testid="streaming-message"
+                className="flex gap-3 max-w-3xl w-full mx-auto my-3.5 self-start"
+              >
+                <div className="w-8 h-8 rounded-xl shrink-0 flex items-center justify-center font-mono text-[10px] font-bold border select-none bg-[var(--surface-raised)] border-[var(--border)] text-[var(--txt)] shadow-sm">
+                  <span className="gradient-text-brand">RD</span>
+                </div>
+                <div className="flex flex-col gap-1 max-w-[calc(100%-44px)] w-full">
+                  <div className="px-4 py-3 rounded-2xl rounded-tl-sm text-sm leading-relaxed border transition-all bg-[var(--ai-bg)] border-[var(--ai-border)] border-l-2 border-l-[var(--accent)] text-[var(--txt)] shadow-[0_4px_24px_rgba(0,0,0,0.25)] glass-panel">
+                    <div
+                      data-testid="streaming-content"
+                      className="prose prose-invert max-w-none break-words text-[13.5px] leading-relaxed select-text inline"
+                      dangerouslySetInnerHTML={{
+                        __html: formatMarkdown(streamingContent, { isStreaming: true }),
+                      }}
+                    />
+                    <span
+                      data-testid="stream-cursor"
+                      className="inline-block w-2 h-4 bg-[var(--accent)] ml-1 animate-pulse align-middle"
+                      aria-hidden="true"
+                    />
+                  </div>
+                </div>
+              </div>
+            ) : null}
+
+            {/* Active Stream Error Card */}
+            {streamError && !isGenerating && (
+              <ChatErrorCard
+                error={streamError}
+                onRetry={onRetry}
+              />
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* Follow-up Suggestion Chips */}
+      {activeFollowUps.length > 0 && !isGenerating && !streamError && (
+        <div className="max-w-3xl mx-auto w-full px-4 mb-2">
+          <FollowUpChips questions={activeFollowUps} onSelect={onSelectSuggestion} />
+        </div>
+      )}
+
+      {/* Bottom Composer */}
+      <ChatComposer
+        onSend={onSend}
+        onStop={onStop}
+        isGenerating={isGenerating}
+      />
+    </div>
+  );
+}
