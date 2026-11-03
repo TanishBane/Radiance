@@ -1,0 +1,284 @@
+"use client";
+
+import { useState, useEffect, useCallback, useRef } from "react";
+import {
+  Conversation,
+  ChatMessage,
+  Attachment,
+  FeedbackRating,
+  UseChatSessionReturn,
+  generateMessageId,
+  generateConversationId,
+} from "@/lib/types/chat";
+import { conversationService } from "@/lib/db/conversations";
+import { generateFollowUpQuestions } from "@/lib/ai/followups";
+
+export function useChatSession(): UseChatSessionReturn {
+  const [conversations, setConversations] = useState<Conversation[]>([]);
+  const [activeConvId, setActiveConvId] = useState<string | null>(null);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [activeFollowUps, setActiveFollowUps] = useState<string[]>([]);
+  const activeConvRef = useRef<string | null>(null);
+  const messagesRef = useRef<ChatMessage[]>([]);
+
+  // Sync refs with state
+  useEffect(() => {
+    activeConvRef.current = activeConvId;
+  }, [activeConvId]);
+
+  useEffect(() => {
+    messagesRef.current = messages;
+  }, [messages]);
+
+  // Load conversations on mount
+  useEffect(() => {
+    conversationService.list().then((loaded) => {
+      setConversations(loaded);
+    });
+  }, []);
+
+  const selectConversation = useCallback((id: string) => {
+    conversationService.list().then((list) => {
+      const conv = list.find((c) => c.id === id);
+      if (conv) {
+        setActiveConvId(conv.id);
+        activeConvRef.current = conv.id;
+        setMessages(conv.messages);
+        messagesRef.current = conv.messages;
+        setActiveFollowUps([]);
+      }
+    });
+  }, []);
+
+  const newChat = useCallback(() => {
+    setActiveConvId(null);
+    activeConvRef.current = null;
+    setMessages([]);
+    messagesRef.current = [];
+    setActiveFollowUps([]);
+  }, []);
+
+  const togglePin = useCallback(async (id: string) => {
+    const list = await conversationService.list();
+    const conv = list.find((c) => c.id === id);
+    if (!conv) return;
+
+    await conversationService.togglePin(id, conv.pinned);
+    const updated = await conversationService.list();
+    setConversations(updated);
+  }, []);
+
+  const deleteConversation = useCallback(
+    async (id: string) => {
+      await conversationService.delete(id);
+      const updated = await conversationService.list();
+      setConversations(updated);
+      if (activeConvRef.current === id) {
+        newChat();
+      }
+    },
+    [newChat]
+  );
+
+  const deleteAllConversations = useCallback(async () => {
+    const list = await conversationService.list();
+    for (const c of list) {
+      await conversationService.delete(c.id);
+    }
+    setConversations([]);
+    newChat();
+  }, [newChat]);
+
+  const appendUserMessage = useCallback(
+    (text: string, attachments: Attachment[] = []): ChatMessage[] => {
+      const userMessage: ChatMessage = {
+        id: generateMessageId(),
+        role: "user",
+        content: text,
+        createdAt: Date.now(),
+        attachments: attachments.length > 0 ? attachments : undefined,
+      };
+
+      const nextMessages = [...messagesRef.current, userMessage];
+      messagesRef.current = nextMessages;
+      setMessages(nextMessages);
+      setActiveFollowUps([]);
+      return nextMessages;
+    },
+    []
+  );
+
+  const appendAssistantMessage = useCallback(
+    async (
+      assistantMessage: ChatMessage,
+      currentMessages: ChatMessage[],
+      tone: string,
+      language: string
+    ) => {
+      const finalMessages = [...currentMessages, assistantMessage];
+      messagesRef.current = finalMessages;
+      setMessages(finalMessages);
+
+      const convId = activeConvRef.current || generateConversationId();
+      if (!activeConvRef.current) {
+        setActiveConvId(convId);
+        activeConvRef.current = convId;
+      }
+
+      // Preserve existing conversation createdAt & pinned if present
+      const list = await conversationService.list();
+      const existing = list.find((c) => c.id === convId);
+
+      const firstUserMsg = finalMessages.find((m) => m.role === "user");
+      const title =
+        existing?.title ||
+        (firstUserMsg ? firstUserMsg.content.slice(0, 36).trim() || "New Chat" : "New Chat");
+
+      const updatedConv: Conversation = {
+        id: convId,
+        title,
+        createdAt: existing ? existing.createdAt : Date.now(),
+        updatedAt: Date.now(),
+        pinned: existing ? existing.pinned : false,
+        messages: finalMessages,
+      };
+
+      await conversationService.save(updatedConv);
+      const updatedList = await conversationService.list();
+      setConversations(updatedList);
+
+      // Generate intelligent follow-up suggestions in background
+      try {
+        const followUps = await generateFollowUpQuestions(assistantMessage.content, tone, language);
+        if (followUps && followUps.length > 0) {
+          setActiveFollowUps(followUps);
+        }
+      } catch {
+        // Non-critical background task failure
+      }
+    },
+    []
+  );
+
+  const deleteMessage = useCallback(async (messageId: string): Promise<void> => {
+    const current = messagesRef.current;
+    const nextMessages = current.filter((m) => m.id !== messageId);
+    messagesRef.current = nextMessages;
+    setMessages(nextMessages);
+    setActiveFollowUps([]);
+
+    const convId = activeConvRef.current;
+    if (!convId) return;
+
+    const list = await conversationService.list();
+    const existingConv = list.find((c) => c.id === convId);
+    if (!existingConv) return;
+
+    const updatedConv: Conversation = {
+      ...existingConv,
+      updatedAt: Date.now(),
+      messages: nextMessages,
+    };
+
+    await conversationService.save(updatedConv);
+    const updatedList = await conversationService.list();
+    setConversations(updatedList);
+  }, []);
+
+  const editUserMessage = useCallback(
+    async (messageId: string, newContent: string): Promise<ChatMessage[]> => {
+      const current = messagesRef.current;
+      const targetIndex = current.findIndex((m) => m.id === messageId);
+      if (targetIndex === -1 || current[targetIndex].role !== "user") {
+        return current;
+      }
+
+      const updatedMsg: ChatMessage = {
+        ...current[targetIndex],
+        content: newContent,
+      };
+
+      // Truncate subsequent messages for resubmission
+      const nextMessages = [...current.slice(0, targetIndex), updatedMsg];
+      messagesRef.current = nextMessages;
+      setMessages(nextMessages);
+      setActiveFollowUps([]);
+
+      const convId = activeConvRef.current;
+      if (convId) {
+        const list = await conversationService.list();
+        const existingConv = list.find((c) => c.id === convId);
+        if (existingConv) {
+          // If first user message was edited, also update title
+          const title =
+            targetIndex === 0
+              ? newContent.slice(0, 36).trim() || "New Chat"
+              : existingConv.title;
+
+          const updatedConv: Conversation = {
+            ...existingConv,
+            title,
+            updatedAt: Date.now(),
+            messages: nextMessages,
+          };
+          await conversationService.save(updatedConv);
+          const updatedList = await conversationService.list();
+          setConversations(updatedList);
+        }
+      }
+
+      return nextMessages;
+    },
+    []
+  );
+
+  const setMessageFeedback = useCallback(
+    async (messageId: string, feedback: FeedbackRating): Promise<void> => {
+      const current = messagesRef.current;
+      const nextMessages = current.map((m) => {
+        if (m.id !== messageId) return m;
+        const newFeedback = m.feedback === feedback ? null : feedback;
+        return { ...m, feedback: newFeedback };
+      });
+
+      messagesRef.current = nextMessages;
+      setMessages(nextMessages);
+
+      const convId = activeConvRef.current;
+      if (convId) {
+        const list = await conversationService.list();
+        const existingConv = list.find((c) => c.id === convId);
+        if (existingConv) {
+          const updatedConv: Conversation = {
+            ...existingConv,
+            updatedAt: Date.now(),
+            messages: nextMessages,
+          };
+          await conversationService.save(updatedConv);
+          const updatedList = await conversationService.list();
+          setConversations(updatedList);
+        }
+      }
+    },
+    []
+  );
+
+  return {
+    conversations,
+    activeConvId,
+    messages,
+    activeFollowUps,
+    selectConversation,
+    newChat,
+    togglePin,
+    deleteConversation,
+    deleteAllConversations,
+    appendUserMessage,
+    appendAssistantMessage,
+    deleteMessage,
+    editUserMessage,
+    setMessageFeedback,
+    setConversations,
+    setMessages,
+  };
+}
