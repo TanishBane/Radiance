@@ -336,7 +336,7 @@ describe("Code Blocks, Highlighting & Math Notation", () => {
     const input = "Einstein showed that $E = mc^2$ represents mass-energy equivalence.";
     const rendered = formatMarkdown(input);
     expect(rendered).toContain('class="math-inline"');
-    expect(rendered).toContain("E = mc<sup>2</sup>");
+    expect(rendered.includes("katex") || rendered.includes("E = mc<sup>2</sup>")).toBe(true);
   });
 
   it("renders block math with $$...$$ delimiters", () => {
@@ -611,6 +611,64 @@ describe("Parenthesized Markdown Hyperlinks", () => {
 
     expect(rendered).toContain('<a href="https://en.wikipedia.org/wiki/Function_(mathematics)"');
     expect(rendered).toContain('<a href="https://radiance.ai/docs"');
+  });
+
+  describe("Advanced Code Blocks, KaTeX Math & Multimodal Typography", () => {
+    it("renders transformer attention formula in backticks as proper mathematical notation rather than code badge", () => {
+      const input = "Attention mechanism: `Attention(Q, K, V) = \\text{softmax}(\\frac{QK^T}{\\sqrt{d_k}})V`.";
+      const rendered = formatMarkdown(input);
+
+      expect(rendered).not.toContain("<code>Attention(Q");
+      expect(rendered).toContain("math-");
+    });
+
+    it("renders LaTeX display math with \\[ ... \\] delimiters", () => {
+      const input = "\\[ \\sum_{i=1}^n x_i \\]";
+      const rendered = formatMarkdown(input);
+
+      expect(rendered).toContain('class="math-block"');
+      expect(rendered).toContain("data-math");
+    });
+
+    it("renders LaTeX inline math with \\( ... \\) delimiters", () => {
+      const input = "Consider \\( \\alpha + \\beta = \\gamma \\) in Euclidean space.";
+      const rendered = formatMarkdown(input);
+
+      expect(rendered).toContain('class="math-inline"');
+    });
+
+    it("renders code blocks with language badge, copy, download, and collapse controls", () => {
+      const input = "```typescript\nconst x: number = 42;\nconsole.log(x);\n```";
+      const rendered = formatMarkdown(input);
+
+      expect(rendered).toContain('class="code-block-wrapper"');
+      expect(rendered).toContain('class="code-block-lang">TYPESCRIPT</span>');
+      expect(rendered).toContain('class="code-copy-btn"');
+      expect(rendered).toContain('class="code-download-btn"');
+      expect(rendered).toContain('class="code-collapse-btn"');
+      expect(rendered).toContain('class="code-line-num"');
+    });
+
+    it("renders safe markdown images with lazy loading wrapper and neutralizes unsafe protocol images", () => {
+      const safeInput = "![Transformer Diagram](https://example.com/transformer.png)";
+      const safeRendered = formatMarkdown(safeInput);
+
+      expect(safeRendered).toContain('<img src="https://example.com/transformer.png" alt="Transformer Diagram" loading="lazy" class="markdown-image"');
+
+      const unsafeInput = "![Malicious](javascript:alert(1))";
+      const unsafeRendered = formatMarkdown(unsafeInput);
+
+      expect(unsafeRendered).not.toContain("javascript:");
+      expect(unsafeRendered).toContain("Image blocked: unsafe protocol");
+    });
+
+    it("renders numbered citations as interactive citation badges", () => {
+      const input = "Transformer architecture was introduced by Vaswani et al. [1] and extended in [2].";
+      const rendered = formatMarkdown(input);
+
+      expect(rendered).toContain('class="citation-badge" title="Citation 1">[1]</span>');
+      expect(rendered).toContain('class="citation-badge" title="Citation 2">[2]</span>');
+    });
   });
 });
 

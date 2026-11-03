@@ -108,6 +108,73 @@ const BASH_RULES: TokenRule[] = [
   { type: "punctuation", pattern: /[();]/ },
 ];
 
+// ── Rust Rules ──
+const RUST_RULES: TokenRule[] = [
+  { type: "comment", pattern: /\/\/[^\n]*|\/\*[\s\S]*?\*\// },
+  { type: "string", pattern: /(?:r#"[^"]*"#|b?"(?:\\[\s\S]|[^\\"])*"|b?'(?:\\[\s\S]|[^\\'])*')/ },
+  {
+    type: "keyword",
+    pattern: /\b(?:fn|let|mut|struct|enum|impl|trait|pub|use|mod|match|if|else|while|for|in|loop|return|break|continue|as|const|static|unsafe|where|type|move|ref|self|Self|async|await)\b/,
+  },
+  {
+    type: "type",
+    pattern: /\b(?:i8|i16|i32|i64|i128|isize|u8|u16|u32|u64|u128|usize|f32|f64|bool|char|str|String|Vec|Option|Result|Some|None|Ok|Err|Box|Rc|Arc)\b/,
+  },
+  { type: "boolean", pattern: /\b(?:true|false)\b/ },
+  { type: "number", pattern: /\b0x[0-9a-fA-F_]+\b|\b\d[\d_]*(?:\.[\d_]+)?(?:[eE][+-]?\d+)?\b/ },
+  { type: "function", pattern: /\b[a-zA-Z_][a-zA-Z0-9_]*(?=\s*\()/ },
+  { type: "operator", pattern: /->|=>|::|==|!=|<=|>=|[+\-*\/%&|^!~?:=<>]/ },
+  { type: "punctuation", pattern: /[{}[\]();,.]/ },
+];
+
+// ── Go Rules ──
+const GO_RULES: TokenRule[] = [
+  { type: "comment", pattern: /\/\/[^\n]*|\/\*[\s\S]*?\*\// },
+  { type: "string", pattern: /(?:`[^`]*`|"(?:\\[\s\S]|[^\\"])*")/ },
+  {
+    type: "keyword",
+    pattern: /\b(?:func|package|import|var|const|type|struct|interface|return|if|else|for|range|switch|case|default|select|go|chan|defer|break|continue|fallthrough)\b/,
+  },
+  {
+    type: "type",
+    pattern: /\b(?:int|int8|int16|int32|int64|uint|uint8|uint16|uint32|uint64|uintptr|float32|float64|complex64|complex128|string|bool|byte|rune|error|any)\b/,
+  },
+  { type: "boolean", pattern: /\b(?:true|false|nil|iota)\b/ },
+  { type: "number", pattern: /\b0x[0-9a-fA-F]+\b|\b\d+(?:\.\d+)?(?:[eE][+-]?\d+)?\b/ },
+  { type: "function", pattern: /\b[a-zA-Z_][a-zA-Z0-9_]*(?=\s*\()/ },
+  { type: "operator", pattern: /:=|<-|==|!=|<=|>=|\+\+|--|&&|\|\||[+\-*\/%&|^!~=<>]/ },
+  { type: "punctuation", pattern: /[{}[\]();,.]/ },
+];
+
+// ── C / C++ Rules ──
+const CPP_RULES: TokenRule[] = [
+  { type: "comment", pattern: /\/\/[^\n]*|\/\*[\s\S]*?\*\// },
+  { type: "string", pattern: /(["'])(?:\\[\s\S]|(?!\1)[^\\])*\1/ },
+  {
+    type: "keyword",
+    pattern: /\b(?:class|struct|namespace|template|typename|public|private|protected|virtual|override|constexpr|const|static|auto|return|if|else|for|while|do|switch|case|break|continue|new|delete|try|catch|throw|using|typedef|extern|inline|sizeof|include)\b/,
+  },
+  {
+    type: "type",
+    pattern: /\b(?:int|float|double|char|bool|void|size_t|uint32_t|int64_t|std|vector|string|map|shared_ptr|unique_ptr)\b/,
+  },
+  { type: "boolean", pattern: /\b(?:true|false|nullptr|NULL)\b/ },
+  { type: "number", pattern: /\b0x[0-9a-fA-F]+\b|\b\d+(?:\.\d+)?(?:[eE][+-]?\d+)?(?:f|l|u)?\b/i },
+  { type: "function", pattern: /\b[a-zA-Z_][a-zA-Z0-9_]*(?=\s*\()/ },
+  { type: "operator", pattern: /::|->|==|!=|<=|>=|[+\-*\/%&|^!~?:=<>]/ },
+  { type: "punctuation", pattern: /[{}[\]();,.]/ },
+];
+
+// ── YAML Rules ──
+const YAML_RULES: TokenRule[] = [
+  { type: "comment", pattern: /#[^\n]*/ },
+  { type: "property", pattern: /^[ \t]*[a-zA-Z0-9_-]+(?=\s*:)/m },
+  { type: "string", pattern: /(["'])(?:\\[\s\S]|(?!\1)[^\\])*\1/ },
+  { type: "boolean", pattern: /\b(?:true|false|yes|no|null|on|off)\b/i },
+  { type: "number", pattern: /\b\d+(?:\.\d+)?\b/ },
+  { type: "punctuation", pattern: /[:\-[\]{}]/ },
+];
+
 const RAW_LANGUAGE_RULES: Record<string, TokenRule[]> = {
   ts: JS_RULES,
   typescript: JS_RULES,
@@ -128,6 +195,16 @@ const RAW_LANGUAGE_RULES: Record<string, TokenRule[]> = {
   bash: BASH_RULES,
   shell: BASH_RULES,
   zsh: BASH_RULES,
+  rust: RUST_RULES,
+  rs: RUST_RULES,
+  go: GO_RULES,
+  golang: GO_RULES,
+  c: CPP_RULES,
+  cpp: CPP_RULES,
+  "c++": CPP_RULES,
+  java: CPP_RULES,
+  yaml: YAML_RULES,
+  yml: YAML_RULES,
 };
 
 // Pre-compile anchored regex patterns once to maximize tokenization performance
