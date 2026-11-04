@@ -302,6 +302,8 @@ export default function RadianceApp() {
             onStop={handleStop}
             onSelectSuggestion={handleSend}
             onOpenSettings={() => setSettingsOpen(true)}
+            selectedModel={selectedModel}
+            onSelectModel={(m: ModelOption) => setModelId(m.id)}
             onRegenerate={handleRegenerate}
             onEditUserMessage={handleEditUserMessage}
             onDeleteMessage={handleDeleteMessage}
