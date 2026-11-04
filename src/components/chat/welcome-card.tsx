@@ -1,73 +1,102 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
-import { Sparkles, Terminal, BookOpen, Image as ImageIcon, BrainCircuit, ArrowUpRight } from "lucide-react";
+import React from "react";
+import { Plane, Play, Bed } from "lucide-react";
 import { motion, useReducedMotion } from "motion/react";
 import { getMotionTransition } from "@/lib/motion/presets";
 
-interface PromptCategory {
+export interface SuggestionItem {
   id: string;
   label: string;
-  icon: React.ReactNode;
-  prompts: string[];
+  prompt: string;
+  badge?: {
+    type: "flight" | "video" | "getaway";
+  };
 }
 
-const PROMPT_CATEGORIES: PromptCategory[] = [
-  {
-    id: "reasoning",
-    label: "Reasoning & Systems",
-    icon: <BrainCircuit className="w-3.5 h-3.5" />,
-    prompts: [
-      "Explain transformer attention mechanism with geometric intuition",
-      "What is RAG and how to eliminate retrieval hallucinations?",
-      "How to design production-grade autonomous agent loops?",
-      "Compare gradient descent optimizations: Adam vs Sophia",
-    ],
-  },
-  {
-    id: "engineering",
-    label: "Code & Architecture",
-    icon: <Terminal className="w-3.5 h-3.5" />,
-    prompts: [
-      "Write a strictly-typed concurrent LRU cache in TypeScript",
-      "Explain React 19 concurrent rendering and useTransition",
-      "Design an RFC 7807 problem details error handling middleware",
-      "How to implement zero-downtime PostgreSQL schema migrations?",
-    ],
-  },
-  {
-    id: "mumbai",
-    label: "Mumbai & Academics",
-    icon: <BookOpen className="w-3.5 h-3.5" />,
-    prompts: [
-      "Compare NM College vs UPG SVKM for AI & Data Science",
-      "What tech engineering internship opportunities exist in BKC and Powai?",
-      "Create a structured semester study roadmap for Machine Learning",
-      "Who is Tanish Bane and what are his open-source AI projects?",
-    ],
-  },
-  {
-    id: "visuals",
-    label: "Flux Visuals",
-    icon: <ImageIcon className="w-3.5 h-3.5" />,
-    prompts: [
-      "Generate a cyberpunk rainy neon skyline over Marine Drive Mumbai",
-      "Generate a minimalist golden nebula with celestial particle rings",
-      "Generate an editorial brutalist architectural studio in Tokyo",
-      "Generate an ethereal glowing violet aurora over crystalline mountains",
-    ],
-  },
-];
+export interface SuggestionColumn {
+  id: string;
+  title: string;
+  titleColor: string;
+  items: SuggestionItem[];
+}
 
-const FACTS = [
-  "The term Artificial Intelligence was coined by John McCarthy in 1956.",
-  "Transformer architecture — the backbone of modern LLMs — was introduced by Google in 2017.",
-  "The human brain has ~86 billion neurons; modern frontier models exceed a trillion parameters.",
-  "India produces more AI research papers than any country except the USA and China.",
-  "AlphaZero mastered chess, shogi, and Go through pure self-play in less than 24 hours.",
-  "Real production software on GitHub matters far more than theoretical certificates in tech hiring.",
-  "Edge AI enables model inference locally on devices with zero cloud latency and total privacy.",
-  "Consistency beats intensity: focused daily engineering compounds faster than deadline panic.",
+export const SUGGESTION_COLUMNS: SuggestionColumn[] = [
+  {
+    id: "understand",
+    title: "Understand",
+    titleColor: "text-[#f29879]",
+    items: [
+      {
+        id: "char-book",
+        label: "character from a book",
+        prompt: "Describe a complex character from a book and analyze their psychological motivations.",
+      },
+      {
+        id: "pack",
+        label: "pack accordingly",
+        prompt: "Help me pack accordingly for an upcoming trip with a comprehensive weather-aware checklist.",
+        badge: {
+          type: "flight",
+        },
+      },
+      {
+        id: "research",
+        label: "research a topic",
+        prompt: "Help me research an in-depth topic, synthesizing key perspectives, findings, and nuances.",
+        badge: {
+          type: "video",
+        },
+      },
+    ],
+  },
+  {
+    id: "create",
+    title: "Create",
+    titleColor: "text-[#b88bf5]",
+    items: [
+      {
+        id: "job-negotiation",
+        label: "job negotiation and accept...",
+        prompt: "Draft a high-leverage job offer negotiation script and formal acceptance letter.",
+      },
+      {
+        id: "game-night",
+        label: "game night planning",
+        prompt: "Plan an engaging, memorable game night with friends including games, food, and timeline.",
+      },
+      {
+        id: "ooo-message",
+        label: "out-of-office message",
+        prompt: "Write a professional, clear, and friendly out-of-office email autoresponder.",
+      },
+    ],
+  },
+  {
+    id: "explore",
+    title: "Explore",
+    titleColor: "text-[#7fa5f8]",
+    items: [
+      {
+        id: "getaway",
+        label: "spring getaway",
+        prompt: "Suggest curated spring getaway destinations with a 3-day itinerary and budget breakdown.",
+        badge: {
+          type: "getaway",
+        },
+      },
+      {
+        id: "plant-care",
+        label: "plant care tips",
+        prompt: "Share essential indoor houseplant care tips for watering, lighting, and repotting.",
+      },
+      {
+        id: "cooking",
+        label: "cooking trends",
+        prompt: "What are the most innovative cooking trends, culinary techniques, and viral recipes right now?",
+      },
+    ],
+  },
 ];
 
 interface WelcomeCardProps {
@@ -75,27 +104,50 @@ interface WelcomeCardProps {
 }
 
 export function WelcomeCard({ onSelectPrompt }: WelcomeCardProps) {
-  const [activeTab, setActiveTab] = useState<string>("reasoning");
   const prefersReducedMotion = useReducedMotion() ?? false;
-
-  const currentCategory = useMemo(() => {
-    return PROMPT_CATEGORIES.find((c) => c.id === activeTab) || PROMPT_CATEGORIES[0];
-  }, [activeTab]);
-
-  const fact = useMemo(() => {
-    return FACTS[Math.floor(Math.random() * FACTS.length)];
-  }, []);
 
   const titleName = "Radiance";
   const description =
     "Illuminate what is possible. Stream real-time reasoning, analyze documents, generate Flux visuals, and explore complex ideas.";
+
+  function renderBadge(type: "flight" | "video" | "getaway") {
+    switch (type) {
+      case "flight":
+        return (
+          <span
+            className="w-4 h-4 sm:w-4.5 sm:h-4.5 rounded-full bg-[#1e88e5] flex items-center justify-center shrink-0 shadow-sm"
+            aria-hidden="true"
+          >
+            <Plane className="w-2.5 h-2.5 text-white" />
+          </span>
+        );
+      case "video":
+        return (
+          <span
+            className="w-4 h-4 sm:w-4.5 sm:h-4.5 rounded-full bg-[#e53935] flex items-center justify-center shrink-0 shadow-sm"
+            aria-hidden="true"
+          >
+            <Play className="w-2.5 h-2.5 text-white fill-white ml-0.5" />
+          </span>
+        );
+      case "getaway":
+        return (
+          <span
+            className="w-4 h-4 sm:w-4.5 sm:h-4.5 rounded-full bg-[#2e7d32] flex items-center justify-center shrink-0 shadow-sm"
+            aria-hidden="true"
+          >
+            <Bed className="w-2.5 h-2.5 text-white" />
+          </span>
+        );
+    }
+  }
 
   return (
     <motion.div
       initial={{ opacity: 0, y: prefersReducedMotion ? 0 : 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={getMotionTransition("entrance", prefersReducedMotion)}
-      className="flex flex-col items-center justify-center max-w-2xl mx-auto px-4 py-8 text-center gap-6"
+      className="flex flex-col items-center justify-center w-full max-w-4xl mx-auto px-4 py-8 text-center gap-6"
     >
       {/* Brand Icon Gem with Restrained Border & Clean Elevation */}
       <div
@@ -117,56 +169,42 @@ export function WelcomeCard({ onSelectPrompt }: WelcomeCardProps) {
         </p>
       </div>
 
-      {/* Categorized Prompt Explorer */}
-      <div className="w-full max-w-xl flex flex-col gap-3 mt-2">
-        {/* Category Filter Pills */}
-        <div data-testid="prompt-categories" className="w-full max-w-[640px] mx-auto flex items-center justify-start sm:justify-center gap-0.5 p-1 rounded-2xl bg-[var(--surface-raised)] border border-[var(--border)] shadow-sm overflow-x-auto overscroll-x-contain [scrollbar-width:none]">
-          {PROMPT_CATEGORIES.map((cat) => {
-            const isActive = activeTab === cat.id;
-            return (
-              <button
-                key={cat.id}
-                type="button"
-                onClick={() => setActiveTab(cat.id)}
-                className={`flex items-center gap-1 px-2 py-1.5 rounded-xl text-[11px] font-mono transition-all whitespace-nowrap shrink-0 touch-target ${
-                  isActive
-                    ? "bg-[var(--accent-d)] text-[var(--accent)] font-semibold border border-[var(--accent)]/40 shadow-chip"
-                    : "text-[var(--txt-muted)] hover:text-[var(--txt)] hover:bg-[var(--surface-hover)] border border-transparent"
-                }`}
-              >
-                {cat.icon}
-                <span>{cat.label}</span>
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Suggestion Prompt Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-left">
-          {currentCategory.prompts.map((prompt) => (
-            <button
-              key={prompt}
-              type="button"
-              onClick={() => onSelectPrompt(prompt)}
-              className="group flex items-start justify-between gap-2 p-3.5 rounded-2xl bg-[var(--surface-raised)] border border-[var(--border)] hover:bg-[var(--surface-hover)] hover:border-[var(--border-hover)] shadow-card transition-all duration-200 text-left min-h-[58px]"
-            >
-              <span className="text-xs text-[var(--txt-dim)] group-hover:text-[var(--txt)] leading-relaxed font-sans">
-                {prompt}
-              </span>
-              <ArrowUpRight className="w-3.5 h-3.5 text-[var(--txt-muted)] group-hover:text-[var(--accent)] shrink-0 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform mt-0.5" />
-            </button>
-          ))}
-        </div>
+      {/* Subtitle from Image 2 */}
+      <div className="w-full max-w-3xl flex flex-col items-start mt-2">
+        <p className="text-sm sm:text-base text-[var(--txt-dim)] font-medium text-left">
+          Tell me what’s on your mind, or pick a suggestion.
+        </p>
       </div>
 
-      {/* Fact of the Day Card */}
-      <div className="w-full max-w-xl mt-2 p-3.5 rounded-2xl bg-[var(--surface-raised)] border border-[var(--border)] text-left relative overflow-hidden shadow-card">
-        <div className="absolute left-0 top-2 bottom-2 w-[2px] bg-gradient-to-b from-[var(--accent)] to-[var(--accent-c)]" />
-        <div className="flex items-center gap-1.5 font-mono text-[9px] uppercase tracking-wider text-[var(--accent)] mb-1">
-          <Sparkles className="w-3 h-3" />
-          <span>Cognitive Insight</span>
-        </div>
-        <p className="text-xs text-[var(--txt-dim)] leading-relaxed font-light">{fact}</p>
+      {/* 3-Column Suggestions Layout matching Image 2 */}
+      <div
+        data-testid="prompt-categories"
+        className="w-full max-w-3xl grid grid-cols-1 md:grid-cols-3 gap-3.5 sm:gap-4 text-left"
+      >
+        {SUGGESTION_COLUMNS.map((column) => (
+          <div
+            key={column.id}
+            className="flex flex-col items-start p-4 sm:p-5 rounded-3xl bg-[var(--surface-raised)] border border-[var(--border)] hover:border-[var(--border-hover)] transition-all shadow-card"
+          >
+            <h2 className={`font-sans text-xl font-semibold tracking-tight mb-3.5 ${column.titleColor}`}>
+              {column.title}
+            </h2>
+            <div className="flex flex-col items-start gap-2.5 w-full">
+              {column.items.map((item) => (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => onSelectPrompt(item.prompt)}
+                  className="group w-fit max-w-full inline-flex items-center gap-2 px-3.5 py-1.5 sm:py-2 rounded-full bg-white/[0.06] hover:bg-white/[0.12] border border-white/[0.05] hover:border-white/[0.14] text-xs sm:text-[13px] text-[#ededed] font-normal transition-all duration-200 cursor-pointer shadow-sm hover:scale-[1.02] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
+                  aria-label={`Ask suggestion: ${item.label}`}
+                >
+                  {item.badge && renderBadge(item.badge.type)}
+                  <span className="truncate">{item.label}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        ))}
       </div>
     </motion.div>
   );
