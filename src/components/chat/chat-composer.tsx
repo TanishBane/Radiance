@@ -207,9 +207,6 @@ export function ChatComposer({
   const [isRecording, setIsRecording] = useState(false);
   const [recordingSeconds, setRecordingSeconds] = useState(0);
 
-  const [bannerDismissed, setBannerDismissed] = useState(false);
-  const [proModalOpen, setProModalOpen] = useState(false);
-
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const searchInputRef = useRef<HTMLInputElement | null>(null);
@@ -868,103 +865,6 @@ export function ChatComposer({
           <span className="hidden sm:inline">Enter send · Shift+Enter newline · @ for context</span>
         </div>
       </div>
-
-      {/* Upgrade to Pro Banner */}
-      {!bannerDismissed && (
-        <aside className="mt-2.5 px-3.5 py-2 rounded-xl bg-gradient-to-r from-[var(--accent-d)] via-[var(--surface-raised)] to-[var(--surface)] border border-[var(--border)] shadow-sm flex items-center justify-between text-xs font-sans">
-          <div className="flex items-center gap-1.5 truncate pr-2">
-            <span className="font-semibold text-[var(--txt)]">Upgrade to Pro.</span>
-            <button
-              type="button"
-              onClick={() => setProModalOpen(true)}
-              className="text-[var(--accent)] underline underline-offset-2 hover:text-[var(--accent-b)] transition-colors"
-            >
-              See Pro benefits
-            </button>
-          </div>
-          <div className="flex items-center gap-2 shrink-0">
-            <button
-              type="button"
-              onClick={() => setProModalOpen(true)}
-              className="px-2.5 py-1 rounded-lg bg-[var(--accent)] text-[var(--void)] font-mono text-[11px] font-bold hover:opacity-90 transition-opacity"
-            >
-              Upgrade
-            </button>
-            <button
-              type="button"
-              onClick={() => setBannerDismissed(true)}
-              className="text-[var(--txt-muted)] hover:text-[var(--txt)] p-1 transition-colors"
-              aria-label="Dismiss banner"
-            >
-              ✕
-            </button>
-          </div>
-        </aside>
-      )}
-
-      {/* Pro Benefits Modal */}
-      {proModalOpen && (
-        <div
-          onClick={(e) => {
-            if (e.target === e.currentTarget) setProModalOpen(false);
-          }}
-          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-in fade-in duration-200"
-        >
-          <div className="w-full max-w-md rounded-2xl bg-[var(--deep)] border border-[var(--border)] shadow-modal p-6 text-[var(--txt)]">
-            <div className="flex items-center justify-between mb-3">
-              <span className="px-2 py-0.5 rounded-full text-[10px] font-mono uppercase tracking-wider bg-[var(--accent-d)] text-[var(--accent)] border border-[var(--accent)]/30">
-                Radiance Pro
-              </span>
-              <button
-                type="button"
-                onClick={() => setProModalOpen(false)}
-                className="text-[var(--txt-muted)] hover:text-[var(--txt)] text-sm"
-              >
-                ✕
-              </button>
-            </div>
-            <h3 className="font-serif text-xl font-bold mb-1.5">
-              Unlock Full Frontier Reasoning
-            </h3>
-            <p className="text-xs text-[var(--txt-muted)] leading-relaxed mb-4">
-              Access Max effort compute across Fable 5, Opus 4.8, and GPT-5.6 models with unlimited context attachments.
-            </p>
-            <ul className="space-y-2 text-xs font-mono text-[var(--txt-dim)] mb-5">
-              <li className="flex items-center gap-2">
-                <span className="text-[var(--accent)]">✓</span>
-                <span>Unlimited High & Max Effort runs on frontier reasoning models</span>
-              </li>
-              <li className="flex items-center gap-2">
-                <span className="text-[var(--accent)]">✓</span>
-                <span>Smart Auto-routing across multi-provider AI clusters</span>
-              </li>
-              <li className="flex items-center gap-2">
-                <span className="text-[var(--accent)]">✓</span>
-                <span>Full-repo @context indexing and voice-to-build automation</span>
-              </li>
-            </ul>
-            <div className="flex items-center justify-end gap-2">
-              <button
-                type="button"
-                onClick={() => setProModalOpen(false)}
-                className="px-3 py-1.5 text-xs text-[var(--txt-muted)] hover:text-[var(--txt)] transition-colors"
-              >
-                Maybe later
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setProModalOpen(false);
-                  setBannerDismissed(true);
-                }}
-                className="px-4 py-1.5 rounded-xl bg-gradient-to-r from-[var(--accent)] to-[var(--accent-b)] text-[var(--void)] font-mono text-xs font-bold hover:opacity-90 transition-opacity"
-              >
-                Activate Pro Trial
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
       <div className="text-center text-[10px] text-[var(--txt-muted)] font-light mt-2 opacity-70">
         Radiance generates high-precision responses. Verify mission-critical details.

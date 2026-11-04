@@ -172,7 +172,7 @@ function CheckmarkIcon() {
 
 export default function AIComposer({
   initialTheme,
-  showUpgradeBanner = true,
+  showUpgradeBanner = false,
   showWalkthroughControl = true,
   onSubmit,
 }: AIComposerProps = {}) {
@@ -196,8 +196,6 @@ export default function AIComposer({
   const [isRecording, setIsRecording] = useState<boolean>(false);
   const [recordingSeconds, setRecordingSeconds] = useState<number>(0);
 
-  const [bannerDismissed, setBannerDismissed] = useState<boolean>(false);
-  const [proModalOpen, setProModalOpen] = useState<boolean>(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [contextMenuOpen, setContextMenuOpen] = useState<boolean>(false);
 
@@ -2006,53 +2004,6 @@ export default function AIComposer({
             </div>
           </div>
         </section>
-
-        {/* Bottom "Upgrade to Pro" Banner */}
-        {showUpgradeBanner && !bannerDismissed && (
-          <aside className="aic-pro-banner">
-            <div className="flex items-center gap-1.5 text-[15px] tracking-[-0.011em] truncate pr-2">
-              <span
-                className="font-medium"
-                style={{ color: 'var(--text-primary)' }}
-              >
-                Upgrade to Pro.
-              </span>
-              <button
-                type="button"
-                onClick={() => setProModalOpen(true)}
-                className="aic-pro-link font-normal"
-              >
-                See Pro benefits
-              </button>
-            </div>
-
-            <div className="flex items-center gap-3 flex-shrink-0">
-              <button
-                type="button"
-                onClick={() => setProModalOpen(true)}
-                className="aic-upgrade-pill-btn"
-              >
-                Upgrade
-              </button>
-              <button
-                type="button"
-                onClick={() => setBannerDismissed(true)}
-                className="transition-opacity hover:opacity-100 opacity-75 p-1"
-                style={{ color: 'var(--dismiss-color)' }}
-                aria-label="Dismiss Upgrade banner"
-              >
-                <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                  <path
-                    d="M2.5 2.5L11.5 11.5M11.5 2.5L2.5 11.5"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                  />
-                </svg>
-              </button>
-            </div>
-          </aside>
-        )}
       </main>
 
       {/* Floating Theme Switcher & Demo Controls */}
@@ -2099,16 +2050,6 @@ export default function AIComposer({
           </button>
         </div>
 
-        {showUpgradeBanner && bannerDismissed && (
-          <button
-            type="button"
-            onClick={() => setBannerDismissed(false)}
-            className="aic-floating-control-pill px-3 py-1.5 rounded-full text-xs shadow-lg"
-          >
-            Restore Pro Banner
-          </button>
-        )}
-
         {showWalkthroughControl && (
           <button
             type="button"
@@ -2120,118 +2061,6 @@ export default function AIComposer({
           </button>
         )}
       </div>
-
-      {/* Pro Benefits Modal */}
-      {proModalOpen && (
-        <div
-          onClick={(e) => {
-            if (e.target === e.currentTarget) setProModalOpen(false);
-          }}
-          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-        >
-          <div
-            className="w-full max-w-md rounded-[24px] shadow-2xl overflow-hidden transition-colors"
-            style={{
-              background: 'var(--modal-bg)',
-              border: '1px solid var(--modal-border)',
-              color: 'var(--text-primary)',
-            }}
-          >
-            <div
-              className="p-6"
-              style={{
-                background:
-                  'radial-gradient(circle at 85% 15%, rgba(58, 126, 86, 0.28), transparent 65%)',
-              }}
-            >
-              <div className="flex items-center justify-between mb-3">
-                <span className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-500/20 text-emerald-500 border border-emerald-500/30">
-                  Pro Plan
-                </span>
-                <button
-                  type="button"
-                  onClick={() => setProModalOpen(false)}
-                  className="opacity-70 hover:opacity-100 p-1"
-                  style={{ color: 'var(--text-secondary)' }}
-                >
-                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                    <path
-                      d="M3.5 3.5L12.5 12.5M12.5 3.5L3.5 12.5"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                    />
-                  </svg>
-                </button>
-              </div>
-              <h2
-                className="text-lg font-semibold mb-1"
-                style={{ color: 'var(--text-primary)' }}
-              >
-                Unlock Full Frontier Reasoning
-              </h2>
-              <p
-                className="text-sm mb-5"
-                style={{ color: 'var(--text-secondary)' }}
-              >
-                Access Max effort compute across Fable 5, Opus 4.8, and GPT-5.6
-                models with unlimited context attachments.
-              </p>
-              <ul
-                className="space-y-2.5 text-sm mb-6"
-                style={{ color: 'var(--text-primary)' }}
-              >
-                <li className="flex items-center gap-2.5">
-                  <span className="w-4 h-4 rounded-full bg-emerald-500/20 text-emerald-500 flex items-center justify-center text-xs">
-                    ✓
-                  </span>
-                  <span>
-                    Unlimited High &amp; Max Effort runs on Fable 5 and Opus 4.8
-                  </span>
-                </li>
-                <li className="flex items-center gap-2.5">
-                  <span className="w-4 h-4 rounded-full bg-emerald-500/20 text-emerald-500 flex items-center justify-center text-xs">
-                    ✓
-                  </span>
-                  <span>
-                    Smart Auto-routing across Kimi K3, GPT-5.6 Terra &amp; Sol
-                  </span>
-                </li>
-                <li className="flex items-center gap-2.5">
-                  <span className="w-4 h-4 rounded-full bg-emerald-500/20 text-emerald-500 flex items-center justify-center text-xs">
-                    ✓
-                  </span>
-                  <span>
-                    Full-repo @context indexing and voice-to-build automation
-                  </span>
-                </li>
-              </ul>
-              <div className="flex items-center justify-end gap-2.5">
-                <button
-                  type="button"
-                  onClick={() => setProModalOpen(false)}
-                  className="px-4 py-2 rounded-full text-sm transition"
-                  style={{ color: 'var(--text-secondary)' }}
-                >
-                  Maybe later
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setProModalOpen(false);
-                    setToastMessage(
-                      'Pro Trial activated — Max Effort unlocked across all models.'
-                    );
-                  }}
-                  className="aic-upgrade-pill-btn px-5"
-                >
-                  Activate Pro Trial
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

@@ -347,8 +347,8 @@ describe("useChatStream — Streaming Lifecycle, Buffer & Error State Specificat
 
     it("discards accumulated partial tokens when stop(true) is explicitly invoked", async () => {
       const onStreamComplete = vi.fn();
-      const chunks = ['0:"Token 1 "\n', '0:"Token 2 "\n'];
-      const { stream, abort } = createDelayedStream(chunks, 30);
+      const chunks = ['0:"Token 1 "\n', '0:"Token 2 "\n', '0:"Token 3 "\n'];
+      const { stream, abort } = createDelayedStream(chunks, 60);
 
       global.fetch = vi.fn().mockImplementation((_url, options) => {
         options.signal?.addEventListener("abort", () => abort());
@@ -369,7 +369,7 @@ describe("useChatStream — Streaming Lifecycle, Buffer & Error State Specificat
       });
 
       await act(async () => {
-        await new Promise((r) => setTimeout(r, 45));
+        await new Promise((r) => setTimeout(r, 70));
       });
 
       // Explicit discardPartial = true
