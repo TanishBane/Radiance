@@ -282,8 +282,6 @@ export default function RadianceApp() {
       {/* Right: Main Application Pane */}
       <main className="flex-1 flex flex-col min-w-0 h-full overflow-hidden relative z-10">
         <Topbar
-          selectedModel={selectedModel}
-          onSelectModel={(m: ModelOption) => setModelId(m.id)}
           language={language}
           onToggleLanguage={(l) => setLanguage(l)}
           onClearChat={handleNewChat}
