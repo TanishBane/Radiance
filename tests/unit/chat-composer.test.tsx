@@ -2,6 +2,7 @@ import React from "react";
 import { render, screen, fireEvent, act } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { ChatComposer } from "@/components/chat/chat-composer";
+import { AVAILABLE_MODELS, getModelById } from "@/lib/ai/models";
 
 describe("ChatComposer Component & Deduplication Controls", () => {
   const onSend = vi.fn();
@@ -248,6 +249,151 @@ describe("ChatComposer Component & Deduplication Controls", () => {
       fireEvent.keyDown(textarea, { key: "Enter", shiftKey: false });
 
       expect(onSend).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("7. AI Model Selection & Image 2 Design Specifications", () => {
+    it("renders the model selector pill with purple microchip icon and default model name", () => {
+      render(<ChatComposer onSend={onSend} onStop={onStop} isGenerating={false} />);
+
+      const modelTrigger = screen.getByTestId("composer-model-trigger");
+      expect(modelTrigger).toBeDefined();
+      expect(modelTrigger.getAttribute("aria-haspopup")).toBe("listbox");
+      expect(modelTrigger.getAttribute("aria-expanded")).toBe("false");
+      expect(modelTrigger.textContent).toContain("Radiance Fast");
+
+      // Verify pill class and microchip icon
+      expect(modelTrigger.className).toContain("rounded-full");
+      const cpuIcon = modelTrigger.querySelector("svg");
+      expect(cpuIcon).toBeDefined();
+      expect(cpuIcon?.getAttribute("class")).toContain("text-[#c084fc]");
+    });
+
+    it("renders the active model passed via selectedModel prop matching Image 2", () => {
+      const openWeightsModel = getModelById("openrouter-reasoning");
+      render(
+        <ChatComposer
+          onSend={onSend}
+          onStop={onStop}
+          isGenerating={false}
+          selectedModel={openWeightsModel}
+        />
+      );
+
+      const modelTrigger = screen.getByTestId("composer-model-trigger");
+      expect(modelTrigger.textContent).toContain("Radiance OpenWeights");
+    });
+
+    it("opens popover with all AVAILABLE_MODELS on click and updates aria-expanded", () => {
+      render(<ChatComposer onSend={onSend} onStop={onStop} isGenerating={false} />);
+
+      const modelTrigger = screen.getByTestId("composer-model-trigger");
+      expect(screen.queryByRole("listbox")).toBeNull();
+
+      fireEvent.click(modelTrigger);
+
+      expect(modelTrigger.getAttribute("aria-expanded")).toBe("true");
+      const listbox = screen.getByRole("listbox");
+      expect(listbox).toBeDefined();
+
+      AVAILABLE_MODELS.forEach((model) => {
+        const option = screen.getByTestId(`model-option-${model.id}`);
+        expect(option).toBeDefined();
+        expect(option.textContent).toContain(model.name);
+        expect(option.textContent).toContain(model.sub);
+        expect(option.textContent).toContain(model.provider);
+      });
+    });
+
+    it("selects a model and invokes onSelectModel callback", () => {
+      const onSelectModel = vi.fn();
+      render(
+        <ChatComposer
+          onSend={onSend}
+          onStop={onStop}
+          isGenerating={false}
+          onSelectModel={onSelectModel}
+        />
+      );
+
+      const modelTrigger = screen.getByTestId("composer-model-trigger");
+      fireEvent.click(modelTrigger);
+
+      const openWeightsOption = screen.getByTestId("model-option-openrouter-reasoning");
+      fireEvent.click(openWeightsOption);
+
+      expect(onSelectModel).toHaveBeenCalledTimes(1);
+      expect(onSelectModel).toHaveBeenCalledWith(
+        expect.objectContaining({
+          id: "openrouter-reasoning",
+          name: "Radiance OpenWeights",
+        })
+      );
+
+      // Popover should close
+      expect(screen.queryByRole("listbox")).toBeNull();
+      expect(modelTrigger.getAttribute("aria-expanded")).toBe("false");
+      expect(modelTrigger.textContent).toContain("Radiance OpenWeights");
+    });
+
+    it("closes popover when user presses Escape key", () => {
+      render(<ChatComposer onSend={onSend} onStop={onStop} isGenerating={false} />);
+
+      const modelTrigger = screen.getByTestId("composer-model-trigger");
+      fireEvent.click(modelTrigger);
+      expect(screen.getByRole("listbox")).toBeDefined();
+
+      fireEvent.keyDown(window, { key: "Escape" });
+      expect(screen.queryByRole("listbox")).toBeNull();
+      expect(modelTrigger.getAttribute("aria-expanded")).toBe("false");
+    });
+
+    it("supports keyboard navigation with ArrowDown/ArrowUp and selection via Enter", () => {
+      const onSelectModel = vi.fn();
+      render(
+        <ChatComposer
+          onSend={onSend}
+          onStop={onStop}
+          isGenerating={false}
+          onSelectModel={onSelectModel}
+        />
+      );
+
+      const modelTrigger = screen.getByTestId("composer-model-trigger");
+      // Open via ArrowDown key on trigger
+      fireEvent.keyDown(modelTrigger, { key: "ArrowDown" });
+      expect(modelTrigger.getAttribute("aria-expanded")).toBe("true");
+
+      const listbox = screen.getByRole("listbox");
+      expect(listbox).toBeDefined();
+      expect(modelTrigger.getAttribute("aria-controls")).toBe("composer-model-listbox");
+
+      // Navigate down through options
+      fireEvent.keyDown(listbox, { key: "ArrowDown" });
+
+      // Select via Enter key
+      const geminiOption = screen.getByTestId("model-option-gemini-quality");
+      fireEvent.keyDown(geminiOption, { key: "Enter" });
+
+      expect(onSelectModel).toHaveBeenCalledWith(
+        expect.objectContaining({
+          id: "gemini-quality",
+          name: "Radiance Multimodal",
+        })
+      );
+      expect(screen.queryByRole("listbox")).toBeNull();
+    });
+
+    it("applies responsive mobile bounds to popover avoiding screen edge clipping", () => {
+      render(<ChatComposer onSend={onSend} onStop={onStop} isGenerating={false} />);
+
+      const modelTrigger = screen.getByTestId("composer-model-trigger");
+      fireEvent.click(modelTrigger);
+
+      const listbox = screen.getByRole("listbox");
+      expect(listbox.className).toContain("-left-16");
+      expect(listbox.className).toContain("sm:left-0");
+      expect(listbox.className).toContain("max-w-[calc(100vw-2rem)]");
     });
   });
 });
