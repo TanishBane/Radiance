@@ -16,6 +16,14 @@ export const metadata: Metadata = {
     "Illuminate what is possible. High-precision reasoning, multimodal intelligence, and ambient spatial computing.",
   keywords: ["AI", "Radiance", "Machine Learning", "Groq", "Gemini", "Llama 3.3", "Vercel AI SDK"],
   authors: [{ name: "RADIANCE Architecture Team" }],
+  icons: {
+    icon: [
+      { url: "/icon.svg", type: "image/svg+xml" },
+    ],
+    shortcut: "/icon.svg",
+    apple: "/icon.svg",
+  },
+  manifest: "/manifest.json",
 };
 
 export const viewport: Viewport = {

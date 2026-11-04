@@ -4,6 +4,7 @@ import React from "react";
 import { Plane, Play, Bed } from "lucide-react";
 import { motion, useReducedMotion } from "motion/react";
 import { getMotionTransition } from "@/lib/motion/presets";
+import { RadianceLogo } from "@/components/branding/radiance-logo";
 
 export interface SuggestionItem {
   id: string;
@@ -171,12 +172,12 @@ export function WelcomeCard({ onSelectPrompt }: WelcomeCardProps) {
     >
       {/* Brand Icon Gem with Dynamic Ambient Glow */}
       <div
-        className="w-16 h-16 rounded-2xl flex items-center justify-center border border-[var(--border)] shadow-card transition-all duration-300 hover:scale-105 select-none hover:border-[var(--accent)]/40 hover:shadow-[0_8px_24px_var(--accent-d)]"
+        className="w-16 h-16 rounded-2xl flex items-center justify-center border border-[var(--border)] shadow-card transition-all duration-300 hover:scale-105 select-none hover:border-[var(--accent)]/40 hover:shadow-[0_8px_24px_var(--accent-d)] p-3 text-[var(--txt)]"
         style={{
           background: "linear-gradient(135deg, var(--surface-raised), rgba(255, 255, 255, 0.02))",
         }}
       >
-        <span className="font-mono text-2xl font-bold gradient-text-brand">RD</span>
+        <RadianceLogo variant="symbol" size="lg" showWordmark={false} animated glow className="w-10 h-9" />
       </div>
 
       {/* Hero Title (Signature TanixAI Cormorant Garamond + 3-Stop Chromatic Gradient) */}
