@@ -493,6 +493,7 @@ export function ChatComposer({
                 onClick={() => removeAttachment(att.id)}
                 className="p-1 rounded-md text-[var(--txt-muted)] hover:text-[var(--danger)] hover:bg-white/5 transition-colors"
                 title="Remove attachment"
+                aria-label="Remove attachment"
               >
                 <X className="w-3 h-3" />
               </button>
