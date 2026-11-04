@@ -26,6 +26,16 @@ describe("Welcome Card Default Assistant Structure", () => {
       expect(titles).toEqual(["Understand", "Create", "Explore"]);
     });
 
+    it("assigns harmonic dynamic theme roles: accentB, gradient, accentC", () => {
+      const understand = SUGGESTION_COLUMNS.find((c) => c.id === "understand");
+      const create = SUGGESTION_COLUMNS.find((c) => c.id === "create");
+      const explore = SUGGESTION_COLUMNS.find((c) => c.id === "explore");
+
+      expect(understand?.headerThemeRole).toBe("accentB");
+      expect(create?.headerThemeRole).toBe("gradient");
+      expect(explore?.headerThemeRole).toBe("accentC");
+    });
+
     it("matches Understand column items and badges from Image 2", () => {
       const understand = SUGGESTION_COLUMNS.find((c) => c.id === "understand");
       expect(understand).toBeDefined();

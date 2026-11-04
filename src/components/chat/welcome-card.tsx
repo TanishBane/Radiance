@@ -17,7 +17,7 @@ export interface SuggestionItem {
 export interface SuggestionColumn {
   id: string;
   title: string;
-  titleColor: string;
+  headerThemeRole: "accentB" | "gradient" | "accentC";
   items: SuggestionItem[];
 }
 
@@ -25,7 +25,7 @@ export const SUGGESTION_COLUMNS: SuggestionColumn[] = [
   {
     id: "understand",
     title: "Understand",
-    titleColor: "text-[#f29879]",
+    headerThemeRole: "accentB",
     items: [
       {
         id: "char-book",
@@ -53,7 +53,7 @@ export const SUGGESTION_COLUMNS: SuggestionColumn[] = [
   {
     id: "create",
     title: "Create",
-    titleColor: "text-[#b88bf5]",
+    headerThemeRole: "gradient",
     items: [
       {
         id: "job-negotiation",
@@ -75,7 +75,7 @@ export const SUGGESTION_COLUMNS: SuggestionColumn[] = [
   {
     id: "explore",
     title: "Explore",
-    titleColor: "text-[#7fa5f8]",
+    headerThemeRole: "accentC",
     items: [
       {
         id: "getaway",
@@ -110,12 +110,32 @@ export function WelcomeCard({ onSelectPrompt }: WelcomeCardProps) {
   const description =
     "Illuminate what is possible. Stream real-time reasoning, analyze documents, generate Flux visuals, and explore complex ideas.";
 
+  function getHeaderStyle(role: "accentB" | "gradient" | "accentC"): React.CSSProperties {
+    switch (role) {
+      case "accentB":
+        return {
+          color: "var(--accent-b)",
+        };
+      case "gradient":
+        return {
+          backgroundImage: "var(--text-gradient)",
+          WebkitBackgroundClip: "text",
+          WebkitTextFillColor: "transparent",
+          color: "var(--accent)",
+        };
+      case "accentC":
+        return {
+          color: "var(--accent-c)",
+        };
+    }
+  }
+
   function renderBadge(type: "flight" | "video" | "getaway") {
     switch (type) {
       case "flight":
         return (
           <span
-            className="w-4 h-4 sm:w-4.5 sm:h-4.5 rounded-full bg-[#1e88e5] flex items-center justify-center shrink-0 shadow-sm"
+            className="w-4.5 h-4.5 rounded-full bg-[#1e88e5] flex items-center justify-center shrink-0 border border-white/20 shadow-[0_0_8px_rgba(30,136,229,0.35)]"
             aria-hidden="true"
           >
             <Plane className="w-2.5 h-2.5 text-white" />
@@ -124,7 +144,7 @@ export function WelcomeCard({ onSelectPrompt }: WelcomeCardProps) {
       case "video":
         return (
           <span
-            className="w-4 h-4 sm:w-4.5 sm:h-4.5 rounded-full bg-[#e53935] flex items-center justify-center shrink-0 shadow-sm"
+            className="w-4.5 h-4.5 rounded-full bg-[#e53935] flex items-center justify-center shrink-0 border border-white/20 shadow-[0_0_8px_rgba(229,57,53,0.35)]"
             aria-hidden="true"
           >
             <Play className="w-2.5 h-2.5 text-white fill-white ml-0.5" />
@@ -133,7 +153,7 @@ export function WelcomeCard({ onSelectPrompt }: WelcomeCardProps) {
       case "getaway":
         return (
           <span
-            className="w-4 h-4 sm:w-4.5 sm:h-4.5 rounded-full bg-[#2e7d32] flex items-center justify-center shrink-0 shadow-sm"
+            className="w-4.5 h-4.5 rounded-full bg-[#2e7d32] flex items-center justify-center shrink-0 border border-white/20 shadow-[0_0_8px_rgba(46,125,50,0.35)]"
             aria-hidden="true"
           >
             <Bed className="w-2.5 h-2.5 text-white" />
@@ -149,9 +169,9 @@ export function WelcomeCard({ onSelectPrompt }: WelcomeCardProps) {
       transition={getMotionTransition("entrance", prefersReducedMotion)}
       className="flex flex-col items-center justify-center w-full max-w-4xl mx-auto px-4 py-8 text-center gap-6"
     >
-      {/* Brand Icon Gem with Restrained Border & Clean Elevation */}
+      {/* Brand Icon Gem with Dynamic Ambient Glow */}
       <div
-        className="w-16 h-16 rounded-2xl flex items-center justify-center border border-[var(--border)] shadow-card transition-transform duration-300 hover:scale-105 select-none"
+        className="w-16 h-16 rounded-2xl flex items-center justify-center border border-[var(--border)] shadow-card transition-all duration-300 hover:scale-105 select-none hover:border-[var(--accent)]/40 hover:shadow-[0_8px_24px_var(--accent-d)]"
         style={{
           background: "linear-gradient(135deg, var(--surface-raised), rgba(255, 255, 255, 0.02))",
         }}
@@ -169,14 +189,19 @@ export function WelcomeCard({ onSelectPrompt }: WelcomeCardProps) {
         </p>
       </div>
 
-      {/* Subtitle from Image 2 */}
+      {/* Dynamic Subtitle matched with Background Atmosphere */}
       <div className="w-full max-w-3xl flex flex-col items-start mt-2">
-        <p className="text-sm sm:text-base text-[var(--txt-dim)] font-medium text-left">
+        <p className="text-sm sm:text-base text-[var(--txt)] font-medium text-left drop-shadow-[0_2px_12px_rgba(0,0,0,0.9)] flex items-center gap-2">
+          <span
+            className="w-2 h-2 rounded-full inline-block animate-pulse shrink-0 shadow-[0_0_8px_var(--accent)]"
+            style={{ backgroundColor: "var(--accent)" }}
+            aria-hidden="true"
+          />
           Tell me what’s on your mind, or pick a suggestion.
         </p>
       </div>
 
-      {/* 3-Column Suggestions Layout matching Image 2 */}
+      {/* 3-Column Suggestions Architecture automatically harmonized with Theme & Palette */}
       <div
         data-testid="prompt-categories"
         className="w-full max-w-3xl grid grid-cols-1 md:grid-cols-3 gap-3.5 sm:gap-4 text-left"
@@ -184,9 +209,21 @@ export function WelcomeCard({ onSelectPrompt }: WelcomeCardProps) {
         {SUGGESTION_COLUMNS.map((column) => (
           <div
             key={column.id}
-            className="flex flex-col items-start p-4 sm:p-5 rounded-3xl bg-[var(--surface-raised)] border border-[var(--border)] hover:border-[var(--border-hover)] transition-all shadow-card"
+            className="group/card flex flex-col items-start p-4 sm:p-5 rounded-3xl border transition-all duration-300 hover:border-[var(--accent)]/40 hover:shadow-[0_16px_48px_-8px_var(--accent-d)]"
+            style={{
+              background:
+                "linear-gradient(180deg, var(--user-bg, rgba(255, 255, 255, 0.04)) 0%, rgba(10, 9, 16, 0.82) 100%)",
+              backdropFilter: "blur(24px)",
+              WebkitBackdropFilter: "blur(24px)",
+              borderColor: "var(--border)",
+              boxShadow:
+                "0 20px 48px -12px rgba(0, 0, 0, 0.7), 0 0 0 1px var(--border), 0 1px 0 0 rgba(255, 255, 255, 0.08) inset",
+            }}
           >
-            <h2 className={`font-sans text-xl font-semibold tracking-tight mb-3.5 ${column.titleColor}`}>
+            <h2
+              className="font-sans text-xl font-semibold tracking-tight mb-3.5 transition-all duration-300 drop-shadow-sm"
+              style={getHeaderStyle(column.headerThemeRole)}
+            >
               {column.title}
             </h2>
             <div className="flex flex-col items-start gap-2.5 w-full">
@@ -195,11 +232,29 @@ export function WelcomeCard({ onSelectPrompt }: WelcomeCardProps) {
                   key={item.id}
                   type="button"
                   onClick={() => onSelectPrompt(item.prompt)}
-                  className="group w-fit max-w-full inline-flex items-center gap-2 px-3.5 py-1.5 sm:py-2 rounded-full bg-white/[0.06] hover:bg-white/[0.12] border border-white/[0.05] hover:border-white/[0.14] text-xs sm:text-[13px] text-[#ededed] font-normal transition-all duration-200 cursor-pointer shadow-sm hover:scale-[1.02] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
+                  className="group/btn w-fit max-w-full inline-flex items-center gap-2 px-3.5 py-1.5 sm:py-2 rounded-full border transition-all duration-200 cursor-pointer shadow-sm active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
+                  style={{
+                    backgroundColor: "rgba(255, 255, 255, 0.05)",
+                    borderColor: "rgba(255, 255, 255, 0.08)",
+                    backdropFilter: "blur(8px)",
+                    WebkitBackdropFilter: "blur(8px)",
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = "var(--accent-d)";
+                    e.currentTarget.style.borderColor = "var(--border-accent)";
+                    e.currentTarget.style.boxShadow = "0 4px 16px var(--accent-d)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.05)";
+                    e.currentTarget.style.borderColor = "rgba(255, 255, 255, 0.08)";
+                    e.currentTarget.style.boxShadow = "none";
+                  }}
                   aria-label={`Ask suggestion: ${item.label}`}
                 >
                   {item.badge && renderBadge(item.badge.type)}
-                  <span className="truncate">{item.label}</span>
+                  <span className="truncate text-xs sm:text-[13px] text-[#ededed] group-hover/btn:text-[var(--txt)] font-normal transition-colors">
+                    {item.label}
+                  </span>
                 </button>
               ))}
             </div>
