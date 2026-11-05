@@ -27,6 +27,14 @@ import {
   Clock,
 } from "lucide-react";
 
+const CODE_EXT_MAP: Record<string, string> = {
+  typescript: "ts", ts: "ts", tsx: "tsx", javascript: "js", js: "js", jsx: "jsx",
+  python: "py", py: "py", sql: "sql", json: "json", html: "html", css: "css",
+  scss: "scss", bash: "sh", sh: "sh", shell: "sh", rust: "rs", rs: "rs",
+  go: "go", golang: "go", c: "c", cpp: "cpp", "c++": "cpp", java: "java",
+  yaml: "yaml", yml: "yaml", markdown: "md", md: "md",
+};
+
 export interface MessageItemProps {
   message: ChatMessage;
   isStreaming?: boolean;
@@ -182,37 +190,7 @@ export function MessageItem({
       const code = downloadBtn.getAttribute("data-code");
       const lang = (downloadBtn.getAttribute("data-lang") || "txt").toLowerCase();
       if (code) {
-        const EXT_MAP: Record<string, string> = {
-          typescript: "ts",
-          ts: "ts",
-          tsx: "tsx",
-          javascript: "js",
-          js: "js",
-          jsx: "jsx",
-          python: "py",
-          py: "py",
-          sql: "sql",
-          json: "json",
-          html: "html",
-          css: "css",
-          scss: "scss",
-          bash: "sh",
-          sh: "sh",
-          shell: "sh",
-          rust: "rs",
-          rs: "rs",
-          go: "go",
-          golang: "go",
-          c: "c",
-          cpp: "cpp",
-          "c++": "cpp",
-          java: "java",
-          yaml: "yaml",
-          yml: "yaml",
-          markdown: "md",
-          md: "md",
-        };
-        const ext = EXT_MAP[lang] || "txt";
+        const ext = CODE_EXT_MAP[lang] || "txt";
         const filename = `snippet-${Date.now()}.${ext}`;
         try {
           const blob = new Blob([code], { type: "text/plain;charset=utf-8" });
