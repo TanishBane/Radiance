@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useRef, useEffect } from "react";
-import { ChatMessage, Attachment, FeedbackRating } from "@/lib/types/chat";
+import { ChatMessage, Attachment, FeedbackRating, ModelOption } from "@/lib/types/chat";
 import { MessageItem } from "@/components/chat/message-item";
 import { WelcomeCard } from "@/components/chat/welcome-card";
 import { FollowUpChips } from "@/components/chat/follow-up-chips";
@@ -18,6 +18,8 @@ export interface ChatWorkspaceProps {
   onStop: () => void;
   onSelectSuggestion: (text: string) => void;
   onOpenSettings?: () => void;
+  selectedModel?: ModelOption;
+  onSelectModel?: (model: ModelOption) => void;
 
   // Milestone 3 Extensions: Inference, Errors & Actions
   streamError?: Error | null;
@@ -103,6 +105,8 @@ export function ChatWorkspace({
   onStop,
   onSelectSuggestion,
   onOpenSettings: _onOpenSettings,
+  selectedModel,
+  onSelectModel,
   streamError,
   onRetry,
   onRegenerate,
@@ -232,6 +236,8 @@ export function ChatWorkspace({
         onSend={onSend}
         onStop={onStop}
         isGenerating={isGenerating}
+        selectedModel={selectedModel}
+        onSelectModel={onSelectModel}
       />
     </div>
   );

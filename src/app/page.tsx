@@ -3,6 +3,11 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { ToneKey, Attachment, ModelOption, ChatMessage, FeedbackRating } from "@/lib/types/chat";
 import { ThemeId, THEMES, GradientStyle } from "@/lib/types/theme";
+import {
+  initializeDynamicTheme,
+  applyThemeToDom,
+  persistManualTheme,
+} from "@/lib/theme/dynamic-theme";
 import { DEFAULT_MODEL_ID, getModelById } from "@/lib/ai/models";
 import { conversationService } from "@/lib/db/conversations";
 
@@ -88,19 +93,23 @@ export default function RadianceApp() {
   const selectedTheme = THEMES[theme] || THEMES.violet;
   const selectedModel = getModelById(modelId);
 
-  // Apply Theme CSS Tokens
+  // Dynamic Color Theme System: automatically assign a fresh theme on site visit
   useEffect(() => {
-    const root = document.documentElement;
-    root.style.setProperty("--accent", selectedTheme.accent);
-    root.style.setProperty("--accent-b", selectedTheme.accentB);
-    root.style.setProperty("--accent-c", selectedTheme.accentC);
-    root.style.setProperty("--accent-d", selectedTheme.accentD);
-    root.style.setProperty("--accent-g", selectedTheme.accentG);
-    root.style.setProperty("--text-gradient", selectedTheme.textGradient);
-    if (selectedTheme.bgGradient) {
-      root.style.setProperty("--bg-gradient", selectedTheme.bgGradient);
-    }
+    const assignedTheme = initializeDynamicTheme();
+    setTheme(assignedTheme);
+  }, []);
+
+  // Apply Theme CSS Tokens to document root with complete variable coverage
+  useEffect(() => {
+    applyThemeToDom(selectedTheme);
   }, [selectedTheme]);
+
+  const handleSelectTheme = useCallback((themeId: string) => {
+    if (THEMES[themeId]) {
+      setTheme(themeId);
+      persistManualTheme(themeId);
+    }
+  }, []);
 
   // Safe Conversation Navigation (prevents cross-session stream contamination)
   const handleNewChat = useCallback(() => {
@@ -282,8 +291,6 @@ export default function RadianceApp() {
       {/* Right: Main Application Pane */}
       <main className="flex-1 flex flex-col min-w-0 h-full overflow-hidden relative z-10">
         <Topbar
-          selectedModel={selectedModel}
-          onSelectModel={(m: ModelOption) => setModelId(m.id)}
           language={language}
           onToggleLanguage={(l) => setLanguage(l)}
           onClearChat={handleNewChat}
@@ -302,6 +309,8 @@ export default function RadianceApp() {
             onStop={handleStop}
             onSelectSuggestion={handleSend}
             onOpenSettings={() => setSettingsOpen(true)}
+            selectedModel={selectedModel}
+            onSelectModel={(m: ModelOption) => setModelId(m.id)}
             onRegenerate={handleRegenerate}
             onEditUserMessage={handleEditUserMessage}
             onDeleteMessage={handleDeleteMessage}
@@ -329,7 +338,7 @@ export default function RadianceApp() {
         activeTone={tone}
         onSelectTone={setTone}
         activeTheme={theme}
-        onSelectTheme={setTheme}
+        onSelectTheme={handleSelectTheme}
         gradientStyle={gradientStyle}
         onSelectGradientStyle={setGradientStyle}
       />

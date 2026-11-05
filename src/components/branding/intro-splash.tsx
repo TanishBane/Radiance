@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
+import { RadianceLogo } from "./radiance-logo";
 
 export function IntroSplash({ onComplete }: { onComplete?: () => void }) {
   const [visible, setVisible] = useState(true);
@@ -45,13 +46,20 @@ export function IntroSplash({ onComplete }: { onComplete?: () => void }) {
             transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
             className="flex flex-col items-center gap-3"
           >
-            <div className="font-mono text-5xl md:text-6xl font-bold tracking-[0.2em] text-[var(--accent)] drop-shadow-[0_4px_24px_rgba(0,0,0,0.8)]">
-              RD
+            <div className="text-[var(--accent)] drop-shadow-[0_4px_28px_rgba(0,0,0,0.8)] mb-1">
+              <RadianceLogo
+                variant="symbol"
+                size="hero"
+                showWordmark={false}
+                animated
+                glow
+                className="w-24 h-21 text-[var(--accent)]"
+              />
             </div>
-            <div className="font-mono text-xs md:text-sm tracking-[0.4em] uppercase text-[var(--txt-muted)]">
+            <div className="font-serif text-2xl md:text-3xl tracking-[0.24em] font-bold uppercase text-[var(--txt)]">
               RADIANCE
             </div>
-            <div className="font-serif italic text-xs tracking-wider text-[var(--txt-dim)] mt-1">
+            <div className="font-serif italic text-xs tracking-wider text-[var(--txt-dim)]">
               Illuminate what is possible
             </div>
           </motion.div>

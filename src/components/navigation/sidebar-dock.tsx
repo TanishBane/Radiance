@@ -14,6 +14,7 @@ import {
   IconCommand,
 } from "@tabler/icons-react";
 import { motion } from "motion/react";
+import { RadianceLogo } from "@/components/branding/radiance-logo";
 
 interface SidebarDockProps {
   onNewChat: () => void;
@@ -74,11 +75,11 @@ export function SidebarDock({
             <button
               type="button"
               onClick={onNewChat}
-              className="w-8 h-8 rounded-xl bg-gradient-to-br from-[var(--accent)] to-[var(--accent-b)] flex items-center justify-center text-[var(--void)] font-serif font-black text-xs shrink-0 shadow-sm hover:scale-105 transition-transform"
+              className="w-8 h-8 rounded-xl bg-gradient-to-br from-[var(--surface-raised)] to-[var(--surface)] border border-[var(--border)] flex items-center justify-center text-[var(--txt)] shrink-0 shadow-sm hover:scale-105 hover:border-[var(--accent)]/50 transition-all p-1.5"
               title="Radiance (New Chat)"
               aria-label="Radiance home"
             >
-              RD
+              <RadianceLogo variant="symbol" size="sm" showWordmark={false} className="w-5 h-4.5 text-[var(--txt)]" />
             </button>
             <motion.div
               animate={{

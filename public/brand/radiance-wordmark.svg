@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 540 100" fill="none">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&amp;display=swap');
+    .wordmark-text {
+      font-family: 'Cormorant Garamond', 'Cinzel', 'Playfair Display', Georgia, serif;
+      font-weight: 700;
+      font-size: 56px;
+      letter-spacing: 0.22em;
+      fill: currentColor;
+    }
+  </style>
+  <text x="12" y="70" class="wordmark-text">RADIANCE</text>
+</svg>
