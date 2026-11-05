@@ -7,6 +7,7 @@ import { motion, useReducedMotion } from "motion/react";
 import { ChatMessage, FeedbackRating } from "@/lib/types/chat";
 import { getMotionTransition } from "@/lib/motion/presets";
 import { formatMarkdown, formatRelativeTime } from "@/lib/utils/format";
+import { RadianceLogo } from "@/components/branding/radiance-logo";
 import { FollowUpChips } from "./follow-up-chips";
 import {
   Copy,
@@ -127,7 +128,6 @@ export function MessageItem({
   // ── Web Speech Synthesis (Text-to-Speech) ──
   const toggleSpeech = () => {
     if (typeof window === "undefined" || !("speechSynthesis" in window)) {
-      alert("Text-to-speech is not supported in this browser.");
       return;
     }
 
@@ -271,7 +271,16 @@ export function MessageItem({
             : "bg-[var(--surface-raised)] border-[var(--border)] text-[var(--txt)] shadow-sm"
         }`}
       >
-        {isUser ? "YOU" : message.isError ? "!" : <span className="gradient-text-brand">RD</span>}
+        {isUser ? (
+          "YOU"
+        ) : message.isError ? (
+          "!"
+        ) : (
+          <div className="flex items-center justify-center relative w-full h-full p-1" title="Radiance">
+            <RadianceLogo variant="symbol" size="xs" showWordmark={false} className="w-4 h-3.5" />
+            <span className="sr-only">RD</span>
+          </div>
+        )}
       </div>
 
       {/* Bubble Container */}

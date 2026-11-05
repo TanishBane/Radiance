@@ -98,6 +98,14 @@ export function ChatComposer({
   const [contextMenuOpen, setContextMenuOpen] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const [recordingSeconds, setRecordingSeconds] = useState(0);
+  const [composerNotice, setComposerNotice] = useState<string | null>(null);
+
+  const showNotice = (msg: string) => {
+    setComposerNotice(msg);
+    setTimeout(() => {
+      setComposerNotice((curr) => (curr === msg ? null : curr));
+    }, 4500);
+  };
 
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -229,7 +237,7 @@ export function ChatComposer({
       windowWithSpeech.SpeechRecognition || windowWithSpeech.webkitSpeechRecognition;
 
     if (!SpeechRecognition) {
-      alert("Voice input is supported in Google Chrome, Edge, and Safari.");
+      showNotice("Voice input is supported in Google Chrome, Edge, and Safari.");
       return;
     }
 
@@ -275,14 +283,14 @@ export function ChatComposer({
 
     for (const file of files) {
       if (file.size > 10 * 1024 * 1024) {
-        alert(`${file.name} exceeds the 10MB limit.`);
+        showNotice(`${file.name} exceeds the 10MB limit.`);
         continue;
       }
       try {
         const attachment = await createAttachmentFromFile(file);
         setAttachments((prev) => [...prev, attachment]);
       } catch (err) {
-        alert(`Failed to parse file: ${err instanceof Error ? err.message : "Unknown error"}`);
+        showNotice(`Failed to parse file: ${err instanceof Error ? err.message : "Unknown error"}`);
       }
     }
     e.target.value = "";
@@ -382,6 +390,25 @@ export function ChatComposer({
               </button>
             </div>
           ))}
+        </div>
+      )}
+
+      {/* Inline Non-blocking Notification Banner */}
+      {composerNotice && (
+        <div
+          role="status"
+          aria-live="polite"
+          className="mb-2 px-3 py-1.5 rounded-xl text-xs font-mono bg-[var(--danger-d)] border border-[var(--danger)]/30 text-[var(--danger)] flex items-center justify-between shadow-sm animate-in fade-in slide-in-from-bottom-1 duration-150"
+        >
+          <span>{composerNotice}</span>
+          <button
+            type="button"
+            onClick={() => setComposerNotice(null)}
+            className="ml-2 hover:opacity-80 cursor-pointer p-0.5"
+            aria-label="Dismiss notice"
+          >
+            <X className="w-3.5 h-3.5" />
+          </button>
         </div>
       )}
 
