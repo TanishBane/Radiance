@@ -35,6 +35,11 @@ const CODE_EXT_MAP: Record<string, string> = {
   yaml: "yaml", yml: "yaml", markdown: "md", md: "md",
 };
 
+const ACTION_BTN_CLS =
+  "p-1.5 rounded-lg hover:bg-[var(--surface-hover)] hover:text-[var(--txt)] transition-colors touch-target cursor-pointer";
+const DROPDOWN_ITEM_CLS =
+  "min-h-[44px] flex items-center gap-2.5 px-3 py-2 text-xs font-medium rounded-lg cursor-pointer outline-none hover:bg-[var(--surface-hover)] focus:bg-[var(--surface-hover)] text-[var(--txt)] transition-colors select-none";
+
 export interface MessageItemProps {
   message: ChatMessage;
   isStreaming?: boolean;
@@ -439,7 +444,7 @@ export function MessageItem({
             <button
               type="button"
               onClick={handleCopy}
-              className="p-1.5 rounded-lg hover:bg-[var(--surface-hover)] hover:text-[var(--txt)] transition-colors touch-target cursor-pointer"
+              className={ACTION_BTN_CLS}
               title={copied ? "Copied to clipboard" : "Copy message"}
               aria-label={copied ? "Copied to clipboard" : "Copy message"}
               data-testid="copy-message-button"
@@ -452,7 +457,7 @@ export function MessageItem({
               <button
                 type="button"
                 onClick={() => setIsEditing(true)}
-                className="p-1.5 rounded-lg hover:bg-[var(--surface-hover)] hover:text-[var(--txt)] transition-colors touch-target cursor-pointer"
+                className={ACTION_BTN_CLS}
                 title="Edit message"
                 aria-label="Edit message"
                 data-testid="edit-message-button"
@@ -466,7 +471,7 @@ export function MessageItem({
               <button
                 type="button"
                 onClick={onRegenerate}
-                className="p-1.5 rounded-lg hover:bg-[var(--surface-hover)] hover:text-[var(--txt)] transition-colors touch-target cursor-pointer"
+                className={ACTION_BTN_CLS}
                 title="Regenerate response"
                 aria-label="Regenerate response"
                 data-testid="regenerate-message-button"
@@ -553,7 +558,7 @@ export function MessageItem({
             <button
               type="button"
               onClick={handleExportMarkdown}
-              className="p-1.5 rounded-lg hover:bg-[var(--surface-hover)] hover:text-[var(--txt)] transition-colors touch-target cursor-pointer"
+              className={ACTION_BTN_CLS}
               title="Export message as Markdown"
               aria-label="Export message as Markdown"
               data-testid="export-message-button"
@@ -599,7 +604,7 @@ export function MessageItem({
                   {/* Copy */}
                   <DropdownMenu.Item
                     onSelect={handleCopy}
-                    className="min-h-[44px] flex items-center gap-2.5 px-3 py-2 text-xs font-medium rounded-lg cursor-pointer outline-none hover:bg-[var(--surface-hover)] focus:bg-[var(--surface-hover)] text-[var(--txt)] transition-colors select-none"
+                    className={DROPDOWN_ITEM_CLS}
                     data-testid="mobile-action-copy"
                   >
                     {copied ? <Check className="w-4 h-4 text-[var(--success)] shrink-0" /> : <Copy className="w-4 h-4 text-[var(--txt-muted)] shrink-0" />}
@@ -610,7 +615,7 @@ export function MessageItem({
                   {isUser && onEdit && (
                     <DropdownMenu.Item
                       onSelect={() => setIsEditing(true)}
-                      className="min-h-[44px] flex items-center gap-2.5 px-3 py-2 text-xs font-medium rounded-lg cursor-pointer outline-none hover:bg-[var(--surface-hover)] focus:bg-[var(--surface-hover)] text-[var(--txt)] transition-colors select-none"
+                      className={DROPDOWN_ITEM_CLS}
                       data-testid="mobile-action-edit"
                     >
                       <Edit2 className="w-4 h-4 text-[var(--txt-muted)] shrink-0" />
@@ -622,7 +627,7 @@ export function MessageItem({
                   {!isUser && !message.isError && onRegenerate && (
                     <DropdownMenu.Item
                       onSelect={onRegenerate}
-                      className="min-h-[44px] flex items-center gap-2.5 px-3 py-2 text-xs font-medium rounded-lg cursor-pointer outline-none hover:bg-[var(--surface-hover)] focus:bg-[var(--surface-hover)] text-[var(--txt)] transition-colors select-none"
+                      className={DROPDOWN_ITEM_CLS}
                       data-testid="mobile-action-regenerate"
                     >
                       <RotateCcw className="w-4 h-4 text-[var(--txt-muted)] shrink-0" />
@@ -647,7 +652,7 @@ export function MessageItem({
                     <>
                       <DropdownMenu.Item
                         onSelect={() => handleFeedback("positive")}
-                        className="min-h-[44px] flex items-center gap-2.5 px-3 py-2 text-xs font-medium rounded-lg cursor-pointer outline-none hover:bg-[var(--surface-hover)] focus:bg-[var(--surface-hover)] text-[var(--txt)] transition-colors select-none"
+                        className={DROPDOWN_ITEM_CLS}
                         data-testid="mobile-action-feedback-positive"
                       >
                         <ThumbsUp className={`w-4 h-4 shrink-0 ${message.feedback === "positive" ? "text-[var(--accent)] fill-current" : "text-[var(--txt-muted)]"}`} />
@@ -656,7 +661,7 @@ export function MessageItem({
 
                       <DropdownMenu.Item
                         onSelect={() => handleFeedback("negative")}
-                        className="min-h-[44px] flex items-center gap-2.5 px-3 py-2 text-xs font-medium rounded-lg cursor-pointer outline-none hover:bg-[var(--surface-hover)] focus:bg-[var(--surface-hover)] text-[var(--txt)] transition-colors select-none"
+                        className={DROPDOWN_ITEM_CLS}
                         data-testid="mobile-action-feedback-negative"
                       >
                         <ThumbsDown className={`w-4 h-4 shrink-0 ${message.feedback === "negative" ? "text-red-400 fill-current" : "text-[var(--txt-muted)]"}`} />
@@ -668,7 +673,7 @@ export function MessageItem({
                   {/* Safe Client-Side Export */}
                   <DropdownMenu.Item
                     onSelect={handleExportMarkdown}
-                    className="min-h-[44px] flex items-center gap-2.5 px-3 py-2 text-xs font-medium rounded-lg cursor-pointer outline-none hover:bg-[var(--surface-hover)] focus:bg-[var(--surface-hover)] text-[var(--txt)] transition-colors select-none"
+                    className={DROPDOWN_ITEM_CLS}
                     data-testid="mobile-action-export"
                   >
                     <Download className="w-4 h-4 text-[var(--txt-muted)] shrink-0" />
