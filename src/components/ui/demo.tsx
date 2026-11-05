@@ -4,7 +4,7 @@ import AIComposer from '@/components/ui/ai-prompt-composer-with-model-selector';
 
 const settings = {
   lightTheme: false,
-  showUpgradeBanner: true,
+  showUpgradeBanner: false,
   showWalkthroughControl: true,
 };
 
