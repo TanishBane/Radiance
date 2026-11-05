@@ -319,33 +319,22 @@ export function ChatComposer({
   };
 
   const handleListboxKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "ArrowDown") {
-      e.preventDefault();
-      setFocusedIndex((prev) => {
-        const next = (prev + 1) % AVAILABLE_MODELS.length;
-        optionRefs.current[next]?.focus();
-        return next;
-      });
-    } else if (e.key === "ArrowUp") {
-      e.preventDefault();
-      setFocusedIndex((prev) => {
-        const next = (prev - 1 + AVAILABLE_MODELS.length) % AVAILABLE_MODELS.length;
-        optionRefs.current[next]?.focus();
-        return next;
-      });
-    } else if (e.key === "Home") {
-      e.preventDefault();
-      setFocusedIndex(0);
-      optionRefs.current[0]?.focus();
-    } else if (e.key === "End") {
-      e.preventDefault();
-      const last = AVAILABLE_MODELS.length - 1;
-      setFocusedIndex(last);
-      optionRefs.current[last]?.focus();
-    } else if (e.key === "Escape") {
+    const len = AVAILABLE_MODELS.length;
+    let next = -1;
+    if (e.key === "ArrowDown") next = (focusedIndex + 1) % len;
+    else if (e.key === "ArrowUp") next = (focusedIndex - 1 + len) % len;
+    else if (e.key === "Home") next = 0;
+    else if (e.key === "End") next = len - 1;
+    else if (e.key === "Escape") {
       e.preventDefault();
       setModelMenuOpen(false);
       modelTriggerRef.current?.focus();
+      return;
+    }
+    if (next >= 0) {
+      e.preventDefault();
+      setFocusedIndex(next);
+      optionRefs.current[next]?.focus();
     }
   };
 

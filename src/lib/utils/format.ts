@@ -414,15 +414,7 @@ export function formatMarkdown(raw: string, options?: FormatMarkdownOptions): st
     }
     return html;
   };
-
-  const closeAllLists = (): string => {
-    let html = "";
-    while (listStack.length > 0) {
-      const popped = listStack.pop()!;
-      html += `</li></${popped.type}>`;
-    }
-    return html;
-  };
+  const closeAllLists = (): string => closeListsToIndent(-1);
 
   for (let i = 0; i < listLines.length; i++) {
     const line = listLines[i];
