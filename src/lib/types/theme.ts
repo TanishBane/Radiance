@@ -20,18 +20,18 @@ export interface ColorTheme {
 }
 
 export type GradientStyle =
-  | "silk-caustics"
+  | "ambient-spotlight"
   | "waves"
   | "cosmic"
   | "aurora-curtains"
-  | "spectral-rays"
-  | "topographic-flow"
+  | "meteor-shower"
+  | "radiant-grid"
   | "quantum-field"
   | "liquid-lava"
   | "matrix-rain"
-  | "celestial-dust"
+  | "fluid-aurora"
   | "radial-pulse"
-  | "neural-lattice"
+  | "solar-corona"
   | "bokeh-blur";
 
 export const COLOR_THEMES: Record<string, ColorTheme> = {
@@ -563,11 +563,11 @@ export interface AtmosphereEngineInfo {
 
 export const ATMOSPHERE_ENGINES: AtmosphereEngineInfo[] = [
   {
-    id: "silk-caustics",
-    label: "Silk Caustics",
-    tag: "Optical Lux",
-    description: "Multi-layer continuous bezier refractive caustic sheets with chromatic dispersion.",
-    iconName: "Layers",
+    id: "ambient-spotlight",
+    label: "Ambient Spotlight",
+    tag: "Spotlight",
+    description: "21st.dev luxury studio spotlight cone tracking cursor with soft specular diffusion.",
+    iconName: "SunMedium",
   },
   {
     id: "waves",
@@ -591,18 +591,18 @@ export const ATMOSPHERE_ENGINES: AtmosphereEngineInfo[] = [
     iconName: "Wind",
   },
   {
-    id: "spectral-rays",
-    label: "Spectral Rays",
-    tag: "Anamorphic",
-    description: "Volumetric diagonal light dispersion beams with Gaussian decay and optical superimposition.",
-    iconName: "Compass",
+    id: "meteor-shower",
+    label: "Celestial Meteors",
+    tag: "Meteors",
+    description: "21st.dev diagonal incandescent shooting stars cascading across night skies.",
+    iconName: "Zap",
   },
   {
-    id: "topographic-flow",
-    label: "Topographic Flow",
-    tag: "Cartographic",
-    description: "Swiss precision elevation isolines undulating with multi-harmonic simplex relief fields.",
-    iconName: "Activity",
+    id: "radiant-grid",
+    label: "Radiant Grid",
+    tag: "Grid Mask",
+    description: "Architectural isometric grid with dynamic radial illumination mask following cursor.",
+    iconName: "Grid3X3",
   },
   {
     id: "quantum-field",
@@ -626,11 +626,11 @@ export const ATMOSPHERE_ENGINES: AtmosphereEngineInfo[] = [
     iconName: "Terminal",
   },
   {
-    id: "celestial-dust",
-    label: "Celestial Dust",
-    tag: "Filmic Motes",
-    description: "3-tier depth-of-field particulate field with foreground bokeh and Brownian drift.",
-    iconName: "Cloud",
+    id: "fluid-aurora",
+    label: "Fluid Aurora",
+    tag: "Aurora",
+    description: "Multi-chromatic plasma ribbons with soft Gaussian dispersion and screen superposition.",
+    iconName: "Wind",
   },
   {
     id: "radial-pulse",
@@ -640,11 +640,11 @@ export const ATMOSPHERE_ENGINES: AtmosphereEngineInfo[] = [
     iconName: "Radio",
   },
   {
-    id: "neural-lattice",
-    label: "Neural Lattice",
-    tag: "Synaptic",
-    description: "Dynamic cognitive graph with bidirectional gradient synapses and traveling action potentials.",
-    iconName: "Cpu",
+    id: "solar-corona",
+    label: "Solar Corona",
+    tag: "Eclipse",
+    description: "Colossal celestial horizon eclipse with incandescent solar prominence flares.",
+    iconName: "Orbit",
   },
   {
     id: "bokeh-blur",
