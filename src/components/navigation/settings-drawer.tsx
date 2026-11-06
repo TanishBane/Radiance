@@ -42,12 +42,12 @@ interface SettingsDrawerProps {
 }
 
 const ENGINE_ICONS: Record<string, React.ReactNode> = {
-  Layers: <Layers className="w-4 h-4 text-[var(--accent)]" />,
+  SunMedium: <SunMedium className="w-4 h-4 text-[var(--accent)]" />,
   Waves: <Waves className="w-4 h-4 text-[var(--accent)]" />,
   Orbit: <Orbit className="w-4 h-4 text-[var(--accent)]" />,
   Wind: <Wind className="w-4 h-4 text-[var(--accent)]" />,
-  Compass: <Compass className="w-4 h-4 text-[var(--accent)]" />,
-  Activity: <Activity className="w-4 h-4 text-[var(--accent)]" />,
+  Zap: <Zap className="w-4 h-4 text-[var(--accent)]" />,
+  Grid3X3: <Grid3X3 className="w-4 h-4 text-[var(--accent)]" />,
   Share2: <Share2 className="w-4 h-4 text-[var(--accent)]" />,
   Flame: <Flame className="w-4 h-4 text-[var(--accent)]" />,
   Terminal: <Terminal className="w-4 h-4 text-[var(--accent)]" />,
@@ -64,7 +64,7 @@ export function SettingsDrawer({
   onClose,
   activeTheme,
   onSelectTheme,
-  gradientStyle = "silk-caustics",
+  gradientStyle = "ambient-spotlight",
   onSelectGradientStyle,
 }: SettingsDrawerProps) {
   const [paletteCategory, setPaletteCategory] = useState<CategoryFilter>("all");

@@ -23,16 +23,16 @@ function hexToRgb(hex: string): [number, number, number] {
 }
 
 const CANVAS_ENGINES: GradientStyle[] = [
-  "silk-caustics",
+  "ambient-spotlight",
   "aurora-curtains",
-  "spectral-rays",
-  "topographic-flow",
+  "meteor-shower",
+  "radiant-grid",
   "quantum-field",
   "liquid-lava",
   "matrix-rain",
-  "celestial-dust",
+  "fluid-aurora",
   "radial-pulse",
-  "neural-lattice",
+  "solar-corona",
   "bokeh-blur",
 ];
 
@@ -71,8 +71,8 @@ export function AtmosphereCanvasEngine({ theme, engine }: AtmosphereCanvasEngine
     window.addEventListener("resize", resizeCanvas);
 
     // Mouse tracking for subtle organic parallax
-    const mousePos = { x: width * 0.5, y: height * 0.5 };
-    const smoothMouse = { x: width * 0.5, y: height * 0.5 };
+    const mousePos = { x: width * 0.5, y: height * 0.45 };
+    const smoothMouse = { x: width * 0.5, y: height * 0.45 };
     const handleMouseMove = (e: MouseEvent) => {
       mousePos.x = e.clientX;
       mousePos.y = e.clientY;
@@ -91,75 +91,104 @@ export function AtmosphereCanvasEngine({ theme, engine }: AtmosphereCanvasEngine
     let frame = 0;
 
     // ═════════════════════════════════════════════════════════════════════════
-    // ── 1. SILK CAUSTICS: Optical Bezier Refraction with Chromatic Dispersion
+    // ── 1. AMBIENT SPOTLIGHT: Luxury Conical Studio Beam & Specular Diffusion
     // ═════════════════════════════════════════════════════════════════════════
-    const drawSilkCaustics = (t: number) => {
+    interface PhotonMote {
+      x: number;
+      y: number;
+      vx: number;
+      vy: number;
+      radius: number;
+      phase: number;
+    }
+    const photonMotes: PhotonMote[] = Array.from({ length: 36 }, () => ({
+      x: Math.random() * width,
+      y: Math.random() * height,
+      vx: (Math.random() - 0.5) * 0.25,
+      vy: -Math.random() * 0.35 - 0.05,
+      radius: Math.random() * 1.8 + 0.8,
+      phase: Math.random() * Math.PI * 2,
+    }));
+
+    const drawAmbientSpotlight = (t: number) => {
       ctx.fillStyle = theme.bloomColors[0];
       ctx.fillRect(0, 0, width, height);
 
-      const ribbons = 7;
-      const mouseParallaxX = (smoothMouse.x / width - 0.5) * 40;
-      const mouseParallaxY = (smoothMouse.y / height - 0.5) * 25;
+      // Light source origin at top of viewport, softly tracking cursor with spring dampening
+      const originX = width * 0.5 + (smoothMouse.x - width * 0.5) * 0.35;
+      const originY = -height * 0.12;
 
-      for (let r = 0; r < ribbons; r++) {
-        const ribbonRatio = r / (ribbons - 1);
-        const cy = height * (0.15 + ribbonRatio * 0.72) + mouseParallaxY * (1 - ribbonRatio);
-        const speed = 0.22 + r * 0.035;
-        const phase = r * 0.88;
+      // Volumetric conical spotlight cone
+      ctx.save();
+      ctx.globalCompositeOperation = "screen";
 
-        // Chromatic dispersion sub-passes: Red/Primary, Green/Secondary, Blue/Tertiary
-        const channels = [
-          { color: `rgba(${r1}, ${g1}, ${b1}, 0.16)`, offsetPhase: 0.0, lw: 1.8 },
-          { color: `rgba(${r2}, ${g2}, ${b2}, 0.13)`, offsetPhase: 0.05, lw: 1.4 },
-          { color: `rgba(${r3}, ${g3}, ${b3}, 0.11)`, offsetPhase: -0.05, lw: 1.2 },
-        ];
+      const targetX = smoothMouse.x;
+      const targetY = smoothMouse.y;
+      const coneSpread = Math.max(width * 0.4, 450);
 
-        channels.forEach((ch) => {
-          ctx.beginPath();
-          ctx.strokeStyle = ch.color;
-          ctx.lineWidth = ch.lw;
+      const coneGrad = ctx.createRadialGradient(
+        originX,
+        originY,
+        30,
+        targetX,
+        targetY,
+        coneSpread * 1.5
+      );
+      coneGrad.addColorStop(0, `rgba(${r2}, ${g2}, ${b2}, 0.24)`);
+      coneGrad.addColorStop(0.3, `rgba(${r1}, ${g1}, ${b1}, 0.14)`);
+      coneGrad.addColorStop(0.7, `rgba(${r3}, ${g3}, ${b3}, 0.05)`);
+      coneGrad.addColorStop(1, "transparent");
 
-          const step = 32;
-          const points: { x: number; y: number }[] = [];
+      ctx.fillStyle = coneGrad;
+      ctx.beginPath();
+      ctx.moveTo(originX - 60, originY);
+      ctx.lineTo(originX + 60, originY);
+      ctx.lineTo(targetX + coneSpread, height * 1.1);
+      ctx.lineTo(targetX - coneSpread, height * 1.1);
+      ctx.closePath();
+      ctx.fill();
 
-          for (let x = -20; x <= width + 20; x += step) {
-            const nx = x / width;
-            const y =
-              cy +
-              Math.sin(nx * 4.2 + t * speed + phase + ch.offsetPhase) * 48 +
-              Math.cos(nx * 8.4 - t * (speed * 0.7) + phase) * 22 +
-              Math.sin(nx * 2.1 + mouseParallaxX * 0.04) * 16;
-            points.push({ x, y });
-          }
+      // Ground specular pool at mouse focus
+      const poolRadius = 380;
+      const poolGrad = ctx.createRadialGradient(
+        targetX,
+        targetY,
+        0,
+        targetX,
+        targetY,
+        poolRadius
+      );
+      poolGrad.addColorStop(0, `rgba(${r2}, ${g2}, ${b2}, 0.20)`);
+      poolGrad.addColorStop(0.45, `rgba(${r1}, ${g1}, ${b1}, 0.08)`);
+      poolGrad.addColorStop(1, "transparent");
 
-          if (points.length > 2) {
-            ctx.moveTo(points[0].x, points[0].y);
-            for (let i = 1; i < points.length - 1; i++) {
-              const xc = (points[i].x + points[i + 1].x) / 2;
-              const yc = (points[i].y + points[i + 1].y) / 2;
-              ctx.quadraticCurveTo(points[i].x, points[i].y, xc, yc);
-            }
-            const last = points[points.length - 1];
-            ctx.lineTo(last.x, last.y);
-            ctx.stroke();
+      ctx.fillStyle = poolGrad;
+      ctx.beginPath();
+      ctx.ellipse(targetX, targetY, poolRadius, poolRadius * 0.55, 0, 0, Math.PI * 2);
+      ctx.fill();
 
-            // Luminous caustics apex glow
-            if (r % 2 === 0) {
-              const midIdx = Math.floor(points.length * 0.45);
-              const apex = points[midIdx];
-              if (apex) {
-                const glow = ctx.createRadialGradient(apex.x, apex.y, 0, apex.x, apex.y, 140);
-                glow.addColorStop(0, `rgba(${r2}, ${g2}, ${b2}, 0.045)`);
-                glow.addColorStop(1, "transparent");
-                ctx.fillStyle = glow;
-                ctx.beginPath();
-                ctx.arc(apex.x, apex.y, 140, 0, Math.PI * 2);
-                ctx.fill();
-              }
-            }
-          }
-        });
-      }
+      // Atmospheric floating photons inside spotlight beam
+      photonMotes.forEach((m) => {
+        m.x += m.vx + Math.sin(t * 0.4 + m.phase) * 0.15;
+        m.y += m.vy;
+
+        if (m.y < -10) m.y = height + 10;
+        if (m.x < -10) m.x = width + 10;
+        if (m.x > width + 10) m.x = -10;
+
+        // Check proximity to spotlight target
+        const distToLight = Math.hypot(m.x - targetX, m.y - targetY);
+        const inLight = distToLight < poolRadius * 1.2;
+        const shimmer = Math.sin(t * 2.2 + m.phase) * 0.35 + 0.65;
+        const alpha = inLight ? shimmer * 0.65 : 0.12;
+
+        ctx.fillStyle = `rgba(${r2}, ${g2}, ${b2}, ${alpha})`;
+        ctx.beginPath();
+        ctx.arc(m.x, m.y, m.radius, 0, Math.PI * 2);
+        ctx.fill();
+      });
+
+      ctx.restore();
     };
 
     // ═════════════════════════════════════════════════════════════════════════
@@ -200,139 +229,211 @@ export function AtmosphereCanvasEngine({ theme, engine }: AtmosphereCanvasEngine
     };
 
     // ═════════════════════════════════════════════════════════════════════════
-    // ── 3. SPECTRAL RAYS: Cinematic Anamorphic Beams with Gaussian Decay
+    // ── 3. CELESTIAL METEORS: Incandescent Diagonal Shooting Stars
     // ═════════════════════════════════════════════════════════════════════════
-    interface VolumetricBeam {
-      originXRatio: number;
-      sweepAngleDeg: number;
-      widthSpread: number;
-      phase: number;
+    interface Meteor {
+      x: number;
+      y: number;
       speed: number;
-      maxAlpha: number;
+      length: number;
+      size: number;
+      angleRad: number;
+      alpha: number;
     }
-    const spectralBeams: VolumetricBeam[] = [
-      { originXRatio: 0.15, sweepAngleDeg: 52, widthSpread: 260, phase: 0.0, speed: 0.28, maxAlpha: 0.09 },
-      { originXRatio: 0.38, sweepAngleDeg: 46, widthSpread: 320, phase: 1.4, speed: 0.22, maxAlpha: 0.08 },
-      { originXRatio: 0.62, sweepAngleDeg: 42, widthSpread: 380, phase: 2.8, speed: 0.25, maxAlpha: 0.075 },
-      { originXRatio: 0.85, sweepAngleDeg: 38, widthSpread: 300, phase: 4.2, speed: 0.32, maxAlpha: 0.085 },
-      { originXRatio: 0.50, sweepAngleDeg: 48, widthSpread: 420, phase: 5.6, speed: 0.18, maxAlpha: 0.065 },
-    ];
 
-    const drawSpectralRays = (t: number) => {
+    const meteorAngle = (215 * Math.PI) / 180; // Diagonal flight angle: top-right to bottom-left
+    const cosM = Math.cos(meteorAngle);
+    const sinM = Math.sin(meteorAngle);
+
+    const meteors: Meteor[] = Array.from({ length: 18 }, () => ({
+      x: Math.random() * (width + 500),
+      y: Math.random() * (height - 200) - 100,
+      speed: Math.random() * 5 + 4,
+      length: Math.random() * 90 + 70,
+      size: Math.random() * 1.5 + 1.2,
+      angleRad: meteorAngle,
+      alpha: Math.random() * 0.5 + 0.4,
+    }));
+
+    // Quiescent background stars for celestial night sky
+    const staticStars = Array.from({ length: 48 }, () => ({
+      x: Math.random() * width,
+      y: Math.random() * height,
+      r: Math.random() * 1.2 + 0.5,
+      alpha: Math.random() * 0.45 + 0.15,
+      twinkleSpeed: Math.random() * 2 + 1,
+      phase: Math.random() * Math.PI * 2,
+    }));
+
+    const drawMeteorShower = (t: number) => {
       ctx.fillStyle = theme.bloomColors[0];
       ctx.fillRect(0, 0, width, height);
 
-      // Light superposition blending
-      ctx.save();
-      ctx.globalCompositeOperation = "screen";
-
-      const lightSourceY = -height * 0.15;
-      const mouseBias = (smoothMouse.x / width - 0.5) * 50;
-
-      spectralBeams.forEach((beam, idx) => {
-        const drift = Math.sin(t * beam.speed + beam.phase) * 65 + mouseBias;
-        const originX = width * beam.originXRatio + drift;
-        const angleRad = (beam.sweepAngleDeg * Math.PI) / 180;
-
-        const pulse = (Math.sin(t * 0.7 + beam.phase) * 0.5 + 0.5);
-        const currentAlpha = beam.maxAlpha * (0.65 + pulse * 0.35);
-
-        const targetX = originX + Math.tan(angleRad) * (height - lightSourceY);
-        const topRadius = 45;
-        const bottomRadius = beam.widthSpread;
-
-        const grad = ctx.createLinearGradient(originX, lightSourceY, targetX, height);
-        const col = idx % 2 === 0 ? `rgba(${r1}, ${g1}, ${b1}` : `rgba(${r2}, ${g2}, ${b2}`;
-        const accentC = `rgba(${r3}, ${g3}, ${b3}`;
-
-        grad.addColorStop(0, `${col}, ${currentAlpha * 1.5})`);
-        grad.addColorStop(0.35, `${col}, ${currentAlpha})`);
-        grad.addColorStop(0.75, `${accentC}, ${currentAlpha * 0.4})`);
-        grad.addColorStop(1, "transparent");
-
-        ctx.fillStyle = grad;
+      // Quiescent twinkling stars
+      staticStars.forEach((s) => {
+        const twinkle = Math.sin(t * s.twinkleSpeed + s.phase) * 0.35 + 0.65;
+        ctx.fillStyle = `rgba(255, 255, 255, ${s.alpha * twinkle})`;
         ctx.beginPath();
-        ctx.moveTo(originX - topRadius, lightSourceY);
-        ctx.lineTo(originX + topRadius, lightSourceY);
-        ctx.lineTo(targetX + bottomRadius, height);
-        ctx.lineTo(targetX - bottomRadius, height);
-        ctx.closePath();
+        ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
         ctx.fill();
       });
 
-      ctx.restore();
+      // Meteors
+      meteors.forEach((m) => {
+        m.x += cosM * m.speed;
+        m.y += sinM * m.speed;
+
+        // Respawn when out of screen bounds
+        if (m.x < -200 || m.y > height + 200) {
+          m.x = Math.random() * (width + 400) + 100;
+          m.y = -Math.random() * 150 - 50;
+          m.speed = Math.random() * 5 + 4;
+          m.length = Math.random() * 90 + 70;
+          m.alpha = Math.random() * 0.5 + 0.4;
+        }
+
+        const tailX = m.x - cosM * m.length;
+        const tailY = m.y - sinM * m.length;
+
+        // Meteor trail gradient
+        const trailGrad = ctx.createLinearGradient(m.x, m.y, tailX, tailY);
+        trailGrad.addColorStop(0, `rgba(255, 255, 255, ${m.alpha})`);
+        trailGrad.addColorStop(0.25, `rgba(${r1}, ${g1}, ${b1}, ${m.alpha * 0.8})`);
+        trailGrad.addColorStop(0.7, `rgba(${r3}, ${g3}, ${b3}, ${m.alpha * 0.3})`);
+        trailGrad.addColorStop(1, "transparent");
+
+        ctx.strokeStyle = trailGrad;
+        ctx.lineWidth = m.size;
+        ctx.beginPath();
+        ctx.moveTo(m.x, m.y);
+        ctx.lineTo(tailX, tailY);
+        ctx.stroke();
+
+        // Incandescent head glow
+        ctx.fillStyle = `rgba(255, 255, 255, ${m.alpha * 0.95})`;
+        ctx.beginPath();
+        ctx.arc(m.x, m.y, m.size * 1.1, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = `rgba(${r2}, ${g2}, ${b2}, ${m.alpha * 0.4})`;
+        ctx.beginPath();
+        ctx.arc(m.x, m.y, m.size * 3.2, 0, Math.PI * 2);
+        ctx.fill();
+      });
     };
 
     // ═════════════════════════════════════════════════════════════════════════
-    // ── 4. TOPOGRAPHIC FLOW: Swiss Cartographic Elevation Isolines
+    // ── 4. RADIANT GRID: Architectural Grid with Dynamic Spotlight Mask
     // ═════════════════════════════════════════════════════════════════════════
-    const drawTopographicFlow = (t: number) => {
+    const drawRadiantGrid = (t: number) => {
       ctx.fillStyle = theme.bloomColors[0];
       ctx.fillRect(0, 0, width, height);
 
-      // 3 Dynamic geological centers orbiting in parametric curves
-      const c1x = width * 0.28 + Math.sin(t * 0.22) * width * 0.08;
-      const c1y = height * 0.38 + Math.cos(t * 0.28) * height * 0.08;
-      const c2x = width * 0.72 + Math.cos(t * 0.18) * width * 0.10;
-      const c2y = height * 0.62 + Math.sin(t * 0.24) * height * 0.09;
-      const c3x = smoothMouse.x;
-      const c3y = smoothMouse.y;
+      const cellSize = 44;
+      const lightRadius = 320;
+      const mx = smoothMouse.x;
+      const my = smoothMouse.y;
 
-      const numStrata = 14;
-      for (let s = 0; s < numStrata; s++) {
-        const strataRatio = s / (numStrata - 1);
-        const yBase = height * 0.10 + strataRatio * height * 0.82;
-        const isIndexContour = s % 4 === 0;
+      // Base ultra-subtle grid lines
+      ctx.strokeStyle = "rgba(255, 255, 255, 0.025)";
+      ctx.lineWidth = 1;
 
-        ctx.beginPath();
-        ctx.lineWidth = isIndexContour ? 1.25 : 0.75;
-        const alpha = isIndexContour ? 0.24 : 0.12;
-        const col = isIndexContour ? `rgba(${r1}, ${g1}, ${b1}, ${alpha})` : `rgba(${r2}, ${g2}, ${b2}, ${alpha})`;
-        ctx.strokeStyle = col;
+      ctx.beginPath();
+      for (let x = 0; x <= width; x += cellSize) {
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, height);
+      }
+      for (let y = 0; y <= height; y += cellSize) {
+        ctx.moveTo(0, y);
+        ctx.lineTo(width, y);
+      }
+      ctx.stroke();
 
-        const points: { x: number; y: number }[] = [];
-        const step = 28;
+      // Dynamic illuminated grid lines within cursor radius
+      const startX = Math.max(0, Math.floor((mx - lightRadius) / cellSize) * cellSize);
+      const endX = Math.min(width, Math.ceil((mx + lightRadius) / cellSize) * cellSize);
+      const startY = Math.max(0, Math.floor((my - lightRadius) / cellSize) * cellSize);
+      const endY = Math.min(height, Math.ceil((my + lightRadius) / cellSize) * cellSize);
 
-        for (let x = 0; x <= width; x += step) {
-          const d1 = Math.hypot(x - c1x, yBase - c1y);
-          const d2 = Math.hypot(x - c2x, yBase - c2y);
-          const d3 = Math.hypot(x - c3x, yBase - c3y);
+      for (let x = startX; x <= endX; x += cellSize) {
+        const dx = Math.abs(x - mx);
+        if (dx < lightRadius) {
+          const dySpan = Math.sqrt(lightRadius * lightRadius - dx * dx);
+          const y1 = Math.max(0, my - dySpan);
+          const y2 = Math.min(height, my + dySpan);
 
-          const hill1 = Math.exp(-d1 / 280) * 58;
-          const hill2 = Math.exp(-d2 / 320) * -44;
-          const mouseDepression = Math.exp(-d3 / 240) * 36;
+          const grad = ctx.createLinearGradient(x, y1, x, y2);
+          const maxAlpha = (1 - dx / lightRadius) * 0.35;
+          grad.addColorStop(0, "transparent");
+          grad.addColorStop(0.5, `rgba(${r1}, ${g1}, ${b1}, ${maxAlpha})`);
+          grad.addColorStop(1, "transparent");
 
-          const harmonic =
-            Math.sin(x * 0.0032 + t * 0.28 + s * 0.45) * 26 +
-            Math.cos(x * 0.0068 - t * 0.18 + s * 0.7) * 12;
-
-          const y = yBase + hill1 + hill2 + mouseDepression + harmonic;
-          points.push({ x, y });
-        }
-
-        if (points.length > 2) {
-          ctx.moveTo(points[0].x, points[0].y);
-          for (let i = 1; i < points.length - 1; i++) {
-            const xc = (points[i].x + points[i + 1].x) / 2;
-            const yc = (points[i].y + points[i + 1].y) / 2;
-            ctx.quadraticCurveTo(points[i].x, points[i].y, xc, yc);
-          }
-          const last = points[points.length - 1];
-          ctx.lineTo(last.x, last.y);
+          ctx.strokeStyle = grad;
+          ctx.lineWidth = 1.2;
+          ctx.beginPath();
+          ctx.moveTo(x, y1);
+          ctx.lineTo(x, y2);
           ctx.stroke();
+        }
+      }
 
-          // Elegant cartographic index elevation ticks
-          if (isIndexContour) {
-            for (let i = 2; i < points.length - 2; i += 6) {
-              const pt = points[i];
-              ctx.fillStyle = `rgba(${r1}, ${g1}, ${b1}, 0.35)`;
+      for (let y = startY; y <= endY; y += cellSize) {
+        const dy = Math.abs(y - my);
+        if (dy < lightRadius) {
+          const dxSpan = Math.sqrt(lightRadius * lightRadius - dy * dy);
+          const x1 = Math.max(0, mx - dxSpan);
+          const x2 = Math.min(width, mx + dxSpan);
+
+          const grad = ctx.createLinearGradient(x1, y, x2, y);
+          const maxAlpha = (1 - dy / lightRadius) * 0.35;
+          grad.addColorStop(0, "transparent");
+          grad.addColorStop(0.5, `rgba(${r1}, ${g1}, ${b1}, ${maxAlpha})`);
+          grad.addColorStop(1, "transparent");
+
+          ctx.strokeStyle = grad;
+          ctx.lineWidth = 1.2;
+          ctx.beginPath();
+          ctx.moveTo(x1, y);
+          ctx.lineTo(x2, y);
+          ctx.stroke();
+        }
+      }
+
+      // Illuminated crosshairs and points at grid intersections near cursor
+      for (let x = startX; x <= endX; x += cellSize) {
+        for (let y = startY; y <= endY; y += cellSize) {
+          const dist = Math.hypot(x - mx, y - my);
+          if (dist < lightRadius * 0.85) {
+            const alpha = Math.pow(1 - dist / (lightRadius * 0.85), 1.5) * 0.6;
+            ctx.fillStyle = `rgba(${r2}, ${g2}, ${b2}, ${alpha})`;
+            ctx.beginPath();
+            ctx.arc(x, y, 1.8, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Tiny crosshair arms
+            if (dist < lightRadius * 0.5) {
+              ctx.strokeStyle = `rgba(${r2}, ${g2}, ${b2}, ${alpha * 0.8})`;
+              ctx.lineWidth = 1;
               ctx.beginPath();
-              ctx.arc(pt.x, pt.y, 1.4, 0, Math.PI * 2);
-              ctx.fill();
+              ctx.moveTo(x - 3.5, y);
+              ctx.lineTo(x + 3.5, y);
+              ctx.moveTo(x, y - 3.5);
+              ctx.lineTo(x, y + 3.5);
+              ctx.stroke();
             }
           }
         }
       }
+
+      // Smooth radial aura centered at cursor
+      const auraGrad = ctx.createRadialGradient(mx, my, 0, mx, my, lightRadius);
+      auraGrad.addColorStop(0, `rgba(${r1}, ${g1}, ${b1}, 0.12)`);
+      auraGrad.addColorStop(0.6, `rgba(${r3}, ${g3}, ${b3}, 0.04)`);
+      auraGrad.addColorStop(1, "transparent");
+      ctx.fillStyle = auraGrad;
+      ctx.beginPath();
+      ctx.arc(mx, my, lightRadius, 0, Math.PI * 2);
+      ctx.fill();
     };
 
     // ═════════════════════════════════════════════════════════════════════════
@@ -458,105 +559,60 @@ export function AtmosphereCanvasEngine({ theme, engine }: AtmosphereCanvasEngine
     };
 
     // ═════════════════════════════════════════════════════════════════════════
-    // ── 8. CELESTIAL DUST: 3-Tier Depth of Field with Macro Bokeh & Scintillation
+    // ── 8. FLUID AURORA: Multi-Chromatic Plasma Ribbons with Gaussian Dispersion
     // ═════════════════════════════════════════════════════════════════════════
-    interface CelestialParticle {
-      x: number;
-      y: number;
-      vx: number;
-      vy: number;
-      r: number;
-      alpha: number;
-      phase: number;
-      tier: "macro" | "mid" | "star";
-    }
-
-    const celestialField: CelestialParticle[] = [
-      // Tier 1: Macro Bokeh (8 foreground particles)
-      ...Array.from({ length: 8 }, () => ({
-        x: Math.random() * width,
-        y: Math.random() * height,
-        vx: (Math.random() - 0.5) * 0.18,
-        vy: -Math.random() * 0.15 - 0.05,
-        r: Math.random() * 24 + 20,
-        alpha: Math.random() * 0.035 + 0.02,
-        phase: Math.random() * Math.PI * 2,
-        tier: "macro" as const,
-      })),
-      // Tier 2: Midground Brownian Motes (42 particles)
-      ...Array.from({ length: 42 }, () => ({
-        x: Math.random() * width,
-        y: Math.random() * height,
-        vx: (Math.random() - 0.5) * 0.35,
-        vy: -Math.random() * 0.45 - 0.10,
-        r: Math.random() * 2.2 + 1.2,
-        alpha: Math.random() * 0.45 + 0.25,
-        phase: Math.random() * Math.PI * 2,
-        tier: "mid" as const,
-      })),
-      // Tier 3: Deep Stars (70 particles)
-      ...Array.from({ length: 70 }, () => ({
-        x: Math.random() * width,
-        y: Math.random() * height,
-        vx: (Math.random() - 0.5) * 0.08,
-        vy: -Math.random() * 0.12 - 0.02,
-        r: Math.random() * 0.9 + 0.5,
-        alpha: Math.random() * 0.5 + 0.2,
-        phase: Math.random() * Math.PI * 2,
-        tier: "star" as const,
-      })),
-    ];
-
-    const drawCelestialDust = (t: number) => {
+    const drawFluidAurora = (t: number) => {
       ctx.fillStyle = theme.bloomColors[0];
       ctx.fillRect(0, 0, width, height);
 
-      const mouseDeltaX = (smoothMouse.x / width - 0.5) * 30;
+      ctx.save();
+      ctx.globalCompositeOperation = "screen";
 
-      celestialField.forEach((p) => {
-        // Organic Brownian drift
-        p.x += p.vx + Math.sin(t * 0.35 + p.phase) * 0.22;
-        p.y += p.vy;
+      const ribbons = 4;
+      const mouseBias = (smoothMouse.x / width - 0.5) * 40;
 
-        if (p.y < -p.r * 2) p.y = height + p.r * 2;
-        if (p.x < -p.r * 2) p.x = width + p.r * 2;
-        if (p.x > width + p.r * 2) p.x = -p.r * 2;
+      for (let r = 0; r < ribbons; r++) {
+        const ribbonRatio = r / (ribbons - 1);
+        const cy = height * (0.28 + ribbonRatio * 0.45);
+        const speed = 0.28 + r * 0.08;
+        const phase = r * 1.2;
 
-        if (p.tier === "macro") {
-          // Macro Bokeh: soft blurred gaussian halo
-          const px = p.x + mouseDeltaX * 1.5;
-          const grad = ctx.createRadialGradient(px, p.y, 0, px, p.y, p.r);
-          grad.addColorStop(0, `rgba(${r2}, ${g2}, ${b2}, ${p.alpha * 1.2})`);
-          grad.addColorStop(0.6, `rgba(${r1}, ${g1}, ${b1}, ${p.alpha * 0.5})`);
-          grad.addColorStop(1, "transparent");
+        const col =
+          r === 0
+            ? `rgba(${r1}, ${g1}, ${b1}, 0.22)`
+            : r === 1
+            ? `rgba(${r2}, ${g2}, ${b2}, 0.18)`
+            : r === 2
+            ? `rgba(${r3}, ${g3}, ${b3}, 0.15)`
+            : `rgba(${r1}, ${g1}, ${b1}, 0.10)`;
 
-          ctx.fillStyle = grad;
-          ctx.beginPath();
-          ctx.arc(px, p.y, p.r, 0, Math.PI * 2);
-          ctx.fill();
-        } else if (p.tier === "mid") {
-          // Midground motes: luminous core + aura
-          const pulse = Math.sin(t * 1.2 + p.phase) * 0.25 + 0.75;
-          const currentAlpha = p.alpha * pulse;
+        ctx.beginPath();
+        ctx.moveTo(0, height);
 
-          ctx.fillStyle = `rgba(${r1}, ${g1}, ${b1}, ${currentAlpha * 0.35})`;
-          ctx.beginPath();
-          ctx.arc(p.x, p.y, p.r * 2.4, 0, Math.PI * 2);
-          ctx.fill();
-
-          ctx.fillStyle = `rgba(${r2}, ${g2}, ${b2}, ${currentAlpha})`;
-          ctx.beginPath();
-          ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-          ctx.fill();
-        } else {
-          // Deep pinpoint stars with harmonic scintillation
-          const twinkle = Math.sin(t * 2.8 + p.phase) * 0.4 + 0.6;
-          ctx.fillStyle = `rgba(255, 255, 255, ${p.alpha * twinkle * 0.65})`;
-          ctx.beginPath();
-          ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-          ctx.fill();
+        const step = 24;
+        for (let x = 0; x <= width + step; x += step) {
+          const nx = x / width;
+          const y =
+            cy +
+            Math.sin(nx * 3.4 + t * speed + phase) * 65 +
+            Math.cos(nx * 6.8 - t * 0.35 + phase) * 32 +
+            Math.sin(nx * 1.8 + mouseBias * 0.03) * 20;
+          ctx.lineTo(x, y);
         }
-      });
+
+        ctx.lineTo(width, height);
+        ctx.closePath();
+
+        const grad = ctx.createLinearGradient(0, cy - 80, 0, height);
+        grad.addColorStop(0, col);
+        grad.addColorStop(0.6, col.replace(/[\d\.]+\)$/, "0.05)"));
+        grad.addColorStop(1, "transparent");
+
+        ctx.fillStyle = grad;
+        ctx.fill();
+      }
+
+      ctx.restore();
     };
 
     // ═════════════════════════════════════════════════════════════════════════
@@ -585,140 +641,108 @@ export function AtmosphereCanvasEngine({ theme, engine }: AtmosphereCanvasEngine
     };
 
     // ═════════════════════════════════════════════════════════════════════════
-    // ── 10. NEURAL LATTICE: Synaptic Cognitive Graph with Action Potentials
+    // ── 10. SOLAR CORONA: Horizon Celestial Eclipse & Incandescent Flares
     // ═════════════════════════════════════════════════════════════════════════
-    interface SynapticNode {
-      x: number;
-      y: number;
-      vx: number;
-      vy: number;
-      radius: number;
-      phase: number;
-      pulseCharge: number;
-    }
-    const synapticNodes: SynapticNode[] = Array.from({ length: 42 }, () => ({
-      x: Math.random() * width,
-      y: Math.random() * height,
-      vx: (Math.random() - 0.5) * 0.45,
-      vy: (Math.random() - 0.5) * 0.45,
-      radius: Math.random() * 1.6 + 1.2,
-      phase: Math.random() * Math.PI * 2,
-      pulseCharge: 0,
-    }));
-
-    // Traveling action potential signals along synapses
-    interface ActionSignal {
-      sourceIdx: number;
-      targetIdx: number;
-      progress: number;
+    interface FlareParticle {
+      angle: number;
+      dist: number;
       speed: number;
+      size: number;
+      alpha: number;
     }
-    const actionSignals: ActionSignal[] = Array.from({ length: 12 }, () => ({
-      sourceIdx: Math.floor(Math.random() * 42),
-      targetIdx: Math.floor(Math.random() * 42),
-      progress: Math.random(),
-      speed: Math.random() * 0.008 + 0.004,
+
+    const flares: FlareParticle[] = Array.from({ length: 24 }, () => ({
+      angle: -Math.PI * 0.95 + Math.random() * Math.PI * 0.9,
+      dist: Math.random() * 80 + 20,
+      speed: Math.random() * 0.4 + 0.2,
+      size: Math.random() * 2 + 1,
+      alpha: Math.random() * 0.5 + 0.3,
     }));
 
-    const drawNeuralLattice = (t: number) => {
+    const drawSolarCorona = (t: number) => {
       ctx.fillStyle = theme.bloomColors[0];
       ctx.fillRect(0, 0, width, height);
 
-      // Update node positions
-      synapticNodes.forEach((n) => {
-        n.x += n.vx;
-        n.y += n.vy;
-        if (n.x < 15 || n.x > width - 15) n.vx *= -1;
-        if (n.y < 15 || n.y > height - 15) n.vy *= -1;
-        n.pulseCharge = Math.max(0, n.pulseCharge - 0.02);
-      });
+      const cx = width * 0.5;
+      const cy = height * 0.92;
+      const baseRadius = Math.min(width, height) * 0.45;
 
-      const maxDist = 145;
+      ctx.save();
+      ctx.globalCompositeOperation = "screen";
 
-      // Draw synapses with bidirectional linear gradients
-      for (let i = 0; i < synapticNodes.length; i++) {
-        for (let j = i + 1; j < synapticNodes.length; j++) {
-          const dx = synapticNodes[i].x - synapticNodes[j].x;
-          const dy = synapticNodes[i].y - synapticNodes[j].y;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist < maxDist) {
-            const norm = 1 - dist / maxDist;
-            const alpha = Math.pow(norm, 1.6) * 0.32;
+      // Broad coronal haze reaching upward into viewport
+      const hazeRadius = baseRadius * 2.2;
+      const hazeGrad = ctx.createRadialGradient(cx, cy, baseRadius * 0.8, cx, cy, hazeRadius);
+      hazeGrad.addColorStop(0, `rgba(${r2}, ${g2}, ${b2}, 0.28)`);
+      hazeGrad.addColorStop(0.35, `rgba(${r1}, ${g1}, ${b1}, 0.14)`);
+      hazeGrad.addColorStop(0.75, `rgba(${r3}, ${g3}, ${b3}, 0.04)`);
+      hazeGrad.addColorStop(1, "transparent");
 
-            const grad = ctx.createLinearGradient(
-              synapticNodes[i].x,
-              synapticNodes[i].y,
-              synapticNodes[j].x,
-              synapticNodes[j].y
-            );
-            grad.addColorStop(0, `rgba(${r1}, ${g1}, ${b1}, ${alpha})`);
-            grad.addColorStop(1, `rgba(${r2}, ${g2}, ${b2}, ${alpha})`);
+      ctx.fillStyle = hazeGrad;
+      ctx.beginPath();
+      ctx.arc(cx, cy, hazeRadius, 0, Math.PI * 2);
+      ctx.fill();
 
-            ctx.strokeStyle = grad;
-            ctx.lineWidth = 0.9;
-            ctx.beginPath();
-            ctx.moveTo(synapticNodes[i].x, synapticNodes[i].y);
-            ctx.lineTo(synapticNodes[j].x, synapticNodes[j].y);
-            ctx.stroke();
+      // 36 Prominence Solar Rays radiating from the eclipse horizon
+      const rayCount = 36;
+      for (let i = 0; i < rayCount; i++) {
+        const theta = -Math.PI * 0.95 + (i / (rayCount - 1)) * Math.PI * 0.9;
+        const breath = Math.sin(t * 1.5 + i * 0.6) * 35 + Math.cos(t * 0.8 + i * 1.1) * 20;
+        const rayLen = 50 + breath;
+        const rStart = baseRadius;
+        const rEnd = baseRadius + rayLen;
 
-            // Delicate Delaunay triad face fill
-            if (dist < 85 && (i + j) % 5 === 0) {
-              const k = (j + 1) % synapticNodes.length;
-              ctx.fillStyle = `rgba(${r1}, ${g1}, ${b1}, 0.016)`;
-              ctx.beginPath();
-              ctx.moveTo(synapticNodes[i].x, synapticNodes[i].y);
-              ctx.lineTo(synapticNodes[j].x, synapticNodes[j].y);
-              ctx.lineTo(synapticNodes[k].x, synapticNodes[k].y);
-              ctx.closePath();
-              ctx.fill();
-            }
-          }
-        }
+        const x1 = cx + Math.cos(theta) * rStart;
+        const y1 = cy + Math.sin(theta) * rStart;
+        const x2 = cx + Math.cos(theta) * rEnd;
+        const y2 = cy + Math.sin(theta) * rEnd;
+
+        const rayAlpha = Math.sin((i / (rayCount - 1)) * Math.PI) * (0.35 + Math.sin(t * 2 + i) * 0.15);
+        ctx.strokeStyle = `rgba(${r2}, ${g2}, ${b2}, ${rayAlpha})`;
+        ctx.lineWidth = 1.6;
+        ctx.beginPath();
+        ctx.moveTo(x1, y1);
+        ctx.lineTo(x2, y2);
+        ctx.stroke();
       }
 
-      // Draw and update active action potential signals
-      actionSignals.forEach((sig) => {
-        sig.progress += sig.speed;
-        const n1 = synapticNodes[sig.sourceIdx];
-        const n2 = synapticNodes[sig.targetIdx];
+      // Incandescent rim light right on the edge of the celestial horizon
+      const rimGrad = ctx.createRadialGradient(cx, cy, baseRadius - 10, cx, cy, baseRadius + 25);
+      rimGrad.addColorStop(0, "transparent");
+      rimGrad.addColorStop(0.5, `rgba(255, 255, 255, 0.65)`);
+      rimGrad.addColorStop(0.75, `rgba(${r1}, ${g1}, ${b1}, 0.45)`);
+      rimGrad.addColorStop(1, "transparent");
 
-        if (n1 && n2) {
-          const dist = Math.hypot(n1.x - n2.x, n1.y - n2.y);
-          if (dist < maxDist && sig.progress <= 1) {
-            const sx = n1.x + (n2.x - n1.x) * sig.progress;
-            const sy = n1.y + (n2.y - n1.y) * sig.progress;
-            const signalAlpha = Math.sin(sig.progress * Math.PI) * 0.85;
+      ctx.fillStyle = rimGrad;
+      ctx.beginPath();
+      ctx.arc(cx, cy, baseRadius + 25, 0, Math.PI * 2);
+      ctx.fill();
 
-            ctx.fillStyle = `rgba(${r3}, ${g3}, ${b3}, ${signalAlpha})`;
-            ctx.beginPath();
-            ctx.arc(sx, sy, 2.2, 0, Math.PI * 2);
-            ctx.fill();
-          } else if (sig.progress > 1) {
-            n2.pulseCharge = 1;
-            sig.sourceIdx = Math.floor(Math.random() * synapticNodes.length);
-            sig.targetIdx = Math.floor(Math.random() * synapticNodes.length);
-            sig.progress = 0;
-          }
+      // Floating coronal plasma motes
+      flares.forEach((f) => {
+        f.dist += f.speed;
+        if (f.dist > 180) {
+          f.dist = Math.random() * 20;
+          f.angle = -Math.PI * 0.95 + Math.random() * Math.PI * 0.9;
         }
-      });
 
-      // Draw synaptic nodes (nucleus + breathing aura)
-      synapticNodes.forEach((n) => {
-        const pulse = Math.sin(t * 1.6 + n.phase) * 0.3 + 0.7;
-        const chargeBoost = n.pulseCharge * 0.5;
+        const fx = cx + Math.cos(f.angle) * (baseRadius + f.dist);
+        const fy = cy + Math.sin(f.angle) * (baseRadius + f.dist);
+        const fade = (1 - f.dist / 180) * f.alpha;
 
-        // Outer energy aura
-        ctx.fillStyle = `rgba(${r1}, ${g1}, ${b1}, ${(pulse * 0.22 + chargeBoost * 0.4)})`;
+        ctx.fillStyle = `rgba(${r2}, ${g2}, ${b2}, ${fade})`;
         ctx.beginPath();
-        ctx.arc(n.x, n.y, n.radius * 3.5, 0, Math.PI * 2);
-        ctx.fill();
-
-        // Inner nucleus
-        ctx.fillStyle = `rgba(${r2}, ${g2}, ${b2}, ${pulse * 0.95})`;
-        ctx.beginPath();
-        ctx.arc(n.x, n.y, n.radius + chargeBoost, 0, Math.PI * 2);
+        ctx.arc(fx, fy, f.size, 0, Math.PI * 2);
         ctx.fill();
       });
+
+      ctx.restore();
+
+      // Occulting dark celestial body
+      ctx.fillStyle = theme.bloomColors[0];
+      ctx.beginPath();
+      ctx.arc(cx, cy, baseRadius - 2, 0, Math.PI * 2);
+      ctx.fill();
     };
 
     // ═════════════════════════════════════════════════════════════════════════
@@ -766,7 +790,7 @@ export function AtmosphereCanvasEngine({ theme, engine }: AtmosphereCanvasEngine
 
     if (prefersReducedMotion) {
       // Draw static first frame for accessibility
-      drawSilkCaustics(0);
+      drawAmbientSpotlight(0);
       return;
     }
 
@@ -781,17 +805,17 @@ export function AtmosphereCanvasEngine({ theme, engine }: AtmosphereCanvasEngine
       smoothMouse.y += (mousePos.y - smoothMouse.y) * 0.04;
 
       switch (engine) {
-        case "silk-caustics":
-          drawSilkCaustics(t);
+        case "ambient-spotlight":
+          drawAmbientSpotlight(t);
           break;
         case "aurora-curtains":
           drawAuroraCurtains(t);
           break;
-        case "spectral-rays":
-          drawSpectralRays(t);
+        case "meteor-shower":
+          drawMeteorShower(t);
           break;
-        case "topographic-flow":
-          drawTopographicFlow(t);
+        case "radiant-grid":
+          drawRadiantGrid(t);
           break;
         case "quantum-field":
           drawQuantumField();
@@ -802,14 +826,14 @@ export function AtmosphereCanvasEngine({ theme, engine }: AtmosphereCanvasEngine
         case "matrix-rain":
           if (frame % 2 === 0) drawMatrixRain();
           break;
-        case "celestial-dust":
-          drawCelestialDust(t);
+        case "fluid-aurora":
+          drawFluidAurora(t);
           break;
         case "radial-pulse":
           drawRadialPulse(t);
           break;
-        case "neural-lattice":
-          drawNeuralLattice(t);
+        case "solar-corona":
+          drawSolarCorona(t);
           break;
         case "bokeh-blur":
           drawBokehBlur();
