@@ -12,6 +12,32 @@ describe("Circuit Breaker & Fallback Engine", () => {
     expect(circuitBreaker.isExhausted("groq")).toBe(true);
   });
 
+  it("requires multiple consecutive failures before tripping to prevent DoS poisoning (SEC-03)", () => {
+    expect(circuitBreaker.isExhausted("groq")).toBe(false);
+
+    // Single failure does not trip
+    const tripped1 = circuitBreaker.recordFailure("groq", "HTTP 429: Rate limited");
+    expect(tripped1).toBe(false);
+    expect(circuitBreaker.isExhausted("groq")).toBe(false);
+
+    // Second failure does not trip
+    const tripped2 = circuitBreaker.recordFailure("groq", "HTTP 429: Rate limited");
+    expect(tripped2).toBe(false);
+    expect(circuitBreaker.isExhausted("groq")).toBe(false);
+
+    // Third failure within window trips the circuit breaker
+    const tripped3 = circuitBreaker.recordFailure("groq", "HTTP 429: Rate limited");
+    expect(tripped3).toBe(true);
+    expect(circuitBreaker.isExhausted("groq")).toBe(true);
+  });
+
+  it("immediately trips on fatal errors when requested", () => {
+    expect(circuitBreaker.isExhausted("openrouter")).toBe(false);
+    const tripped = circuitBreaker.recordFailure("openrouter", "Account suspended", true);
+    expect(tripped).toBe(true);
+    expect(circuitBreaker.isExhausted("openrouter")).toBe(true);
+  });
+
   it("cascades away from exhausted providers to healthy candidates", () => {
     // Before exhaustion, groq-fast is candidate
     const initialCandidates = circuitBreaker.resolveCandidateModels("groq-fast", false);
