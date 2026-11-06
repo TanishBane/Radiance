@@ -27,7 +27,7 @@ import {
   Disc,
   Eye,
   Dices,
-  Shuffle, Layers, Compass, Activity, Cloud, Cpu,
+  Shuffle, Layers, Compass, Activity, Cloud, Cpu, Moon, Sun,
 } from "lucide-react";
 
 interface SettingsDrawerProps {
@@ -42,7 +42,7 @@ interface SettingsDrawerProps {
 }
 
 const ENGINE_ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
-  Film, Waves, Orbit, Wind, Zap, Grid3X3, Share2, Flame, Terminal, Sparkles, Radio, Disc, Eye,
+  Film, Waves, Orbit, Wind, Zap, Grid3X3, Share2, Flame, Terminal, Sparkles, Radio, Disc, Eye, Moon, Sun,
 };
 
 type CategoryFilter = "all" | "signature" | "elemental" | "cyber" | "organic" | "cosmic";
@@ -52,7 +52,7 @@ export function SettingsDrawer({
   onClose,
   activeTheme,
   onSelectTheme,
-  gradientStyle = "aurora-nights",
+  gradientStyle = "plain-black",
   onSelectGradientStyle,
 }: SettingsDrawerProps) {
   const [paletteCategory, setPaletteCategory] = useState<CategoryFilter>("all");
