@@ -64,6 +64,14 @@ export function BackgroundLayers({
         }}
         aria-hidden="true"
       />
+
+      {/* ══ 2.39:1 CINEMATIC VIEWFINDER CORNER GUIDES ══ */}
+      <div className="fixed inset-0 pointer-events-none z-[3] hidden sm:block select-none opacity-25" aria-hidden="true">
+        <div className="absolute top-3 left-3 w-3 h-3 border-t border-l border-white/40" />
+        <div className="absolute top-3 right-3 w-3 h-3 border-t border-r border-white/40" />
+        <div className="absolute bottom-3 left-3 w-3 h-3 border-b border-l border-white/40" />
+        <div className="absolute bottom-3 right-3 w-3 h-3 border-b border-r border-white/40" />
+      </div>
     </>
   );
 }
