@@ -41,20 +41,8 @@ interface SettingsDrawerProps {
   onSelectGradientStyle?: (style: GradientStyle) => void;
 }
 
-const ENGINE_ICONS: Record<string, React.ReactNode> = {
-  SunMedium: <SunMedium className="w-4 h-4 text-[var(--accent)]" />,
-  Waves: <Waves className="w-4 h-4 text-[var(--accent)]" />,
-  Orbit: <Orbit className="w-4 h-4 text-[var(--accent)]" />,
-  Wind: <Wind className="w-4 h-4 text-[var(--accent)]" />,
-  Zap: <Zap className="w-4 h-4 text-[var(--accent)]" />,
-  Grid3X3: <Grid3X3 className="w-4 h-4 text-[var(--accent)]" />,
-  Share2: <Share2 className="w-4 h-4 text-[var(--accent)]" />,
-  Flame: <Flame className="w-4 h-4 text-[var(--accent)]" />,
-  Terminal: <Terminal className="w-4 h-4 text-[var(--accent)]" />,
-  Cloud: <Cloud className="w-4 h-4 text-[var(--accent)]" />,
-  Radio: <Radio className="w-4 h-4 text-[var(--accent)]" />,
-  Cpu: <Cpu className="w-4 h-4 text-[var(--accent)]" />,
-  Eye: <Eye className="w-4 h-4 text-[var(--accent)]" />,
+const ENGINE_ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
+  SunMedium, Waves, Orbit, Wind, Zap, Grid3X3, Share2, Flame, Terminal, Sparkles, Radio, Disc, Eye,
 };
 
 type CategoryFilter = "all" | "signature" | "elemental" | "cyber" | "organic" | "cosmic";
@@ -153,7 +141,9 @@ export function SettingsDrawer({
                           }`}
                         >
                           <div className="p-1.5 rounded-lg bg-[var(--surface)] mb-1">
-                            {ENGINE_ICONS[engine.iconName] || <Sparkles className="w-4 h-4 text-[var(--accent)]" />}
+                            {React.createElement(ENGINE_ICON_MAP[engine.iconName] || Sparkles, {
+                              className: "w-4 h-4 text-[var(--accent)]",
+                            })}
                           </div>
                           <span className="text-[11px] font-semibold leading-tight line-clamp-1">
                             {engine.label}

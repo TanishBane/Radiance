@@ -22,6 +22,19 @@ describe("Distributed & Layered Rate Limiting", () => {
     // Default fallback
     const headersEmpty = new Headers();
     expect(getTrustedClientIp(headersEmpty)).toBe("127.0.0.1");
+
+    // Rejects invalid spoofed IP strings and falls back to safe default
+    const headersMalicious = new Headers({
+      "x-real-ip": "attacker-injected-string; DROP TABLE",
+      "x-forwarded-for": "not-an-ip, 127.0.0.1",
+    });
+    expect(getTrustedClientIp(headersMalicious)).toBe("127.0.0.1");
+
+    // Accepts valid IPv6 addresses
+    const headersIpv6 = new Headers({
+      "x-real-ip": "2001:db8:85a3:8d3:1319:8a2e:370:7348",
+    });
+    expect(getTrustedClientIp(headersIpv6)).toBe("2001:db8:85a3:8d3:1319:8a2e:370:7348");
   });
 
   it("permits initial requests within token burst capacity", async () => {

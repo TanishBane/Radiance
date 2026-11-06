@@ -7,9 +7,17 @@ interface ProviderState {
   reason?: string;
 }
 
+interface FailureWindow {
+  count: number;
+  windowStart: number;
+}
+
 class CircuitBreaker {
   private states = new Map<string, ProviderState>();
+  private failureWindows = new Map<string, FailureWindow>();
   private readonly cooldownMs = 60 * 1000; // 1 minute cooldown for rate-limited providers
+  private readonly failureThreshold = 3; // Minimum 3 consecutive failures to trip
+  private readonly failureWindowMs = 30 * 1000; // 30-second rolling window
 
   isExhausted(provider: string): boolean {
     const state = this.states.get(provider);
@@ -29,10 +37,40 @@ class CircuitBreaker {
       exhaustedAt: Date.now(),
       reason,
     });
+    this.failureWindows.delete(provider);
+  }
+
+  /**
+   * Records a provider failure. Only trips the circuit breaker after
+   * failureThreshold failures within failureWindowMs to prevent single-request
+   * Denial of Service poisoning across all tenants (SEC-03).
+   * Returns true if the circuit breaker was tripped.
+   */
+  recordFailure(provider: string, reason?: string, fatal = false): boolean {
+    const now = Date.now();
+    if (fatal) {
+      this.markExhausted(provider, reason);
+      return true;
+    }
+
+    const window = this.failureWindows.get(provider);
+    if (!window || now - window.windowStart > this.failureWindowMs) {
+      this.failureWindows.set(provider, { count: 1, windowStart: now });
+      return false;
+    }
+
+    window.count++;
+    if (window.count >= this.failureThreshold) {
+      this.markExhausted(provider, reason || `Exhausted after ${window.count} failures`);
+      return true;
+    }
+
+    return false;
   }
 
   resetAll(): void {
     this.states.clear();
+    this.failureWindows.clear();
   }
 
   /**

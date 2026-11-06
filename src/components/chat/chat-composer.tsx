@@ -98,6 +98,14 @@ export function ChatComposer({
   const [contextMenuOpen, setContextMenuOpen] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const [recordingSeconds, setRecordingSeconds] = useState(0);
+  const [composerNotice, setComposerNotice] = useState<string | null>(null);
+
+  const showNotice = (msg: string) => {
+    setComposerNotice(msg);
+    setTimeout(() => {
+      setComposerNotice((curr) => (curr === msg ? null : curr));
+    }, 4500);
+  };
 
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -229,7 +237,7 @@ export function ChatComposer({
       windowWithSpeech.SpeechRecognition || windowWithSpeech.webkitSpeechRecognition;
 
     if (!SpeechRecognition) {
-      alert("Voice input is supported in Google Chrome, Edge, and Safari.");
+      showNotice("Voice input is supported in Google Chrome, Edge, and Safari.");
       return;
     }
 
@@ -275,14 +283,14 @@ export function ChatComposer({
 
     for (const file of files) {
       if (file.size > 10 * 1024 * 1024) {
-        alert(`${file.name} exceeds the 10MB limit.`);
+        showNotice(`${file.name} exceeds the 10MB limit.`);
         continue;
       }
       try {
         const attachment = await createAttachmentFromFile(file);
         setAttachments((prev) => [...prev, attachment]);
       } catch (err) {
-        alert(`Failed to parse file: ${err instanceof Error ? err.message : "Unknown error"}`);
+        showNotice(`Failed to parse file: ${err instanceof Error ? err.message : "Unknown error"}`);
       }
     }
     e.target.value = "";
@@ -311,33 +319,22 @@ export function ChatComposer({
   };
 
   const handleListboxKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "ArrowDown") {
-      e.preventDefault();
-      setFocusedIndex((prev) => {
-        const next = (prev + 1) % AVAILABLE_MODELS.length;
-        optionRefs.current[next]?.focus();
-        return next;
-      });
-    } else if (e.key === "ArrowUp") {
-      e.preventDefault();
-      setFocusedIndex((prev) => {
-        const next = (prev - 1 + AVAILABLE_MODELS.length) % AVAILABLE_MODELS.length;
-        optionRefs.current[next]?.focus();
-        return next;
-      });
-    } else if (e.key === "Home") {
-      e.preventDefault();
-      setFocusedIndex(0);
-      optionRefs.current[0]?.focus();
-    } else if (e.key === "End") {
-      e.preventDefault();
-      const last = AVAILABLE_MODELS.length - 1;
-      setFocusedIndex(last);
-      optionRefs.current[last]?.focus();
-    } else if (e.key === "Escape") {
+    const len = AVAILABLE_MODELS.length;
+    let next = -1;
+    if (e.key === "ArrowDown") next = (focusedIndex + 1) % len;
+    else if (e.key === "ArrowUp") next = (focusedIndex - 1 + len) % len;
+    else if (e.key === "Home") next = 0;
+    else if (e.key === "End") next = len - 1;
+    else if (e.key === "Escape") {
       e.preventDefault();
       setModelMenuOpen(false);
       modelTriggerRef.current?.focus();
+      return;
+    }
+    if (next >= 0) {
+      e.preventDefault();
+      setFocusedIndex(next);
+      optionRefs.current[next]?.focus();
     }
   };
 
@@ -377,11 +374,31 @@ export function ChatComposer({
                 onClick={() => removeAttachment(att.id)}
                 className="p-1 rounded-md text-[var(--txt-muted)] hover:text-[var(--danger)] hover:bg-white/5 transition-colors"
                 title="Remove attachment"
+                aria-label="Remove attachment"
               >
                 <X className="w-3 h-3" />
               </button>
             </div>
           ))}
+        </div>
+      )}
+
+      {/* Inline Non-blocking Notification Banner */}
+      {composerNotice && (
+        <div
+          role="status"
+          aria-live="polite"
+          className="mb-2 px-3 py-1.5 rounded-xl text-xs font-mono bg-[var(--danger-d)] border border-[var(--danger)]/30 text-[var(--danger)] flex items-center justify-between shadow-sm animate-in fade-in slide-in-from-bottom-1 duration-150"
+        >
+          <span>{composerNotice}</span>
+          <button
+            type="button"
+            onClick={() => setComposerNotice(null)}
+            className="ml-2 hover:opacity-80 cursor-pointer p-0.5"
+            aria-label="Dismiss notice"
+          >
+            <X className="w-3.5 h-3.5" />
+          </button>
         </div>
       )}
 
