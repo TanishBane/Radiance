@@ -150,7 +150,7 @@ export function WelcomeCard({ onSelectPrompt }: WelcomeCardProps) {
       {/* 35mm CinemaScope Studio Indicator */}
       <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/10 bg-white/[0.03] backdrop-blur-md text-[10px] font-mono tracking-widest text-[var(--txt-muted)] uppercase">
         <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent)] animate-pulse" />
-        <span>2.39:1 Cinemascope · Studio Mode</span>
+        <span>Aurora Nights · Arctic Atmosphere</span>
       </div>
 
       {/* Brand Icon Gem with Cinematic Framing */}

@@ -13,7 +13,7 @@ const cormorant = Cormorant_Garamond({
 export const metadata: Metadata = {
   title: "RADIANCE — Intelligent AI Platform",
   description:
-    "Illuminate what is possible. High-precision reasoning, multimodal intelligence, and cinematic spatial computing.",
+    "Illuminate what is possible. High-precision reasoning, multimodal intelligence, and aurora spatial computing.",
   keywords: ["AI", "Radiance", "Machine Learning", "Groq", "Gemini", "Llama 3.3", "Vercel AI SDK"],
   authors: [{ name: "RADIANCE Architecture Team" }],
   icons: {

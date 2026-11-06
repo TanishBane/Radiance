@@ -52,7 +52,7 @@ export function SettingsDrawer({
   onClose,
   activeTheme,
   onSelectTheme,
-  gradientStyle = "cinematic-studio",
+  gradientStyle = "aurora-nights",
   onSelectGradientStyle,
 }: SettingsDrawerProps) {
   const [paletteCategory, setPaletteCategory] = useState<CategoryFilter>("all");

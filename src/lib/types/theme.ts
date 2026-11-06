@@ -20,7 +20,7 @@ export interface ColorTheme {
 }
 
 export type GradientStyle =
-  | "cinematic-studio"
+  | "aurora-nights"
   | "waves"
   | "cosmic"
   | "aurora-curtains"
@@ -38,20 +38,20 @@ export const COLOR_THEMES: Record<string, ColorTheme> = {
   // ══ 1. SIGNATURE & ATMOSPHERIC ══
   default: {
     id: "default",
-    label: "Cinematic 35mm",
+    label: "Aurora Nights",
     category: "signature",
-    swatchGradient: "linear-gradient(135deg, #090a0f, #d4a373, #38bdf8)",
-    accent: "#d4a373",
-    accentD: "rgba(212,163,115,0.12)",
-    accentG: "rgba(212,163,115,0.22)",
-    accentB: "#f4f4f5",
-    accentC: "#38bdf8",
-    textGradient: "linear-gradient(135deg, #f4f4f5 0%, #d4a373 50%, #38bdf8 100%)",
-    userBg: "rgba(212,163,115,0.06)",
-    userBorder: "rgba(212,163,115,0.18)",
+    swatchGradient: "linear-gradient(135deg, #020612, #10b981, #6366f1)",
+    accent: "#10b981",
+    accentD: "rgba(16,185,129,0.12)",
+    accentG: "rgba(16,185,129,0.24)",
+    accentB: "#a7f3d0",
+    accentC: "#6366f1",
+    textGradient: "linear-gradient(135deg, #a7f3d0 0%, #10b981 50%, #6366f1 100%)",
+    userBg: "rgba(16,185,129,0.06)",
+    userBorder: "rgba(16,185,129,0.18)",
     bgGradient: null,
-    bloomColors: ["#06050a", "#0d0c14", "#d4a373", "#1e1b2e", "#38bdf8", "#f4f4f5"],
-    ribbonColors: ["#06050a", "#1e1b2e", "#d4a373", "#7dd3fc"],
+    bloomColors: ["#020612", "#051329", "#10b981", "#064e3b", "#6366f1", "#a7f3d0"],
+    ribbonColors: ["#020612", "#064e3b", "#10b981", "#c7d2fe"],
     ribbonAngle: 155,
   },
   violet: {
@@ -563,11 +563,11 @@ export interface AtmosphereEngineInfo {
 
 export const ATMOSPHERE_ENGINES: AtmosphereEngineInfo[] = [
   {
-    id: "cinematic-studio",
-    label: "Cinematic Studio",
-    tag: "Cinematic",
-    description: "Minimalist 35mm cinematic projection beam, subtle anamorphic streak, and analog film motes.",
-    iconName: "Film",
+    id: "aurora-nights",
+    label: "Aurora Nights",
+    tag: "Atmospheric",
+    description: "Undulating emerald-violet polar curtains dancing across an Arctic starlit void.",
+    iconName: "Sparkles",
   },
   {
     id: "waves",
