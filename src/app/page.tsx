@@ -264,7 +264,7 @@ export default function RadianceApp() {
   }, [isGenerating, retryLast]);
 
   return (
-    <div className="relative flex flex-row h-[100dvh] w-screen overflow-hidden bg-[var(--void)] text-[var(--txt)] font-sans select-none">
+    <div className="relative flex flex-row h-[100dvh] w-full max-w-full overflow-hidden bg-[var(--void)] text-[var(--txt)] font-sans select-none">
       {/* Background Engines */}
       {gradientStyle === "cosmic" && (
         <AmbientCanvas accentColor={selectedTheme.accent} />

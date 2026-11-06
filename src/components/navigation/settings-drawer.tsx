@@ -101,7 +101,7 @@ export function SettingsDrawer({
           <Dialog.Close asChild>
           <button
             type="button"
-            className="p-2 rounded-xl text-[var(--txt-muted)] hover:text-[var(--txt)] hover:bg-[var(--surface-hover)] transition-colors touch-target"
+            className="p-2 rounded-xl text-[var(--txt-muted)] hover:text-[var(--txt)] hover:bg-[var(--surface-hover)] transition-colors touch-target min-w-[44px] min-h-[44px] flex items-center justify-center cursor-pointer"
             aria-label="Close settings"
           >
             <X className="w-4 h-4" />
@@ -256,7 +256,7 @@ export function SettingsDrawer({
                         key={theme.id}
                         type="button"
                         onClick={() => onSelectTheme(theme.id)}
-                        className={`flex flex-col items-center gap-2 p-2 rounded-xl border text-center transition-all ${
+                        className={`flex flex-col items-center gap-2 p-2 rounded-xl border text-center transition-all min-h-[56px] cursor-pointer ${
                           isActive
                             ? "bg-[var(--accent-d)] border-[var(--accent)] ring-1 ring-[var(--accent)]/50 shadow-sm"
                             : "bg-[var(--surface)] border-[var(--border)] hover:bg-[var(--surface-hover)]"

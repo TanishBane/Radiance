@@ -211,9 +211,26 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
   padding: 8px 14px;
   background: rgba(255, 255, 255, 0.035);
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+@media (max-width: 480px) {
+  .code-block-header {
+    padding: 6px 10px;
+  }
+  .code-block-header-right {
+    gap: 4px;
+  }
+  .code-copy-btn,
+  .code-download-btn,
+  .code-collapse-btn {
+    padding: 3px 6px;
+    font-size: 9.5px;
+  }
 }
 
 .code-block-header-left {

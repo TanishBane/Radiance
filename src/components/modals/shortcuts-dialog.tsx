@@ -23,7 +23,7 @@ export function ShortcutsDialog({ isOpen, onClose }: ShortcutsDialogProps) {
     <Dialog.Root open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <Dialog.Portal>
       <Dialog.Overlay className="radiance-dialog-overlay fixed inset-0 z-50 bg-black/70 backdrop-blur-sm" />
-      <Dialog.Content className="radiance-dialog-panel radiance-dialog-center fixed left-1/2 top-1/2 w-96 max-w-[90vw] z-50 rounded-2xl bg-[var(--deep)]/95 backdrop-blur-2xl border border-[var(--border)] shadow-[0_20px_60px_rgba(0,0,0,0.8)] p-5 outline-none">
+      <Dialog.Content className="radiance-dialog-panel radiance-dialog-center fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-96 max-w-[90vw] z-50 rounded-2xl bg-[var(--deep)]/95 backdrop-blur-2xl border border-[var(--border)] shadow-[0_20px_60px_rgba(0,0,0,0.8)] p-5 outline-none">
         <Dialog.Description className="sr-only">Keyboard shortcuts for common Radiance actions.</Dialog.Description>
         <div className="flex items-center justify-between pb-3 mb-3 border-b border-[var(--border)]">
           <div className="flex items-center gap-2">
@@ -34,7 +34,7 @@ export function ShortcutsDialog({ isOpen, onClose }: ShortcutsDialogProps) {
           <button
             type="button"
             aria-label="Close keyboard shortcuts"
-            className="p-1 rounded-lg text-[var(--txt-muted)] hover:text-[var(--txt)] touch-target"
+            className="min-w-[44px] min-h-[44px] p-2 rounded-xl text-[var(--txt-muted)] hover:text-[var(--txt)] hover:bg-[var(--surface-hover)] transition-colors touch-target flex items-center justify-center cursor-pointer"
           >
             <X className="w-4 h-4" />
           </button>
