@@ -59,8 +59,9 @@ export function HistoryDrawer({
             {conversations.length > 0 && (
               <button
                 onClick={onDeleteAll}
-                className="p-1.5 rounded-lg text-[var(--txt-muted)] hover:text-[var(--danger)] hover:bg-[var(--danger)]/10 transition-colors"
+                className="min-w-[44px] min-h-[44px] p-2 rounded-xl text-[var(--txt-muted)] hover:text-[var(--danger)] hover:bg-[var(--danger)]/10 transition-colors touch-target flex items-center justify-center cursor-pointer"
                 title="Delete all conversations"
+                aria-label="Delete all conversations"
               >
                 <Trash2 className="w-4 h-4" />
               </button>
@@ -68,7 +69,7 @@ export function HistoryDrawer({
             <Dialog.Close asChild>
             <button
               type="button"
-              className="p-1.5 rounded-lg text-[var(--txt-muted)] hover:text-[var(--txt)] hover:bg-[var(--surface-hover)] transition-colors"
+              className="min-w-[44px] min-h-[44px] p-2 rounded-xl text-[var(--txt-muted)] hover:text-[var(--txt)] hover:bg-[var(--surface-hover)] transition-colors touch-target flex items-center justify-center cursor-pointer"
               aria-label="Close conversation history"
             >
               <X className="w-4 h-4" />
@@ -86,7 +87,7 @@ export function HistoryDrawer({
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search chat history..."
-              className="w-full bg-transparent border-0 outline-none text-xs text-[var(--txt)] placeholder:text-[var(--txt-muted)]"
+              className="w-full bg-transparent border-0 outline-none text-base sm:text-xs text-[var(--txt)] placeholder:text-[var(--txt-muted)]"
             />
           </div>
         </div>
@@ -176,16 +177,17 @@ function ConversationItem({
         </span>
       </div>
 
-      <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+      <div className="flex items-center gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
         <button
           onClick={(e) => {
             e.stopPropagation();
             onTogglePin();
           }}
-          className={`p-1 rounded hover:bg-white/10 ${
+          className={`min-w-[36px] min-h-[36px] p-1.5 rounded-lg hover:bg-white/10 transition-colors flex items-center justify-center touch-target cursor-pointer ${
             conv.pinned ? "text-[var(--accent)] opacity-100" : "text-[var(--txt-muted)]"
           }`}
           title={conv.pinned ? "Unpin chat" : "Pin chat"}
+          aria-label={conv.pinned ? "Unpin chat" : "Pin chat"}
         >
           <Pin className="w-3.5 h-3.5 fill-current" />
         </button>
@@ -194,8 +196,9 @@ function ConversationItem({
             e.stopPropagation();
             onDelete();
           }}
-          className="p-1 rounded text-[var(--txt-muted)] hover:text-[var(--danger)] hover:bg-white/10"
+          className="min-w-[36px] min-h-[36px] p-1.5 rounded-lg text-[var(--txt-muted)] hover:text-[var(--danger)] hover:bg-white/10 transition-colors flex items-center justify-center touch-target cursor-pointer"
           title="Delete chat"
+          aria-label="Delete chat"
         >
           <Trash2 className="w-3.5 h-3.5" />
         </button>
