@@ -15,8 +15,7 @@ import {
   Sparkles,
   Sliders,
   Film,
-  SunMedium,
-  Waves,
+    Waves,
   Orbit,
   Wind,
   Zap,
@@ -43,7 +42,7 @@ interface SettingsDrawerProps {
 }
 
 const ENGINE_ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
-  Film, SunMedium, Waves, Orbit, Wind, Zap, Grid3X3, Share2, Flame, Terminal, Sparkles, Radio, Disc, Eye,
+  Film, Waves, Orbit, Wind, Zap, Grid3X3, Share2, Flame, Terminal, Sparkles, Radio, Disc, Eye,
 };
 
 type CategoryFilter = "all" | "signature" | "elemental" | "cyber" | "organic" | "cosmic";
@@ -53,7 +52,7 @@ export function SettingsDrawer({
   onClose,
   activeTheme,
   onSelectTheme,
-  gradientStyle = "ambient-spotlight",
+  gradientStyle = "cinematic-studio",
   onSelectGradientStyle,
 }: SettingsDrawerProps) {
   const [paletteCategory, setPaletteCategory] = useState<CategoryFilter>("all");
