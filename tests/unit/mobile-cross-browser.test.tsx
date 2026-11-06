@@ -130,7 +130,7 @@ describe("Mobile & Cross-Browser Ergonomics, Touch & Viewport Invariants", () =>
 
     const theme = COLOR_THEMES.violet;
     const { unmount } = render(
-      <AtmosphereCanvasEngine theme={theme} engine="cinematic-studio" />
+      <AtmosphereCanvasEngine theme={theme} engine="aurora-nights" />
     );
 
     // Verify touch listeners were registered with passive: true

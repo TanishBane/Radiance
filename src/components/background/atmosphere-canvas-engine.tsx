@@ -23,7 +23,7 @@ function hexToRgb(hex: string): [number, number, number] {
 }
 
 const CANVAS_ENGINES: GradientStyle[] = [
-  "cinematic-studio",
+  "aurora-nights",
   "aurora-curtains",
   "meteor-shower",
   "radiant-grid",
@@ -102,142 +102,97 @@ export function AtmosphereCanvasEngine({ theme, engine }: AtmosphereCanvasEngine
     let frame = 0;
 
     // ═════════════════════════════════════════════════════════════════════════
-    // ── 1. CINEMATIC STUDIO (Minimalist 35mm Projection & Anamorphic Trace)
+    // ── 1. AURORA NIGHTS: Undulating Emerald & Violet Polar Curtains with Starlight
     // ═════════════════════════════════════════════════════════════════════════
-    interface FilmMote {
+    interface PolarStar {
       x: number;
       y: number;
-      vx: number;
-      vy: number;
-      radius: number;
-      phase: number;
+      r: number;
+      alpha: number;
       speed: number;
+      phase: number;
     }
 
-    const filmMotes: FilmMote[] = Array.from({ length: 18 }, () => ({
+    const polarStars: PolarStar[] = Array.from({ length: 42 }, () => ({
       x: Math.random() * width,
-      y: Math.random() * height,
-      vx: (Math.random() - 0.5) * 0.14,
-      vy: -Math.random() * 0.18 - 0.04,
-      radius: Math.random() * 0.9 + 0.5,
+      y: Math.random() * height * 0.75,
+      r: Math.random() * 1.1 + 0.4,
+      alpha: Math.random() * 0.5 + 0.25,
+      speed: Math.random() * 1.8 + 0.8,
       phase: Math.random() * Math.PI * 2,
-      speed: Math.random() * 1.4 + 0.8,
     }));
 
-    const drawCinematicStudio = (t: number) => {
-      // 1. Deep cinematic 35mm darkroom base
+    const drawAuroraNights = (t: number) => {
+      // 1. Deep Arctic Void
       const bgGrad = ctx.createLinearGradient(0, 0, 0, height);
-      bgGrad.addColorStop(0, "#06050a");
-      bgGrad.addColorStop(0.45, "#0a0912");
-      bgGrad.addColorStop(1, "#040306");
+      bgGrad.addColorStop(0, "#020612");
+      bgGrad.addColorStop(0.5, "#040b1e");
+      bgGrad.addColorStop(1, "#020510");
       ctx.fillStyle = bgGrad;
       ctx.fillRect(0, 0, width, height);
+
+      // 2. Quiescent Polar Starfield
+      polarStars.forEach((s) => {
+        const twinkle = prefersReducedMotion ? 1 : Math.sin(t * s.speed + s.phase) * 0.35 + 0.65;
+        ctx.fillStyle = `rgba(255, 255, 255, ${s.alpha * twinkle * 0.85})`;
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+        ctx.fill();
+      });
 
       ctx.save();
       ctx.globalCompositeOperation = "screen";
 
-      const targetX = smoothMouse.x;
-      const targetY = smoothMouse.y;
+      // 3. Multi-layer Undulating Aurora Curtains (4 harmonic ribbons)
+      const numCurtains = 4;
+      const mouseInfluenceX = (smoothMouse.x - width * 0.5) * 0.06;
 
-      // 2. High-end 35mm projector light shaft (theatrical key beam)
-      const projX = width * 0.5 + (targetX - width * 0.5) * 0.18;
-      const projY = -height * 0.06;
-      const beamSpread = Math.max(width * 0.42, 480);
-      const breath = prefersReducedMotion ? 1 : Math.sin(t * 0.45) * 0.08 + 0.92;
+      for (let i = 0; i < numCurtains; i++) {
+        const curtainSpeed = prefersReducedMotion ? 0 : 0.28 + i * 0.08;
+        const curtainPhase = i * 1.4;
+        const baseY = height * (0.16 + i * 0.10);
+        const amplitude = 48 + i * 16;
 
-      const beamGrad = ctx.createRadialGradient(
-        projX,
-        projY,
-        20,
-        targetX,
-        targetY * 0.85 + height * 0.15,
-        beamSpread * 1.4
-      );
-      beamGrad.addColorStop(0, `rgba(${r2}, ${g2}, ${b2}, ${0.18 * breath})`);
-      beamGrad.addColorStop(0.28, `rgba(${r1}, ${g1}, ${b1}, ${0.09 * breath})`);
-      beamGrad.addColorStop(0.7, `rgba(${r3}, ${g3}, ${b3}, ${0.025 * breath})`);
-      beamGrad.addColorStop(1, "transparent");
-
-      ctx.fillStyle = beamGrad;
-      ctx.beginPath();
-      ctx.moveTo(projX - 45, projY);
-      ctx.lineTo(projX + 45, projY);
-      ctx.lineTo(targetX + beamSpread * 0.75, height * 1.1);
-      ctx.lineTo(targetX - beamSpread * 0.75, height * 1.1);
-      ctx.closePath();
-      ctx.fill();
-
-      // 3. Subtle Anamorphic 1px Optical Horizon Trace
-      const flareY = targetY * 0.38 + height * 0.26;
-      const flarePulse = prefersReducedMotion ? 1 : Math.sin(t * 0.9) * 0.1 + 0.9;
-      const flareWidth = width * 0.82;
-
-      // Soft central focal illumination
-      const focalRadius = 90;
-      const focalGrad = ctx.createRadialGradient(targetX, flareY, 0, targetX, flareY, focalRadius);
-      focalGrad.addColorStop(0, `rgba(255, 255, 255, ${0.28 * flarePulse})`);
-      focalGrad.addColorStop(0.3, `rgba(${r2}, ${g2}, ${b2}, ${0.16 * flarePulse})`);
-      focalGrad.addColorStop(0.75, `rgba(${r1}, ${g1}, ${b1}, ${0.04 * flarePulse})`);
-      focalGrad.addColorStop(1, "transparent");
-
-      ctx.fillStyle = focalGrad;
-      ctx.beginPath();
-      ctx.arc(targetX, flareY, focalRadius, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Precision 1px anamorphic laser line (subtle, clean, not slop)
-      const streakGrad = ctx.createLinearGradient(
-        targetX - flareWidth * 0.5,
-        flareY,
-        targetX + flareWidth * 0.5,
-        flareY
-      );
-      streakGrad.addColorStop(0, "transparent");
-      streakGrad.addColorStop(0.25, `rgba(${r1}, ${g1}, ${b1}, ${0.06 * flarePulse})`);
-      streakGrad.addColorStop(0.48, `rgba(${r2}, ${g2}, ${b2}, ${0.18 * flarePulse})`);
-      streakGrad.addColorStop(0.5, `rgba(255, 255, 255, ${0.45 * flarePulse})`);
-      streakGrad.addColorStop(0.52, `rgba(${r2}, ${g2}, ${b2}, ${0.18 * flarePulse})`);
-      streakGrad.addColorStop(0.75, `rgba(${r3}, ${g3}, ${b3}, ${0.06 * flarePulse})`);
-      streakGrad.addColorStop(1, "transparent");
-
-      ctx.fillStyle = streakGrad;
-      ctx.fillRect(targetX - flareWidth * 0.5, flareY - 0.5, flareWidth, 1);
-
-      // 4. Delicate 35mm Analog Silver Dust (18 motes)
-      filmMotes.forEach((m) => {
-        if (!prefersReducedMotion) {
-          m.x += m.vx + Math.sin(t * 0.4 + m.phase) * 0.12;
-          m.y += m.vy;
-          if (m.y < -10) m.y = height + 10;
-          if (m.x < -10) m.x = width + 10;
-          if (m.x > width + 10) m.x = -10;
+        const grad = ctx.createLinearGradient(0, baseY - amplitude, 0, baseY + amplitude * 2.4);
+        if (i % 2 === 0) {
+          grad.addColorStop(0, "transparent");
+          grad.addColorStop(0.18, `rgba(${r1}, ${g1}, ${b1}, 0.24)`); // Emerald core
+          grad.addColorStop(0.55, `rgba(${r2}, ${g2}, ${b2}, 0.12)`); // Luminous mint
+          grad.addColorStop(0.85, `rgba(${r3}, ${g3}, ${b3}, 0.03)`); // Violet shift
+          grad.addColorStop(1, "transparent");
+        } else {
+          grad.addColorStop(0, "transparent");
+          grad.addColorStop(0.22, `rgba(${r3}, ${g3}, ${b3}, 0.20)`); // Violet/indigo
+          grad.addColorStop(0.6, `rgba(${r1}, ${g1}, ${b1}, 0.10)`); // Emerald
+          grad.addColorStop(1, "transparent");
         }
 
-        const distToTarget = Math.hypot(m.x - targetX, m.y - targetY);
-        const inBeam = Math.max(0, 1 - distToTarget / 380);
-        const shimmer = prefersReducedMotion ? 1 : Math.sin(t * m.speed + m.phase) * 0.35 + 0.65;
-        const moteAlpha = (0.12 + inBeam * 0.42) * shimmer;
-
-        ctx.fillStyle = `rgba(255, 255, 255, ${moteAlpha})`;
+        ctx.fillStyle = grad;
         ctx.beginPath();
-        ctx.arc(m.x, m.y, m.radius, 0, Math.PI * 2);
+        ctx.moveTo(0, height);
+
+        for (let x = 0; x <= width; x += 16) {
+          const nx = x / width;
+          const wave1 = Math.sin(nx * 3.2 + t * curtainSpeed + curtainPhase) * amplitude;
+          const wave2 = Math.sin(nx * 6.8 - t * 0.2 + curtainPhase) * (amplitude * 0.35);
+          const wave3 = Math.cos(nx * 1.5 + t * 0.12) * 15;
+          const y = baseY + wave1 + wave2 + wave3 + mouseInfluenceX * Math.sin(nx * Math.PI);
+          ctx.lineTo(x, y);
+        }
+
+        ctx.lineTo(width, height);
+        ctx.closePath();
         ctx.fill();
-      });
+      }
 
       ctx.restore();
 
-      // 5. Theatrical 2.39:1 Letterbox Framing (ensures ultra-high contrast & focus)
-      const topLetterbox = ctx.createLinearGradient(0, 0, 0, 75);
-      topLetterbox.addColorStop(0, "rgba(4, 3, 7, 0.72)");
-      topLetterbox.addColorStop(1, "transparent");
-      ctx.fillStyle = topLetterbox;
-      ctx.fillRect(0, 0, width, 75);
-
-      const botLetterbox = ctx.createLinearGradient(0, height - 85, 0, height);
-      botLetterbox.addColorStop(0, "transparent");
-      botLetterbox.addColorStop(1, "rgba(4, 3, 7, 0.82)");
-      ctx.fillStyle = botLetterbox;
-      ctx.fillRect(0, height - 85, width, 85);
+      // 4. Subtle Horizon Scrim for guaranteed WCAG AAA typography contrast
+      const horizonScrim = ctx.createLinearGradient(0, height * 0.65, 0, height);
+      horizonScrim.addColorStop(0, "transparent");
+      horizonScrim.addColorStop(1, "rgba(2, 6, 18, 0.85)");
+      ctx.fillStyle = horizonScrim;
+      ctx.fillRect(0, height * 0.65, width, height * 0.35);
     };
 
     // ═════════════════════════════════════════════════════════════════════════
@@ -839,7 +794,7 @@ export function AtmosphereCanvasEngine({ theme, engine }: AtmosphereCanvasEngine
 
     if (prefersReducedMotion) {
       // Draw static first frame for accessibility
-      drawCinematicStudio(0);
+      drawAuroraNights(0);
       return;
     }
 
@@ -854,8 +809,8 @@ export function AtmosphereCanvasEngine({ theme, engine }: AtmosphereCanvasEngine
       smoothMouse.y += (mousePos.y - smoothMouse.y) * 0.04;
 
       switch (engine) {
-        case "cinematic-studio":
-          drawCinematicStudio(t);
+        case "aurora-nights":
+          drawAuroraNights(t);
           break;
         case "aurora-curtains":
           drawAuroraCurtains(t);

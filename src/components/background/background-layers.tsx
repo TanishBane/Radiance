@@ -15,7 +15,7 @@ interface BackgroundLayersProps {
 export function BackgroundLayers({
   bgGradient,
   theme,
-  gradientStyle = "cinematic-studio",
+  gradientStyle = "aurora-nights",
 }: BackgroundLayersProps) {
   const isWaves = gradientStyle === "waves";
   const isCosmic = gradientStyle === "cosmic";
@@ -32,7 +32,7 @@ export function BackgroundLayers({
         <AtmosphereCanvasEngine theme={theme} engine={gradientStyle} />
       )}
 
-      {/* ══ CINEMATIC FALLBACK GRADIENT (for Cosmic 3D mode) ══ */}
+      {/* ══ ATMOSPHERIC FALLBACK GRADIENT (for Cosmic 3D mode) ══ */}
       {isCosmic && (
         <div
           className="fixed inset-0 pointer-events-none z-0 transition-all duration-700"
@@ -65,13 +65,7 @@ export function BackgroundLayers({
         aria-hidden="true"
       />
 
-      {/* ══ 2.39:1 CINEMATIC VIEWFINDER CORNER GUIDES ══ */}
-      <div className="fixed inset-0 pointer-events-none z-[3] hidden sm:block select-none opacity-25" aria-hidden="true">
-        <div className="absolute top-3 left-3 w-3 h-3 border-t border-l border-white/40" />
-        <div className="absolute top-3 right-3 w-3 h-3 border-t border-r border-white/40" />
-        <div className="absolute bottom-3 left-3 w-3 h-3 border-b border-l border-white/40" />
-        <div className="absolute bottom-3 right-3 w-3 h-3 border-b border-r border-white/40" />
-      </div>
+
     </>
   );
 }
