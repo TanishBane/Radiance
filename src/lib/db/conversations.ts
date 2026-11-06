@@ -123,6 +123,22 @@ export const conversationService = {
   },
 
   /**
+   * Deletes all conversations in a single atomic batch locally and in the cloud (SCAN-05).
+   */
+  async deleteAll(userId?: string): Promise<void> {
+    safeLocalStorage.deleteAllConversations();
+
+    const supabase = getSupabaseBrowserClient();
+    if (!supabase || !userId) return;
+
+    try {
+      await supabase.from("conversations").delete().eq("user_id", userId);
+    } catch (err) {
+      console.warn("[ConversationService] Cloud deleteAll failed:", err);
+    }
+  },
+
+  /**
    * Toggles pinned state locally and in the cloud.
    */
   async togglePin(convId: string, isPinned: boolean, userId?: string): Promise<void> {

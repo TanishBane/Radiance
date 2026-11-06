@@ -1,5 +1,17 @@
 import type { NextConfig } from "next";
 
+const cspHeader = [
+  "default-src 'self'",
+  "script-src 'self' 'unsafe-eval' 'unsafe-inline'",
+  "style-src 'self' 'unsafe-inline'",
+  "img-src 'self' blob: data: https://image.pollinations.ai",
+  "font-src 'self' data:",
+  "connect-src 'self' https://*.supabase.co https://*.upstash.io https://api.groq.com https://generativelanguage.googleapis.com https://openrouter.ai https://image.pollinations.ai",
+  "frame-ancestors 'none'",
+  "base-uri 'self'",
+  "form-action 'self'",
+].join("; ");
+
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   images: {
@@ -16,6 +28,7 @@ const nextConfig: NextConfig = {
       {
         source: "/(.*)",
         headers: [
+          { key: "Content-Security-Policy", value: cspHeader },
           { key: "X-Content-Type-Options", value: "nosniff" },
           { key: "X-Frame-Options", value: "DENY" },
           { key: "X-XSS-Protection", value: "1; mode=block" },

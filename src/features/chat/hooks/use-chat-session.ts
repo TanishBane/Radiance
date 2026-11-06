@@ -81,10 +81,7 @@ export function useChatSession(): UseChatSessionReturn {
   );
 
   const deleteAllConversations = useCallback(async () => {
-    const list = await conversationService.list();
-    for (const c of list) {
-      await conversationService.delete(c.id);
-    }
+    await conversationService.deleteAll();
     setConversations([]);
     newChat();
   }, [newChat]);

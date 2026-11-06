@@ -7,6 +7,7 @@ import { motion, useReducedMotion } from "motion/react";
 import { ChatMessage, FeedbackRating } from "@/lib/types/chat";
 import { getMotionTransition } from "@/lib/motion/presets";
 import { formatMarkdown, formatRelativeTime } from "@/lib/utils/format";
+import { RadianceLogo } from "@/components/branding/radiance-logo";
 import { FollowUpChips } from "./follow-up-chips";
 import {
   Copy,
@@ -25,6 +26,19 @@ import {
   RefreshCw,
   Clock,
 } from "lucide-react";
+
+const CODE_EXT_MAP: Record<string, string> = {
+  typescript: "ts", ts: "ts", tsx: "tsx", javascript: "js", js: "js", jsx: "jsx",
+  python: "py", py: "py", sql: "sql", json: "json", html: "html", css: "css",
+  scss: "scss", bash: "sh", sh: "sh", shell: "sh", rust: "rs", rs: "rs",
+  go: "go", golang: "go", c: "c", cpp: "cpp", "c++": "cpp", java: "java",
+  yaml: "yaml", yml: "yaml", markdown: "md", md: "md",
+};
+
+const ACTION_BTN_CLS =
+  "p-1.5 rounded-lg hover:bg-[var(--surface-hover)] hover:text-[var(--txt)] transition-colors touch-target cursor-pointer";
+const DROPDOWN_ITEM_CLS =
+  "min-h-[44px] flex items-center gap-2.5 px-3 py-2 text-xs font-medium rounded-lg cursor-pointer outline-none hover:bg-[var(--surface-hover)] focus:bg-[var(--surface-hover)] text-[var(--txt)] transition-colors select-none";
 
 export interface MessageItemProps {
   message: ChatMessage;
@@ -127,7 +141,6 @@ export function MessageItem({
   // ── Web Speech Synthesis (Text-to-Speech) ──
   const toggleSpeech = () => {
     if (typeof window === "undefined" || !("speechSynthesis" in window)) {
-      alert("Text-to-speech is not supported in this browser.");
       return;
     }
 
@@ -182,37 +195,7 @@ export function MessageItem({
       const code = downloadBtn.getAttribute("data-code");
       const lang = (downloadBtn.getAttribute("data-lang") || "txt").toLowerCase();
       if (code) {
-        const EXT_MAP: Record<string, string> = {
-          typescript: "ts",
-          ts: "ts",
-          tsx: "tsx",
-          javascript: "js",
-          js: "js",
-          jsx: "jsx",
-          python: "py",
-          py: "py",
-          sql: "sql",
-          json: "json",
-          html: "html",
-          css: "css",
-          scss: "scss",
-          bash: "sh",
-          sh: "sh",
-          shell: "sh",
-          rust: "rs",
-          rs: "rs",
-          go: "go",
-          golang: "go",
-          c: "c",
-          cpp: "cpp",
-          "c++": "cpp",
-          java: "java",
-          yaml: "yaml",
-          yml: "yaml",
-          markdown: "md",
-          md: "md",
-        };
-        const ext = EXT_MAP[lang] || "txt";
+        const ext = CODE_EXT_MAP[lang] || "txt";
         const filename = `snippet-${Date.now()}.${ext}`;
         try {
           const blob = new Blob([code], { type: "text/plain;charset=utf-8" });
@@ -271,7 +254,16 @@ export function MessageItem({
             : "bg-[var(--surface-raised)] border-[var(--border)] text-[var(--txt)] shadow-sm"
         }`}
       >
-        {isUser ? "YOU" : message.isError ? "!" : <span className="gradient-text-brand">RD</span>}
+        {isUser ? (
+          "YOU"
+        ) : message.isError ? (
+          "!"
+        ) : (
+          <div className="flex items-center justify-center relative w-full h-full p-1" title="Radiance">
+            <RadianceLogo variant="symbol" size="xs" showWordmark={false} className="w-4 h-3.5" />
+            <span className="sr-only">RD</span>
+          </div>
+        )}
       </div>
 
       {/* Bubble Container */}
@@ -452,7 +444,7 @@ export function MessageItem({
             <button
               type="button"
               onClick={handleCopy}
-              className="p-1.5 rounded-lg hover:bg-[var(--surface-hover)] hover:text-[var(--txt)] transition-colors touch-target cursor-pointer"
+              className={ACTION_BTN_CLS}
               title={copied ? "Copied to clipboard" : "Copy message"}
               aria-label={copied ? "Copied to clipboard" : "Copy message"}
               data-testid="copy-message-button"
@@ -465,7 +457,7 @@ export function MessageItem({
               <button
                 type="button"
                 onClick={() => setIsEditing(true)}
-                className="p-1.5 rounded-lg hover:bg-[var(--surface-hover)] hover:text-[var(--txt)] transition-colors touch-target cursor-pointer"
+                className={ACTION_BTN_CLS}
                 title="Edit message"
                 aria-label="Edit message"
                 data-testid="edit-message-button"
@@ -479,7 +471,7 @@ export function MessageItem({
               <button
                 type="button"
                 onClick={onRegenerate}
-                className="p-1.5 rounded-lg hover:bg-[var(--surface-hover)] hover:text-[var(--txt)] transition-colors touch-target cursor-pointer"
+                className={ACTION_BTN_CLS}
                 title="Regenerate response"
                 aria-label="Regenerate response"
                 data-testid="regenerate-message-button"
@@ -566,7 +558,7 @@ export function MessageItem({
             <button
               type="button"
               onClick={handleExportMarkdown}
-              className="p-1.5 rounded-lg hover:bg-[var(--surface-hover)] hover:text-[var(--txt)] transition-colors touch-target cursor-pointer"
+              className={ACTION_BTN_CLS}
               title="Export message as Markdown"
               aria-label="Export message as Markdown"
               data-testid="export-message-button"
@@ -612,7 +604,7 @@ export function MessageItem({
                   {/* Copy */}
                   <DropdownMenu.Item
                     onSelect={handleCopy}
-                    className="min-h-[44px] flex items-center gap-2.5 px-3 py-2 text-xs font-medium rounded-lg cursor-pointer outline-none hover:bg-[var(--surface-hover)] focus:bg-[var(--surface-hover)] text-[var(--txt)] transition-colors select-none"
+                    className={DROPDOWN_ITEM_CLS}
                     data-testid="mobile-action-copy"
                   >
                     {copied ? <Check className="w-4 h-4 text-[var(--success)] shrink-0" /> : <Copy className="w-4 h-4 text-[var(--txt-muted)] shrink-0" />}
@@ -623,7 +615,7 @@ export function MessageItem({
                   {isUser && onEdit && (
                     <DropdownMenu.Item
                       onSelect={() => setIsEditing(true)}
-                      className="min-h-[44px] flex items-center gap-2.5 px-3 py-2 text-xs font-medium rounded-lg cursor-pointer outline-none hover:bg-[var(--surface-hover)] focus:bg-[var(--surface-hover)] text-[var(--txt)] transition-colors select-none"
+                      className={DROPDOWN_ITEM_CLS}
                       data-testid="mobile-action-edit"
                     >
                       <Edit2 className="w-4 h-4 text-[var(--txt-muted)] shrink-0" />
@@ -635,7 +627,7 @@ export function MessageItem({
                   {!isUser && !message.isError && onRegenerate && (
                     <DropdownMenu.Item
                       onSelect={onRegenerate}
-                      className="min-h-[44px] flex items-center gap-2.5 px-3 py-2 text-xs font-medium rounded-lg cursor-pointer outline-none hover:bg-[var(--surface-hover)] focus:bg-[var(--surface-hover)] text-[var(--txt)] transition-colors select-none"
+                      className={DROPDOWN_ITEM_CLS}
                       data-testid="mobile-action-regenerate"
                     >
                       <RotateCcw className="w-4 h-4 text-[var(--txt-muted)] shrink-0" />
@@ -660,7 +652,7 @@ export function MessageItem({
                     <>
                       <DropdownMenu.Item
                         onSelect={() => handleFeedback("positive")}
-                        className="min-h-[44px] flex items-center gap-2.5 px-3 py-2 text-xs font-medium rounded-lg cursor-pointer outline-none hover:bg-[var(--surface-hover)] focus:bg-[var(--surface-hover)] text-[var(--txt)] transition-colors select-none"
+                        className={DROPDOWN_ITEM_CLS}
                         data-testid="mobile-action-feedback-positive"
                       >
                         <ThumbsUp className={`w-4 h-4 shrink-0 ${message.feedback === "positive" ? "text-[var(--accent)] fill-current" : "text-[var(--txt-muted)]"}`} />
@@ -669,7 +661,7 @@ export function MessageItem({
 
                       <DropdownMenu.Item
                         onSelect={() => handleFeedback("negative")}
-                        className="min-h-[44px] flex items-center gap-2.5 px-3 py-2 text-xs font-medium rounded-lg cursor-pointer outline-none hover:bg-[var(--surface-hover)] focus:bg-[var(--surface-hover)] text-[var(--txt)] transition-colors select-none"
+                        className={DROPDOWN_ITEM_CLS}
                         data-testid="mobile-action-feedback-negative"
                       >
                         <ThumbsDown className={`w-4 h-4 shrink-0 ${message.feedback === "negative" ? "text-red-400 fill-current" : "text-[var(--txt-muted)]"}`} />
@@ -681,7 +673,7 @@ export function MessageItem({
                   {/* Safe Client-Side Export */}
                   <DropdownMenu.Item
                     onSelect={handleExportMarkdown}
-                    className="min-h-[44px] flex items-center gap-2.5 px-3 py-2 text-xs font-medium rounded-lg cursor-pointer outline-none hover:bg-[var(--surface-hover)] focus:bg-[var(--surface-hover)] text-[var(--txt)] transition-colors select-none"
+                    className={DROPDOWN_ITEM_CLS}
                     data-testid="mobile-action-export"
                   >
                     <Download className="w-4 h-4 text-[var(--txt-muted)] shrink-0" />
