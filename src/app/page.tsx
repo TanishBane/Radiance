@@ -178,9 +178,9 @@ export default function RadianceApp() {
   // ── Action Handlers ──
 
   const handleSend = useCallback(
-    (text: string, attachments: Attachment[] = []) => {
+    (text: string, attachments: Attachment[] = [], mode?: string) => {
       const nextMessages = appendUserMessage(text, attachments);
-      send(nextMessages);
+      send(nextMessages, undefined, mode);
     },
     [appendUserMessage, send]
   );

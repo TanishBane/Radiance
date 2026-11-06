@@ -14,6 +14,7 @@ import {
   Check,
   Sparkles,
   Sliders,
+  Film,
   SunMedium,
   Waves,
   Orbit,
@@ -42,7 +43,7 @@ interface SettingsDrawerProps {
 }
 
 const ENGINE_ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
-  SunMedium, Waves, Orbit, Wind, Zap, Grid3X3, Share2, Flame, Terminal, Sparkles, Radio, Disc, Eye,
+  Film, SunMedium, Waves, Orbit, Wind, Zap, Grid3X3, Share2, Flame, Terminal, Sparkles, Radio, Disc, Eye,
 };
 
 type CategoryFilter = "all" | "signature" | "elemental" | "cyber" | "organic" | "cosmic";
