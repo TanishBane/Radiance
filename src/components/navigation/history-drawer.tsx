@@ -47,7 +47,7 @@ export function HistoryDrawer({
       <Dialog.Portal>
       <Dialog.Overlay className="radiance-dialog-overlay fixed inset-0 z-40 bg-black/60 backdrop-blur-sm" />
 
-      <Dialog.Content className="radiance-dialog-panel radiance-dialog-right fixed right-0 top-0 bottom-0 w-80 max-w-[85vw] z-50 flex flex-col bg-[var(--deep)]/95 backdrop-blur-2xl border-l border-[var(--border)] shadow-[-20px_0_50px_rgba(0,0,0,0.6)] outline-none">
+      <Dialog.Content className="radiance-dialog-panel radiance-dialog-right fixed right-0 top-0 bottom-0 h-[100dvh] w-80 max-w-[88vw] z-50 flex flex-col pt-[env(safe-area-inset-top,0px)] pb-[env(safe-area-inset-bottom,0px)] pr-[env(safe-area-inset-right,0px)] bg-[var(--deep)]/95 backdrop-blur-2xl border-l border-[var(--border)] shadow-[-20px_0_50px_rgba(0,0,0,0.6)] outline-none">
         <Dialog.Description className="sr-only">Search, select, and manage saved conversations.</Dialog.Description>
         {/* Header */}
         <div className="flex items-center justify-between px-4 py-3.5 border-b border-[var(--border)]">

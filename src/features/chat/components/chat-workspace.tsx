@@ -130,7 +130,7 @@ export function ChatWorkspace({
   return (
     <div className="flex-1 flex flex-col relative overflow-hidden z-10">
       {/* Scrollable Message List */}
-      <div ref={chatScrollRef} className="flex-1 overflow-y-auto px-4 py-6 scroll-smooth">
+      <div ref={chatScrollRef} className="flex-1 overflow-y-auto px-3 sm:px-4 py-4 sm:py-6 scroll-smooth overscroll-contain [-webkit-overflow-scrolling:touch]">
         {!hasContent ? (
           <WelcomeCard onSelectPrompt={onSelectSuggestion} />
         ) : (

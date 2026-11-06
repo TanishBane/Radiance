@@ -79,8 +79,19 @@ export function AtmosphereCanvasEngine({ theme, engine }: AtmosphereCanvasEngine
     };
     window.addEventListener("mousemove", handleMouseMove, { passive: true });
 
+    // Touch tracking for mobile and tablet responsiveness
+    const handleTouch = (e: TouchEvent) => {
+      if (e.touches && e.touches.length > 0) {
+        mousePos.x = e.touches[0].clientX;
+        mousePos.y = e.touches[0].clientY;
+      }
+    };
+    window.addEventListener("touchstart", handleTouch, { passive: true });
+    window.addEventListener("touchmove", handleTouch, { passive: true });
+
     const prefersReducedMotion =
       typeof window !== "undefined" &&
+      typeof window.matchMedia === "function" &&
       window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
     const [r1, g1, b1] = hexToRgb(theme.accent);
@@ -863,6 +874,8 @@ export function AtmosphereCanvasEngine({ theme, engine }: AtmosphereCanvasEngine
       if (rafIdRef.current) cancelAnimationFrame(rafIdRef.current);
       window.removeEventListener("resize", resizeCanvas);
       window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("touchstart", handleTouch);
+      window.removeEventListener("touchmove", handleTouch);
       document.removeEventListener("visibilitychange", handleVisibility);
     };
   }, [theme, engine]);
