@@ -35,8 +35,7 @@ const CODE_EXT_MAP: Record<string, string> = {
   yaml: "yaml", yml: "yaml", markdown: "md", md: "md",
 };
 
-const ACTION_BTN_CLS =
-  "p-1.5 rounded-lg hover:bg-[var(--surface-hover)] hover:text-[var(--txt)] transition-colors touch-target cursor-pointer";
+const ACTION_BTN_CLS = "min-w-[44px] min-h-[44px] p-2 rounded-xl hover:bg-[var(--surface-hover)] hover:text-[var(--txt)] transition-colors touch-target cursor-pointer flex items-center justify-center";
 const DROPDOWN_ITEM_CLS =
   "min-h-[44px] flex items-center gap-2.5 px-3 py-2 text-xs font-medium rounded-lg cursor-pointer outline-none hover:bg-[var(--surface-hover)] focus:bg-[var(--surface-hover)] text-[var(--txt)] transition-colors select-none";
 

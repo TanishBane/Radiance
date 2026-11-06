@@ -111,14 +111,9 @@ export function WelcomeCard({ onSelectPrompt }: WelcomeCardProps) {
   const description =
     "Illuminate what is possible. Stream real-time reasoning, analyze documents, generate Flux visuals, and explore complex ideas.";
 
-  function getHeaderStyle(role: "accentB" | "gradient" | "accentC"): React.CSSProperties {
-    if (role === "accentB") return { color: "var(--accent-b)" };
-    if (role === "accentC") return { color: "var(--accent-c)" };
+  function getHeaderStyle(_role: "accentB" | "gradient" | "accentC"): React.CSSProperties {
     return {
-      backgroundImage: "var(--text-gradient)",
-      WebkitBackgroundClip: "text",
-      WebkitTextFillColor: "transparent",
-      color: "var(--accent)",
+      color: "var(--txt)",
     };
   }
 
@@ -155,10 +150,7 @@ export function WelcomeCard({ onSelectPrompt }: WelcomeCardProps) {
 
       {/* Brand Icon Gem with Cinematic Framing */}
       <div
-        className="w-16 h-16 rounded-2xl flex items-center justify-center border border-white/[0.09] shadow-card transition-all duration-300 hover:scale-105 select-none hover:border-[var(--accent)]/40 p-3 text-[var(--txt)]"
-        style={{
-          background: "linear-gradient(135deg, var(--surface-raised), rgba(255, 255, 255, 0.02))",
-        }}
+        className="w-16 h-16 rounded-2xl flex items-center justify-center border border-[var(--border)] bg-[var(--surface-raised)] shadow-card transition-all duration-300 hover:scale-105 select-none hover:border-[var(--border-accent)] p-3 text-[var(--txt)]"
       >
         <RadianceLogo variant="symbol" size="lg" showWordmark={false} animated glow className="w-10 h-9" />
       </div>
@@ -196,16 +188,9 @@ export function WelcomeCard({ onSelectPrompt }: WelcomeCardProps) {
         {SUGGESTION_COLUMNS.map((column) => (
           <div
             key={column.id}
-            className="group/card flex flex-col items-start p-4 sm:p-5 rounded-2xl border transition-all duration-300 hover:border-white/20"
-            style={{
-              background: "var(--surface)",
-              backdropFilter: "blur(20px)",
-              WebkitBackdropFilter: "blur(20px)",
-              borderColor: "var(--border)",
-              boxShadow: "0 8px 32px -8px rgba(0, 0, 0, 0.7), 0 1px 0 0 rgba(255, 255, 255, 0.05) inset",
-            }}
+            className="group/card flex flex-col items-start p-4 sm:p-5 rounded-2xl border border-[var(--border)] bg-[var(--surface-raised)] transition-all duration-300 hover:border-[var(--border-hover)] shadow-card"
           >
-            <div className="flex items-center justify-between w-full mb-3.5 border-b border-white/[0.06] pb-2">
+            <div className="flex items-center justify-between w-full mb-3.5 border-b border-[var(--border)] pb-2">
               <h2
                 className="font-serif text-lg font-normal tracking-wide transition-all duration-300"
                 style={getHeaderStyle(column.headerThemeRole)}
@@ -222,11 +207,11 @@ export function WelcomeCard({ onSelectPrompt }: WelcomeCardProps) {
                   key={item.id}
                   type="button"
                   onClick={() => onSelectPrompt(item.prompt)}
-                  className="group/btn w-full inline-flex items-center gap-2 px-3.5 py-2.5 min-h-[44px] rounded-xl border border-[var(--border)] bg-[var(--surface-raised)] hover:bg-[var(--surface-hover)] hover:border-[var(--border-strong)] transition-all duration-200 cursor-pointer active:scale-[0.99] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[var(--accent)] touch-target text-left"
+                  className="group/btn w-full inline-flex items-center gap-2 px-3.5 py-2.5 min-h-[44px] rounded-xl border border-[var(--border)] bg-[var(--surface)] hover:bg-[var(--surface-hover)] hover:border-[var(--border-accent)] transition-all duration-200 cursor-pointer active:scale-[0.99] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[var(--border-accent)] touch-target text-left"
                   aria-label={`Ask suggestion: ${item.label}`}
                 >
                   {item.badge && renderBadge(item.badge.type)}
-                  <span className="truncate text-xs sm:text-[13px] text-[var(--txt-dim)] group-hover/btn:text-[var(--txt)] font-normal transition-colors">
+                  <span className="truncate text-xs sm:text-[13px] text-[var(--txt)] font-normal transition-colors">
                     {item.label}
                   </span>
                 </button>

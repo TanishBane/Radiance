@@ -679,7 +679,7 @@ export function ChatComposer({
                 data-testid="send-button"
                 className={`w-8 h-8 rounded-full transition-all shadow-sm shrink-0 flex items-center justify-center touch-target ${
                   isSubmitReady
-                    ? "bg-gradient-to-br from-[var(--accent-b)] to-[var(--accent)] text-[var(--void)] font-bold hover:opacity-90"
+                    ? "bg-[var(--accent)] text-[var(--void)] font-bold hover:opacity-90 active:scale-95"
                     : "bg-[var(--surface)] border border-[var(--border)] text-[var(--txt-muted)] opacity-40 pointer-events-none"
                 }`}
                 title="Send message (Enter)"

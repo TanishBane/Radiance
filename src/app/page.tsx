@@ -106,8 +106,8 @@ export default function RadianceApp() {
 
   // Apply Theme CSS Tokens to document root with complete variable coverage
   useEffect(() => {
-    applyThemeToDom(selectedTheme);
-  }, [selectedTheme]);
+    applyThemeToDom(selectedTheme, gradientStyle);
+  }, [selectedTheme, gradientStyle]);
 
     // Synchronize background mode attribute to document root
   useEffect(() => {
