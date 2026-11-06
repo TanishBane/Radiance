@@ -565,8 +565,8 @@ export const ATMOSPHERE_ENGINES: AtmosphereEngineInfo[] = [
   {
     id: "silk-caustics",
     label: "Silk Caustics",
-    tag: "Refraction",
-    description: "Anisotropic refractive light sheets undulating with harmonic optical dispersion.",
+    tag: "Optical Lux",
+    description: "Multi-layer continuous bezier refractive caustic sheets with chromatic dispersion.",
     iconName: "Layers",
   },
   {
@@ -593,15 +593,15 @@ export const ATMOSPHERE_ENGINES: AtmosphereEngineInfo[] = [
   {
     id: "spectral-rays",
     label: "Spectral Rays",
-    tag: "Volumetric",
-    description: "Subtle directional chromatic dispersion beams gently angling across the deep viewport.",
+    tag: "Anamorphic",
+    description: "Volumetric diagonal light dispersion beams with Gaussian decay and optical superimposition.",
     iconName: "Compass",
   },
   {
     id: "topographic-flow",
     label: "Topographic Flow",
-    tag: "Generative",
-    description: "Generative mathematical elevation isolines drifting with Perlin simplex flow.",
+    tag: "Cartographic",
+    description: "Swiss precision elevation isolines undulating with multi-harmonic simplex relief fields.",
     iconName: "Activity",
   },
   {
@@ -628,8 +628,8 @@ export const ATMOSPHERE_ENGINES: AtmosphereEngineInfo[] = [
   {
     id: "celestial-dust",
     label: "Celestial Dust",
-    tag: "Tranquil",
-    description: "Microscopic luminous atmospheric particulate suspended in a tranquil brownian drift.",
+    tag: "Filmic Motes",
+    description: "3-tier depth-of-field particulate field with foreground bokeh and Brownian drift.",
     iconName: "Cloud",
   },
   {
@@ -642,8 +642,8 @@ export const ATMOSPHERE_ENGINES: AtmosphereEngineInfo[] = [
   {
     id: "neural-lattice",
     label: "Neural Lattice",
-    tag: "Cognitive",
-    description: "Subtle self-organizing mathematical lattice geometry with gentle organic pulsation.",
+    tag: "Synaptic",
+    description: "Dynamic cognitive graph with bidirectional gradient synapses and traveling action potentials.",
     iconName: "Cpu",
   },
   {
