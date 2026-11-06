@@ -123,16 +123,16 @@ export function WelcomeCard({ onSelectPrompt }: WelcomeCardProps) {
   }
 
   const BADGE_MAP = {
-    flight: { bg: "bg-[#1e88e5] shadow-[0_0_8px_rgba(30,136,229,0.35)]", icon: <Plane className="w-2.5 h-2.5 text-white" /> },
-    video: { bg: "bg-[#e53935] shadow-[0_0_8px_rgba(229,57,53,0.35)]", icon: <Play className="w-2.5 h-2.5 text-white fill-white ml-0.5" /> },
-    getaway: { bg: "bg-[#2e7d32] shadow-[0_0_8px_rgba(46,125,50,0.35)]", icon: <Bed className="w-2.5 h-2.5 text-white" /> },
+    flight: { bg: "bg-white/[0.08] text-[var(--accent-c)] border-white/10", icon: <Plane className="w-2.5 h-2.5 text-current" /> },
+    video: { bg: "bg-white/[0.08] text-[var(--accent)] border-white/10", icon: <Play className="w-2.5 h-2.5 text-current fill-current ml-0.5" /> },
+    getaway: { bg: "bg-white/[0.08] text-[var(--accent-b)] border-white/10", icon: <Bed className="w-2.5 h-2.5 text-current" /> },
   } as const;
 
   function renderBadge(type: "flight" | "video" | "getaway") {
     const badge = BADGE_MAP[type];
     return (
       <span
-        className={`w-4.5 h-4.5 rounded-full ${badge.bg} flex items-center justify-center shrink-0 border border-white/20`}
+        className={`w-4 h-4 rounded-md ${badge.bg} flex items-center justify-center shrink-0 border`}
         aria-hidden="true"
       >
         {badge.icon}
@@ -147,9 +147,15 @@ export function WelcomeCard({ onSelectPrompt }: WelcomeCardProps) {
       transition={getMotionTransition("entrance", prefersReducedMotion)}
       className="flex flex-col items-center justify-center w-full max-w-4xl mx-auto px-4 py-8 text-center gap-6"
     >
-      {/* Brand Icon Gem with Dynamic Ambient Glow */}
+      {/* 35mm CinemaScope Studio Indicator */}
+      <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/10 bg-white/[0.03] backdrop-blur-md text-[10px] font-mono tracking-widest text-[var(--txt-muted)] uppercase">
+        <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent)] animate-pulse" />
+        <span>2.39:1 Cinemascope · Studio Mode</span>
+      </div>
+
+      {/* Brand Icon Gem with Cinematic Framing */}
       <div
-        className="w-16 h-16 rounded-2xl flex items-center justify-center border border-[var(--border)] shadow-card transition-all duration-300 hover:scale-105 select-none hover:border-[var(--accent)]/40 hover:shadow-[0_8px_24px_var(--accent-d)] p-3 text-[var(--txt)]"
+        className="w-16 h-16 rounded-2xl flex items-center justify-center border border-white/[0.09] shadow-card transition-all duration-300 hover:scale-105 select-none hover:border-[var(--accent)]/40 p-3 text-[var(--txt)]"
         style={{
           background: "linear-gradient(135deg, var(--surface-raised), rgba(255, 255, 255, 0.02))",
         }}
@@ -157,10 +163,10 @@ export function WelcomeCard({ onSelectPrompt }: WelcomeCardProps) {
         <RadianceLogo variant="symbol" size="lg" showWordmark={false} animated glow className="w-10 h-9" />
       </div>
 
-      {/* Hero Title (Signature TanixAI Cormorant Garamond + 3-Stop Chromatic Gradient) */}
+      {/* Hero Title (Editorial Serif + Signature Chromatic Flare) */}
       <div className="flex flex-col gap-2.5">
         <h1 className="font-serif text-3xl sm:text-5xl md:text-6xl font-light text-[var(--txt)] tracking-tight leading-tight select-none">
-          Hello, I Am <em className="not-italic font-bold gradient-text-brand drop-shadow-sm">{titleName}</em>
+          Hello, I Am <em className="not-italic font-medium gradient-text-brand drop-shadow-sm">{titleName}</em>
         </h1>
         <p className="text-sm md:text-base text-[var(--txt-dim)] font-light max-w-lg leading-relaxed mx-auto font-sans">
           {description}
@@ -168,15 +174,18 @@ export function WelcomeCard({ onSelectPrompt }: WelcomeCardProps) {
       </div>
 
       {/* Dynamic Subtitle matched with Background Atmosphere */}
-      <div className="w-full max-w-3xl flex flex-col items-start mt-2">
-        <p className="text-sm sm:text-base text-[var(--txt)] font-medium text-left drop-shadow-[0_2px_12px_rgba(0,0,0,0.9)] flex items-center gap-2">
+      <div className="w-full max-w-3xl flex items-center justify-between mt-1 px-1">
+        <p className="text-xs sm:text-sm text-[var(--txt-dim)] font-medium text-left flex items-center gap-2 font-mono">
           <span
-            className="w-2 h-2 rounded-full inline-block animate-pulse shrink-0 shadow-[0_0_8px_var(--accent)]"
+            className="w-1.5 h-1.5 rounded-full inline-block animate-pulse shrink-0 shadow-[0_0_8px_var(--accent)]"
             style={{ backgroundColor: "var(--accent)" }}
             aria-hidden="true"
           />
-          Tell me what’s on your mind, or pick a suggestion.
+          Select a prompt beat or enter your query:
         </p>
+        <span className="hidden sm:inline-block text-[10px] font-mono text-[var(--txt-muted)] tracking-wider">
+          [PROMPT ARCHITECTURE]
+        </span>
       </div>
 
       {/* 3-Column Suggestions Architecture automatically harmonized with Theme & Palette */}
@@ -187,50 +196,38 @@ export function WelcomeCard({ onSelectPrompt }: WelcomeCardProps) {
         {SUGGESTION_COLUMNS.map((column) => (
           <div
             key={column.id}
-            className="group/card flex flex-col items-start p-4 sm:p-5 rounded-3xl border transition-all duration-300 hover:border-[var(--accent)]/40 hover:shadow-[0_16px_48px_-8px_var(--accent-d)]"
+            className="group/card flex flex-col items-start p-4 sm:p-5 rounded-2xl border transition-all duration-300 hover:border-white/20"
             style={{
               background:
-                "linear-gradient(180deg, var(--user-bg, rgba(255, 255, 255, 0.04)) 0%, rgba(10, 9, 16, 0.82) 100%)",
-              backdropFilter: "blur(24px)",
-              WebkitBackdropFilter: "blur(24px)",
+                "linear-gradient(180deg, rgba(16, 14, 24, 0.75) 0%, rgba(8, 7, 13, 0.88) 100%)",
+              backdropFilter: "blur(20px)",
+              WebkitBackdropFilter: "blur(20px)",
               borderColor: "var(--border)",
-              boxShadow:
-                "0 20px 48px -12px rgba(0, 0, 0, 0.7), 0 0 0 1px var(--border), 0 1px 0 0 rgba(255, 255, 255, 0.08) inset",
+              boxShadow: "0 8px 32px -8px rgba(0, 0, 0, 0.7), 0 1px 0 0 rgba(255, 255, 255, 0.05) inset",
             }}
           >
-            <h2
-              className="font-sans text-xl font-semibold tracking-tight mb-3.5 transition-all duration-300 drop-shadow-sm"
-              style={getHeaderStyle(column.headerThemeRole)}
-            >
-              {column.title}
-            </h2>
-            <div className="flex flex-col items-start gap-2.5 w-full">
+            <div className="flex items-center justify-between w-full mb-3.5 border-b border-white/[0.06] pb-2">
+              <h2
+                className="font-serif text-lg font-normal tracking-wide transition-all duration-300"
+                style={getHeaderStyle(column.headerThemeRole)}
+              >
+                {column.title}
+              </h2>
+              <span className="text-[9px] font-mono uppercase tracking-widest text-[var(--txt-muted)]">
+                {column.id}
+              </span>
+            </div>
+            <div className="flex flex-col items-start gap-2 w-full">
               {column.items.map((item) => (
                 <button
                   key={item.id}
                   type="button"
                   onClick={() => onSelectPrompt(item.prompt)}
-                  className="group/btn w-fit max-w-full inline-flex items-center gap-2 px-3.5 py-2 sm:py-2 min-h-[44px] rounded-full border transition-all duration-200 cursor-pointer shadow-sm active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] touch-target"
-                  style={{
-                    backgroundColor: "rgba(255, 255, 255, 0.05)",
-                    borderColor: "rgba(255, 255, 255, 0.08)",
-                    backdropFilter: "blur(8px)",
-                    WebkitBackdropFilter: "blur(8px)",
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = "var(--accent-d)";
-                    e.currentTarget.style.borderColor = "var(--border-accent)";
-                    e.currentTarget.style.boxShadow = "0 4px 16px var(--accent-d)";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.05)";
-                    e.currentTarget.style.borderColor = "rgba(255, 255, 255, 0.08)";
-                    e.currentTarget.style.boxShadow = "none";
-                  }}
+                  className="group/btn w-full inline-flex items-center gap-2 px-3.5 py-2.5 min-h-[44px] rounded-xl border border-white/[0.06] bg-white/[0.02] hover:bg-white/[0.06] hover:border-white/15 transition-all duration-200 cursor-pointer active:scale-[0.99] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[var(--accent)] touch-target text-left"
                   aria-label={`Ask suggestion: ${item.label}`}
                 >
                   {item.badge && renderBadge(item.badge.type)}
-                  <span className="truncate text-xs sm:text-[13px] text-[#ededed] group-hover/btn:text-[var(--txt)] font-normal transition-colors">
+                  <span className="truncate text-xs sm:text-[13px] text-[var(--txt-dim)] group-hover/btn:text-[var(--txt)] font-normal transition-colors">
                     {item.label}
                   </span>
                 </button>
