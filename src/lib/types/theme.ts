@@ -20,18 +20,18 @@ export interface ColorTheme {
 }
 
 export type GradientStyle =
-  | "bloom"
+  | "silk-caustics"
   | "waves"
   | "cosmic"
   | "aurora-curtains"
-  | "warp-speed"
-  | "cyber-grid"
+  | "spectral-rays"
+  | "topographic-flow"
   | "quantum-field"
   | "liquid-lava"
   | "matrix-rain"
-  | "zen-minimal"
+  | "celestial-dust"
   | "radial-pulse"
-  | "particle-vortex"
+  | "neural-lattice"
   | "bokeh-blur";
 
 export const COLOR_THEMES: Record<string, ColorTheme> = {
@@ -563,16 +563,16 @@ export interface AtmosphereEngineInfo {
 
 export const ATMOSPHERE_ENGINES: AtmosphereEngineInfo[] = [
   {
-    id: "bloom",
-    label: "Bloom Mesh",
-    tag: "Gradient 1",
-    description: "21st.dev 6-blob radial mesh with unquantized continuous phase modulation.",
-    iconName: "SunMedium",
+    id: "silk-caustics",
+    label: "Silk Caustics",
+    tag: "Refraction",
+    description: "Anisotropic refractive light sheets undulating with harmonic optical dispersion.",
+    iconName: "Layers",
   },
   {
     id: "waves",
     label: "Ribbon Waves",
-    tag: "Gradient 2",
+    tag: "Gradient",
     description: "21st.dev dynamic stripe bands swaying along harmonic sinusoidal angles.",
     iconName: "Waves",
   },
@@ -591,18 +591,18 @@ export const ATMOSPHERE_ENGINES: AtmosphereEngineInfo[] = [
     iconName: "Wind",
   },
   {
-    id: "warp-speed",
-    label: "Hyper Warp",
-    tag: "Interstellar",
-    description: "High-speed 3D star streaks traveling outward from the optical center.",
-    iconName: "Zap",
+    id: "spectral-rays",
+    label: "Spectral Rays",
+    tag: "Volumetric",
+    description: "Subtle directional chromatic dispersion beams gently angling across the deep viewport.",
+    iconName: "Compass",
   },
   {
-    id: "cyber-grid",
-    label: "Tron Grid",
-    tag: "Retro 3D",
-    description: "3D perspective wireframe horizon with forward motion and neon horizon glow.",
-    iconName: "Grid3X3",
+    id: "topographic-flow",
+    label: "Topographic Flow",
+    tag: "Generative",
+    description: "Generative mathematical elevation isolines drifting with Perlin simplex flow.",
+    iconName: "Activity",
   },
   {
     id: "quantum-field",
@@ -626,11 +626,11 @@ export const ATMOSPHERE_ENGINES: AtmosphereEngineInfo[] = [
     iconName: "Terminal",
   },
   {
-    id: "zen-minimal",
-    label: "Zen Obsidian",
-    tag: "Minimalist",
-    description: "Distraction-free pure deep void with slow, breathing ambient focal glow.",
-    iconName: "Sparkles",
+    id: "celestial-dust",
+    label: "Celestial Dust",
+    tag: "Tranquil",
+    description: "Microscopic luminous atmospheric particulate suspended in a tranquil brownian drift.",
+    iconName: "Cloud",
   },
   {
     id: "radial-pulse",
@@ -640,11 +640,11 @@ export const ATMOSPHERE_ENGINES: AtmosphereEngineInfo[] = [
     iconName: "Radio",
   },
   {
-    id: "particle-vortex",
-    label: "Stellar Vortex",
-    tag: "Galactic",
-    description: "Swirling particle spiral orbiting around a gravitational singularity.",
-    iconName: "Disc",
+    id: "neural-lattice",
+    label: "Neural Lattice",
+    tag: "Cognitive",
+    description: "Subtle self-organizing mathematical lattice geometry with gentle organic pulsation.",
+    iconName: "Cpu",
   },
   {
     id: "bokeh-blur",

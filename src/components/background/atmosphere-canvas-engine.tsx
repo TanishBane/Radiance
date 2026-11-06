@@ -22,26 +22,26 @@ function hexToRgb(hex: string): [number, number, number] {
   return [(num >> 16) & 255, (num >> 8) & 255, num & 255];
 }
 
+const CANVAS_ENGINES: GradientStyle[] = [
+  "silk-caustics",
+  "aurora-curtains",
+  "spectral-rays",
+  "topographic-flow",
+  "quantum-field",
+  "liquid-lava",
+  "matrix-rain",
+  "celestial-dust",
+  "radial-pulse",
+  "neural-lattice",
+  "bokeh-blur",
+];
+
 export function AtmosphereCanvasEngine({ theme, engine }: AtmosphereCanvasEngineProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const rafIdRef = useRef<number | null>(null);
 
   useEffect(() => {
-    // Only handle canvas-based engines
-    const canvasEngines = [
-      "aurora-curtains",
-      "warp-speed",
-      "cyber-grid",
-      "quantum-field",
-      "liquid-lava",
-      "matrix-rain",
-      "zen-minimal",
-      "radial-pulse",
-      "particle-vortex",
-      "bokeh-blur",
-    ];
-
-    if (!canvasEngines.includes(engine)) {
+    if (!CANVAS_ENGINES.includes(engine)) {
       if (rafIdRef.current) cancelAnimationFrame(rafIdRef.current);
       return;
     }
@@ -72,7 +72,49 @@ export function AtmosphereCanvasEngine({ theme, engine }: AtmosphereCanvasEngine
     let isRunning = true;
     let frame = 0;
 
-    // ── Engine 1: Aurora Curtains ──
+    // ── Engine 1: Silk Caustics (Replaces Bloom Mesh with Anisotropic Refraction) ──
+    const drawSilkCaustics = (t: number) => {
+      ctx.fillStyle = theme.bloomColors[0];
+      ctx.fillRect(0, 0, width, height);
+
+      const ribbons = 6;
+      for (let r = 0; r < ribbons; r++) {
+        ctx.beginPath();
+        const baseColor =
+          r % 3 === 0
+            ? `rgba(${r1}, ${g1}, ${b1}, 0.14)`
+            : r % 3 === 1
+            ? `rgba(${r2}, ${g2}, ${b2}, 0.12)`
+            : `rgba(${r3}, ${g3}, ${b3}, 0.10)`;
+        ctx.strokeStyle = baseColor;
+        ctx.lineWidth = 1.6;
+
+        const phase = r * 0.95;
+        const cy = height * 0.18 + r * height * 0.13;
+        for (let x = 0; x <= width; x += 16) {
+          const normX = x / width;
+          const y =
+            cy +
+            Math.sin(normX * 5.2 + t * 0.45 + phase) * 44 +
+            Math.cos(normX * 3.1 - t * 0.3 + phase * 0.7) * 22;
+          if (x === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+
+        // Translucent under-wash gradient
+        ctx.lineTo(width, height);
+        ctx.lineTo(0, height);
+        ctx.closePath();
+        const grad = ctx.createLinearGradient(0, cy - 40, 0, height);
+        grad.addColorStop(0, baseColor.replace(/[\d\.]+\)$/, "0.035)"));
+        grad.addColorStop(1, "transparent");
+        ctx.fillStyle = grad;
+        ctx.fill();
+      }
+    };
+
+    // ── Engine 2: Aurora Curtains ──
     const drawAuroraCurtains = (t: number) => {
       ctx.fillStyle = theme.bloomColors[0];
       ctx.fillRect(0, 0, width, height);
@@ -101,100 +143,75 @@ export function AtmosphereCanvasEngine({ theme, engine }: AtmosphereCanvasEngine
       }
     };
 
-    // ── Engine 2: Hyper Warp Speed ──
-    interface Star {
-      x: number;
-      y: number;
-      z: number;
-      pz: number;
-    }
-    const stars: Star[] = Array.from({ length: 250 }, () => ({
-      x: (Math.random() - 0.5) * width * 2,
-      y: (Math.random() - 0.5) * height * 2,
-      z: Math.random() * width,
-      pz: Math.random() * width,
-    }));
-
-    const drawWarpSpeed = () => {
-      ctx.fillStyle = "rgba(6, 6, 10, 0.25)";
-      ctx.fillRect(0, 0, width, height);
-
-      const cx = width / 2;
-      const cy = height / 2;
-
-      stars.forEach((star) => {
-        star.pz = star.z;
-        star.z -= 18;
-        if (star.z <= 0) {
-          star.z = width;
-          star.pz = width;
-          star.x = (Math.random() - 0.5) * width * 2;
-          star.y = (Math.random() - 0.5) * height * 2;
-        }
-
-        const k = 128.0 / star.z;
-        const px = star.x * k + cx;
-        const py = star.y * k + cy;
-
-        const pk = 128.0 / star.pz;
-        const ppx = star.x * pk + cx;
-        const ppy = star.y * pk + cy;
-
-        const alpha = Math.min(1, (1 - star.z / width) * 1.5);
-        ctx.strokeStyle = `rgba(${r2}, ${g2}, ${b2}, ${alpha})`;
-        ctx.lineWidth = Math.max(0.5, (1 - star.z / width) * 2.5);
-
-        ctx.beginPath();
-        ctx.moveTo(ppx, ppy);
-        ctx.lineTo(px, py);
-        ctx.stroke();
-      });
-    };
-
-    // ── Engine 3: Tron Cyber Grid ──
-    const drawCyberGrid = (t: number) => {
+    // ── Engine 3: Spectral Rays (Replaces Hyper Warp with Volumetric Light Dispersion) ──
+    const drawSpectralRays = (t: number) => {
       ctx.fillStyle = theme.bloomColors[0];
       ctx.fillRect(0, 0, width, height);
 
-      const horizon = height * 0.55;
-      const fov = 300;
+      const numRays = 5;
+      const angle = Math.PI / 4; // 45 deg diagonal sweep
+      for (let i = 0; i < numRays; i++) {
+        const rayOffset = (i / numRays) * width * 1.5 - width * 0.25;
+        const drift = Math.sin(t * 0.25 + i * 1.1) * 60;
+        const originX = rayOffset + drift;
+        const rayWidth = 140 + Math.sin(t * 0.4 + i) * 35;
+        const alpha = Math.sin(t * 0.5 + i * 0.8) * 0.035 + 0.065;
 
-      // Draw horizon glow
-      const horizonGrad = ctx.createLinearGradient(0, horizon - 80, 0, horizon + 20);
-      horizonGrad.addColorStop(0, "transparent");
-      horizonGrad.addColorStop(0.8, `rgba(${r1}, ${g1}, ${b1}, 0.25)`);
-      horizonGrad.addColorStop(1, "transparent");
-      ctx.fillStyle = horizonGrad;
-      ctx.fillRect(0, horizon - 80, width, 100);
+        const grad = ctx.createLinearGradient(
+          originX,
+          0,
+          originX + Math.cos(angle) * height * 1.4,
+          height
+        );
+        const col = i % 2 === 0 ? `rgba(${r1}, ${g1}, ${b1}` : `rgba(${r2}, ${g2}, ${b2}`;
+        grad.addColorStop(0, `${col}, 0)`);
+        grad.addColorStop(0.3, `${col}, ${alpha})`);
+        grad.addColorStop(0.7, `${col}, ${alpha * 0.6})`);
+        grad.addColorStop(1, `${col}, 0)`);
 
-      ctx.strokeStyle = `rgba(${r1}, ${g1}, ${b1}, 0.25)`;
-      ctx.lineWidth = 1;
-
-      // Perspective lines radiating outward
-      const numLines = 24;
-      for (let i = -numLines / 2; i <= numLines / 2; i++) {
-        const x = (width / 2) + i * 45;
+        ctx.fillStyle = grad;
         ctx.beginPath();
-        ctx.moveTo(width / 2, horizon);
-        ctx.lineTo(x * 3 - (width), height);
-        ctx.stroke();
+        ctx.moveTo(originX - rayWidth / 2, 0);
+        ctx.lineTo(originX + rayWidth / 2, 0);
+        ctx.lineTo(originX + rayWidth / 2 + Math.tan(angle * 0.6) * height, height);
+        ctx.lineTo(originX - rayWidth / 2 + Math.tan(angle * 0.6) * height, height);
+        ctx.closePath();
+        ctx.fill();
       }
+    };
 
-      // Horizontal lines advancing towards viewer
-      const speed = (t * 60) % 40;
-      for (let z = 0; z < height - horizon; z += 18) {
-        const lineY = horizon + Math.pow((z + speed) / (height - horizon), 2) * (height - horizon);
-        if (lineY > height) continue;
-        const alpha = Math.min(0.35, ((lineY - horizon) / (height - horizon)) * 0.4);
-        ctx.strokeStyle = `rgba(${r2}, ${g2}, ${b2}, ${alpha})`;
+    // ── Engine 4: Topographic Flow (Replaces Tron Grid with Generative Isolines) ──
+    const drawTopographicFlow = (t: number) => {
+      ctx.fillStyle = theme.bloomColors[0];
+      ctx.fillRect(0, 0, width, height);
+
+      const numLevels = 10;
+      for (let lvl = 0; lvl < numLevels; lvl++) {
+        const yBase = height * 0.15 + (lvl / numLevels) * height * 0.75;
+        const color = lvl % 2 === 0
+          ? `rgba(${r1}, ${g1}, ${b1}, 0.22)`
+          : `rgba(${r2}, ${g2}, ${b2}, 0.16)`;
+
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 0.9;
         ctx.beginPath();
-        ctx.moveTo(0, lineY);
-        ctx.lineTo(width, lineY);
+
+        for (let x = 0; x <= width; x += 14) {
+          const nx = x / width;
+          const elevation =
+            Math.sin(nx * 6 + t * 0.35 + lvl * 0.5) * 32 +
+            Math.cos(nx * 12 - t * 0.2 + lvl * 0.8) * 16 +
+            Math.sin(nx * 3 + lvl * 0.4) * 20;
+          const y = yBase + elevation;
+
+          if (x === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
         ctx.stroke();
       }
     };
 
-    // ── Engine 4: Quantum Constellations ──
+    // ── Engine 5: Quantum Constellations ──
     interface Node {
       x: number;
       y: number;
@@ -245,7 +262,7 @@ export function AtmosphereCanvasEngine({ theme, engine }: AtmosphereCanvasEngine
       }
     };
 
-    // ── Engine 5: Molten Metablobs ──
+    // ── Engine 6: Molten Metablobs ──
     interface Blob {
       x: number;
       y: number;
@@ -283,7 +300,7 @@ export function AtmosphereCanvasEngine({ theme, engine }: AtmosphereCanvasEngine
       });
     };
 
-    // ── Engine 6: Digital Glyph Rain (Matrix) ──
+    // ── Engine 7: Digital Glyph Rain (Matrix) ──
     const glyphs = "01アイウエオカキクケコサシスセソタチツテトRADIANCE";
     const fontSize = 14;
     const columns = Math.floor(width / fontSize);
@@ -310,29 +327,58 @@ export function AtmosphereCanvasEngine({ theme, engine }: AtmosphereCanvasEngine
       }
     };
 
-    // ── Engine 7: Zen Minimalist Ambient Glow ──
-    const drawZenMinimal = (t: number) => {
+    // ── Engine 8: Celestial Dust (Replaces Zen Obsidian with Tranquil Brownian Particulate) ──
+    interface CelestialParticle {
+      x: number;
+      y: number;
+      vx: number;
+      vy: number;
+      r: number;
+      alpha: number;
+      phase: number;
+      depth: number;
+    }
+    const dustParticles: CelestialParticle[] = Array.from({ length: 95 }, () => ({
+      x: Math.random() * width,
+      y: Math.random() * height,
+      vx: (Math.random() - 0.5) * 0.25,
+      vy: -Math.random() * 0.35 - 0.05,
+      r: Math.random() * 2.2 + 0.8,
+      alpha: Math.random() * 0.35 + 0.15,
+      phase: Math.random() * Math.PI * 2,
+      depth: Math.random(),
+    }));
+
+    const drawCelestialDust = (t: number) => {
       ctx.fillStyle = theme.bloomColors[0];
       ctx.fillRect(0, 0, width, height);
 
-      // Slow breathing luminance
-      const pulse = Math.sin(t * 0.8) * 0.05 + 0.15;
-      const cx = width / 2;
-      const cy = height * 0.45;
-      const radius = Math.min(width, height) * 0.55;
+      dustParticles.forEach((p) => {
+        p.x += p.vx + Math.sin(t * 0.4 + p.phase) * 0.15;
+        p.y += p.vy;
 
-      const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, radius);
-      grad.addColorStop(0, `rgba(${r1}, ${g1}, ${b1}, ${pulse})`);
-      grad.addColorStop(0.5, `rgba(${r2}, ${g2}, ${b2}, ${pulse * 0.4})`);
-      grad.addColorStop(1, "transparent");
+        if (p.y < -10) p.y = height + 10;
+        if (p.x < -10) p.x = width + 10;
+        if (p.x > width + 10) p.x = -10;
 
-      ctx.fillStyle = grad;
-      ctx.beginPath();
-      ctx.arc(cx, cy, radius, 0, Math.PI * 2);
-      ctx.fill();
+        const pulseAlpha = p.alpha * (Math.sin(t * 1.4 + p.phase) * 0.3 + 0.7);
+        const col = p.depth > 0.5 ? `rgba(${r2}, ${g2}, ${b2}` : `rgba(${r1}, ${g1}, ${b1}`;
+
+        // Soft aura
+        ctx.fillStyle = `${col}, ${pulseAlpha * 0.35})`;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r * 2.2, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Core
+        ctx.fillStyle = `${col}, ${pulseAlpha})`;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fill();
+      });
     };
 
-    // ── Engine 8: Harmonic Radial Pulse ──
+    // ── Engine 9: Harmonic Radial Pulse ──
     const drawRadialPulse = (t: number) => {
       ctx.fillStyle = theme.bloomColors[0];
       ctx.fillRect(0, 0, width, height);
@@ -355,40 +401,72 @@ export function AtmosphereCanvasEngine({ theme, engine }: AtmosphereCanvasEngine
       }
     };
 
-    // ── Engine 9: Stellar Vortex ──
-    const vortexStars = Array.from({ length: 180 }, () => ({
-      angle: Math.random() * Math.PI * 2,
-      dist: Math.random() * Math.min(width, height) * 0.6 + 20,
-      speed: Math.random() * 0.008 + 0.003,
-      size: Math.random() * 2 + 1,
+    // ── Engine 10: Neural Lattice (Replaces Stellar Vortex with Cognitive Graph Topology) ──
+    interface LatticeNode {
+      x: number;
+      y: number;
+      vx: number;
+      vy: number;
+      radius: number;
+      phase: number;
+    }
+    const latticeNodes: LatticeNode[] = Array.from({ length: 48 }, () => ({
+      x: Math.random() * width,
+      y: Math.random() * height,
+      vx: (Math.random() - 0.5) * 0.5,
+      vy: (Math.random() - 0.5) * 0.5,
+      radius: Math.random() * 1.8 + 1.2,
+      phase: Math.random() * Math.PI * 2,
     }));
 
-    const drawParticleVortex = () => {
-      ctx.fillStyle = "rgba(6, 6, 10, 0.15)";
+    const drawNeuralLattice = (t: number) => {
+      ctx.fillStyle = theme.bloomColors[0];
       ctx.fillRect(0, 0, width, height);
 
-      const cx = width / 2;
-      const cy = height / 2;
+      // Update positions
+      latticeNodes.forEach((n) => {
+        n.x += n.vx;
+        n.y += n.vy;
+        if (n.x < 10 || n.x > width - 10) n.vx *= -1;
+        if (n.y < 10 || n.y > height - 10) n.vy *= -1;
+      });
 
-      vortexStars.forEach((s) => {
-        s.angle += s.speed;
-        s.dist -= 0.2;
-        if (s.dist <= 10) {
-          s.dist = Math.min(width, height) * 0.6;
+      // Draw connective synapses
+      const maxDist = 135;
+      for (let i = 0; i < latticeNodes.length; i++) {
+        for (let j = i + 1; j < latticeNodes.length; j++) {
+          const dx = latticeNodes[i].x - latticeNodes[j].x;
+          const dy = latticeNodes[i].y - latticeNodes[j].y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < maxDist) {
+            const norm = 1 - dist / maxDist;
+            const alpha = norm * norm * 0.28;
+            ctx.strokeStyle = `rgba(${r1}, ${g1}, ${b1}, ${alpha})`;
+            ctx.lineWidth = 0.85;
+            ctx.beginPath();
+            ctx.moveTo(latticeNodes[i].x, latticeNodes[i].y);
+            ctx.lineTo(latticeNodes[j].x, latticeNodes[j].y);
+            ctx.stroke();
+          }
         }
+      }
 
-        const x = cx + Math.cos(s.angle) * s.dist;
-        const y = cy + Math.sin(s.angle) * s.dist;
-        const alpha = Math.min(1, s.dist / 150);
-
-        ctx.fillStyle = `rgba(${r2}, ${g2}, ${b2}, ${alpha * 0.8})`;
+      // Draw synaptic nodes
+      latticeNodes.forEach((n) => {
+        const pulse = Math.sin(t * 1.8 + n.phase) * 0.3 + 0.7;
+        ctx.fillStyle = `rgba(${r2}, ${g2}, ${b2}, ${pulse * 0.85})`;
         ctx.beginPath();
-        ctx.arc(x, y, s.size, 0, Math.PI * 2);
+        ctx.arc(n.x, n.y, n.radius, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = `rgba(${r3}, ${g3}, ${b3}, ${pulse * 0.25})`;
+        ctx.beginPath();
+        ctx.arc(n.x, n.y, n.radius * 2.8, 0, Math.PI * 2);
         ctx.fill();
       });
     };
 
-    // ── Engine 10: Cinematic Bokeh Discs ──
+    // ── Engine 11: Cinematic Bokeh Discs ──
     interface Bokeh {
       x: number;
       y: number;
@@ -431,7 +509,7 @@ export function AtmosphereCanvasEngine({ theme, engine }: AtmosphereCanvasEngine
 
     if (prefersReducedMotion) {
       // Draw static first frame
-      drawZenMinimal(0);
+      drawSilkCaustics(0);
       return;
     }
 
@@ -442,14 +520,17 @@ export function AtmosphereCanvasEngine({ theme, engine }: AtmosphereCanvasEngine
       frame++;
 
       switch (engine) {
+        case "silk-caustics":
+          drawSilkCaustics(t);
+          break;
         case "aurora-curtains":
           drawAuroraCurtains(t);
           break;
-        case "warp-speed":
-          drawWarpSpeed();
+        case "spectral-rays":
+          drawSpectralRays(t);
           break;
-        case "cyber-grid":
-          drawCyberGrid(t);
+        case "topographic-flow":
+          drawTopographicFlow(t);
           break;
         case "quantum-field":
           drawQuantumField();
@@ -460,14 +541,14 @@ export function AtmosphereCanvasEngine({ theme, engine }: AtmosphereCanvasEngine
         case "matrix-rain":
           if (frame % 2 === 0) drawMatrixRain();
           break;
-        case "zen-minimal":
-          drawZenMinimal(t);
+        case "celestial-dust":
+          drawCelestialDust(t);
           break;
         case "radial-pulse":
           drawRadialPulse(t);
           break;
-        case "particle-vortex":
-          drawParticleVortex();
+        case "neural-lattice":
+          drawNeuralLattice(t);
           break;
         case "bokeh-blur":
           drawBokehBlur();
@@ -500,20 +581,7 @@ export function AtmosphereCanvasEngine({ theme, engine }: AtmosphereCanvasEngine
     };
   }, [theme, engine]);
 
-  const canvasEngines = [
-    "aurora-curtains",
-    "warp-speed",
-    "cyber-grid",
-    "quantum-field",
-    "liquid-lava",
-    "matrix-rain",
-    "zen-minimal",
-    "radial-pulse",
-    "particle-vortex",
-    "bokeh-blur",
-  ];
-
-  if (!canvasEngines.includes(engine)) return null;
+  if (!CANVAS_ENGINES.includes(engine)) return null;
 
   return (
     <canvas

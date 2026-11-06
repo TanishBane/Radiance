@@ -18,20 +18,26 @@ describe("Theme Gradients Configuration & Mathematical Invariants", () => {
   it("should define exactly 13 unique atmosphere engines", () => {
     expect(ATMOSPHERE_ENGINES.length).toBe(13);
     const engineIds = new Set(ATMOSPHERE_ENGINES.map((e) => e.id));
+    const engineIdStrings = engineIds as Set<string>;
     expect(engineIds.size).toBe(13);
 
-    expect(engineIds.has("bloom")).toBe(true);
+    expect(engineIds.has("silk-caustics")).toBe(true);
+    expect(engineIdStrings.has("bloom")).toBe(false);
     expect(engineIds.has("waves")).toBe(true);
     expect(engineIds.has("cosmic")).toBe(true);
     expect(engineIds.has("aurora-curtains")).toBe(true);
-    expect(engineIds.has("warp-speed")).toBe(true);
-    expect(engineIds.has("cyber-grid")).toBe(true);
+    expect(engineIds.has("spectral-rays")).toBe(true);
+    expect(engineIdStrings.has("warp-speed")).toBe(false);
+    expect(engineIds.has("topographic-flow")).toBe(true);
+    expect(engineIdStrings.has("cyber-grid")).toBe(false);
     expect(engineIds.has("quantum-field")).toBe(true);
     expect(engineIds.has("liquid-lava")).toBe(true);
     expect(engineIds.has("matrix-rain")).toBe(true);
-    expect(engineIds.has("zen-minimal")).toBe(true);
+    expect(engineIds.has("celestial-dust")).toBe(true);
+    expect(engineIdStrings.has("zen-minimal")).toBe(false);
     expect(engineIds.has("radial-pulse")).toBe(true);
-    expect(engineIds.has("particle-vortex")).toBe(true);
+    expect(engineIds.has("neural-lattice")).toBe(true);
+    expect(engineIdStrings.has("particle-vortex")).toBe(false);
     expect(engineIds.has("bokeh-blur")).toBe(true);
   });
 
