@@ -7,15 +7,15 @@ interface AmbientCanvasProps {
   accentColor?: string;
 }
 
-export function AmbientCanvas({ accentColor = "#e8a849" }: AmbientCanvasProps) {
+export function AmbientCanvas({ accentColor = "#7c5cff" }: AmbientCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const colorRef = useRef<THREE.Color>(new THREE.Color(accentColor));
-  const color2Ref = useRef<THREE.Color>(new THREE.Color(accentColor).offsetHSL(0.42, 0, 0.05));
+  const color2Ref = useRef<THREE.Color>(new THREE.Color(accentColor).offsetHSL(0.35, -0.1, 0.08));
 
   // Sync color changes from props into shader uniforms
   useEffect(() => {
     colorRef.current.set(accentColor);
-    color2Ref.current.copy(colorRef.current).offsetHSL(0.42, 0, 0.05);
+    color2Ref.current.copy(colorRef.current).offsetHSL(0.35, -0.1, 0.08);
   }, [accentColor]);
 
   useEffect(() => {
@@ -83,9 +83,11 @@ export function AmbientCanvas({ accentColor = "#e8a849" }: AmbientCanvasProps) {
       varying vec3 vPos;
       void main() {
         vec3 viewDir = normalize(cameraPosition - vPos);
-        float fresnel = pow(1.0 - max(dot(viewDir, normalize(vNormal)), 0.0), 2.4);
-        vec3 glow = uColor * (0.12 + fresnel * 0.95);
-        gl_FragColor = vec4(glow, uOpacity * (0.18 + fresnel * 0.55));
+        float nDotV = max(dot(viewDir, normalize(vNormal)), 0.0);
+        float fresnel = pow(1.0 - nDotV, 2.8);
+        vec3 chromaticCyan = vec3(0.22, 0.74, 0.97);
+        vec3 rim = mix(uColor, chromaticCyan, pow(1.0 - nDotV, 4.5) * 0.5) * (0.16 + fresnel * 1.05);
+        gl_FragColor = vec4(rim, uOpacity * (0.16 + fresnel * 0.60));
       }
     `;
 
@@ -121,6 +123,41 @@ export function AmbientCanvas({ accentColor = "#e8a849" }: AmbientCanvasProps) {
       blobs.push(mesh);
     });
 
+    // ── Anamorphic Horizontal Optical Line ──
+    const flareGeo = new THREE.PlaneGeometry(28, 0.045);
+    const flareMat = new THREE.ShaderMaterial({
+      vertexShader: `
+        varying vec2 vUv;
+        void main() {
+          vUv = uv;
+          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        }
+      `,
+      fragmentShader: `
+        uniform vec3 uColor;
+        uniform float uTime;
+        varying vec2 vUv;
+        void main() {
+          float xDist = abs(vUv.x - 0.5) * 2.0;
+          float yDist = abs(vUv.y - 0.5) * 2.0;
+          float intensity = pow(1.0 - xDist, 3.2) * pow(1.0 - yDist, 2.2);
+          float pulse = sin(uTime * 1.5) * 0.15 + 0.85;
+          vec3 col = mix(uColor, vec3(1.0), pow(1.0 - xDist, 8.0) * 0.6);
+          gl_FragColor = vec4(col, intensity * 0.55 * pulse);
+        }
+      `,
+      uniforms: {
+        uColor: { value: colorRef.current },
+        uTime: { value: 0 },
+      },
+      transparent: true,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+    });
+    const flareMesh = new THREE.Mesh(flareGeo, flareMat);
+    flareMesh.position.set(0, -0.6, -2.5);
+    scene.add(flareMesh);
+
     // ── Particle Field ──
     function makeSprite() {
       const c = document.createElement("canvas");
@@ -137,6 +174,7 @@ export function AmbientCanvas({ accentColor = "#e8a849" }: AmbientCanvasProps) {
       return new THREE.CanvasTexture(c);
     }
 
+    const spriteTexture = makeSprite();
     const PARTICLE_COUNT = 2200;
     const positions = new Float32Array(PARTICLE_COUNT * 3);
     for (let i = 0; i < PARTICLE_COUNT; i++) {
@@ -152,7 +190,7 @@ export function AmbientCanvas({ accentColor = "#e8a849" }: AmbientCanvasProps) {
     pGeo.setAttribute("position", new THREE.BufferAttribute(positions, 3));
     const pMat = new THREE.PointsMaterial({
       size: 0.05,
-      map: makeSprite(),
+      map: spriteTexture,
       transparent: true,
       opacity: 0.5,
       color: colorRef.current,
@@ -172,7 +210,15 @@ export function AmbientCanvas({ accentColor = "#e8a849" }: AmbientCanvasProps) {
       pointer.y = (e.clientY / window.innerHeight) * 2 - 1;
     };
 
+    const handleTouchMove = (e: TouchEvent) => {
+      if (e.touches.length > 0) {
+        pointer.x = (e.touches[0].clientX / window.innerWidth) * 2 - 1;
+        pointer.y = (e.touches[0].clientY / window.innerHeight) * 2 - 1;
+      }
+    };
+
     window.addEventListener("mousemove", handlePointerMove, { passive: true });
+    window.addEventListener("touchmove", handleTouchMove, { passive: true });
 
     // ── Animation Loop ──
     let running = true;
@@ -200,6 +246,9 @@ export function AmbientCanvas({ accentColor = "#e8a849" }: AmbientCanvasProps) {
       camera.position.x = smooth.x * 0.6;
       camera.position.y = -smooth.y * 0.4;
       camera.lookAt(0, 0, -3);
+
+      flareMat.uniforms.uTime.value += dt * motionScale;
+      flareMat.uniforms.uColor.value.set(colorRef.current);
 
       particles.rotation.y += dt * 0.008 * motionScale;
       particles.rotation.x += dt * 0.003 * motionScale;
@@ -232,14 +281,18 @@ export function AmbientCanvas({ accentColor = "#e8a849" }: AmbientCanvasProps) {
       canvas.removeEventListener("webglcontextlost", handleContextLost);
       window.removeEventListener("resize", resize);
       window.removeEventListener("mousemove", handlePointerMove);
+      window.removeEventListener("touchmove", handleTouchMove);
       document.removeEventListener("visibilitychange", handleVisibility);
       renderer.dispose();
       blobs.forEach((b) => {
         b.geometry.dispose();
         b.material.dispose();
       });
+      flareGeo.dispose();
+      flareMat.dispose();
       pGeo.dispose();
       pMat.dispose();
+      spriteTexture.dispose();
     };
   }, []);
 

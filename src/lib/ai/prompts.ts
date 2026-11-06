@@ -84,11 +84,23 @@ export const TONES: Record<ToneKey, ToneDefinition> = {
   },
 };
 
+export const MODES: Record<string, string> = {
+  build: "Focus on complete, production-ready, robust implementations with high craft and precision. Provide complete working code, avoid placeholders, and ensure proper typings.",
+  plan: "Focus on step-by-step strategic planning, architecture breakdown, and trade-off analysis before execution. Highlight potential bottlenecks, edge cases, and milestones.",
+  ask: "Provide clear, direct, and insightful explanations answering the user's questions with maximum conceptual clarity.",
+};
+
 export function composeSystemPrompt(
   toneKey: ToneKey = "default",
-  language: "en" | "hi" = "en"
+  language: "en" | "hi" = "en",
+  mode = "default"
 ): string {
   let prompt = SYSTEM_BASE;
+
+  const modeLower = (mode || "").toLowerCase();
+  if (MODES[modeLower]) {
+    prompt += `\n\n[Mode Instruction - ${mode.toUpperCase()}]: ${MODES[modeLower]}`;
+  }
 
   const tone = TONES[toneKey];
   if (tone && tone.prompt) {
