@@ -138,13 +138,14 @@ export const MobileSidebar = ({
                 className
               )}
             >
-              <div
-                className="absolute right-4 top-4 z-50 text-[var(--txt-muted)] hover:text-[var(--txt)] cursor-pointer p-1 rounded-lg hover:bg-[var(--surface-hover)] transition-colors"
+              <button
+                type="button"
+                className="absolute right-4 top-4 z-50 text-[var(--txt-muted)] hover:text-[var(--txt)] cursor-pointer p-2 min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg hover:bg-[var(--surface-hover)] transition-colors touch-target"
                 onClick={() => setOpen(false)}
                 aria-label="Close drawer"
               >
                 <IconX className="h-5 w-5" />
-              </div>
+              </button>
               {children}
             </motion.div>
           </>

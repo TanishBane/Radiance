@@ -21,7 +21,7 @@ export function FollowUpChips({ questions, onSelect }: FollowUpChipsProps) {
           <button
             key={idx}
             onClick={() => onSelect(q)}
-            className="flex items-center gap-2.5 text-left px-3.5 py-2 rounded-lg text-xs bg-[var(--surface)] border border-[var(--border)] border-l-2 border-l-[var(--accent)] text-[var(--txt-dim)] hover:text-[var(--txt)] hover:bg-[var(--accent-d)] hover:border-[var(--accent)] hover:translate-x-1 transition-all duration-150"
+            className="flex items-center gap-2.5 text-left px-3.5 py-2.5 min-h-[44px] rounded-xl text-xs bg-[var(--surface)] border border-[var(--border)] border-l-2 border-l-[var(--accent)] text-[var(--txt-dim)] hover:text-[var(--txt)] hover:bg-[var(--accent-d)] hover:border-[var(--accent)] hover:translate-x-1 active:scale-[0.99] transition-all duration-150 cursor-pointer touch-target"
           >
             <ArrowRight className="w-3 h-3 text-[var(--accent)] shrink-0 opacity-80" />
             <span className="leading-snug">{q}</span>

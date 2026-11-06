@@ -61,7 +61,7 @@ export function Topbar({
           <button
             type="button"
             onClick={() => onToggleLanguage("en")}
-            className={`px-2.5 py-1 rounded-lg transition-colors ${
+            className={`min-w-[34px] sm:min-w-[28px] min-h-[34px] sm:min-h-[28px] px-2.5 py-1 rounded-lg flex items-center justify-center transition-colors touch-target ${
               language === "en"
                 ? "bg-[var(--accent-d)] text-[var(--accent-b)] font-bold shadow-sm"
                 : "text-[var(--txt-muted)] hover:text-[var(--txt)]"
@@ -72,7 +72,7 @@ export function Topbar({
           <button
             type="button"
             onClick={() => onToggleLanguage("hi")}
-            className={`px-2.5 py-1 rounded-lg transition-colors ${
+            className={`min-w-[34px] sm:min-w-[28px] min-h-[34px] sm:min-h-[28px] px-2.5 py-1 rounded-lg flex items-center justify-center transition-colors touch-target ${
               language === "hi"
                 ? "bg-[var(--accent-d)] text-[var(--accent-b)] font-bold shadow-sm"
                 : "text-[var(--txt-muted)] hover:text-[var(--txt)]"
@@ -86,7 +86,7 @@ export function Topbar({
         <button
           type="button"
           onClick={onClearChat}
-          className="p-2 rounded-xl border border-[var(--border)] text-[var(--txt-muted)] hover:text-[var(--danger)] hover:bg-[var(--danger)]/10 hover:border-[var(--danger)]/30 transition-colors touch-target"
+          className="min-w-[44px] min-h-[44px] p-2 rounded-xl border border-[var(--border)] text-[var(--txt-muted)] hover:text-[var(--danger)] hover:bg-[var(--danger)]/10 hover:border-[var(--danger)]/30 transition-colors touch-target flex items-center justify-center cursor-pointer"
           title="Clear active conversation"
           aria-label="Clear active conversation"
         >
