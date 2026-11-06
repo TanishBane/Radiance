@@ -11,8 +11,13 @@ import {
 import { DEFAULT_MODEL_ID, getModelById } from "@/lib/ai/models";
 import { conversationService } from "@/lib/db/conversations";
 
-// Background & Branding
-import { AmbientCanvas } from "@/components/background/ambient-canvas";
+import dynamic from "next/dynamic";
+
+// Background & Branding (AmbientCanvas code-split to defer Three.js from initial JS payload)
+const AmbientCanvas = dynamic(
+  () => import("@/components/background/ambient-canvas").then((m) => m.AmbientCanvas),
+  { ssr: false }
+);
 import { BackgroundLayers } from "@/components/background/background-layers";
 import { IntroSplash } from "@/components/branding/intro-splash";
 

@@ -3,7 +3,7 @@
 import { cn } from "@/lib/utils/cn";
 import React, { useState, createContext, useContext } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
-import { IconMenu2, IconX } from "@tabler/icons-react";
+import { X } from "lucide-react";
 import { getMotionTransition } from "@/lib/motion/presets";
 
 export interface SidebarLinkItem {
@@ -144,7 +144,7 @@ export const MobileSidebar = ({
                 onClick={() => setOpen(false)}
                 aria-label="Close drawer"
               >
-                <IconX className="h-5 w-5" />
+                <X className="h-5 w-5" />
               </button>
               {children}
             </motion.div>

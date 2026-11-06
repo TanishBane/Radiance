@@ -7,12 +7,7 @@ import {
   SidebarLink,
   SidebarLinkItem,
 } from "@/components/ui/sidebar";
-import {
-  IconPlus,
-  IconHistory,
-  IconAdjustmentsHorizontal,
-  IconCommand,
-} from "@tabler/icons-react";
+import { Plus, History, SlidersHorizontal, Command } from "lucide-react";
 import { motion } from "motion/react";
 import { RadianceLogo } from "@/components/branding/radiance-logo";
 
@@ -49,25 +44,25 @@ export function SidebarDock({
       label: "New Chat",
       icon: (
         <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-[var(--accent-b)] to-[var(--accent)] text-[var(--void)] flex items-center justify-center shadow-sm shrink-0">
-          <IconPlus className="w-4 h-4 stroke-[2.5]" />
+          <Plus className="w-4 h-4 stroke-[2.5]" />
         </div>
       ),
       onClick: () => handleAction(onNewChat),
     },
     {
       label: "History",
-      icon: <IconHistory className="w-5 h-5 shrink-0" />,
+      icon: <History className="w-5 h-5 shrink-0" />,
       onClick: () => handleAction(onToggleHistory),
       badge: "Ctrl+L",
     },
     {
       label: "Personalization",
-      icon: <IconAdjustmentsHorizontal className="w-5 h-5 shrink-0" />,
+      icon: <SlidersHorizontal className="w-5 h-5 shrink-0" />,
       onClick: () => handleAction(onToggleSettings),
     },
     {
       label: "Shortcuts",
-      icon: <IconCommand className="w-5 h-5 shrink-0" />,
+      icon: <Command className="w-5 h-5 shrink-0" />,
       onClick: () => handleAction(onOpenShortcuts),
       badge: "Ctrl+K",
     },

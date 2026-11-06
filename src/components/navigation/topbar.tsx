@@ -2,8 +2,7 @@
 
 import React from "react";
 import { RadianceLogo } from "@/components/branding/radiance-logo";
-import { Trash2 } from "lucide-react";
-import { IconMenu2 } from "@tabler/icons-react";
+import { Trash2, Menu } from "lucide-react";
 
 interface TopbarProps {
   language: "en" | "hi";
@@ -33,7 +32,7 @@ export function Topbar({
             title="Open navigation menu"
             aria-label="Open navigation menu"
           >
-            <IconMenu2 className="w-5 h-5" />
+            <Menu className="w-5 h-5" />
           </button>
         )}
 

@@ -55,3 +55,12 @@ jobs:
         run: pnpm run build
         env:
           NEXT_TELEMETRY_DISABLED: 1
+
+      - name: Install Playwright Browsers
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Playwright E2E Verification
+        run: pnpm run test:e2e
+        env:
+          CI: 1
+          NEXT_TELEMETRY_DISABLED: 1
