@@ -358,7 +358,7 @@ export function ChatComposer({
   }, []);
 
   return (
-    <div className="w-full max-w-3xl mx-auto px-4 pb-4 z-20 select-none">
+    <div className="w-full max-w-3xl mx-auto px-3 sm:px-4 pb-[max(1rem,env(safe-area-inset-bottom,0px))] z-20 select-none">
       {/* Attached Files Preview Bar */}
       {attachments.length > 0 && (
         <div className="flex flex-wrap gap-2 mb-2 p-2 rounded-xl bg-[var(--surface)] border border-[var(--border)] animate-in fade-in slide-in-from-bottom-2 duration-200">
@@ -527,7 +527,7 @@ export function ChatComposer({
                 aria-label={`Select AI model. Current model: ${activeModel.name}`}
               >
                 <Cpu className="w-3.5 h-3.5 text-[#c084fc] shrink-0" aria-hidden="true" />
-                <span className="font-mono text-xs sm:text-[13px] font-medium text-[var(--txt)] truncate max-w-[150px] xs:max-w-[200px] sm:max-w-none">
+                <span className="font-mono text-xs sm:text-[13px] font-medium text-[var(--txt)] truncate max-w-[85px] xs:max-w-[130px] sm:max-w-none">
                   {activeModel.name}
                 </span>
                 <ChevronDown
