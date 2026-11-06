@@ -20,7 +20,7 @@ export interface ColorTheme {
 }
 
 export type GradientStyle =
-  | "ambient-spotlight"
+  | "cinematic-studio"
   | "waves"
   | "cosmic"
   | "aurora-curtains"
@@ -563,10 +563,10 @@ export interface AtmosphereEngineInfo {
 
 export const ATMOSPHERE_ENGINES: AtmosphereEngineInfo[] = [
   {
-    id: "ambient-spotlight",
-    label: "Cinematic Atmosphere",
+    id: "cinematic-studio",
+    label: "Cinematic Studio",
     tag: "Cinematic",
-    description: "21st.dev & Mobbin immersive cinematic studio with anamorphic lens flares, volumetric beams, and optical motes.",
+    description: "Minimalist 35mm cinematic projection beam, subtle anamorphic streak, and analog film motes.",
     iconName: "Film",
   },
   {

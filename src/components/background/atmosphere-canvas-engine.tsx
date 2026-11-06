@@ -23,7 +23,7 @@ function hexToRgb(hex: string): [number, number, number] {
 }
 
 const CANVAS_ENGINES: GradientStyle[] = [
-  "ambient-spotlight",
+  "cinematic-studio",
   "aurora-curtains",
   "meteor-shower",
   "radiant-grid",
@@ -102,59 +102,34 @@ export function AtmosphereCanvasEngine({ theme, engine }: AtmosphereCanvasEngine
     let frame = 0;
 
     // ═════════════════════════════════════════════════════════════════════════
-    // ── 1. CINEMATIC ATMOSPHERE (21st.dev & Mobbin Immersive Theatrical Engine)
+    // ── 1. CINEMATIC STUDIO (Minimalist 35mm Projection & Anamorphic Trace)
     // ═════════════════════════════════════════════════════════════════════════
-    interface CinematicBokeh {
-      x: number;
-      y: number;
-      vx: number;
-      vy: number;
-      radius: number;
-      baseAlpha: number;
-      phase: number;
-      chroma: "accent" | "accentB" | "accentC";
-      depth: number;
-    }
-
-    interface CinematicMote {
+    interface FilmMote {
       x: number;
       y: number;
       vx: number;
       vy: number;
       radius: number;
       phase: number;
-      shimmerSpeed: number;
+      speed: number;
     }
 
-    const cinematicBokeh: CinematicBokeh[] = Array.from({ length: 22 }, (_, idx) => ({
+    const filmMotes: FilmMote[] = Array.from({ length: 18 }, () => ({
       x: Math.random() * width,
       y: Math.random() * height,
-      vx: (Math.random() - 0.5) * 0.18,
-      vy: -Math.random() * 0.22 - 0.04,
-      radius: Math.random() * 55 + 24,
-      baseAlpha: Math.random() * 0.07 + 0.025,
+      vx: (Math.random() - 0.5) * 0.14,
+      vy: -Math.random() * 0.18 - 0.04,
+      radius: Math.random() * 0.9 + 0.5,
       phase: Math.random() * Math.PI * 2,
-      chroma: idx % 3 === 0 ? "accent" : idx % 3 === 1 ? "accentB" : "accentC",
-      depth: Math.random() * 0.6 + 0.4,
+      speed: Math.random() * 1.4 + 0.8,
     }));
 
-    const cinematicMotes: CinematicMote[] = Array.from({ length: 42 }, () => ({
-      x: Math.random() * width,
-      y: Math.random() * height,
-      vx: (Math.random() - 0.5) * 0.3,
-      vy: -Math.random() * 0.32 - 0.06,
-      radius: Math.random() * 1.6 + 0.6,
-      phase: Math.random() * Math.PI * 2,
-      shimmerSpeed: Math.random() * 2 + 1.2,
-    }));
-
-    const drawAmbientSpotlight = (t: number) => {
-      // Stratified cinematic base backdrop
+    const drawCinematicStudio = (t: number) => {
+      // 1. Deep cinematic 35mm darkroom base
       const bgGrad = ctx.createLinearGradient(0, 0, 0, height);
-      bgGrad.addColorStop(0, theme.bloomColors[0]);
-      bgGrad.addColorStop(0.35, theme.bloomColors[1]);
-      bgGrad.addColorStop(0.7, theme.bloomColors[0]);
-      bgGrad.addColorStop(1, "#040307");
+      bgGrad.addColorStop(0, "#06050a");
+      bgGrad.addColorStop(0.45, "#0a0912");
+      bgGrad.addColorStop(1, "#040306");
       ctx.fillStyle = bgGrad;
       ctx.fillRect(0, 0, width, height);
 
@@ -164,64 +139,53 @@ export function AtmosphereCanvasEngine({ theme, engine }: AtmosphereCanvasEngine
       const targetX = smoothMouse.x;
       const targetY = smoothMouse.y;
 
-      // Volumetric crossing theatrical projector shafts (IMAX / stage beam)
-      const p1X = width * 0.18 + (targetX - width * 0.5) * 0.14;
-      const p1Y = -height * 0.08;
-      const beam1Spread = Math.max(width * 0.36, 420);
+      // 2. High-end 35mm projector light shaft (theatrical key beam)
+      const projX = width * 0.5 + (targetX - width * 0.5) * 0.18;
+      const projY = -height * 0.06;
+      const beamSpread = Math.max(width * 0.42, 480);
+      const breath = prefersReducedMotion ? 1 : Math.sin(t * 0.45) * 0.08 + 0.92;
 
-      const beam1Grad = ctx.createRadialGradient(p1X, p1Y, 15, targetX, targetY, beam1Spread * 1.6);
-      beam1Grad.addColorStop(0, `rgba(${r2}, ${g2}, ${b2}, 0.22)`);
-      beam1Grad.addColorStop(0.28, `rgba(${r1}, ${g1}, ${b1}, 0.12)`);
-      beam1Grad.addColorStop(0.65, `rgba(${r3}, ${g3}, ${b3}, 0.04)`);
-      beam1Grad.addColorStop(1, "transparent");
+      const beamGrad = ctx.createRadialGradient(
+        projX,
+        projY,
+        20,
+        targetX,
+        targetY * 0.85 + height * 0.15,
+        beamSpread * 1.4
+      );
+      beamGrad.addColorStop(0, `rgba(${r2}, ${g2}, ${b2}, ${0.18 * breath})`);
+      beamGrad.addColorStop(0.28, `rgba(${r1}, ${g1}, ${b1}, ${0.09 * breath})`);
+      beamGrad.addColorStop(0.7, `rgba(${r3}, ${g3}, ${b3}, ${0.025 * breath})`);
+      beamGrad.addColorStop(1, "transparent");
 
-      ctx.fillStyle = beam1Grad;
+      ctx.fillStyle = beamGrad;
       ctx.beginPath();
-      ctx.moveTo(p1X - 50, p1Y);
-      ctx.lineTo(p1X + 50, p1Y);
-      ctx.lineTo(targetX + beam1Spread, height * 1.15);
-      ctx.lineTo(targetX - beam1Spread * 0.5, height * 1.15);
+      ctx.moveTo(projX - 45, projY);
+      ctx.lineTo(projX + 45, projY);
+      ctx.lineTo(targetX + beamSpread * 0.75, height * 1.1);
+      ctx.lineTo(targetX - beamSpread * 0.75, height * 1.1);
       ctx.closePath();
       ctx.fill();
 
-      // Projector beam 2 (Upper Right Rim Light)
-      const p2X = width * 0.82 + (targetX - width * 0.5) * 0.14;
-      const p2Y = -height * 0.08;
-      const beam2Spread = Math.max(width * 0.32, 360);
+      // 3. Subtle Anamorphic 1px Optical Horizon Trace
+      const flareY = targetY * 0.38 + height * 0.26;
+      const flarePulse = prefersReducedMotion ? 1 : Math.sin(t * 0.9) * 0.1 + 0.9;
+      const flareWidth = width * 0.82;
 
-      const beam2Grad = ctx.createRadialGradient(p2X, p2Y, 15, targetX, targetY, beam2Spread * 1.5);
-      beam2Grad.addColorStop(0, `rgba(${r3}, ${g3}, ${b3}, 0.16)`);
-      beam2Grad.addColorStop(0.35, `rgba(${r1}, ${g1}, ${b1}, 0.08)`);
-      beam2Grad.addColorStop(1, "transparent");
+      // Soft central focal illumination
+      const focalRadius = 90;
+      const focalGrad = ctx.createRadialGradient(targetX, flareY, 0, targetX, flareY, focalRadius);
+      focalGrad.addColorStop(0, `rgba(255, 255, 255, ${0.28 * flarePulse})`);
+      focalGrad.addColorStop(0.3, `rgba(${r2}, ${g2}, ${b2}, ${0.16 * flarePulse})`);
+      focalGrad.addColorStop(0.75, `rgba(${r1}, ${g1}, ${b1}, ${0.04 * flarePulse})`);
+      focalGrad.addColorStop(1, "transparent");
 
-      ctx.fillStyle = beam2Grad;
+      ctx.fillStyle = focalGrad;
       ctx.beginPath();
-      ctx.moveTo(p2X - 40, p2Y);
-      ctx.lineTo(p2X + 40, p2Y);
-      ctx.lineTo(targetX + beam2Spread * 0.6, height * 1.15);
-      ctx.lineTo(targetX - beam2Spread, height * 1.15);
-      ctx.closePath();
+      ctx.arc(targetX, flareY, focalRadius, 0, Math.PI * 2);
       ctx.fill();
 
-      // ── Anamorphic Lens Flare Line (21st.dev Component Signature) ──
-      const flareY = targetY * 0.45 + height * 0.24;
-      const flarePulse = prefersReducedMotion ? 1 : Math.sin(t * 1.2) * 0.12 + 0.88;
-      const flareWidth = width * 0.88;
-
-      // Central intense core glow
-      const coreRadius = 140;
-      const coreGrad = ctx.createRadialGradient(targetX, flareY, 0, targetX, flareY, coreRadius);
-      coreGrad.addColorStop(0, `rgba(255, 255, 255, ${0.44 * flarePulse})`);
-      coreGrad.addColorStop(0.18, `rgba(${r2}, ${g2}, ${b2}, ${0.30 * flarePulse})`);
-      coreGrad.addColorStop(0.55, `rgba(${r1}, ${g1}, ${b1}, ${0.12 * flarePulse})`);
-      coreGrad.addColorStop(1, "transparent");
-
-      ctx.fillStyle = coreGrad;
-      ctx.beginPath();
-      ctx.arc(targetX, flareY, coreRadius, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Anamorphic horizontal streak with chromatic dispersion (cyan-violet wavelength split)
+      // Precision 1px anamorphic laser line (subtle, clean, not slop)
       const streakGrad = ctx.createLinearGradient(
         targetX - flareWidth * 0.5,
         flareY,
@@ -229,60 +193,20 @@ export function AtmosphereCanvasEngine({ theme, engine }: AtmosphereCanvasEngine
         flareY
       );
       streakGrad.addColorStop(0, "transparent");
-      streakGrad.addColorStop(0.2, `rgba(56, 189, 248, ${0.08 * flarePulse})`);
-      streakGrad.addColorStop(0.42, `rgba(${r1}, ${g1}, ${b1}, ${0.28 * flarePulse})`);
-      streakGrad.addColorStop(0.5, `rgba(255, 255, 255, ${0.55 * flarePulse})`);
-      streakGrad.addColorStop(0.58, `rgba(${r2}, ${g2}, ${b2}, ${0.28 * flarePulse})`);
-      streakGrad.addColorStop(0.8, `rgba(192, 132, 252, ${0.08 * flarePulse})`);
+      streakGrad.addColorStop(0.25, `rgba(${r1}, ${g1}, ${b1}, ${0.06 * flarePulse})`);
+      streakGrad.addColorStop(0.48, `rgba(${r2}, ${g2}, ${b2}, ${0.18 * flarePulse})`);
+      streakGrad.addColorStop(0.5, `rgba(255, 255, 255, ${0.45 * flarePulse})`);
+      streakGrad.addColorStop(0.52, `rgba(${r2}, ${g2}, ${b2}, ${0.18 * flarePulse})`);
+      streakGrad.addColorStop(0.75, `rgba(${r3}, ${g3}, ${b3}, ${0.06 * flarePulse})`);
       streakGrad.addColorStop(1, "transparent");
 
       ctx.fillStyle = streakGrad;
-      ctx.fillRect(targetX - flareWidth * 0.5, flareY - 1.5, flareWidth, 3);
+      ctx.fillRect(targetX - flareWidth * 0.5, flareY - 0.5, flareWidth, 1);
 
-      // Secondary soft diffusion halo streak
-      ctx.fillStyle = streakGrad;
-      ctx.fillRect(targetX - flareWidth * 0.35, flareY - 8, flareWidth * 0.7, 16);
-
-      // ── Cinematic Optical Bokeh Orbs (Multi-Plane Parallax Depth of Field) ──
-      cinematicBokeh.forEach((b) => {
+      // 4. Delicate 35mm Analog Silver Dust (18 motes)
+      filmMotes.forEach((m) => {
         if (!prefersReducedMotion) {
-          b.x += b.vx + Math.sin(t * 0.35 + b.phase) * 0.15;
-          b.y += b.vy;
-          if (b.y < -b.radius * 2) b.y = height + b.radius * 2;
-          if (b.x < -b.radius * 2) b.x = width + b.radius * 2;
-          if (b.x > width + b.radius * 2) b.x = -b.radius * 2;
-        }
-
-        const offsetX = (smoothMouse.x - width * 0.5) * 0.05 * b.depth;
-        const offsetY = (smoothMouse.y - height * 0.5) * 0.05 * b.depth;
-        const drawX = b.x + offsetX;
-        const drawY = b.y + offsetY;
-
-        const [br, bg, bb] =
-          b.chroma === "accent"
-            ? [r1, g1, b1]
-            : b.chroma === "accentB"
-            ? [r2, g2, b2]
-            : [r3, g3, b3];
-        const pulse = prefersReducedMotion ? 1 : Math.sin(t * 0.8 + b.phase) * 0.25 + 0.75;
-        const alpha = b.baseAlpha * pulse;
-
-        const bGrad = ctx.createRadialGradient(drawX, drawY, 0, drawX, drawY, b.radius);
-        bGrad.addColorStop(0, `rgba(${br}, ${bg}, ${bb}, ${alpha * 1.5})`);
-        bGrad.addColorStop(0.45, `rgba(${br}, ${bg}, ${bb}, ${alpha * 0.8})`);
-        bGrad.addColorStop(0.85, `rgba(${br}, ${bg}, ${bb}, ${alpha * 0.2})`);
-        bGrad.addColorStop(1, "transparent");
-
-        ctx.fillStyle = bGrad;
-        ctx.beginPath();
-        ctx.arc(drawX, drawY, b.radius, 0, Math.PI * 2);
-        ctx.fill();
-      });
-
-      // ── Micro-Optical Shimmering Dust Motes ──
-      cinematicMotes.forEach((m) => {
-        if (!prefersReducedMotion) {
-          m.x += m.vx + Math.sin(t * 0.5 + m.phase) * 0.2;
+          m.x += m.vx + Math.sin(t * 0.4 + m.phase) * 0.12;
           m.y += m.vy;
           if (m.y < -10) m.y = height + 10;
           if (m.x < -10) m.x = width + 10;
@@ -290,30 +214,30 @@ export function AtmosphereCanvasEngine({ theme, engine }: AtmosphereCanvasEngine
         }
 
         const distToTarget = Math.hypot(m.x - targetX, m.y - targetY);
-        const proximityGlow = Math.max(0, 1 - distToTarget / 420);
-        const shimmer = prefersReducedMotion ? 1 : Math.sin(t * m.shimmerSpeed + m.phase) * 0.4 + 0.6;
-        const moteAlpha = Math.min(0.85, (0.15 + proximityGlow * 0.55) * shimmer);
+        const inBeam = Math.max(0, 1 - distToTarget / 380);
+        const shimmer = prefersReducedMotion ? 1 : Math.sin(t * m.speed + m.phase) * 0.35 + 0.65;
+        const moteAlpha = (0.12 + inBeam * 0.42) * shimmer;
 
         ctx.fillStyle = `rgba(255, 255, 255, ${moteAlpha})`;
         ctx.beginPath();
-        ctx.arc(m.x, m.y, m.radius * (1 + proximityGlow * 0.4), 0, Math.PI * 2);
+        ctx.arc(m.x, m.y, m.radius, 0, Math.PI * 2);
         ctx.fill();
       });
 
       ctx.restore();
 
-      // Theatrical letterbox top/bottom falloff for high contrast & ergonomic focus
-      const topLetterbox = ctx.createLinearGradient(0, 0, 0, 80);
-      topLetterbox.addColorStop(0, "rgba(4, 3, 7, 0.65)");
+      // 5. Theatrical 2.39:1 Letterbox Framing (ensures ultra-high contrast & focus)
+      const topLetterbox = ctx.createLinearGradient(0, 0, 0, 75);
+      topLetterbox.addColorStop(0, "rgba(4, 3, 7, 0.72)");
       topLetterbox.addColorStop(1, "transparent");
       ctx.fillStyle = topLetterbox;
-      ctx.fillRect(0, 0, width, 80);
+      ctx.fillRect(0, 0, width, 75);
 
-      const botLetterbox = ctx.createLinearGradient(0, height - 90, 0, height);
+      const botLetterbox = ctx.createLinearGradient(0, height - 85, 0, height);
       botLetterbox.addColorStop(0, "transparent");
-      botLetterbox.addColorStop(1, "rgba(4, 3, 7, 0.75)");
+      botLetterbox.addColorStop(1, "rgba(4, 3, 7, 0.82)");
       ctx.fillStyle = botLetterbox;
-      ctx.fillRect(0, height - 90, width, 90);
+      ctx.fillRect(0, height - 85, width, 85);
     };
 
     // ═════════════════════════════════════════════════════════════════════════
@@ -915,7 +839,7 @@ export function AtmosphereCanvasEngine({ theme, engine }: AtmosphereCanvasEngine
 
     if (prefersReducedMotion) {
       // Draw static first frame for accessibility
-      drawAmbientSpotlight(0);
+      drawCinematicStudio(0);
       return;
     }
 
@@ -930,8 +854,8 @@ export function AtmosphereCanvasEngine({ theme, engine }: AtmosphereCanvasEngine
       smoothMouse.y += (mousePos.y - smoothMouse.y) * 0.04;
 
       switch (engine) {
-        case "ambient-spotlight":
-          drawAmbientSpotlight(t);
+        case "cinematic-studio":
+          drawCinematicStudio(t);
           break;
         case "aurora-curtains":
           drawAuroraCurtains(t);
