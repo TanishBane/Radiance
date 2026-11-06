@@ -21,7 +21,7 @@ export function Topbar({
   onToggleMobileMenu,
 }: TopbarProps) {
   return (
-    <header className="sticky top-0 z-30 flex items-center justify-between gap-2 px-2.5 sm:px-4 py-2.5 bg-[var(--void)]/80 backdrop-blur-xl border-b border-[var(--border)] select-none shrink-0 w-full">
+    <header className="sticky top-0 z-30 flex items-center justify-between gap-2 px-2.5 sm:px-4 py-2.5 pt-[max(0.625rem,env(safe-area-inset-top,0px))] pl-[max(0.625rem,env(safe-area-inset-left,0px))] pr-[max(0.625rem,env(safe-area-inset-right,0px))] bg-[var(--void)]/85 backdrop-blur-xl border-b border-[var(--border)] select-none shrink-0 w-full">
       {/* Left: Mobile Menu Toggle & Desktop Context Indicator */}
       <div className="flex items-center gap-2 sm:gap-3 min-w-0">
         {/* On Mobile: Hamburger button to open sidebar drawer */}
@@ -29,7 +29,7 @@ export function Topbar({
           <button
             type="button"
             onClick={onToggleMobileMenu}
-            className="md:hidden p-1.5 rounded-xl border border-[var(--border)] text-[var(--txt-dim)] hover:text-[var(--txt)] hover:bg-[var(--surface-hover)] transition-colors"
+            className="md:hidden min-w-[44px] min-h-[44px] p-2 rounded-xl border border-[var(--border)] text-[var(--txt-dim)] hover:text-[var(--txt)] hover:bg-[var(--surface-hover)] active:scale-95 transition-all flex items-center justify-center touch-target cursor-pointer"
             title="Open navigation menu"
             aria-label="Open navigation menu"
           >

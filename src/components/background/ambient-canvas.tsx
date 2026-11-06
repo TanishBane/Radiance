@@ -34,7 +34,10 @@ export function AmbientCanvas({ accentColor = "#e8a849" }: AmbientCanvasProps) {
       return; // Graceful fallback if WebGL is unavailable
     }
 
-    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const reduceMotion =
+      typeof window !== "undefined" &&
+      typeof window.matchMedia === "function" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const motionScale = reduceMotion ? 0.15 : 1;
 
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));

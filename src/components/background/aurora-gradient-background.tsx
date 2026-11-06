@@ -37,6 +37,7 @@ export function AuroraGradientBackground({
     // Respect user's motion preferences
     const prefersReducedMotion =
       typeof window !== "undefined" &&
+      typeof window.matchMedia === "function" &&
       window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
     const renderWavesFrame = (t: number) => {
