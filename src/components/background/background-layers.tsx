@@ -15,20 +15,20 @@ interface BackgroundLayersProps {
 export function BackgroundLayers({
   bgGradient,
   theme,
-  gradientStyle = "bloom",
+  gradientStyle = "silk-caustics",
 }: BackgroundLayersProps) {
-  const isBloomOrWaves = gradientStyle === "bloom" || gradientStyle === "waves";
+  const isWaves = gradientStyle === "waves";
   const isCosmic = gradientStyle === "cosmic";
 
   return (
     <>
-      {/* ══ 21st.dev ANIMATED GRADIENT ENGINE (Bloom Field or Ribbon Waves) ══ */}
-      {theme && isBloomOrWaves && (
+      {/* ══ 21st.dev ANIMATED GRADIENT ENGINE (Ribbon Waves) ══ */}
+      {theme && isWaves && (
         <AuroraGradientBackground theme={theme} styleMode={gradientStyle} />
       )}
 
-      {/* ══ DIVERSE ATMOSPHERE CANVAS ENGINES (10 Distinct Interactive Modes) ══ */}
-      {theme && !isBloomOrWaves && !isCosmic && (
+      {/* ══ DIVERSE ATMOSPHERE CANVAS ENGINES (11 Distinct Interactive Modes) ══ */}
+      {theme && !isWaves && !isCosmic && (
         <AtmosphereCanvasEngine theme={theme} engine={gradientStyle} />
       )}
 

@@ -27,7 +27,7 @@ import {
   Disc,
   Eye,
   Dices,
-  Shuffle,
+  Shuffle, Layers, Compass, Activity, Cloud, Cpu,
 } from "lucide-react";
 
 interface SettingsDrawerProps {
@@ -42,18 +42,18 @@ interface SettingsDrawerProps {
 }
 
 const ENGINE_ICONS: Record<string, React.ReactNode> = {
-  SunMedium: <SunMedium className="w-4 h-4 text-[var(--accent)]" />,
+  Layers: <Layers className="w-4 h-4 text-[var(--accent)]" />,
   Waves: <Waves className="w-4 h-4 text-[var(--accent)]" />,
   Orbit: <Orbit className="w-4 h-4 text-[var(--accent)]" />,
   Wind: <Wind className="w-4 h-4 text-[var(--accent)]" />,
-  Zap: <Zap className="w-4 h-4 text-[var(--accent)]" />,
-  Grid3X3: <Grid3X3 className="w-4 h-4 text-[var(--accent)]" />,
+  Compass: <Compass className="w-4 h-4 text-[var(--accent)]" />,
+  Activity: <Activity className="w-4 h-4 text-[var(--accent)]" />,
   Share2: <Share2 className="w-4 h-4 text-[var(--accent)]" />,
   Flame: <Flame className="w-4 h-4 text-[var(--accent)]" />,
   Terminal: <Terminal className="w-4 h-4 text-[var(--accent)]" />,
-  Sparkles: <Sparkles className="w-4 h-4 text-[var(--accent)]" />,
+  Cloud: <Cloud className="w-4 h-4 text-[var(--accent)]" />,
   Radio: <Radio className="w-4 h-4 text-[var(--accent)]" />,
-  Disc: <Disc className="w-4 h-4 text-[var(--accent)]" />,
+  Cpu: <Cpu className="w-4 h-4 text-[var(--accent)]" />,
   Eye: <Eye className="w-4 h-4 text-[var(--accent)]" />,
 };
 
@@ -64,7 +64,7 @@ export function SettingsDrawer({
   onClose,
   activeTheme,
   onSelectTheme,
-  gradientStyle = "bloom",
+  gradientStyle = "silk-caustics",
   onSelectGradientStyle,
 }: SettingsDrawerProps) {
   const [paletteCategory, setPaletteCategory] = useState<CategoryFilter>("all");
