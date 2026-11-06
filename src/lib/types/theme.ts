@@ -564,10 +564,10 @@ export interface AtmosphereEngineInfo {
 export const ATMOSPHERE_ENGINES: AtmosphereEngineInfo[] = [
   {
     id: "ambient-spotlight",
-    label: "Ambient Spotlight",
-    tag: "Spotlight",
-    description: "21st.dev luxury studio spotlight cone tracking cursor with soft specular diffusion.",
-    iconName: "SunMedium",
+    label: "Cinematic Atmosphere",
+    tag: "Cinematic",
+    description: "21st.dev & Mobbin immersive cinematic studio with anamorphic lens flares, volumetric beams, and optical motes.",
+    iconName: "Film",
   },
   {
     id: "waves",

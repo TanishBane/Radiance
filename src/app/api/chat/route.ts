@@ -71,16 +71,16 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  // 5. Construct System Prompt (Default Assistant + Tone + Language)
-  const systemPrompt = composeSystemPrompt(tone, language);
+  // 5. Construct System Prompt (Default Assistant + Tone + Language + Mode)
+  const systemPrompt = composeSystemPrompt(tone, language, mode);
 
   // 6. Map Messages to CoreMessage Format With Attachment Injection
   const coreMessages: CoreMessage[] = messages.map((m) => {
     let textContent = m.content;
 
-    // Append text and document attachments safely
+    // Append text, document, and PDF attachments safely
     const textAttachments = m.attachments?.filter(
-      (a) => a.type === "text" || a.type === "csv" || a.type === "doc"
+      (a) => a.type === "text" || a.type === "csv" || a.type === "doc" || a.type === "pdf"
     );
     if (textAttachments && textAttachments.length > 0) {
       textAttachments.forEach((att) => {

@@ -79,11 +79,18 @@ class CircuitBreaker {
    */
   resolveCandidateModels(preferredModelId: string, needsVision: boolean): ModelOption[] {
     const preferred = AVAILABLE_MODELS.find((m) => m.id === preferredModelId);
-    const candidates = [...AVAILABLE_MODELS];
+    let candidates = [...AVAILABLE_MODELS];
 
-    // If request needs vision, prioritize models supporting vision (e.g. Gemini)
+    // If request needs vision, strictly restrict to models supporting vision (e.g. Gemini)
     if (needsVision) {
-      candidates.sort((a, b) => (b.supportsVision ? 1 : 0) - (a.supportsVision ? 1 : 0));
+      candidates = candidates.filter((m) => Boolean(m.supportsVision));
+      if (preferred && preferred.supportsVision) {
+        const idx = candidates.findIndex((m) => m.id === preferred.id);
+        if (idx > -1) {
+          candidates.splice(idx, 1);
+          candidates.unshift(preferred);
+        }
+      }
     } else if (preferred) {
       // Put preferred model first
       const idx = candidates.findIndex((m) => m.id === preferred.id);

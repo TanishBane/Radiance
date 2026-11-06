@@ -61,7 +61,7 @@ function CheckmarkIcon() {
 }
 
 export interface ChatComposerProps {
-  onSend: (text: string, attachments: Attachment[]) => void;
+  onSend: (text: string, attachments: Attachment[], mode?: ComposerMode) => void;
   onStop: () => void;
   isGenerating: boolean;
   disabled?: boolean;
@@ -196,7 +196,11 @@ export function ChatComposer({
 
     isSubmittingRef.current = true;
     try {
-      onSend(trimmed, attachments);
+      if (mode && mode !== "Build") {
+        onSend(trimmed, attachments, mode);
+      } else {
+        onSend(trimmed, attachments);
+      }
       setInput("");
       setAttachments([]);
       setContextMenuOpen(false);

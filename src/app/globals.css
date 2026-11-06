@@ -18,6 +18,8 @@
     --accent-b: #bfa7ff;
     --accent-c: #e27aff;
     --text-gradient: linear-gradient(135deg, var(--accent-b), var(--accent), var(--accent-c));
+    --cinematic-glow: 0 0 40px -10px var(--accent-g);
+    --cinematic-flare: linear-gradient(90deg, transparent 0%, rgba(56, 189, 248, 0.12) 20%, var(--accent) 50%, rgba(192, 132, 252, 0.12) 80%, transparent 100%);
 
     --danger: #e85555;
     --danger-d: rgba(232, 85, 85, 0.12);

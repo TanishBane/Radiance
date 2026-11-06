@@ -15,7 +15,7 @@ export interface ChatWorkspaceProps {
   streamingContent: string;
   isGenerating: boolean;
   activeFollowUps: string[];
-  onSend: (text: string, attachments?: Attachment[]) => void;
+  onSend: (text: string, attachments?: Attachment[], mode?: string) => void;
   onStop: () => void;
   onSelectSuggestion: (text: string) => void;
   onOpenSettings?: () => void;

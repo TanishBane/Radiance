@@ -29,8 +29,17 @@ export async function generateFollowupQuestions(
       temperature: 0.4,
     });
 
-    const clean = result.text.trim();
-    const parsed = JSON.parse(clean);
+    const raw = result.text.trim();
+    // Strip markdown code fences if present (e.g. ```json ... ``` or ``` ... ```)
+    const stripped = raw.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/, "").trim();
+    const startIdx = stripped.indexOf("[");
+    const endIdx = stripped.lastIndexOf("]");
+    const jsonStr =
+      startIdx !== -1 && endIdx !== -1 && endIdx > startIdx
+        ? stripped.slice(startIdx, endIdx + 1)
+        : stripped;
+
+    const parsed = JSON.parse(jsonStr);
     if (Array.isArray(parsed) && parsed.length > 0) {
       return parsed.slice(0, 3).map((q) => String(q).trim());
     }

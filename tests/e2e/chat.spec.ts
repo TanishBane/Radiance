@@ -81,12 +81,12 @@ test.describe("Radiance AI Platform E2E Workflows", () => {
   });
 
   test("model selector opens and applies a registered model", async ({ page }) => {
-    const modelButton = page.locator("header").getByRole("button", { name: "Radiance Fast" });
+    const modelButton = page.getByTestId("composer-model-trigger");
     await modelButton.click();
-    await expect(page.getByText("FRONTIER INFERENCE MODELS", { exact: false })).toBeVisible();
+    await expect(page.getByText("Frontier Inference Models", { exact: false })).toBeVisible();
 
-    await page.getByRole("button", { name: /Radiance Instant/ }).click();
-    await expect(page.locator("header").getByRole("button", { name: "Radiance Instant" })).toBeVisible();
+    await page.getByRole("option", { name: /Radiance Instant/ }).click();
+    await expect(page.getByTestId("composer-model-trigger")).toContainText("Radiance Instant");
   });
 
   test("390px workspace does not overflow horizontally", async ({ page }) => {

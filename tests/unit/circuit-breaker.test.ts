@@ -52,10 +52,12 @@ describe("Circuit Breaker & Fallback Engine", () => {
     expect(healthyCandidates.some((m) => m.provider === "gemini")).toBe(true);
   });
 
-  it("prioritizes vision-capable models when request contains multimodal data", () => {
+  it("prioritizes and filters to vision-capable models when request contains multimodal data", () => {
     const visionCandidates = circuitBreaker.resolveCandidateModels("groq-fast", true);
     // Gemini supports vision, so it must be prioritized first
     expect(visionCandidates[0].provider).toBe("gemini");
     expect(visionCandidates[0].supportsVision).toBe(true);
+    // All candidates must support vision
+    expect(visionCandidates.every((m) => m.supportsVision)).toBe(true);
   });
 });

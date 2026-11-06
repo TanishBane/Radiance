@@ -62,6 +62,10 @@ class LocalTokenBucketLimiter {
     bucket.tokens = Math.min(this.capacity, bucket.tokens + elapsedSeconds * this.refillRatePerSecond);
     bucket.lastRefill = now;
 
+    // Refresh insertion order to guarantee true LRU eviction (SEC-01)
+    this.buckets.delete(clientId);
+    this.buckets.set(clientId, bucket);
+
     if (bucket.tokens >= 1) {
       bucket.tokens -= 1;
       return { success: true, remaining: Math.floor(bucket.tokens) };
