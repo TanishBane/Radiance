@@ -434,8 +434,15 @@ export function ChatComposer({
           value={input}
           onChange={handleInput}
           onKeyDown={handleKeyDown}
+          onFocus={() => {
+            setTimeout(() => {
+              if (typeof textareaRef.current?.scrollIntoView === "function") {
+                textareaRef.current.scrollIntoView({ behavior: "smooth", block: "nearest" });
+              }
+            }, 120);
+          }}
           placeholder="Ask RADIANCE anything... (Shift+Enter for newline)"
-          className="w-full bg-transparent border-0 outline-none resize-none text-sm text-[var(--txt)] placeholder:text-[var(--txt-muted)] py-1.5 max-h-[140px] leading-relaxed font-sans mb-2"
+          className="w-full bg-transparent border-0 outline-none resize-none text-base sm:text-sm text-[var(--txt)] placeholder:text-[var(--txt-muted)] py-1.5 max-h-[140px] leading-relaxed font-sans mb-2"
         />
 
         {/* Hidden File Input */}
@@ -449,9 +456,9 @@ export function ChatComposer({
         />
 
         {/* Bottom Controls Bar */}
-        <div className="flex items-center justify-between gap-2 pt-1 border-t border-[var(--border)]">
+        <div className="flex items-center justify-between gap-1.5 sm:gap-2 pt-1 border-t border-[var(--border)]">
           {/* Left Controls: Add Files, Mode Selector, Model Trigger */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 sm:gap-2 min-w-0 flex-1 overflow-x-visible">
             {/* 1. Add Files Expanding Button */}
             <button
               type="button"
@@ -486,7 +493,7 @@ export function ChatComposer({
               {modeMenuOpen && (
                 <div
                   onClick={(e) => e.stopPropagation()}
-                  className="absolute left-0 bottom-full mb-2 w-36 rounded-xl p-1.5 z-40 bg-[var(--deep)]/95 backdrop-blur-xl border border-[var(--border)] shadow-modal animate-in fade-in zoom-in-95 duration-150 flex flex-col gap-0.5"
+                  className="fixed left-3 sm:absolute sm:left-0 bottom-24 sm:bottom-full mb-0 sm:mb-2 w-36 rounded-xl p-1.5 z-50 bg-[var(--deep)]/95 backdrop-blur-xl border border-[var(--border)] shadow-modal animate-in fade-in zoom-in-95 duration-150 flex flex-col gap-0.5"
                 >
                   {orderedModes.map((m) => {
                     const isSelected = m === mode;
@@ -520,14 +527,14 @@ export function ChatComposer({
                 onClick={handleOpenModelMenu}
                 onKeyDown={handleTriggerKeyDown}
                 title={activeModel.name}
-                className="h-8 px-3 rounded-full border border-[var(--border)] bg-[var(--surface)] hover:bg-[var(--surface-hover)] hover:border-[var(--border-accent)] text-[var(--txt)] transition-all flex items-center gap-2 text-xs font-mono touch-target cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] active:scale-[0.98]"
+                className="h-8 px-2.5 sm:px-3 rounded-full border border-[var(--border)] bg-[var(--surface)] hover:bg-[var(--surface-hover)] hover:border-[var(--border-accent)] text-[var(--txt)] transition-all flex items-center gap-1.5 sm:gap-2 text-xs font-mono touch-target cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] active:scale-[0.98]"
                 aria-haspopup="listbox"
                 aria-expanded={modelMenuOpen}
                 aria-controls="composer-model-listbox"
                 aria-label={`Select AI model. Current model: ${activeModel.name}`}
               >
                 <Cpu className="w-3.5 h-3.5 text-[#c084fc] shrink-0" aria-hidden="true" />
-                <span className="font-mono text-xs sm:text-[13px] font-medium text-[var(--txt)] truncate max-w-[85px] xs:max-w-[130px] sm:max-w-none">
+                <span className="font-mono text-xs sm:text-[13px] font-medium text-[var(--txt)] truncate max-w-[70px] xs:max-w-[110px] sm:max-w-none">
                   {activeModel.name}
                 </span>
                 <ChevronDown
@@ -552,7 +559,7 @@ export function ChatComposer({
                   tabIndex={-1}
                   onKeyDown={handleListboxKeyDown}
                   onClick={(e) => e.stopPropagation()}
-                  className="absolute -left-16 sm:left-0 bottom-full mb-2 w-72 sm:w-80 max-w-[calc(100vw-2rem)] rounded-2xl p-2 z-40 bg-[var(--deep)]/95 backdrop-blur-2xl border border-[var(--border)] shadow-modal animate-in fade-in zoom-in-95 duration-150 flex flex-col gap-1 max-h-80 overflow-y-auto"
+                  className="absolute -left-16 sm:left-0 bottom-full mb-2 w-72 sm:w-80 max-w-[calc(100vw-2rem)] rounded-2xl p-2 z-50 bg-[var(--deep)]/95 backdrop-blur-2xl border border-[var(--border)] shadow-modal animate-in fade-in zoom-in-95 duration-150 flex flex-col gap-1 max-h-80 overflow-y-auto"
                 >
                   <div className="px-3 py-1.5 text-[10px] font-mono uppercase tracking-widest text-[var(--txt-muted)] border-b border-[var(--border)] flex items-center justify-between select-none">
                     <span>Frontier Inference Models</span>

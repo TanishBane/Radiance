@@ -159,7 +159,7 @@ export function WelcomeCard({ onSelectPrompt }: WelcomeCardProps) {
 
       {/* Hero Title (Signature TanixAI Cormorant Garamond + 3-Stop Chromatic Gradient) */}
       <div className="flex flex-col gap-2.5">
-        <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl font-light text-[var(--txt)] tracking-tight leading-tight select-none">
+        <h1 className="font-serif text-3xl sm:text-5xl md:text-6xl font-light text-[var(--txt)] tracking-tight leading-tight select-none">
           Hello, I Am <em className="not-italic font-bold gradient-text-brand drop-shadow-sm">{titleName}</em>
         </h1>
         <p className="text-sm md:text-base text-[var(--txt-dim)] font-light max-w-lg leading-relaxed mx-auto font-sans">
@@ -210,7 +210,7 @@ export function WelcomeCard({ onSelectPrompt }: WelcomeCardProps) {
                   key={item.id}
                   type="button"
                   onClick={() => onSelectPrompt(item.prompt)}
-                  className="group/btn w-fit max-w-full inline-flex items-center gap-2 px-3.5 py-1.5 sm:py-2 rounded-full border transition-all duration-200 cursor-pointer shadow-sm active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
+                  className="group/btn w-fit max-w-full inline-flex items-center gap-2 px-3.5 py-2 sm:py-2 min-h-[44px] rounded-full border transition-all duration-200 cursor-pointer shadow-sm active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] touch-target"
                   style={{
                     backgroundColor: "rgba(255, 255, 255, 0.05)",
                     borderColor: "rgba(255, 255, 255, 0.08)",

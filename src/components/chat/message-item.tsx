@@ -322,14 +322,14 @@ export function MessageItem({
                 rows={3}
                 aria-label="Edit message prompt"
                 data-testid="edit-message-textarea"
-                className="w-full bg-[var(--deep)] border border-[var(--border)] rounded-lg p-2.5 text-xs text-[var(--txt)] focus:border-[var(--accent)] outline-none resize-y min-h-[70px] font-sans"
+                className="w-full bg-[var(--deep)] border border-[var(--border)] rounded-lg p-2.5 text-base sm:text-xs text-[var(--txt)] focus:border-[var(--accent)] outline-none resize-y min-h-[70px] font-sans"
                 autoFocus
               />
               <div className="flex items-center justify-end gap-2">
                 <button
                   type="button"
                   onClick={handleCancelEdit}
-                  className="px-2.5 py-1 text-xs rounded-md border border-[var(--border)] text-[var(--txt-muted)] hover:text-[var(--txt)] hover:bg-[var(--surface-hover)] transition-colors cursor-pointer"
+                  className="min-h-[36px] px-3 py-1.5 text-xs rounded-lg border border-[var(--border)] text-[var(--txt-muted)] hover:text-[var(--txt)] hover:bg-[var(--surface-hover)] transition-colors cursor-pointer touch-target flex items-center justify-center"
                   data-testid="cancel-edit-button"
                 >
                   Cancel
@@ -338,7 +338,7 @@ export function MessageItem({
                   type="button"
                   onClick={handleSaveEdit}
                   disabled={!editContent.trim()}
-                  className="px-3 py-1 text-xs rounded-md bg-[var(--accent)] text-[var(--deep)] font-medium hover:opacity-90 disabled:opacity-40 transition-opacity cursor-pointer"
+                  className="min-h-[36px] px-3.5 py-1.5 text-xs rounded-lg bg-[var(--accent)] text-[var(--deep)] font-medium hover:opacity-90 disabled:opacity-40 transition-opacity cursor-pointer touch-target flex items-center justify-center"
                   data-testid="save-edit-button"
                 >
                   Save & Resubmit

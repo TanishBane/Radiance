@@ -37,6 +37,13 @@ export function SidebarDock({
   const open = controlledOpen !== undefined ? controlledOpen : internalOpen;
   const setOpen = controlledSetOpen !== undefined ? controlledSetOpen : setInternalOpen;
 
+  const handleAction = (action: () => void) => {
+    action();
+    if (open) {
+      setOpen(false);
+    }
+  };
+
   const mainLinks: SidebarLinkItem[] = [
     {
       label: "New Chat",
@@ -45,23 +52,23 @@ export function SidebarDock({
           <IconPlus className="w-4 h-4 stroke-[2.5]" />
         </div>
       ),
-      onClick: onNewChat,
+      onClick: () => handleAction(onNewChat),
     },
     {
       label: "History",
       icon: <IconHistory className="w-5 h-5 shrink-0" />,
-      onClick: onToggleHistory,
+      onClick: () => handleAction(onToggleHistory),
       badge: "Ctrl+L",
     },
     {
       label: "Personalization",
       icon: <IconAdjustmentsHorizontal className="w-5 h-5 shrink-0" />,
-      onClick: onToggleSettings,
+      onClick: () => handleAction(onToggleSettings),
     },
     {
       label: "Shortcuts",
       icon: <IconCommand className="w-5 h-5 shrink-0" />,
-      onClick: onOpenShortcuts,
+      onClick: () => handleAction(onOpenShortcuts),
       badge: "Ctrl+K",
     },
   ];
