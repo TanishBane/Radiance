@@ -18,20 +18,40 @@ describe("Theme Gradients Configuration & Mathematical Invariants", () => {
   it("should define exactly 13 unique atmosphere engines", () => {
     expect(ATMOSPHERE_ENGINES.length).toBe(13);
     const engineIds = new Set(ATMOSPHERE_ENGINES.map((e) => e.id));
+    const engineIdStrings = engineIds as Set<string>;
     expect(engineIds.size).toBe(13);
 
-    expect(engineIds.has("bloom")).toBe(true);
+    // 5 New Flagship 21st.dev Engines
+    expect(engineIds.has("ambient-spotlight")).toBe(true);
+    expect(engineIdStrings.has("bloom")).toBe(false);
+    expect(engineIdStrings.has("silk-caustics")).toBe(false);
+
     expect(engineIds.has("waves")).toBe(true);
     expect(engineIds.has("cosmic")).toBe(true);
     expect(engineIds.has("aurora-curtains")).toBe(true);
-    expect(engineIds.has("warp-speed")).toBe(true);
-    expect(engineIds.has("cyber-grid")).toBe(true);
+
+    expect(engineIds.has("meteor-shower")).toBe(true);
+    expect(engineIdStrings.has("warp-speed")).toBe(false);
+    expect(engineIdStrings.has("spectral-rays")).toBe(false);
+
+    expect(engineIds.has("radiant-grid")).toBe(true);
+    expect(engineIdStrings.has("cyber-grid")).toBe(false);
+    expect(engineIdStrings.has("topographic-flow")).toBe(false);
+
     expect(engineIds.has("quantum-field")).toBe(true);
     expect(engineIds.has("liquid-lava")).toBe(true);
     expect(engineIds.has("matrix-rain")).toBe(true);
-    expect(engineIds.has("zen-minimal")).toBe(true);
+
+    expect(engineIds.has("fluid-aurora")).toBe(true);
+    expect(engineIdStrings.has("zen-minimal")).toBe(false);
+    expect(engineIdStrings.has("celestial-dust")).toBe(false);
+
     expect(engineIds.has("radial-pulse")).toBe(true);
-    expect(engineIds.has("particle-vortex")).toBe(true);
+
+    expect(engineIds.has("solar-corona")).toBe(true);
+    expect(engineIdStrings.has("particle-vortex")).toBe(false);
+    expect(engineIdStrings.has("neural-lattice")).toBe(false);
+
     expect(engineIds.has("bokeh-blur")).toBe(true);
   });
 

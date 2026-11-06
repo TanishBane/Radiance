@@ -20,18 +20,18 @@ export interface ColorTheme {
 }
 
 export type GradientStyle =
-  | "bloom"
+  | "ambient-spotlight"
   | "waves"
   | "cosmic"
   | "aurora-curtains"
-  | "warp-speed"
-  | "cyber-grid"
+  | "meteor-shower"
+  | "radiant-grid"
   | "quantum-field"
   | "liquid-lava"
   | "matrix-rain"
-  | "zen-minimal"
+  | "fluid-aurora"
   | "radial-pulse"
-  | "particle-vortex"
+  | "solar-corona"
   | "bokeh-blur";
 
 export const COLOR_THEMES: Record<string, ColorTheme> = {
@@ -563,16 +563,16 @@ export interface AtmosphereEngineInfo {
 
 export const ATMOSPHERE_ENGINES: AtmosphereEngineInfo[] = [
   {
-    id: "bloom",
-    label: "Bloom Mesh",
-    tag: "Gradient 1",
-    description: "21st.dev 6-blob radial mesh with unquantized continuous phase modulation.",
+    id: "ambient-spotlight",
+    label: "Ambient Spotlight",
+    tag: "Spotlight",
+    description: "21st.dev luxury studio spotlight cone tracking cursor with soft specular diffusion.",
     iconName: "SunMedium",
   },
   {
     id: "waves",
     label: "Ribbon Waves",
-    tag: "Gradient 2",
+    tag: "Gradient",
     description: "21st.dev dynamic stripe bands swaying along harmonic sinusoidal angles.",
     iconName: "Waves",
   },
@@ -591,17 +591,17 @@ export const ATMOSPHERE_ENGINES: AtmosphereEngineInfo[] = [
     iconName: "Wind",
   },
   {
-    id: "warp-speed",
-    label: "Hyper Warp",
-    tag: "Interstellar",
-    description: "High-speed 3D star streaks traveling outward from the optical center.",
+    id: "meteor-shower",
+    label: "Celestial Meteors",
+    tag: "Meteors",
+    description: "21st.dev diagonal incandescent shooting stars cascading across night skies.",
     iconName: "Zap",
   },
   {
-    id: "cyber-grid",
-    label: "Tron Grid",
-    tag: "Retro 3D",
-    description: "3D perspective wireframe horizon with forward motion and neon horizon glow.",
+    id: "radiant-grid",
+    label: "Radiant Grid",
+    tag: "Grid Mask",
+    description: "Architectural isometric grid with dynamic radial illumination mask following cursor.",
     iconName: "Grid3X3",
   },
   {
@@ -626,11 +626,11 @@ export const ATMOSPHERE_ENGINES: AtmosphereEngineInfo[] = [
     iconName: "Terminal",
   },
   {
-    id: "zen-minimal",
-    label: "Zen Obsidian",
-    tag: "Minimalist",
-    description: "Distraction-free pure deep void with slow, breathing ambient focal glow.",
-    iconName: "Sparkles",
+    id: "fluid-aurora",
+    label: "Fluid Aurora",
+    tag: "Aurora",
+    description: "Multi-chromatic plasma ribbons with soft Gaussian dispersion and screen superposition.",
+    iconName: "Wind",
   },
   {
     id: "radial-pulse",
@@ -640,11 +640,11 @@ export const ATMOSPHERE_ENGINES: AtmosphereEngineInfo[] = [
     iconName: "Radio",
   },
   {
-    id: "particle-vortex",
-    label: "Stellar Vortex",
-    tag: "Galactic",
-    description: "Swirling particle spiral orbiting around a gravitational singularity.",
-    iconName: "Disc",
+    id: "solar-corona",
+    label: "Solar Corona",
+    tag: "Eclipse",
+    description: "Colossal celestial horizon eclipse with incandescent solar prominence flares.",
+    iconName: "Orbit",
   },
   {
     id: "bokeh-blur",

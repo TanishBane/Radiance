@@ -33,6 +33,7 @@ export function AtmosphericParticles() {
 
     const prefersReducedMotion =
       typeof window !== "undefined" &&
+      typeof window.matchMedia === "function" &&
       window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
     let width = (canvas.width = window.innerWidth);
@@ -54,6 +55,16 @@ export function AtmosphericParticles() {
       targetMouse.y = (e.clientY / height - 0.5) * 2;
     };
     window.addEventListener("mousemove", handleMouseMove, { passive: true });
+
+    // Touch tracking for mobile parallax ergonomics
+    const handleTouch = (e: TouchEvent) => {
+      if (e.touches && e.touches.length > 0) {
+        targetMouse.x = (e.touches[0].clientX / width - 0.5) * 2;
+        targetMouse.y = (e.touches[0].clientY / height - 0.5) * 2;
+      }
+    };
+    window.addEventListener("touchstart", handleTouch, { passive: true });
+    window.addEventListener("touchmove", handleTouch, { passive: true });
 
     // Generate ~50 subtle, microscopic celestial dust particles
     const PARTICLE_COUNT = Math.min(55, Math.floor((width * height) / 22000));
@@ -141,6 +152,8 @@ export function AtmosphericParticles() {
       cancelAnimationFrame(animId);
       window.removeEventListener("resize", handleResize);
       window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("touchstart", handleTouch);
+      window.removeEventListener("touchmove", handleTouch);
       document.removeEventListener("visibilitychange", handleVisibility);
     };
   }, []);

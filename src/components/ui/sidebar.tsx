@@ -134,7 +134,7 @@ export const MobileSidebar = ({
               exit={{ x: "-100%", opacity: 0 }}
               transition={getMotionTransition("drawer", prefersReducedMotion)}
               className={cn(
-                "fixed h-full w-[280px] max-w-[85vw] inset-y-0 left-0 bg-[var(--void)]/95 backdrop-blur-2xl border-r border-[var(--border)] p-6 z-[100] flex flex-col justify-between shadow-2xl",
+                "fixed h-[100dvh] w-[280px] max-w-[85vw] inset-y-0 left-0 bg-[var(--void)]/95 backdrop-blur-2xl border-r border-[var(--border)] p-6 pt-[max(1.5rem,env(safe-area-inset-top,0px))] pb-[max(1.5rem,env(safe-area-inset-bottom,0px))] pl-[max(1.5rem,env(safe-area-inset-left,0px))] z-[100] flex flex-col justify-between shadow-2xl",
                 className
               )}
             >
