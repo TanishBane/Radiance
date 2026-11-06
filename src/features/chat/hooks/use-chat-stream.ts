@@ -28,6 +28,8 @@ export function useChatStream({
   const lastModelIdRef = useRef<string | undefined>(undefined);
   const discardPartialRef = useRef(false);
 
+  const lastModeRef = useRef<string | undefined>(undefined);
+
   const stop = useCallback((discardPartial: boolean | unknown = false) => {
     if (discardPartial === true) {
       discardPartialRef.current = true;
@@ -42,11 +44,12 @@ export function useChatStream({
   }, []);
 
   const send = useCallback(
-    async (messagesToSend: ChatMessage[], overrideModelId?: string) => {
+    async (messagesToSend: ChatMessage[], overrideModelId?: string, overrideMode?: string) => {
       if (isGeneratingRef.current) return;
 
       lastMessagesRef.current = messagesToSend;
       lastModelIdRef.current = overrideModelId;
+      lastModeRef.current = overrideMode;
 
       discardPartialRef.current = false;
       isGeneratingRef.current = true;
@@ -72,7 +75,7 @@ export function useChatStream({
               attachments: m.attachments,
             })),
             modelId: overrideModelId || modelId,
-            mode: "default",
+            mode: overrideMode || "build",
             tone,
             language,
           }),
@@ -206,7 +209,7 @@ export function useChatStream({
   const retryLast = useCallback(async () => {
     if (isGeneratingRef.current) return;
     if (!lastMessagesRef.current || lastMessagesRef.current.length === 0) return;
-    await send(lastMessagesRef.current, lastModelIdRef.current);
+    await send(lastMessagesRef.current, lastModelIdRef.current, lastModeRef.current);
   }, [send]);
 
   return {

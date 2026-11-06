@@ -32,7 +32,7 @@ export function BackgroundLayers({
         <AtmosphereCanvasEngine theme={theme} engine={gradientStyle} />
       )}
 
-      {/* ══ AMBIENT FALLBACK GRADIENT (for Cosmic 3D mode) ══ */}
+      {/* ══ CINEMATIC FALLBACK GRADIENT (for Cosmic 3D mode) ══ */}
       {isCosmic && (
         <div
           className="fixed inset-0 pointer-events-none z-0 transition-all duration-700"

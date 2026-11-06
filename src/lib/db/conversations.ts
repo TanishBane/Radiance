@@ -26,8 +26,17 @@ export const conversationService = {
 
       if (convError) throw convError;
 
-      // Upsert messages in batch
-      if (conv.messages.length > 0) {
+      // Upsert active messages and prune deleted/removed messages
+      const activeIds = conv.messages.map((m: ChatMessage) => m.id);
+
+      if (activeIds.length > 0) {
+        // Prune any messages from this conversation that were deleted
+        await supabase
+          .from("messages")
+          .delete()
+          .eq("conversation_id", conv.id)
+          .not("id", "in", `(${activeIds.join(",")})`);
+
         const messageRows = conv.messages.map((m: ChatMessage) => ({
           id: m.id,
           conversation_id: conv.id,
@@ -42,10 +51,22 @@ export const conversationService = {
         });
 
         if (msgError) throw msgError;
+      } else {
+        await supabase.from("messages").delete().eq("conversation_id", conv.id);
       }
     } catch (err) {
       console.warn("[ConversationService] Supabase sync failed, cached locally:", err);
     }
+  },
+
+  /**
+   * Retrieves a single conversation by ID.
+   */
+  async get(convId: string): Promise<Conversation | null> {
+    const local = safeLocalStorage.getConversation(convId);
+    if (local) return local;
+    const all = await this.list();
+    return all.find((c) => c.id === convId) || null;
   },
 
   /**
