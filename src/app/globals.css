@@ -2,8 +2,8 @@
 
 @layer base {
   :root {
-    --void: #06050a;
-    --deep: #0c0b14;
+    --void: #000000;
+    --deep: #080808;
     --surface: rgba(255, 255, 255, 0.035);
     --surface-hover: rgba(255, 255, 255, 0.07);
     --surface-raised: rgba(16, 14, 24, 0.88);
@@ -78,6 +78,38 @@
     -webkit-tap-highlight-color: transparent;
     touch-action: manipulation;
   }
+  /* ══ PLAIN WHITE BACKGROUND OPTION ══ */
+  :root[data-background="plain-white"],
+  body[data-background="plain-white"] {
+    --void: #ffffff;
+    --deep: #f8fafc;
+    --surface: rgba(0, 0, 0, 0.04);
+    --surface-hover: rgba(0, 0, 0, 0.08);
+    --surface-raised: rgba(255, 255, 255, 0.98);
+    --surface-overlay: rgba(248, 250, 252, 0.98);
+    --border: rgba(0, 0, 0, 0.09);
+    --border-hover: rgba(0, 0, 0, 0.18);
+    --border-accent: rgba(0, 0, 0, 0.25);
+
+    --accent: #18181b;
+    --accent-d: rgba(0, 0, 0, 0.06);
+    --accent-g: rgba(0, 0, 0, 0.12);
+    --accent-b: #09090b;
+    --accent-c: #52525b;
+    --text-gradient: linear-gradient(135deg, #09090b 0%, #27272a 50%, #52525b 100%);
+    --cinematic-glow: none;
+    --cinematic-flare: transparent;
+
+    --txt: #09090b;
+    --txt-dim: rgba(9, 9, 11, 0.72);
+    --txt-muted: rgba(9, 9, 11, 0.44);
+
+    --user-bg: #f4f4f5;
+    --user-border: rgba(0, 0, 0, 0.10);
+    --ai-bg: #ffffff;
+    --ai-border: rgba(0, 0, 0, 0.08);
+  }
+
 }
 
 /* ══ FONT FAMILIES ══ */

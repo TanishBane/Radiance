@@ -2,7 +2,7 @@
 
 import React from "react";
 import { RadianceLogo } from "@/components/branding/radiance-logo";
-import { Trash2, Menu } from "lucide-react";
+import { Trash2, Menu, Sun, Moon } from "lucide-react";
 
 interface TopbarProps {
   language: "en" | "hi";
@@ -10,6 +10,8 @@ interface TopbarProps {
   onClearChat: () => void;
   onNewChat: () => void;
   onToggleMobileMenu?: () => void;
+  isWhiteBackground?: boolean;
+  onToggleBackground?: () => void;
 }
 
 export function Topbar({
@@ -18,6 +20,8 @@ export function Topbar({
   onClearChat,
   onNewChat,
   onToggleMobileMenu,
+  isWhiteBackground,
+  onToggleBackground,
 }: TopbarProps) {
   return (
     <header className="sticky top-0 z-30 flex items-center justify-between gap-2 px-2.5 sm:px-4 py-2.5 pt-[max(0.625rem,env(safe-area-inset-top,0px))] pl-[max(0.625rem,env(safe-area-inset-left,0px))] pr-[max(0.625rem,env(safe-area-inset-right,0px))] bg-[var(--void)]/85 backdrop-blur-xl border-b border-[var(--border)] select-none shrink-0 w-full">
@@ -80,6 +84,23 @@ export function Topbar({
             HI
           </button>
         </div>
+
+        {/* Plain Black / Plain White Background Toggle */}
+        {onToggleBackground && (
+          <button
+            type="button"
+            onClick={onToggleBackground}
+            className="min-w-[44px] min-h-[44px] p-2 rounded-xl border border-[var(--border)] bg-[var(--surface)] hover:bg-[var(--surface-hover)] text-[var(--txt)] transition-colors touch-target flex items-center justify-center cursor-pointer"
+            title={isWhiteBackground ? "Switch to Plain Black" : "Switch to Plain White"}
+            aria-label={isWhiteBackground ? "Switch to Plain Black" : "Switch to Plain White"}
+          >
+            {isWhiteBackground ? (
+              <Moon className="w-3.5 h-3.5" />
+            ) : (
+              <Sun className="w-3.5 h-3.5" />
+            )}
+          </button>
+        )}
 
         {/* Clear Chat Button */}
         <button

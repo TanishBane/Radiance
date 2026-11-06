@@ -20,10 +20,10 @@ export interface ColorTheme {
 }
 
 export type GradientStyle =
-  | "aurora-nights"
+  | "plain-black"
+  | "plain-white"
   | "waves"
   | "cosmic"
-  | "aurora-curtains"
   | "meteor-shower"
   | "radiant-grid"
   | "quantum-field"
@@ -38,20 +38,20 @@ export const COLOR_THEMES: Record<string, ColorTheme> = {
   // ══ 1. SIGNATURE & ATMOSPHERIC ══
   default: {
     id: "default",
-    label: "Aurora Nights",
+    label: "Plain Black",
     category: "signature",
-    swatchGradient: "linear-gradient(135deg, #020612, #10b981, #6366f1)",
-    accent: "#10b981",
-    accentD: "rgba(16,185,129,0.12)",
-    accentG: "rgba(16,185,129,0.24)",
-    accentB: "#a7f3d0",
-    accentC: "#6366f1",
-    textGradient: "linear-gradient(135deg, #a7f3d0 0%, #10b981 50%, #6366f1 100%)",
-    userBg: "rgba(16,185,129,0.06)",
-    userBorder: "rgba(16,185,129,0.18)",
+    swatchGradient: "linear-gradient(135deg, #000000, #18181b, #ffffff)",
+    accent: "#ffffff",
+    accentD: "rgba(255,255,255,0.08)",
+    accentG: "rgba(255,255,255,0.18)",
+    accentB: "#ffffff",
+    accentC: "#a1a1aa",
+    textGradient: "linear-gradient(135deg, #ffffff 0%, #e4e4e7 50%, #a1a1aa 100%)",
+    userBg: "rgba(255,255,255,0.04)",
+    userBorder: "rgba(255,255,255,0.12)",
     bgGradient: null,
-    bloomColors: ["#020612", "#051329", "#10b981", "#064e3b", "#6366f1", "#a7f3d0"],
-    ribbonColors: ["#020612", "#064e3b", "#10b981", "#c7d2fe"],
+    bloomColors: ["#000000", "#000000", "#000000", "#000000", "#000000", "#000000"],
+    ribbonColors: ["#000000", "#000000", "#000000", "#000000"],
     ribbonAngle: 155,
   },
   violet: {
@@ -563,11 +563,18 @@ export interface AtmosphereEngineInfo {
 
 export const ATMOSPHERE_ENGINES: AtmosphereEngineInfo[] = [
   {
-    id: "aurora-nights",
-    label: "Aurora Nights",
-    tag: "Atmospheric",
-    description: "Undulating emerald-violet polar curtains dancing across an Arctic starlit void.",
-    iconName: "Sparkles",
+    id: "plain-black",
+    label: "Plain Black",
+    tag: "Minimal",
+    description: "Pure solid OLED black backdrop with maximum text contrast and zero visual noise.",
+    iconName: "Moon",
+  },
+  {
+    id: "plain-white",
+    label: "Plain White",
+    tag: "Minimal",
+    description: "Clean solid white paper canvas with high-clarity monochrome typography.",
+    iconName: "Sun",
   },
   {
     id: "waves",
@@ -582,13 +589,6 @@ export const ATMOSPHERE_ENGINES: AtmosphereEngineInfo[] = [
     tag: "WebGL",
     description: "Procedural 3D starfield and volumetric Three.js shader nebula.",
     iconName: "Orbit",
-  },
-  {
-    id: "aurora-curtains",
-    label: "Aurora Curtains",
-    tag: "Atmospheric",
-    description: "Fluctuating polar light curtains waving vertically with harmonic distortion.",
-    iconName: "Wind",
   },
   {
     id: "meteor-shower",

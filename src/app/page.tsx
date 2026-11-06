@@ -36,7 +36,7 @@ import { ChatWorkspace } from "@/features/chat/components/chat-workspace";
 export default function RadianceApp() {
   const [showSplash, setShowSplash] = useState(true);
   const [theme, setTheme] = useState<ThemeId>("violet");
-  const [gradientStyle, setGradientStyle] = useState<GradientStyle>("aurora-nights");
+  const [gradientStyle, setGradientStyle] = useState<GradientStyle>("plain-black");
   const [modelId, setModelId] = useState(DEFAULT_MODEL_ID);
   const [tone, setTone] = useState<ToneKey>("default");
   const [language, setLanguage] = useState<"en" | "hi">("en");
@@ -108,6 +108,17 @@ export default function RadianceApp() {
   useEffect(() => {
     applyThemeToDom(selectedTheme);
   }, [selectedTheme]);
+
+    // Synchronize background mode attribute to document root
+  useEffect(() => {
+    if (typeof document !== "undefined") {
+      document.documentElement.setAttribute("data-background", gradientStyle);
+    }
+  }, [gradientStyle]);
+
+  const handleToggleBackground = useCallback(() => {
+    setGradientStyle((prev) => (prev === "plain-white" ? "plain-black" : "plain-white"));
+  }, []);
 
   const handleSelectTheme = useCallback((themeId: string) => {
     if (THEMES[themeId]) {
@@ -301,6 +312,8 @@ export default function RadianceApp() {
           onClearChat={handleNewChat}
           onNewChat={handleNewChat}
           onToggleMobileMenu={() => setMobileSidebarOpen((prev) => !prev)}
+          isWhiteBackground={gradientStyle === "plain-white"}
+          onToggleBackground={handleToggleBackground}
         />
 
         <div className="flex-1 flex flex-col min-w-0 overflow-hidden relative">

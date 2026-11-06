@@ -14,7 +14,7 @@ describe("Navigation Drawers Unit Specifications (Accessibility & Dialog Semanti
           onClose={vi.fn()}
           activeTheme="violet"
           onSelectTheme={vi.fn()}
-          gradientStyle="aurora-nights"
+          gradientStyle="plain-black"
           onSelectGradientStyle={vi.fn()}
         />
       );
@@ -29,7 +29,7 @@ describe("Navigation Drawers Unit Specifications (Accessibility & Dialog Semanti
           onClose={vi.fn()}
           activeTheme="violet"
           onSelectTheme={vi.fn()}
-          gradientStyle="aurora-nights"
+          gradientStyle="plain-black"
           onSelectGradientStyle={vi.fn()}
         />
       );
@@ -49,7 +49,7 @@ describe("Navigation Drawers Unit Specifications (Accessibility & Dialog Semanti
           onClose={vi.fn()}
           activeTheme="violet"
           onSelectTheme={onSelectTheme}
-          gradientStyle="aurora-nights"
+          gradientStyle="plain-black"
           onSelectGradientStyle={vi.fn()}
         />
       );
@@ -67,7 +67,7 @@ describe("Navigation Drawers Unit Specifications (Accessibility & Dialog Semanti
           onClose={onClose}
           activeTheme="violet"
           onSelectTheme={vi.fn()}
-          gradientStyle="aurora-nights"
+          gradientStyle="plain-black"
           onSelectGradientStyle={vi.fn()}
         />
       );

@@ -23,8 +23,8 @@ function hexToRgb(hex: string): [number, number, number] {
 }
 
 const CANVAS_ENGINES: GradientStyle[] = [
-  "aurora-nights",
-  "aurora-curtains",
+  "plain-black",
+  "plain-white",
   "meteor-shower",
   "radiant-grid",
   "quantum-field",
@@ -102,134 +102,19 @@ export function AtmosphereCanvasEngine({ theme, engine }: AtmosphereCanvasEngine
     let frame = 0;
 
     // ═════════════════════════════════════════════════════════════════════════
-    // ── 1. AURORA NIGHTS: Undulating Emerald & Violet Polar Curtains with Starlight
+    // ── 1. PLAIN BLACK: Pure Minimalist Solid Black Canvas
     // ═════════════════════════════════════════════════════════════════════════
-    interface PolarStar {
-      x: number;
-      y: number;
-      r: number;
-      alpha: number;
-      speed: number;
-      phase: number;
-    }
-
-    const polarStars: PolarStar[] = Array.from({ length: 42 }, () => ({
-      x: Math.random() * width,
-      y: Math.random() * height * 0.75,
-      r: Math.random() * 1.1 + 0.4,
-      alpha: Math.random() * 0.5 + 0.25,
-      speed: Math.random() * 1.8 + 0.8,
-      phase: Math.random() * Math.PI * 2,
-    }));
-
-    const drawAuroraNights = (t: number) => {
-      // 1. Deep Arctic Void
-      const bgGrad = ctx.createLinearGradient(0, 0, 0, height);
-      bgGrad.addColorStop(0, "#020612");
-      bgGrad.addColorStop(0.5, "#040b1e");
-      bgGrad.addColorStop(1, "#020510");
-      ctx.fillStyle = bgGrad;
+    const drawPlainBlack = () => {
+      ctx.fillStyle = "#000000";
       ctx.fillRect(0, 0, width, height);
-
-      // 2. Quiescent Polar Starfield
-      polarStars.forEach((s) => {
-        const twinkle = prefersReducedMotion ? 1 : Math.sin(t * s.speed + s.phase) * 0.35 + 0.65;
-        ctx.fillStyle = `rgba(255, 255, 255, ${s.alpha * twinkle * 0.85})`;
-        ctx.beginPath();
-        ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
-        ctx.fill();
-      });
-
-      ctx.save();
-      ctx.globalCompositeOperation = "screen";
-
-      // 3. Multi-layer Undulating Aurora Curtains (4 harmonic ribbons)
-      const numCurtains = 4;
-      const mouseInfluenceX = (smoothMouse.x - width * 0.5) * 0.06;
-
-      for (let i = 0; i < numCurtains; i++) {
-        const curtainSpeed = prefersReducedMotion ? 0 : 0.28 + i * 0.08;
-        const curtainPhase = i * 1.4;
-        const baseY = height * (0.16 + i * 0.10);
-        const amplitude = 48 + i * 16;
-
-        const grad = ctx.createLinearGradient(0, baseY - amplitude, 0, baseY + amplitude * 2.4);
-        if (i % 2 === 0) {
-          grad.addColorStop(0, "transparent");
-          grad.addColorStop(0.18, `rgba(${r1}, ${g1}, ${b1}, 0.24)`); // Emerald core
-          grad.addColorStop(0.55, `rgba(${r2}, ${g2}, ${b2}, 0.12)`); // Luminous mint
-          grad.addColorStop(0.85, `rgba(${r3}, ${g3}, ${b3}, 0.03)`); // Violet shift
-          grad.addColorStop(1, "transparent");
-        } else {
-          grad.addColorStop(0, "transparent");
-          grad.addColorStop(0.22, `rgba(${r3}, ${g3}, ${b3}, 0.20)`); // Violet/indigo
-          grad.addColorStop(0.6, `rgba(${r1}, ${g1}, ${b1}, 0.10)`); // Emerald
-          grad.addColorStop(1, "transparent");
-        }
-
-        ctx.fillStyle = grad;
-        ctx.beginPath();
-        ctx.moveTo(0, height);
-
-        for (let x = 0; x <= width; x += 16) {
-          const nx = x / width;
-          const wave1 = Math.sin(nx * 3.2 + t * curtainSpeed + curtainPhase) * amplitude;
-          const wave2 = Math.sin(nx * 6.8 - t * 0.2 + curtainPhase) * (amplitude * 0.35);
-          const wave3 = Math.cos(nx * 1.5 + t * 0.12) * 15;
-          const y = baseY + wave1 + wave2 + wave3 + mouseInfluenceX * Math.sin(nx * Math.PI);
-          ctx.lineTo(x, y);
-        }
-
-        ctx.lineTo(width, height);
-        ctx.closePath();
-        ctx.fill();
-      }
-
-      ctx.restore();
-
-      // 4. Subtle Horizon Scrim for guaranteed WCAG AAA typography contrast
-      const horizonScrim = ctx.createLinearGradient(0, height * 0.65, 0, height);
-      horizonScrim.addColorStop(0, "transparent");
-      horizonScrim.addColorStop(1, "rgba(2, 6, 18, 0.85)");
-      ctx.fillStyle = horizonScrim;
-      ctx.fillRect(0, height * 0.65, width, height * 0.35);
     };
 
     // ═════════════════════════════════════════════════════════════════════════
-    // ── 2. AURORA CURTAINS: Vertical Polar Light with Sine Harmonic Modulation
+    // ── 2. PLAIN WHITE: Pure Minimalist Solid White Canvas
     // ═════════════════════════════════════════════════════════════════════════
-    const drawAuroraCurtains = (t: number) => {
-      ctx.fillStyle = theme.bloomColors[0];
+    const drawPlainWhite = () => {
+      ctx.fillStyle = "#ffffff";
       ctx.fillRect(0, 0, width, height);
-
-      const numCurtains = 4;
-      for (let c = 0; c < numCurtains; c++) {
-        const baseColor = c % 2 === 0 ? `rgba(${r1}, ${g1}, ${b1}` : `rgba(${r2}, ${g2}, ${b2}`;
-        const waveOffset = c * 0.9;
-        const speed = 0.45 + c * 0.12;
-
-        ctx.beginPath();
-        ctx.moveTo(0, height);
-
-        for (let x = 0; x <= width; x += 18) {
-          const nx = x / width;
-          const y =
-            height * 0.42 +
-            Math.sin(nx * 3.8 + t * speed + waveOffset) * 85 +
-            Math.sin(nx * 7.6 - t * 0.3) * 35 +
-            c * 42;
-          ctx.lineTo(x, y);
-        }
-        ctx.lineTo(width, height);
-        ctx.closePath();
-
-        const grad = ctx.createLinearGradient(0, height * 0.3, 0, height);
-        grad.addColorStop(0, `${baseColor}, 0.18)`);
-        grad.addColorStop(0.5, `${baseColor}, 0.08)`);
-        grad.addColorStop(1, "transparent");
-        ctx.fillStyle = grad;
-        ctx.fill();
-      }
     };
 
     // ═════════════════════════════════════════════════════════════════════════
@@ -793,8 +678,14 @@ export function AtmosphereCanvasEngine({ theme, engine }: AtmosphereCanvasEngine
     };
 
     if (prefersReducedMotion) {
-      // Draw static first frame for accessibility
-      drawAuroraNights(0);
+      if (engine === "plain-white") {
+        drawPlainWhite();
+      } else if (engine === "plain-black") {
+        drawPlainBlack();
+      } else {
+        ctx.fillStyle = theme.bloomColors[0] || "#000000";
+        ctx.fillRect(0, 0, width, height);
+      }
       return;
     }
 
@@ -809,11 +700,11 @@ export function AtmosphereCanvasEngine({ theme, engine }: AtmosphereCanvasEngine
       smoothMouse.y += (mousePos.y - smoothMouse.y) * 0.04;
 
       switch (engine) {
-        case "aurora-nights":
-          drawAuroraNights(t);
+        case "plain-black":
+          drawPlainBlack();
           break;
-        case "aurora-curtains":
-          drawAuroraCurtains(t);
+        case "plain-white":
+          drawPlainWhite();
           break;
         case "meteor-shower":
           drawMeteorShower(t);
