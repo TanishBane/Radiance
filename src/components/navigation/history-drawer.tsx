@@ -164,7 +164,7 @@ function ConversationItem({
   return (
     <div
       onClick={onSelect}
-      className={`group flex items-center justify-between p-2.5 rounded-xl cursor-pointer transition-all border ${
+      className={`group flex items-center justify-between p-2.5 min-h-[44px] touch-target rounded-xl cursor-pointer transition-all border ${
         isActive
           ? "bg-[var(--accent-d)] border-[var(--accent)]/50 text-[var(--txt)]"
           : "bg-[var(--surface)] border-transparent hover:bg-[var(--surface-hover)] hover:border-[var(--border)] text-[var(--txt-dim)]"
