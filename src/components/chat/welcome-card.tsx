@@ -112,55 +112,32 @@ export function WelcomeCard({ onSelectPrompt }: WelcomeCardProps) {
     "Illuminate what is possible. Stream real-time reasoning, analyze documents, generate Flux visuals, and explore complex ideas.";
 
   function getHeaderStyle(role: "accentB" | "gradient" | "accentC"): React.CSSProperties {
-    switch (role) {
-      case "accentB":
-        return {
-          color: "var(--accent-b)",
-        };
-      case "gradient":
-        return {
-          backgroundImage: "var(--text-gradient)",
-          WebkitBackgroundClip: "text",
-          WebkitTextFillColor: "transparent",
-          color: "var(--accent)",
-        };
-      case "accentC":
-        return {
-          color: "var(--accent-c)",
-        };
-    }
+    if (role === "accentB") return { color: "var(--accent-b)" };
+    if (role === "accentC") return { color: "var(--accent-c)" };
+    return {
+      backgroundImage: "var(--text-gradient)",
+      WebkitBackgroundClip: "text",
+      WebkitTextFillColor: "transparent",
+      color: "var(--accent)",
+    };
   }
 
+  const BADGE_MAP = {
+    flight: { bg: "bg-[#1e88e5] shadow-[0_0_8px_rgba(30,136,229,0.35)]", icon: <Plane className="w-2.5 h-2.5 text-white" /> },
+    video: { bg: "bg-[#e53935] shadow-[0_0_8px_rgba(229,57,53,0.35)]", icon: <Play className="w-2.5 h-2.5 text-white fill-white ml-0.5" /> },
+    getaway: { bg: "bg-[#2e7d32] shadow-[0_0_8px_rgba(46,125,50,0.35)]", icon: <Bed className="w-2.5 h-2.5 text-white" /> },
+  } as const;
+
   function renderBadge(type: "flight" | "video" | "getaway") {
-    switch (type) {
-      case "flight":
-        return (
-          <span
-            className="w-4.5 h-4.5 rounded-full bg-[#1e88e5] flex items-center justify-center shrink-0 border border-white/20 shadow-[0_0_8px_rgba(30,136,229,0.35)]"
-            aria-hidden="true"
-          >
-            <Plane className="w-2.5 h-2.5 text-white" />
-          </span>
-        );
-      case "video":
-        return (
-          <span
-            className="w-4.5 h-4.5 rounded-full bg-[#e53935] flex items-center justify-center shrink-0 border border-white/20 shadow-[0_0_8px_rgba(229,57,53,0.35)]"
-            aria-hidden="true"
-          >
-            <Play className="w-2.5 h-2.5 text-white fill-white ml-0.5" />
-          </span>
-        );
-      case "getaway":
-        return (
-          <span
-            className="w-4.5 h-4.5 rounded-full bg-[#2e7d32] flex items-center justify-center shrink-0 border border-white/20 shadow-[0_0_8px_rgba(46,125,50,0.35)]"
-            aria-hidden="true"
-          >
-            <Bed className="w-2.5 h-2.5 text-white" />
-          </span>
-        );
-    }
+    const badge = BADGE_MAP[type];
+    return (
+      <span
+        className={`w-4.5 h-4.5 rounded-full ${badge.bg} flex items-center justify-center shrink-0 border border-white/20`}
+        aria-hidden="true"
+      >
+        {badge.icon}
+      </span>
+    );
   }
 
   return (

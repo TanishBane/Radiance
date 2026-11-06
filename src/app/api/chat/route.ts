@@ -90,8 +90,10 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    // Append images for multimodal-capable models
-    const imageAttachments = m.attachments?.filter((a) => a.type === "image" && a.dataUrl);
+    // Append images for multimodal-capable models, strictly validating data URL scheme (SEC-04)
+    const imageAttachments = m.attachments?.filter(
+      (a) => a.type === "image" && a.dataUrl && a.dataUrl.startsWith("data:image/")
+    );
     if (imageAttachments && imageAttachments.length > 0 && m.role === "user") {
       return {
         role: "user",
@@ -152,7 +154,8 @@ export async function POST(req: NextRequest) {
         errStr.includes("rate limit") ||
         errStr.includes("resource_exhausted")
       ) {
-        circuitBreaker.markExhausted(modelOption.provider, error.message);
+        // Record failure against threshold to prevent single-incident DoS poisoning (SEC-03)
+        circuitBreaker.recordFailure(modelOption.provider, error.message);
         continue; // Try next healthy candidate
       }
 
@@ -160,9 +163,12 @@ export async function POST(req: NextRequest) {
     }
   }
 
+  // Log raw error details internally on server without exposing credentials or internal paths to client (SEC-05)
+  console.error("[ChatAPI] Inference failed across candidate models:", lastError);
+
   return new Response(
     JSON.stringify({
-      error: lastError?.message || "Inference failed across available providers.",
+      error: "Inference failed across available providers. Please try again shortly.",
     }),
     { status: 500, headers: { "Content-Type": "application/json" } }
   );

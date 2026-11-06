@@ -17,6 +17,9 @@ class LocalTokenBucketLimiter {
   private buckets = new Map<string, LocalBucket>();
   private readonly capacity: number;
   private readonly refillRatePerSecond: number;
+  private checkCount = 0;
+  private static readonly MAX_BUCKETS = 10_000;
+  private static readonly CLEANUP_INTERVAL = 500;
 
   constructor(capacity = 30, refillRatePerSecond = 0.5) {
     this.capacity = capacity;
@@ -25,6 +28,28 @@ class LocalTokenBucketLimiter {
 
   check(clientId: string): { success: boolean; remaining: number; retryAfter?: number } {
     const now = Date.now();
+    this.checkCount++;
+
+    // Opportunistic automatic cleanup & hard capacity bounds to prevent memory leaks (SEC-01)
+    if (
+      this.checkCount >= LocalTokenBucketLimiter.CLEANUP_INTERVAL ||
+      this.buckets.size >= LocalTokenBucketLimiter.MAX_BUCKETS
+    ) {
+      this.checkCount = 0;
+      this.cleanup();
+
+      // If still exceeding max capacity after cleanup, evict oldest entries (FIFO)
+      if (this.buckets.size >= LocalTokenBucketLimiter.MAX_BUCKETS) {
+        const evictCount = Math.floor(LocalTokenBucketLimiter.MAX_BUCKETS * 0.2);
+        let evicted = 0;
+        for (const key of this.buckets.keys()) {
+          this.buckets.delete(key);
+          evicted++;
+          if (evicted >= evictCount) break;
+        }
+      }
+    }
+
     let bucket = this.buckets.get(clientId);
 
     if (!bucket) {
@@ -137,25 +162,43 @@ export async function checkRateLimit(
   };
 }
 
+const IPV4_REGEX = /^(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(?:\.(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}$/;
+const IPV6_REGEX = /^(?:[a-fA-F0-9]{1,4}:){1,7}[a-fA-F0-9]{1,4}$|^::1$|^::$/;
+
+function sanitizeAndValidateIp(candidate: string | null | undefined): string | null {
+  if (!candidate) return null;
+  const trimmed = candidate.trim();
+  if (trimmed.length === 0 || trimmed.length > 45) return null;
+  if (IPV4_REGEX.test(trimmed) || IPV6_REGEX.test(trimmed)) {
+    return trimmed;
+  }
+  return null;
+}
+
 /**
  * Derives trusted client IP avoiding spoofed x-forwarded-for headers.
  */
 export function getTrustedClientIp(headers: Headers): string {
   // Edge-verified headers
-  const realIp = headers.get("x-real-ip");
-  if (realIp && realIp.trim().length > 0) return realIp.trim();
+  const realIp = sanitizeAndValidateIp(headers.get("x-real-ip"));
+  if (realIp) return realIp;
 
   const vercelIp = headers.get("x-vercel-forwarded-for");
-  if (vercelIp && vercelIp.trim().length > 0) return vercelIp.split(",")[0].trim();
+  if (vercelIp && vercelIp.trim().length > 0) {
+    const validated = sanitizeAndValidateIp(vercelIp.split(",")[0]);
+    if (validated) return validated;
+  }
 
-  const cfIp = headers.get("cf-connecting-ip");
-  if (cfIp && cfIp.trim().length > 0) return cfIp.trim();
+  const cfIp = sanitizeAndValidateIp(headers.get("cf-connecting-ip"));
+  if (cfIp) return cfIp;
 
   const forwarded = headers.get("x-forwarded-for");
   if (forwarded && forwarded.trim().length > 0) {
-    // In multi-proxy setups, the first non-private client IP
     const parts = forwarded.split(",").map((s) => s.trim());
-    return parts[0] || "127.0.0.1";
+    for (const part of parts) {
+      const validated = sanitizeAndValidateIp(part);
+      if (validated) return validated;
+    }
   }
 
   return "127.0.0.1";

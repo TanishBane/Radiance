@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { RadianceLogo } from "@/components/branding/logo";
+import { RadianceLogo } from "@/components/branding/radiance-logo";
 import { Trash2 } from "lucide-react";
 import { IconMenu2 } from "@tabler/icons-react";
 

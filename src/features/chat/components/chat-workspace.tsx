@@ -7,6 +7,7 @@ import { WelcomeCard } from "@/components/chat/welcome-card";
 import { FollowUpChips } from "@/components/chat/follow-up-chips";
 import { ChatComposer } from "@/components/chat/chat-composer";
 import { formatMarkdown } from "@/lib/utils/format";
+import { RadianceLogo } from "@/components/branding/radiance-logo";
 import { AlertCircle, RotateCcw } from "lucide-react";
 
 export interface ChatWorkspaceProps {
@@ -162,8 +163,9 @@ export function ChatWorkspace({
                 data-testid="active-inference-indicator"
                 className="flex gap-3 max-w-3xl w-full mx-auto my-3.5 self-start animate-fade-in"
               >
-                <div className="w-8 h-8 rounded-xl shrink-0 flex items-center justify-center font-mono text-[10px] font-bold border select-none bg-[var(--surface-raised)] border-[var(--border)] text-[var(--txt)] shadow-sm">
-                  <span className="gradient-text-brand">RD</span>
+                <div className="w-8 h-8 rounded-xl shrink-0 flex items-center justify-center font-mono text-[10px] font-bold border select-none bg-[var(--surface-raised)] border-[var(--border)] text-[var(--txt)] shadow-sm p-1">
+                  <RadianceLogo variant="symbol" size="xs" showWordmark={false} className="w-4 h-3.5" />
+                  <span className="sr-only">RD</span>
                 </div>
                 <div className="flex flex-col gap-1 max-w-[calc(100%-44px)]">
                   <div
@@ -191,8 +193,9 @@ export function ChatWorkspace({
                 data-testid="streaming-message"
                 className="flex gap-3 max-w-3xl w-full mx-auto my-3.5 self-start"
               >
-                <div className="w-8 h-8 rounded-xl shrink-0 flex items-center justify-center font-mono text-[10px] font-bold border select-none bg-[var(--surface-raised)] border-[var(--border)] text-[var(--txt)] shadow-sm">
-                  <span className="gradient-text-brand">RD</span>
+                <div className="w-8 h-8 rounded-xl shrink-0 flex items-center justify-center font-mono text-[10px] font-bold border select-none bg-[var(--surface-raised)] border-[var(--border)] text-[var(--txt)] shadow-sm p-1">
+                  <RadianceLogo variant="symbol" size="xs" showWordmark={false} className="w-4 h-3.5" />
+                  <span className="sr-only">RD</span>
                 </div>
                 <div className="flex flex-col gap-1 max-w-[calc(100%-44px)] w-full">
                   <div className="px-4 py-3 rounded-2xl rounded-tl-sm text-sm leading-relaxed border transition-all bg-[var(--ai-bg)] border-[var(--ai-border)] border-l-2 border-l-[var(--accent)] text-[var(--txt)] shadow-[0_4px_24px_rgba(0,0,0,0.25)] glass-panel">
