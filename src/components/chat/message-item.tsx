@@ -246,7 +246,7 @@ export function MessageItem({
     >
       {/* Avatar */}
       <div
-        className={`w-8 h-8 rounded-xl shrink-0 flex items-center justify-center font-mono text-[10px] font-bold border transition-transform duration-200 group-hover:scale-105 select-none ${
+        className={`w-8 h-8 rounded-xl shrink-0 flex items-center justify-center font-mono text-[10px] font-bold border transition-transform duration-200 select-none ${
           isUser
             ? "bg-[var(--user-bg)] border-[var(--user-border)] text-[var(--accent-b)] shadow-sm"
             : message.isError
@@ -489,7 +489,7 @@ export function MessageItem({
                   onClick={toggleSpeech}
                   className={`p-1.5 rounded-lg transition-colors touch-target cursor-pointer ${
                     isSpeaking
-                      ? "text-[var(--accent)] bg-[var(--accent-d)] animate-pulse"
+                      ? "text-[var(--accent)] bg-[var(--accent-d)]"
                       : "hover:bg-[var(--surface-hover)] hover:text-[var(--txt)] text-[var(--txt-muted)]"
                   }`}
                   title={isSpeaking ? "Stop speech" : "Read aloud"}

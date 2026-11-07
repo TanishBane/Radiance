@@ -171,7 +171,7 @@ export function RadianceLogo({
           className
         )}
       >
-        <div className="flex items-center justify-center group-hover:scale-105 transition-transform duration-200">
+        <div className="flex items-center justify-center">
           {symbolContent}
         </div>
         {hasWordmark && wordmarkContent}
