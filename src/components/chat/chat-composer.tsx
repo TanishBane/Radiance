@@ -605,7 +605,7 @@ export function ChatComposer({
                                 {m.name}
                               </span>
                               <div className="flex items-center gap-1.5 shrink-0">
-                                <span className="text-[9px] uppercase px-1.5 py-0.5 rounded bg-[var(--surface)] text-[var(--txt-muted)] border border-[var(--border)] font-mono">
+                                <span className="text-[10px] capitalize px-1.5 py-0.5 rounded bg-[var(--surface)] text-[var(--txt-muted)] border border-[var(--border)] font-mono">
                                   {m.provider}
                                 </span>
                                 {isSelected && <CheckmarkIcon />}

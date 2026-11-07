@@ -62,7 +62,7 @@ export function ChatErrorCard({ error, errorDetails, onRetry }: ChatErrorCardPro
       <div className="flex flex-col gap-1 max-w-[calc(100%-44px)] w-full">
         <div className="px-4 py-3.5 rounded-2xl rounded-tl-sm text-sm border bg-[var(--danger-d)]/40 border-[var(--danger)]/30 border-l-4 border-l-[var(--danger)] text-[var(--txt)] shadow-[0_4px_24px_rgba(232,85,85,0.08)] glass-panel">
           <div className="flex items-center gap-2 mb-1.5">
-            <span className="font-semibold text-xs uppercase tracking-wider text-[var(--danger)]">
+            <span className="font-semibold text-xs text-[var(--danger)]">
               Generation Error
             </span>
           </div>

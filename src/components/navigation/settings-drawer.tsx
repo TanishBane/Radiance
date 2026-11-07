@@ -115,7 +115,7 @@ export function SettingsDrawer({
               {onSelectGradientStyle && (
                 <div className="flex flex-col gap-2.5">
                   <div className="flex items-center justify-between">
-                    <span className="text-[11px] font-mono uppercase tracking-wider text-[var(--txt-muted)] font-semibold">
+                    <span className="text-xs font-medium text-[var(--txt-muted)]">
                       Atmosphere Engine ({ATMOSPHERE_ENGINES.length})
                     </span>
                     <span className="text-[9px] font-mono text-[var(--accent)] px-2 py-0.5 rounded-full bg-[var(--accent-d)] border border-[var(--accent)]/30">
@@ -163,7 +163,7 @@ export function SettingsDrawer({
               {/* Color Themes Grid (28 Distinct Palettes) */}
               <div className="flex flex-col gap-2.5">
                 <div className="flex items-center justify-between">
-                  <span className="text-[11px] font-mono uppercase tracking-wider text-[var(--txt-muted)] font-semibold">
+                  <span className="text-xs font-medium text-[var(--txt-muted)]">
                     Atmospheric Color Palettes ({Object.keys(COLOR_THEMES).length})
                   </span>
                   <span className="text-[9px] font-mono text-[var(--accent)] px-2 py-0.5 rounded-full bg-[var(--accent-d)] border border-[var(--accent)]/30">
@@ -171,7 +171,7 @@ export function SettingsDrawer({
                   </span>
                 </div>
                 <p className="text-xs text-[var(--txt-muted)] leading-relaxed">
-                  Both 21st.dev gradient formulas and CSS tokens dynamically adapt across all 28 color palettes.
+                  Curated color palettes adapt background, tokens, and contrast across all 28 options.
                 </p>
 
                 {/* Dynamic Theme System Controls */}
