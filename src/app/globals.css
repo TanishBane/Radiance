@@ -18,8 +18,8 @@
     --accent-b: #bfa7ff;
     --accent-c: #e27aff;
     --text-gradient: linear-gradient(135deg, var(--accent-b), var(--accent), var(--accent-c));
-    --cinematic-glow: none;
-    --cinematic-flare: transparent;
+    --cinematic-glow: 0 0 40px -10px var(--accent-g);
+    --cinematic-flare: linear-gradient(90deg, transparent 0%, rgba(56, 189, 248, 0.12) 20%, var(--accent) 50%, rgba(192, 132, 252, 0.12) 80%, transparent 100%);
 
     --danger: #e85555;
     --danger-d: rgba(232, 85, 85, 0.12);
@@ -575,7 +575,7 @@ blockquote {
   padding: 8px 16px;
   color: var(--txt-dim);
   font-style: italic;
-  background: var(--surface);
+  background: linear-gradient(90deg, var(--accent-d) 0%, transparent 100%);
   border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
 }
 blockquote p {
@@ -777,6 +777,7 @@ li {
   margin-left: 3px;
   vertical-align: middle;
   border-radius: 1px;
+  box-shadow: 0 0 8px var(--accent);
   animation: cursorBlink 0.7s cubic-bezier(0.4, 0, 0.2, 1) infinite;
 }
 
