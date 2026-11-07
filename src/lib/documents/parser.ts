@@ -159,21 +159,15 @@ export async function createAttachmentFromFile(file: File): Promise<Attachment> 
   let dataUrl: string | undefined = undefined;
   let extractedText: string | undefined = undefined;
 
-  if (isImage || isPdf) {
-    try {
-      // Generate ephemeral preview dataUrl for images and base64 for PDFs
-      dataUrl = await new Promise<string>((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result as string);
-        reader.onerror = () => reject(new Error("Failed to read file preview"));
-        reader.readAsDataURL(file);
-      });
-    } catch {
-      // Non-fatal if dataUrl generation fails
-    }
-  }
-
-  if (!isImage) {
+  if (isImage) {
+    // Generate ephemeral preview dataUrl
+    dataUrl = await new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = () => reject(new Error("Failed to read image preview"));
+      reader.readAsDataURL(file);
+    });
+  } else {
     // Extract document text
     const parsed = await parseDocumentFile(file);
     if (!parsed.error) {

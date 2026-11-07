@@ -2,39 +2,39 @@
 
 @layer base {
   :root {
-    --void: #000000;
-    --deep: #050505;
-    --surface: #0a0a0a;
-    --surface-hover: #171717;
-    --surface-raised: #0d0d0f;
-    --surface-overlay: rgba(0, 0, 0, 0.96);
-    --border: #262626;
-    --border-hover: #404040;
-    --border-accent: #ffffff;
+    --void: #06050a;
+    --deep: #0c0b14;
+    --surface: rgba(255, 255, 255, 0.035);
+    --surface-hover: rgba(255, 255, 255, 0.07);
+    --surface-raised: rgba(16, 14, 24, 0.88);
+    --surface-overlay: rgba(10, 9, 16, 0.94);
+    --border: rgba(255, 255, 255, 0.09);
+    --border-hover: rgba(255, 255, 255, 0.18);
+    --border-accent: rgba(124, 92, 255, 0.35);
 
-    --accent: #ffffff;
-    --accent-d: rgba(255, 255, 255, 0.12);
-    --accent-g: rgba(255, 255, 255, 0.20);
-    --accent-b: #ffffff;
-    --accent-c: #ffffff;
-    --text-gradient: #ffffff;
-    --cinematic-glow: none;
-    --cinematic-flare: transparent;
+    --accent: #7c5cff;
+    --accent-d: rgba(124, 92, 255, 0.12);
+    --accent-g: rgba(124, 92, 255, 0.20);
+    --accent-b: #bfa7ff;
+    --accent-c: #e27aff;
+    --text-gradient: linear-gradient(135deg, var(--accent-b), var(--accent), var(--accent-c));
+    --cinematic-glow: 0 0 40px -10px var(--accent-g);
+    --cinematic-flare: linear-gradient(90deg, transparent 0%, rgba(56, 189, 248, 0.12) 20%, var(--accent) 50%, rgba(192, 132, 252, 0.12) 80%, transparent 100%);
 
-    --danger: #ef4444;
-    --danger-d: rgba(239, 68, 68, 0.15);
-    --warn: #f59e0b;
-    --success: #10b981;
-    --success-d: rgba(16, 185, 129, 0.15);
+    --danger: #e85555;
+    --danger-d: rgba(232, 85, 85, 0.12);
+    --warn: #e8c849;
+    --success: #49e87a;
+    --success-d: rgba(73, 232, 122, 0.12);
 
-    --txt: #ffffff;
-    --txt-dim: #ffffff;
-    --txt-muted: #d4d4d8;
+    --txt: #f3f1ec;
+    --txt-dim: rgba(243, 241, 236, 0.72);
+    --txt-muted: rgba(243, 241, 236, 0.40);
 
-    --user-bg: #121214;
-    --user-border: #262626;
-    --ai-bg: #050505;
-    --ai-border: #1f1f23;
+    --user-bg: rgba(20, 18, 30, 0.90);
+    --user-border: rgba(255, 255, 255, 0.12);
+    --ai-bg: rgba(12, 11, 19, 0.90);
+    --ai-border: rgba(255, 255, 255, 0.09);
 
     --radius-sm: 8px;
     --radius-md: 12px;
@@ -78,38 +78,8 @@
     -webkit-tap-highlight-color: transparent;
     touch-action: manipulation;
   }
-  /* ══ PLAIN WHITE BACKGROUND: COMPLETE BLACK TEXT & CLEAN PAPER TOKENS ══ */
-  :root[data-background="plain-white"],
-  body[data-background="plain-white"] {
-    --void: #ffffff;
-    --deep: #fafafa;
-    --surface: #ffffff;
-    --surface-hover: #f4f4f5;
-    --surface-raised: #ffffff;
-    --surface-overlay: rgba(255, 255, 255, 0.98);
-    --border: #e4e4e7;
-    --border-hover: #d4d4d8;
-    --border-accent: #000000;
-
-    --accent: #000000;
-    --accent-d: rgba(0, 0, 0, 0.08);
-    --accent-g: rgba(0, 0, 0, 0.15);
-    --accent-b: #000000;
-    --accent-c: #000000;
-    --text-gradient: #000000;
-    --cinematic-glow: none;
-    --cinematic-flare: transparent;
-
-    --txt: #000000;
-    --txt-dim: #000000;
-    --txt-muted: #3f3f46;
-
-    --user-bg: #f4f4f5;
-    --user-border: #e4e4e7;
-    --ai-bg: #ffffff;
-    --ai-border: #e4e4e7;
-  }
 }
+
 /* ══ FONT FAMILIES ══ */
 .font-serif {
   font-family: var(--font-serif), "Cormorant Garamond", Georgia, serif;
@@ -121,9 +91,10 @@
 
 /* ══ SIGNATURE TEXT GRADIENTS (from TanixAI legacy .w-title em) ══ */
 .gradient-text-brand {
-  color: var(--txt);
-  -webkit-text-fill-color: var(--txt);
-  background: none;
+  background: var(--text-gradient, linear-gradient(135deg, var(--accent-b), var(--accent), var(--accent-c, #d4883a)));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   display: inline-block;
 }
 
@@ -851,100 +822,4 @@ li {
     animation-iteration-count: 1 !important;
     transition-duration: 1ms !important;
   }
-}
-
-/* ══ 100% COMPLETE WHITE TEXT (BLACK MODE) & COMPLETE BLACK TEXT (WHITE MODE) OVERRIDES ══ */
-:root[data-background="plain-white"] .code-block-wrapper {
-  background: #f7f7f9;
-  border-color: #e4e4e7;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
-}
-:root[data-background="plain-white"] .code-block-header {
-  background: #f0f0f4;
-  border-bottom-color: #e4e4e7;
-}
-:root[data-background="plain-white"] .code-block-wrapper code,
-:root[data-background="plain-white"] .code-block-wrapper pre {
-  color: #000000;
-}
-:root[data-background="plain-white"] .code-line-num {
-  color: #71717a;
-  border-right-color: #e4e4e7;
-}
-:root[data-background="plain-white"] .code-copy-btn,
-:root[data-background="plain-white"] .code-download-btn,
-:root[data-background="plain-white"] .code-collapse-btn {
-  background: #ffffff;
-  border-color: #d4d4d8;
-  color: #000000;
-}
-:root[data-background="plain-white"] code:not(.code-block-wrapper code) {
-  background: #f4f4f5;
-  border-color: #e4e4e7;
-  color: #000000;
-}
-:root[data-background="plain-white"] .table-wrapper {
-  background: #ffffff;
-  border-color: #e4e4e7;
-}
-:root[data-background="plain-white"] .table-wrapper thead th {
-  background: #f4f4f5;
-  color: #000000;
-  border-bottom-color: #e4e4e7;
-}
-:root[data-background="plain-white"] .table-wrapper tbody td {
-  color: #000000;
-  border-bottom-color: #e4e4e7;
-}
-:root[data-background="plain-white"] .table-wrapper tbody tr:nth-child(even) {
-  background: #fafafa;
-}
-:root[data-background="plain-white"] .math-block {
-  background: #f7f7f9;
-  border-color: #e4e4e7;
-  color: #000000;
-}
-:root[data-background="plain-white"] .prose,
-:root[data-background="plain-white"] .prose h1,
-:root[data-background="plain-white"] .prose h2,
-:root[data-background="plain-white"] .prose h3,
-:root[data-background="plain-white"] .prose h4,
-:root[data-background="plain-white"] .prose h5,
-:root[data-background="plain-white"] .prose h6,
-:root[data-background="plain-white"] .prose p,
-:root[data-background="plain-white"] .prose span,
-:root[data-background="plain-white"] .prose li,
-:root[data-background="plain-white"] .prose strong,
-:root[data-background="plain-white"] .prose em,
-:root[data-background="plain-white"] .markdown-h1,
-:root[data-background="plain-white"] .markdown-h2,
-:root[data-background="plain-white"] .markdown-h3 {
-  color: #000000;
-}
-:root[data-background="plain-white"] .prose a {
-  color: #000000;
-  text-decoration-color: #71717a;
-}
-:root[data-background="plain-white"] blockquote {
-  border-left-color: #000000;
-  background: #f4f4f5;
-  color: #000000;
-}
-
-/* Black mode high-contrast complete white text guarantee */
-.prose,
-.prose h1,
-.prose h2,
-.prose h3,
-.prose h4,
-.prose h5,
-.prose h6,
-.prose p,
-.prose span,
-.prose li,
-.prose strong,
-.markdown-h1,
-.markdown-h2,
-.markdown-h3 {
-  color: var(--txt);
 }

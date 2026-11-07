@@ -11,13 +11,8 @@ import {
 import { DEFAULT_MODEL_ID, getModelById } from "@/lib/ai/models";
 import { conversationService } from "@/lib/db/conversations";
 
-import dynamic from "next/dynamic";
-
-// Background & Branding (AmbientCanvas code-split to defer Three.js from initial JS payload)
-const AmbientCanvas = dynamic(
-  () => import("@/components/background/ambient-canvas").then((m) => m.AmbientCanvas),
-  { ssr: false }
-);
+// Background & Branding
+import { AmbientCanvas } from "@/components/background/ambient-canvas";
 import { BackgroundLayers } from "@/components/background/background-layers";
 import { IntroSplash } from "@/components/branding/intro-splash";
 
@@ -34,9 +29,9 @@ import { useChatStream } from "@/features/chat/hooks/use-chat-stream";
 import { ChatWorkspace } from "@/features/chat/components/chat-workspace";
 
 export default function RadianceApp() {
-  const [showSplash, setShowSplash] = useState(false);
+  const [showSplash, setShowSplash] = useState(true);
   const [theme, setTheme] = useState<ThemeId>("violet");
-  const [gradientStyle, setGradientStyle] = useState<GradientStyle>("plain-black");
+  const [gradientStyle, setGradientStyle] = useState<GradientStyle>("ambient-spotlight");
   const [modelId, setModelId] = useState(DEFAULT_MODEL_ID);
   const [tone, setTone] = useState<ToneKey>("default");
   const [language, setLanguage] = useState<"en" | "hi">("en");
@@ -106,19 +101,8 @@ export default function RadianceApp() {
 
   // Apply Theme CSS Tokens to document root with complete variable coverage
   useEffect(() => {
-    applyThemeToDom(selectedTheme, gradientStyle);
-  }, [selectedTheme, gradientStyle]);
-
-    // Synchronize background mode attribute to document root
-  useEffect(() => {
-    if (typeof document !== "undefined") {
-      document.documentElement.setAttribute("data-background", gradientStyle);
-    }
-  }, [gradientStyle]);
-
-  const handleToggleBackground = useCallback(() => {
-    setGradientStyle((prev) => (prev === "plain-white" ? "plain-black" : "plain-white"));
-  }, []);
+    applyThemeToDom(selectedTheme);
+  }, [selectedTheme]);
 
   const handleSelectTheme = useCallback((themeId: string) => {
     if (THEMES[themeId]) {
@@ -312,8 +296,6 @@ export default function RadianceApp() {
           onClearChat={handleNewChat}
           onNewChat={handleNewChat}
           onToggleMobileMenu={() => setMobileSidebarOpen((prev) => !prev)}
-          isWhiteBackground={gradientStyle === "plain-white"}
-          onToggleBackground={handleToggleBackground}
         />
 
         <div className="flex-1 flex flex-col min-w-0 overflow-hidden relative">

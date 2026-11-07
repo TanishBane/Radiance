@@ -15,7 +15,8 @@ import {
   Sparkles,
   Sliders,
   Film,
-    Waves,
+  SunMedium,
+  Waves,
   Orbit,
   Wind,
   Zap,
@@ -27,7 +28,7 @@ import {
   Disc,
   Eye,
   Dices,
-  Shuffle, Layers, Compass, Activity, Cloud, Cpu, Moon, Sun,
+  Shuffle, Layers, Compass, Activity, Cloud, Cpu,
 } from "lucide-react";
 
 interface SettingsDrawerProps {
@@ -42,7 +43,7 @@ interface SettingsDrawerProps {
 }
 
 const ENGINE_ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
-  Film, Waves, Orbit, Wind, Zap, Grid3X3, Share2, Flame, Terminal, Sparkles, Radio, Disc, Eye, Moon, Sun,
+  Film, SunMedium, Waves, Orbit, Wind, Zap, Grid3X3, Share2, Flame, Terminal, Sparkles, Radio, Disc, Eye,
 };
 
 type CategoryFilter = "all" | "signature" | "elemental" | "cyber" | "organic" | "cosmic";
@@ -52,7 +53,7 @@ export function SettingsDrawer({
   onClose,
   activeTheme,
   onSelectTheme,
-  gradientStyle = "plain-black",
+  gradientStyle = "ambient-spotlight",
   onSelectGradientStyle,
 }: SettingsDrawerProps) {
   const [paletteCategory, setPaletteCategory] = useState<CategoryFilter>("all");
@@ -115,7 +116,7 @@ export function SettingsDrawer({
               {onSelectGradientStyle && (
                 <div className="flex flex-col gap-2.5">
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-medium text-[var(--txt-muted)]">
+                    <span className="text-[11px] font-mono uppercase tracking-wider text-[var(--txt-muted)] font-semibold">
                       Atmosphere Engine ({ATMOSPHERE_ENGINES.length})
                     </span>
                     <span className="text-[9px] font-mono text-[var(--accent)] px-2 py-0.5 rounded-full bg-[var(--accent-d)] border border-[var(--accent)]/30">
@@ -163,7 +164,7 @@ export function SettingsDrawer({
               {/* Color Themes Grid (28 Distinct Palettes) */}
               <div className="flex flex-col gap-2.5">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-medium text-[var(--txt-muted)]">
+                  <span className="text-[11px] font-mono uppercase tracking-wider text-[var(--txt-muted)] font-semibold">
                     Atmospheric Color Palettes ({Object.keys(COLOR_THEMES).length})
                   </span>
                   <span className="text-[9px] font-mono text-[var(--accent)] px-2 py-0.5 rounded-full bg-[var(--accent-d)] border border-[var(--accent)]/30">
@@ -171,7 +172,7 @@ export function SettingsDrawer({
                   </span>
                 </div>
                 <p className="text-xs text-[var(--txt-muted)] leading-relaxed">
-                  Curated color palettes adapt background, tokens, and contrast across all 28 options.
+                  Both 21st.dev gradient formulas and CSS tokens dynamically adapt across all 28 color palettes.
                 </p>
 
                 {/* Dynamic Theme System Controls */}

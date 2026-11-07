@@ -20,10 +20,10 @@ export interface ColorTheme {
 }
 
 export type GradientStyle =
-  | "plain-black"
-  | "plain-white"
+  | "ambient-spotlight"
   | "waves"
   | "cosmic"
+  | "aurora-curtains"
   | "meteor-shower"
   | "radiant-grid"
   | "quantum-field"
@@ -38,20 +38,20 @@ export const COLOR_THEMES: Record<string, ColorTheme> = {
   // ══ 1. SIGNATURE & ATMOSPHERIC ══
   default: {
     id: "default",
-    label: "Plain Black",
+    label: "Void",
     category: "signature",
-    swatchGradient: "linear-gradient(135deg, #000000, #18181b, #ffffff)",
-    accent: "#ffffff",
-    accentD: "rgba(255,255,255,0.08)",
-    accentG: "rgba(255,255,255,0.18)",
-    accentB: "#ffffff",
-    accentC: "#a1a1aa",
-    textGradient: "linear-gradient(135deg, #ffffff 0%, #e4e4e7 50%, #a1a1aa 100%)",
-    userBg: "rgba(255,255,255,0.04)",
-    userBorder: "rgba(255,255,255,0.12)",
+    swatchGradient: "linear-gradient(135deg, #e8a849, #d4883a, #c06828)",
+    accent: "#e8a849",
+    accentD: "rgba(232,168,73,0.12)",
+    accentG: "rgba(232,168,73,0.25)",
+    accentB: "#f5c77e",
+    accentC: "#d4883a",
+    textGradient: "linear-gradient(135deg, #f5c77e 0%, #e8a849 50%, #d4883a 100%)",
+    userBg: "rgba(232,168,73,0.06)",
+    userBorder: "rgba(232,168,73,0.18)",
     bgGradient: null,
-    bloomColors: ["#000000", "#000000", "#000000", "#000000", "#000000", "#000000"],
-    ribbonColors: ["#000000", "#000000", "#000000", "#000000"],
+    bloomColors: ["#120c04", "#1a1006", "#e8a849", "#784408", "#c06828", "#ffd899"],
+    ribbonColors: ["#120c04", "#784408", "#e8a849", "#fef08a"],
     ribbonAngle: 155,
   },
   violet: {
@@ -563,18 +563,11 @@ export interface AtmosphereEngineInfo {
 
 export const ATMOSPHERE_ENGINES: AtmosphereEngineInfo[] = [
   {
-    id: "plain-black",
-    label: "Plain Black",
-    tag: "Minimal",
-    description: "Pure solid OLED black backdrop with maximum text contrast and zero visual noise.",
-    iconName: "Moon",
-  },
-  {
-    id: "plain-white",
-    label: "Plain White",
-    tag: "Minimal",
-    description: "Clean solid white paper canvas with high-clarity monochrome typography.",
-    iconName: "Sun",
+    id: "ambient-spotlight",
+    label: "Cinematic Atmosphere",
+    tag: "Cinematic",
+    description: "21st.dev & Mobbin immersive cinematic studio with anamorphic lens flares, volumetric beams, and optical motes.",
+    iconName: "Film",
   },
   {
     id: "waves",
@@ -589,6 +582,13 @@ export const ATMOSPHERE_ENGINES: AtmosphereEngineInfo[] = [
     tag: "WebGL",
     description: "Procedural 3D starfield and volumetric Three.js shader nebula.",
     iconName: "Orbit",
+  },
+  {
+    id: "aurora-curtains",
+    label: "Aurora Curtains",
+    tag: "Atmospheric",
+    description: "Fluctuating polar light curtains waving vertically with harmonic distortion.",
+    iconName: "Wind",
   },
   {
     id: "meteor-shower",

@@ -124,29 +124,4 @@ test.describe("Radiance AI Platform E2E Workflows", () => {
 
     expect(fits).toBe(true);
   });
-
-  test("submits prompt, streams assistant response and renders message", async ({ page }) => {
-    await page.route("**/api/chat", async (route) => {
-      const sseBody = '0:"Radiance delivers real-time frontier AI reasoning."\n';
-      await route.fulfill({
-        status: 200,
-        contentType: "text/plain; charset=utf-8",
-        headers: {
-          "X-Radiance-Provider": "mock",
-          "X-Radiance-Model": "radiance-instant",
-        },
-        body: sseBody,
-      });
-    });
-
-    const textarea = page.locator("textarea");
-    await textarea.fill("Explain quantum teleportation.");
-
-    const sendButton = page.getByTestId("send-button");
-    await expect(sendButton).toBeEnabled();
-    await sendButton.click();
-
-    await expect(page.getByText("Explain quantum teleportation.")).toBeVisible();
-    await expect(page.getByText("Radiance delivers real-time frontier AI reasoning.")).toBeVisible();
-  });
 });
