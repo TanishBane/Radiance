@@ -245,7 +245,7 @@ export function MessageItem({
     >
       {/* Avatar */}
       <div
-        className={`w-8 h-8 rounded-xl shrink-0 flex items-center justify-center font-mono text-[10px] font-bold border transition-transform duration-200 group-hover:scale-105 select-none ${
+        className={`w-8 h-8 rounded-xl shrink-0 flex items-center justify-center font-mono text-[10px] font-bold border select-none ${
           isUser
             ? "bg-[var(--user-bg)] border-[var(--user-border)] text-[var(--accent-b)] shadow-sm"
             : message.isError
@@ -385,9 +385,9 @@ export function MessageItem({
           {/* Generated Image Display (Pollinations Flux) */}
           {message.generatedImageUrl && (
             <div className="mt-3.5 flex flex-col gap-2 rounded-xl overflow-hidden border border-[var(--border)] bg-[var(--deep)] p-2.5">
-              <div className="font-mono text-[9px] uppercase tracking-widest text-[var(--accent)] flex items-center justify-between">
+              <div className="text-xs text-[var(--txt-muted)] flex items-center justify-between font-mono">
                 <span>Generated visual</span>
-                <span className="text-[8px] text-[var(--txt-muted)] font-mono">1024x1024</span>
+                <span className="text-[10px] text-[var(--txt-muted)] font-mono">1024×1024</span>
               </div>
               <div className="relative aspect-square max-w-sm rounded-lg overflow-hidden bg-black/40 shadow-inner">
                 <Image
@@ -403,7 +403,7 @@ export function MessageItem({
                   href={message.generatedImageUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-mono rounded-lg bg-[var(--surface)] border border-[var(--border)] text-[var(--accent)] hover:bg-[var(--surface-hover)] transition-colors touch-target"
+                  className="flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-lg bg-[var(--surface)] border border-[var(--border)] text-[var(--txt)] hover:bg-[var(--surface-hover)] transition-colors touch-target"
                 >
                   <Download className="w-3.5 h-3.5" />
                   <span>Download</span>
@@ -488,7 +488,7 @@ export function MessageItem({
                   onClick={toggleSpeech}
                   className={`p-1.5 rounded-lg transition-colors touch-target cursor-pointer ${
                     isSpeaking
-                      ? "text-[var(--accent)] bg-[var(--accent-d)] animate-pulse"
+                      ? "text-[var(--accent)] bg-[var(--accent-d)] ring-1 ring-[var(--accent)]/50"
                       : "hover:bg-[var(--surface-hover)] hover:text-[var(--txt)] text-[var(--txt-muted)]"
                   }`}
                   title={isSpeaking ? "Stop speech" : "Read aloud"}

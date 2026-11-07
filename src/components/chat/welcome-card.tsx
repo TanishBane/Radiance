@@ -59,7 +59,7 @@ export const SUGGESTION_COLUMNS: SuggestionColumn[] = [
       {
         id: "job-negotiation",
         label: "job negotiation and accept...",
-        prompt: "Draft a high-leverage job offer negotiation script and formal acceptance letter.",
+        prompt: "Draft a strategic job offer negotiation script and formal acceptance letter.",
       },
       {
         id: "game-night",
