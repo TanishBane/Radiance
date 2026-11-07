@@ -15,10 +15,32 @@ interface BackgroundLayersProps {
 export function BackgroundLayers({
   bgGradient,
   theme,
-  gradientStyle = "ambient-spotlight",
+  gradientStyle = "plain-black",
 }: BackgroundLayersProps) {
+  const isPlainBlack = gradientStyle === "plain-black";
+  const isPlainWhite = gradientStyle === "plain-white";
   const isWaves = gradientStyle === "waves";
   const isCosmic = gradientStyle === "cosmic";
+
+  // ══ 1. PURE SOLID PLAIN BLACK BACKGROUND (Default, Zero Overhead, Anti-Slop) ══
+  if (isPlainBlack) {
+    return (
+      <div
+        className="fixed inset-0 pointer-events-none z-0 bg-black transition-colors duration-300"
+        aria-hidden="true"
+      />
+    );
+  }
+
+  // ══ 2. PURE SOLID PLAIN WHITE BACKGROUND OPTION (Clean Paper Minimalist) ══
+  if (isPlainWhite) {
+    return (
+      <div
+        className="fixed inset-0 pointer-events-none z-0 bg-white transition-colors duration-300"
+        aria-hidden="true"
+      />
+    );
+  }
 
   return (
     <>
@@ -27,12 +49,12 @@ export function BackgroundLayers({
         <AuroraGradientBackground theme={theme} styleMode={gradientStyle} />
       )}
 
-      {/* ══ DIVERSE ATMOSPHERE CANVAS ENGINES (11 Distinct Interactive Modes) ══ */}
+      {/* ══ DIVERSE ATMOSPHERE CANVAS ENGINES ══ */}
       {theme && !isWaves && !isCosmic && (
         <AtmosphereCanvasEngine theme={theme} engine={gradientStyle} />
       )}
 
-      {/* ══ CINEMATIC FALLBACK GRADIENT (for Cosmic 3D mode) ══ */}
+      {/* ══ ATMOSPHERIC FALLBACK GRADIENT (for Cosmic 3D mode) ══ */}
       {isCosmic && (
         <div
           className="fixed inset-0 pointer-events-none z-0 transition-all duration-700"
@@ -55,7 +77,7 @@ export function BackgroundLayers({
         aria-hidden="true"
       />
 
-      {/* ══ OPTICAL RADIAL VIGNETTE (Eliminates glare behind text, concentrates soft perimeter lighting) ══ */}
+      {/* ══ OPTICAL RADIAL VIGNETTE ══ */}
       <div
         className="fixed inset-0 pointer-events-none z-[2]"
         style={{

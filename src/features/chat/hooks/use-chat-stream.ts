@@ -62,6 +62,27 @@ export function useChatStream({
 
       let accumulated = "";
 
+      const timeoutMs = 60000;
+      let timeoutId: ReturnType<typeof setTimeout> | null = setTimeout(() => {
+        controller.abort(new Error("Connection timed out after 60s without server response."));
+      }, timeoutMs);
+
+      const resetTimeout = () => {
+        if (timeoutId) {
+          clearTimeout(timeoutId);
+          timeoutId = setTimeout(() => {
+            controller.abort(new Error("Stream connection timed out after 60s of inactivity."));
+          }, timeoutMs);
+        }
+      };
+
+      const cancelTimeout = () => {
+        if (timeoutId) {
+          clearTimeout(timeoutId);
+          timeoutId = null;
+        }
+      };
+
       try {
         const res = await fetch("/api/chat", {
           method: "POST",
@@ -130,6 +151,7 @@ export function useChatStream({
         while (true) {
           const { done, value } = await reader.read();
           if (done) break;
+          resetTimeout();
 
           buffer += decoder.decode(value, { stream: true });
           const lines = buffer.split("\n");
@@ -168,10 +190,15 @@ export function useChatStream({
         abortControllerRef.current = null;
         onStreamComplete(assistantMsg);
       } catch (err: unknown) {
+        const isTimeout =
+          controller.signal.reason instanceof Error &&
+          controller.signal.reason.message.includes("timed out");
+
         const isAbort =
-          controller.signal.aborted ||
-          (typeof DOMException !== "undefined" && err instanceof DOMException && err.name === "AbortError") ||
-          (err instanceof Error && (err.name === "AbortError" || err.message.toLowerCase().includes("aborted")));
+          !isTimeout &&
+          (controller.signal.aborted ||
+            (typeof DOMException !== "undefined" && err instanceof DOMException && err.name === "AbortError") ||
+            (err instanceof Error && (err.name === "AbortError" || err.message.toLowerCase().includes("aborted"))));
 
         if (isAbort) {
           const shouldDiscard = discardPartialRef.current;
@@ -194,13 +221,19 @@ export function useChatStream({
           return;
         }
 
-        const error = err instanceof Error ? err : new Error(String(err));
+        const error = isTimeout
+          ? (controller.signal.reason as Error)
+          : err instanceof Error
+          ? err
+          : new Error(String(err));
         setStreamError(error);
         isGeneratingRef.current = false;
         setIsGenerating(false);
         setStreamingContent("");
         abortControllerRef.current = null;
         onError?.(error);
+      } finally {
+        cancelTimeout();
       }
     },
     [modelId, tone, language, onStreamComplete, onError]

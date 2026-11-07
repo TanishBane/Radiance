@@ -22,13 +22,17 @@ describe("Theme Gradients Configuration & Mathematical Invariants", () => {
     expect(engineIds.size).toBe(13);
 
     // 5 New Flagship 21st.dev Engines
-    expect(engineIds.has("ambient-spotlight")).toBe(true);
+    expect(engineIds.has("plain-black")).toBe(true);
+    expect(engineIds.has("plain-white")).toBe(true);
+    expect(engineIdStrings.has("aurora-nights")).toBe(false);
+    expect(engineIdStrings.has("cinematic-studio")).toBe(false);
+    expect(engineIdStrings.has("ambient-spotlight")).toBe(false);
     expect(engineIdStrings.has("bloom")).toBe(false);
     expect(engineIdStrings.has("silk-caustics")).toBe(false);
 
     expect(engineIds.has("waves")).toBe(true);
     expect(engineIds.has("cosmic")).toBe(true);
-    expect(engineIds.has("aurora-curtains")).toBe(true);
+    expect(engineIdStrings.has("aurora-curtains")).toBe(false);
 
     expect(engineIds.has("meteor-shower")).toBe(true);
     expect(engineIdStrings.has("warp-speed")).toBe(false);
