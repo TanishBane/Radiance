@@ -169,10 +169,73 @@ export function persistManualTheme(themeId: ThemeId): void {
 /**
  * Applies all CSS variables associated with a ColorTheme to the document root element.
  */
-export function applyThemeToDom(theme: ColorTheme): void {
+export function applyThemeToDom(theme: ColorTheme, gradientStyle?: string): void {
   if (typeof document === "undefined" || !theme) return;
   const root = document.documentElement;
 
+  // 1. Solid Plain White Mode: Complete Black Text & Crisp Minimalist Tokens
+  if (gradientStyle === "plain-white") {
+    root.style.setProperty("--void", "#ffffff");
+    root.style.setProperty("--deep", "#fafafa");
+    root.style.setProperty("--surface", "#ffffff");
+    root.style.setProperty("--surface-hover", "#f4f4f5");
+    root.style.setProperty("--surface-raised", "#ffffff");
+    root.style.setProperty("--surface-overlay", "rgba(255, 255, 255, 0.98)");
+    root.style.setProperty("--border", "#e4e4e7");
+    root.style.setProperty("--border-hover", "#d4d4d8");
+    root.style.setProperty("--border-accent", "#000000");
+
+    root.style.setProperty("--txt", "#000000");
+    root.style.setProperty("--txt-dim", "#000000");
+    root.style.setProperty("--txt-muted", "#3f3f46");
+
+    root.style.setProperty("--accent", "#000000");
+    root.style.setProperty("--accent-b", "#000000");
+    root.style.setProperty("--accent-c", "#000000");
+    root.style.setProperty("--accent-d", "rgba(0, 0, 0, 0.08)");
+    root.style.setProperty("--accent-g", "rgba(0, 0, 0, 0.15)");
+    root.style.setProperty("--text-gradient", "#000000");
+
+    root.style.setProperty("--user-bg", "#f4f4f5");
+    root.style.setProperty("--user-border", "#e4e4e7");
+    root.style.setProperty("--ai-bg", "#ffffff");
+    root.style.setProperty("--ai-border", "#e4e4e7");
+    root.style.removeProperty("--bg-gradient");
+    return;
+  }
+
+  // 2. Solid Plain Black Mode: Complete White Text & Crisp High-Contrast Tokens
+  if (gradientStyle === "plain-black") {
+    root.style.setProperty("--void", "#000000");
+    root.style.setProperty("--deep", "#050505");
+    root.style.setProperty("--surface", "#0a0a0a");
+    root.style.setProperty("--surface-hover", "#171717");
+    root.style.setProperty("--surface-raised", "#0d0d0f");
+    root.style.setProperty("--surface-overlay", "rgba(0, 0, 0, 0.96)");
+    root.style.setProperty("--border", "#262626");
+    root.style.setProperty("--border-hover", "#404040");
+    root.style.setProperty("--border-accent", "#ffffff");
+
+    root.style.setProperty("--txt", "#ffffff");
+    root.style.setProperty("--txt-dim", "#ffffff");
+    root.style.setProperty("--txt-muted", "#d4d4d8");
+
+    root.style.setProperty("--accent", "#ffffff");
+    root.style.setProperty("--accent-b", "#ffffff");
+    root.style.setProperty("--accent-c", "#ffffff");
+    root.style.setProperty("--accent-d", "rgba(255, 255, 255, 0.12)");
+    root.style.setProperty("--accent-g", "rgba(255, 255, 255, 0.20)");
+    root.style.setProperty("--text-gradient", "#ffffff");
+
+    root.style.setProperty("--user-bg", "#121214");
+    root.style.setProperty("--user-border", "#262626");
+    root.style.setProperty("--ai-bg", "#050505");
+    root.style.setProperty("--ai-border", "#1f1f23");
+    root.style.removeProperty("--bg-gradient");
+    return;
+  }
+
+  // 3. Dynamic Atmospheric Engines: Rich Accent Tokens
   root.style.setProperty("--accent", theme.accent);
   root.style.setProperty("--accent-b", theme.accentB);
   root.style.setProperty("--accent-c", theme.accentC);

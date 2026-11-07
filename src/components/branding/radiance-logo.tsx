@@ -80,7 +80,7 @@ export function RadianceLogo({
       className={cn(
         "shrink-0 transition-transform duration-300",
         cfg.box,
-        glow && "drop-shadow-[0_0_12px_var(--accent)]"
+        glow && ""
       )}
       aria-hidden={ariaHidden ?? true}
       focusable="false"

@@ -7,12 +7,7 @@ import {
   SidebarLink,
   SidebarLinkItem,
 } from "@/components/ui/sidebar";
-import {
-  IconPlus,
-  IconHistory,
-  IconAdjustmentsHorizontal,
-  IconCommand,
-} from "@tabler/icons-react";
+import { Plus, History, SlidersHorizontal, Command } from "lucide-react";
 import { motion } from "motion/react";
 import { RadianceLogo } from "@/components/branding/radiance-logo";
 
@@ -48,26 +43,26 @@ export function SidebarDock({
     {
       label: "New Chat",
       icon: (
-        <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-[var(--accent-b)] to-[var(--accent)] text-[var(--void)] flex items-center justify-center shadow-sm shrink-0">
-          <IconPlus className="w-4 h-4 stroke-[2.5]" />
+        <div className="w-8 h-8 rounded-lg bg-[var(--txt)] text-[var(--void)] flex items-center justify-center shrink-0">
+          <Plus className="w-4 h-4 stroke-[2.5]" />
         </div>
       ),
       onClick: () => handleAction(onNewChat),
     },
     {
       label: "History",
-      icon: <IconHistory className="w-5 h-5 shrink-0" />,
+      icon: <History className="w-5 h-5 shrink-0" />,
       onClick: () => handleAction(onToggleHistory),
       badge: "Ctrl+L",
     },
     {
       label: "Personalization",
-      icon: <IconAdjustmentsHorizontal className="w-5 h-5 shrink-0" />,
+      icon: <SlidersHorizontal className="w-5 h-5 shrink-0" />,
       onClick: () => handleAction(onToggleSettings),
     },
     {
       label: "Shortcuts",
-      icon: <IconCommand className="w-5 h-5 shrink-0" />,
+      icon: <Command className="w-5 h-5 shrink-0" />,
       onClick: () => handleAction(onOpenShortcuts),
       badge: "Ctrl+K",
     },
@@ -82,7 +77,7 @@ export function SidebarDock({
             <button
               type="button"
               onClick={onNewChat}
-              className="w-8 h-8 rounded-xl bg-gradient-to-br from-[var(--surface-raised)] to-[var(--surface)] border border-[var(--border)] flex items-center justify-center text-[var(--txt)] shrink-0 shadow-sm hover:scale-105 hover:border-[var(--accent)]/50 transition-all p-1.5"
+              className="w-8 h-8 rounded-lg bg-[var(--surface-raised)] border border-[var(--border)] flex items-center justify-center text-[var(--txt)] shrink-0 hover:border-[var(--border-accent)] transition-colors p-1.5"
               title="Radiance (New Chat)"
               aria-label="Radiance home"
             >
@@ -96,16 +91,13 @@ export function SidebarDock({
               className="flex flex-col"
             >
               <div className="flex items-center gap-2">
-                <span className="font-serif font-bold text-sm text-[var(--txt)] tracking-wider">
-                  RADIANCE
+                <span className="font-serif font-medium text-sm text-[var(--txt)]">
+                  Radiance
                 </span>
-                <span className="font-mono text-[8px] uppercase tracking-widest px-1.5 py-0.2 rounded-full border border-[var(--accent)]/30 text-[var(--accent)] bg-[var(--accent-d)]">
+                <span className="font-mono text-[10px] text-[var(--txt-muted)]">
                   v1.0
                 </span>
               </div>
-              <span className="font-mono text-[9px] uppercase tracking-widest text-[var(--accent)]">
-                AI Platform
-              </span>
             </motion.div>
           </div>
 

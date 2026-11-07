@@ -2,8 +2,7 @@
 
 import React from "react";
 import { RadianceLogo } from "@/components/branding/radiance-logo";
-import { Trash2 } from "lucide-react";
-import { IconMenu2 } from "@tabler/icons-react";
+import { Trash2, Menu, Sun, Moon } from "lucide-react";
 
 interface TopbarProps {
   language: "en" | "hi";
@@ -11,6 +10,8 @@ interface TopbarProps {
   onClearChat: () => void;
   onNewChat: () => void;
   onToggleMobileMenu?: () => void;
+  isWhiteBackground?: boolean;
+  onToggleBackground?: () => void;
 }
 
 export function Topbar({
@@ -19,6 +20,8 @@ export function Topbar({
   onClearChat,
   onNewChat,
   onToggleMobileMenu,
+  isWhiteBackground,
+  onToggleBackground,
 }: TopbarProps) {
   return (
     <header className="sticky top-0 z-30 flex items-center justify-between gap-2 px-2.5 sm:px-4 py-2.5 pt-[max(0.625rem,env(safe-area-inset-top,0px))] pl-[max(0.625rem,env(safe-area-inset-left,0px))] pr-[max(0.625rem,env(safe-area-inset-right,0px))] bg-[var(--void)]/85 backdrop-blur-xl border-b border-[var(--border)] select-none shrink-0 w-full">
@@ -33,7 +36,7 @@ export function Topbar({
             title="Open navigation menu"
             aria-label="Open navigation menu"
           >
-            <IconMenu2 className="w-5 h-5" />
+            <Menu className="w-5 h-5" />
           </button>
         )}
 
@@ -43,12 +46,12 @@ export function Topbar({
         </div>
 
         {/* On Desktop: Clean Context Badge (Default Assistant) */}
-        <div className="hidden md:flex items-center gap-2 px-2.5 py-1 rounded-xl bg-[var(--surface)] border border-[var(--border)]">
-          <span className="w-2 h-2 rounded-full bg-[var(--accent)] animate-pulse" />
-          <span className="font-mono text-xs font-semibold text-[var(--txt)] tracking-wide">
+        <div className="hidden md:flex items-center gap-2 px-2.5 py-1 rounded-lg bg-[var(--surface)] border border-[var(--border)]">
+          <span className="w-1.5 h-1.5 rounded-full bg-[var(--txt-muted)]" />
+          <span className="font-mono text-xs text-[var(--txt)]">
             Default Assistant
           </span>
-          <span className="font-mono text-[9px] uppercase tracking-widest px-1.5 py-0.2 rounded-full border border-[var(--accent)]/30 text-[var(--accent)] bg-[var(--accent-d)]">
+          <span className="font-mono text-[10px] text-[var(--txt-muted)]">
             v1.0
           </span>
         </div>
@@ -81,6 +84,23 @@ export function Topbar({
             HI
           </button>
         </div>
+
+        {/* Plain Black / Plain White Background Toggle */}
+        {onToggleBackground && (
+          <button
+            type="button"
+            onClick={onToggleBackground}
+            className="min-w-[44px] min-h-[44px] p-2 rounded-xl border border-[var(--border)] bg-[var(--surface)] hover:bg-[var(--surface-hover)] text-[var(--txt)] transition-colors touch-target flex items-center justify-center cursor-pointer"
+            title={isWhiteBackground ? "Switch to Plain Black" : "Switch to Plain White"}
+            aria-label={isWhiteBackground ? "Switch to Plain Black" : "Switch to Plain White"}
+          >
+            {isWhiteBackground ? (
+              <Moon className="w-3.5 h-3.5" />
+            ) : (
+              <Sun className="w-3.5 h-3.5" />
+            )}
+          </button>
+        )}
 
         {/* Clear Chat Button */}
         <button

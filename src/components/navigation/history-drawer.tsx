@@ -95,7 +95,7 @@ export function HistoryDrawer({
         {/* Content List */}
         <div className="flex-1 overflow-y-auto p-2 flex flex-col gap-1">
           {filtered.length === 0 ? (
-            <div className="py-12 text-center text-xs text-[var(--txt-muted)] font-mono">
+            <div className="py-12 text-center text-xs text-[var(--txt-muted)]">
               {search ? "No matching conversations found." : "No saved conversations yet."}
             </div>
           ) : (
@@ -103,7 +103,7 @@ export function HistoryDrawer({
               {/* Pinned Section */}
               {pinned.length > 0 && (
                 <div className="flex flex-col gap-1 mb-2">
-                  <div className="px-2 py-1 font-mono text-[9px] uppercase tracking-wider text-[var(--accent)] opacity-80">
+                  <div className="px-2.5 py-1 text-xs font-medium text-[var(--txt-muted)]">
                     Pinned
                   </div>
                   {pinned.map((c) => (
@@ -123,7 +123,7 @@ export function HistoryDrawer({
               {unpinned.length > 0 && (
                 <div className="flex flex-col gap-1">
                   {pinned.length > 0 && (
-                    <div className="px-2 py-1 font-mono text-[9px] uppercase tracking-wider text-[var(--txt-muted)]">
+                    <div className="px-2.5 py-1 text-xs font-medium text-[var(--txt-muted)]">
                       Recent
                     </div>
                   )}
@@ -164,7 +164,7 @@ function ConversationItem({
   return (
     <div
       onClick={onSelect}
-      className={`group flex items-center justify-between p-2.5 rounded-xl cursor-pointer transition-all border ${
+      className={`group flex items-center justify-between p-2.5 min-h-[44px] touch-target rounded-xl cursor-pointer transition-all border ${
         isActive
           ? "bg-[var(--accent-d)] border-[var(--accent)]/50 text-[var(--txt)]"
           : "bg-[var(--surface)] border-transparent hover:bg-[var(--surface-hover)] hover:border-[var(--border)] text-[var(--txt-dim)]"
