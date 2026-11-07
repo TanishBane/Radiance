@@ -9,11 +9,6 @@ import {
   Cpu,
   Atom,
   Check,
-  Mic,
-  Zap,
-  Sparkles,
-  Layers,
-  Eye,
 } from "lucide-react";
 import { Attachment, ModelOption } from "@/lib/types/chat";
 import { AVAILABLE_MODELS, DEFAULT_MODEL_ID, getModelById } from "@/lib/ai/models";
@@ -64,14 +59,6 @@ function CheckmarkIcon() {
       aria-hidden="true"
     />
   );
-}
-
-function renderModelIcon(modelId: string) {
-  if (modelId.includes("fast")) return <Zap className="w-4 h-4 text-[var(--accent)] shrink-0" strokeWidth={1.5} />;
-  if (modelId.includes("instant")) return <Sparkles className="w-4 h-4 text-[var(--accent-b)] shrink-0" strokeWidth={1.5} />;
-  if (modelId.includes("pro")) return <Cpu className="w-4 h-4 text-[var(--accent)] shrink-0" strokeWidth={1.5} />;
-  if (modelId.includes("multimodal") || modelId.includes("gemini")) return <Eye className="w-4 h-4 text-[var(--accent-b)] shrink-0" strokeWidth={1.5} />;
-  return <Layers className="w-4 h-4 text-[var(--accent-c)] shrink-0" strokeWidth={1.5} />;
 }
 
 export interface ChatComposerProps {
@@ -421,7 +408,7 @@ export function ChatComposer({
       )}
 
       {/* Main Composer Box */}
-      <div className="relative rounded-2xl bg-[var(--surface-raised)] border border-[var(--border)] focus-within:border-[var(--border-hover)] transition-colors backdrop-blur-2xl shadow-card p-3">
+      <div className="relative rounded-2xl bg-[var(--surface-raised)] border border-[var(--border)] focus-within:border-[var(--border-accent)] focus-within:shadow-card transition-all duration-200 backdrop-blur-2xl shadow-card p-3">
         {/* @ Context Mention Popover */}
         {contextMenuOpen && (
           <div
@@ -477,11 +464,11 @@ export function ChatComposer({
         <div className="flex items-center justify-between gap-1.5 sm:gap-2 pt-1 border-t border-[var(--border)]">
           {/* Left Controls: Add Files, Mode Selector, Model Trigger */}
           <div className="flex items-center gap-1.5 sm:gap-2 min-w-0 flex-1 overflow-x-visible">
-            {/* 1. Add Files Button */}
+            {/* 1. Add Files Expanding Button */}
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}
-              className="group/btn h-8 px-2.5 rounded-xl border border-[var(--border)] bg-[var(--surface)] hover:bg-[var(--surface-hover)] hover:border-[var(--border-hover)] text-[var(--txt-muted)] hover:text-[var(--txt)] transition-colors flex items-center gap-1.5 text-xs font-mono touch-target"
+              className="group/btn h-8 px-2.5 rounded-full border border-[var(--border)] bg-[var(--surface)] hover:bg-[var(--surface-hover)] text-[var(--txt-muted)] hover:text-[var(--txt)] transition-all flex items-center gap-1.5 text-xs font-mono touch-target"
               title="Attach file or media"
               aria-label="Add files"
             >
@@ -500,7 +487,7 @@ export function ChatComposer({
                   setModelMenuOpen(false);
                   setModeMenuOpen((prev) => !prev);
                 }}
-                className="h-8 px-2.5 rounded-xl border border-[var(--border)] bg-[var(--surface)] hover:bg-[var(--surface-hover)] hover:border-[var(--border-hover)] text-[var(--txt)] transition-colors flex items-center gap-1.5 text-xs font-mono touch-target"
+                className="h-8 px-2.5 rounded-full border border-[var(--border)] bg-[var(--surface)] hover:bg-[var(--surface-hover)] text-[var(--txt)] transition-all flex items-center gap-1.5 text-xs font-mono touch-target"
                 aria-haspopup="true"
                 aria-expanded={modeMenuOpen}
               >
@@ -535,7 +522,7 @@ export function ChatComposer({
               )}
             </div>
 
-            {/* 3. Real Model Selector */}
+            {/* 3. Real Model Selector Pill (Image 2) */}
             <div className="relative inline-flex items-center">
               <button
                 ref={modelTriggerRef}
@@ -545,13 +532,13 @@ export function ChatComposer({
                 onClick={handleOpenModelMenu}
                 onKeyDown={handleTriggerKeyDown}
                 title={activeModel.name}
-                className="h-8 px-2.5 sm:px-3 rounded-full border border-[var(--border)] bg-[var(--surface)] hover:bg-[var(--surface-hover)] hover:border-[var(--border-hover)] text-[var(--txt)] transition-colors flex items-center gap-1.5 sm:gap-2 text-xs font-mono touch-target cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[var(--accent)] active:scale-[0.98]"
+                className="h-8 px-2.5 sm:px-3 rounded-full border border-[var(--border)] bg-[var(--surface)] hover:bg-[var(--surface-hover)] hover:border-[var(--border-accent)] text-[var(--txt)] transition-all flex items-center gap-1.5 sm:gap-2 text-xs font-mono touch-target cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] active:scale-[0.98]"
                 aria-haspopup="listbox"
                 aria-expanded={modelMenuOpen}
                 aria-controls="composer-model-listbox"
                 aria-label={`Select AI model. Current model: ${activeModel.name}`}
               >
-                <Cpu className="w-3.5 h-3.5 text-[#c084fc] shrink-0" strokeWidth={1.5} aria-hidden="true" />
+                <Atom className="w-3.5 h-3.5 text-[#c084fc] shrink-0" aria-hidden="true" />
                 <span className="font-mono text-xs sm:text-[13px] font-medium text-[var(--txt)] truncate max-w-[70px] xs:max-w-[110px] sm:max-w-none">
                   {activeModel.name}
                 </span>
@@ -579,9 +566,9 @@ export function ChatComposer({
                   onClick={(e) => e.stopPropagation()}
                   className="absolute -left-16 sm:left-0 bottom-full mb-2 w-72 sm:w-80 max-w-[calc(100vw-2rem)] rounded-2xl p-2 z-50 bg-[var(--deep)]/95 backdrop-blur-2xl border border-[var(--border)] shadow-modal animate-in fade-in zoom-in-95 duration-150 flex flex-col gap-1 max-h-80 overflow-y-auto"
                 >
-                  <div className="px-3 py-1.5 text-[10px] font-mono text-[var(--txt-muted)] border-b border-[var(--border)] flex items-center justify-between select-none">
-                    <span>Inference models</span>
-                    <span className="text-[9px] text-[var(--accent)] font-semibold">Multi-provider</span>
+                  <div className="px-3 py-1.5 text-[10px] font-mono uppercase tracking-widest text-[var(--txt-muted)] border-b border-[var(--border)] flex items-center justify-between select-none">
+                    <span>Frontier Inference Models</span>
+                    <span className="text-[9px] text-[var(--accent)] font-semibold">Multi-Provider</span>
                   </div>
                   <div className="flex flex-col gap-1 pt-1">
                     {AVAILABLE_MODELS.map((m, idx) => {
@@ -607,13 +594,11 @@ export function ChatComposer({
                           }}
                           className={`flex items-start gap-2.5 p-2.5 rounded-xl text-left transition-colors font-mono cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[var(--accent)] ${
                             isSelected
-                              ? "bg-[var(--accent-d)] border border-[var(--border-accent)] text-[var(--txt)] shadow-sm"
+                              ? "bg-[var(--accent-d)] border border-[var(--accent)] text-[var(--txt)] ring-1 ring-[var(--accent)]/40 shadow-sm"
                               : "hover:bg-[var(--surface-hover)] text-[var(--txt-dim)] hover:text-[var(--txt)] border border-transparent"
                           }`}
                         >
-                          <div className="mt-0.5 shrink-0 select-none">
-                            {renderModelIcon(m.id)}
-                          </div>
+                          <span className="text-base mt-0.5 shrink-0 select-none">{m.icon}</span>
                           <div className="flex flex-col flex-1 min-w-0">
                             <div className="flex items-center justify-between gap-1">
                               <span className="text-xs font-semibold font-mono text-[var(--txt)] truncate">
@@ -634,7 +619,7 @@ export function ChatComposer({
                                 <span>{(m.contextWindow / 1024).toFixed(0)}k ctx</span>
                               )}
                               {m.supportsVision && (
-                                <span className="text-[var(--accent)] font-medium">Multimodal</span>
+                                <span className="text-[var(--accent)] font-medium">✦ Multimodal</span>
                               )}
                               {m.pricingTier === "free" && (
                                 <span className="text-emerald-400 font-medium">Free</span>
@@ -652,22 +637,22 @@ export function ChatComposer({
 
           {/* Right Controls: Voice Toggle & Send/Stop Buttons */}
           <div className="flex items-center gap-2">
-            {/* 4. Voice Input Button */}
+            {/* 4. Voice Input Expanding Button */}
             <button
               type="button"
               onClick={toggleVoice}
-              className={`group/rec h-8 px-2.5 rounded-xl border border-[var(--border)] transition-colors flex items-center gap-1.5 text-xs font-mono touch-target ${
+              className={`group/rec h-8 px-2.5 rounded-full border border-[var(--border)] transition-all flex items-center gap-1.5 text-xs font-mono touch-target ${
                 isRecording
-                  ? "bg-red-500/15 border-red-500/30 text-red-400"
+                  ? "bg-red-500/20 border-red-500/40 text-red-400 animate-pulse"
                   : "bg-[var(--surface)] text-[var(--txt-muted)] hover:text-[var(--txt)] hover:bg-[var(--surface-hover)]"
               }`}
               title={isRecording ? "Stop recording" : "Record voice input"}
               aria-label="Record voice input"
             >
               {isRecording ? (
-                <span className="w-2 h-2 rounded-full bg-red-400 shrink-0" />
+                <span className="w-2 h-2 rounded-full bg-red-500 animate-ping" />
               ) : (
-                <Mic className="w-3.5 h-3.5 text-[var(--txt-muted)] group-hover/rec:text-[var(--txt)] shrink-0" strokeWidth={1.5} />
+                <span className="text-sm">🎙</span>
               )}
               <span className="hidden sm:inline-block max-w-0 overflow-hidden whitespace-nowrap group-hover/rec:max-w-[80px] transition-all duration-300">
                 {isRecording ? formattedRecordingTime : "Record"}
@@ -681,7 +666,7 @@ export function ChatComposer({
                 onClick={() => onStop()}
                 aria-label="Stop response generation"
                 data-testid="stop-button"
-                className="w-8 h-8 rounded-xl bg-[var(--danger)] text-white hover:bg-[var(--danger)]/90 transition-opacity shadow-sm shrink-0 flex items-center justify-center touch-target cursor-pointer"
+                className="w-8 h-8 rounded-full bg-[var(--danger)] text-white hover:bg-[var(--danger)]/90 transition-all shadow-sm shrink-0 flex items-center justify-center touch-target"
                 title="Stop response generation"
               >
                 <Square className="w-3.5 h-3.5 fill-white" />
@@ -693,9 +678,9 @@ export function ChatComposer({
                 disabled={(!input.trim() && attachments.length === 0) || disabled}
                 aria-label="Send message"
                 data-testid="send-button"
-                className={`w-8 h-8 rounded-xl transition-all shadow-sm shrink-0 flex items-center justify-center touch-target cursor-pointer ${
+                className={`w-8 h-8 rounded-full transition-all shadow-sm shrink-0 flex items-center justify-center touch-target ${
                   isSubmitReady
-                    ? "bg-[var(--accent)] text-[var(--void)] font-bold hover:opacity-90 active:scale-95"
+                    ? "bg-gradient-to-br from-[var(--accent-b)] to-[var(--accent)] text-[var(--void)] font-bold hover:opacity-90"
                     : "bg-[var(--surface)] border border-[var(--border)] text-[var(--txt-muted)] opacity-40 pointer-events-none"
                 }`}
                 title="Send message (Enter)"
@@ -721,7 +706,7 @@ export function ChatComposer({
         </div>
       </div>
 
-      <div className="text-center text-[10px] text-[var(--txt-muted)] font-normal mt-2 opacity-70">
+      <div className="text-center text-[10px] text-[var(--txt-muted)] font-light mt-2 opacity-70">
         Radiance generates high-precision responses. Verify mission-critical details.
       </div>
     </div>
