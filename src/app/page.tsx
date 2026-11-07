@@ -34,7 +34,7 @@ import { useChatStream } from "@/features/chat/hooks/use-chat-stream";
 import { ChatWorkspace } from "@/features/chat/components/chat-workspace";
 
 export default function RadianceApp() {
-  const [showSplash, setShowSplash] = useState(true);
+  const [showSplash, setShowSplash] = useState(false);
   const [theme, setTheme] = useState<ThemeId>("violet");
   const [gradientStyle, setGradientStyle] = useState<GradientStyle>("plain-black");
   const [modelId, setModelId] = useState(DEFAULT_MODEL_ID);

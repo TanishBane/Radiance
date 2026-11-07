@@ -386,7 +386,7 @@ export function MessageItem({
           {message.generatedImageUrl && (
             <div className="mt-3.5 flex flex-col gap-2 rounded-xl overflow-hidden border border-[var(--border)] bg-[var(--deep)] p-2.5">
               <div className="font-mono text-[9px] uppercase tracking-widest text-[var(--accent)] flex items-center justify-between">
-                <span>Synthesized Flux Visual</span>
+                <span>Generated visual</span>
                 <span className="text-[8px] text-[var(--txt-muted)] font-mono">1024x1024</span>
               </div>
               <div className="relative aspect-square max-w-sm rounded-lg overflow-hidden bg-black/40 shadow-inner">

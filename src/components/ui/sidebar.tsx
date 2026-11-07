@@ -182,9 +182,9 @@ export const SidebarLink = ({
       </motion.span>
 
       {link.badge && open && (
-        <span className="ml-auto text-[9px] font-mono px-1.5 py-0.5 rounded bg-[var(--accent-d)] text-[var(--accent)] border border-[var(--accent)]/30">
+        <kbd className="ml-auto text-[10px] font-mono px-1.5 py-0.5 rounded bg-[var(--surface)] text-[var(--txt-muted)] border border-[var(--border)]">
           {link.badge}
-        </span>
+        </kbd>
       )}
     </>
   );

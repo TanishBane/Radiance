@@ -143,75 +143,60 @@ export function WelcomeCard({ onSelectPrompt }: WelcomeCardProps) {
       className="flex flex-col items-center justify-center w-full max-w-4xl mx-auto px-4 py-8 text-center gap-6"
     >
       {/* 35mm CinemaScope Studio Indicator */}
-      <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-[var(--border)] bg-[var(--surface-raised)] backdrop-blur-md text-[10px] font-mono tracking-widest text-[var(--txt-muted)] uppercase">
-        <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent)] animate-pulse" />
-        <span>MINIMALIST WORKSPACE</span>
-      </div>
-
-      {/* Brand Icon Gem with Cinematic Framing */}
-      <div
-        className="w-16 h-16 rounded-2xl flex items-center justify-center border border-[var(--border)] bg-[var(--surface-raised)] shadow-card transition-all duration-300 hover:scale-105 select-none hover:border-[var(--border-accent)] p-3 text-[var(--txt)]"
-      >
-        <RadianceLogo variant="symbol" size="lg" showWordmark={false} animated glow className="w-10 h-9" />
+      <div className="w-14 h-14 rounded-xl flex items-center justify-center border border-[var(--border)] bg-[var(--surface-raised)] p-2.5 text-[var(--txt)]">
+        <RadianceLogo variant="symbol" size="lg" showWordmark={false} animated={false} glow={false} className="w-9 h-8" />
       </div>
 
       {/* Hero Title (Editorial Serif + Signature Chromatic Flare) */}
-      <div className="flex flex-col gap-2.5">
-        <h1 className="font-serif text-3xl sm:text-5xl md:text-6xl font-light text-[var(--txt)] tracking-tight leading-tight select-none">
-          Hello, I Am <em className="not-italic font-medium gradient-text-brand drop-shadow-sm">{titleName}</em>
+      <div className="flex flex-col gap-2 max-w-xl mx-auto">
+        <h1 className="font-serif text-4xl sm:text-5xl font-normal text-[var(--txt)] tracking-tight leading-tight select-none">
+          {titleName}
         </h1>
-        <p className="text-sm md:text-base text-[var(--txt-dim)] font-light max-w-lg leading-relaxed mx-auto font-sans">
+        <p className="text-sm md:text-base text-[var(--txt-muted)] font-normal leading-relaxed font-sans">
           {description}
         </p>
       </div>
 
       {/* Dynamic Subtitle matched with Background Atmosphere */}
-      <div className="w-full max-w-3xl flex items-center justify-between mt-1 px-1">
-        <p className="text-xs sm:text-sm text-[var(--txt-dim)] font-medium text-left flex items-center gap-2 font-mono">
-          <span
-            className="w-1.5 h-1.5 rounded-full inline-block animate-pulse shrink-0 shadow-[0_0_8px_var(--accent)]"
-            style={{ backgroundColor: "var(--accent)" }}
-            aria-hidden="true"
-          />
-          Select a prompt beat or enter your query:
+      <div className="w-full max-w-3xl flex items-center justify-between mt-2 px-1">
+        <p className="text-xs text-[var(--txt-muted)] font-mono flex items-center gap-2">
+          <span className="w-1.5 h-1.5 rounded-full bg-[var(--border-accent)]" aria-hidden="true" />
+          Suggested starting points
         </p>
-        <span className="hidden sm:inline-block text-[10px] font-mono text-[var(--txt-muted)] tracking-wider">
-          [PROMPT ARCHITECTURE]
-        </span>
       </div>
 
       {/* 3-Column Suggestions Architecture automatically harmonized with Theme & Palette */}
       <div
         data-testid="prompt-categories"
-        className="w-full max-w-3xl grid grid-cols-1 md:grid-cols-3 gap-3.5 sm:gap-4 text-left"
+        className="w-full max-w-3xl grid grid-cols-1 md:grid-cols-3 gap-3 text-left"
       >
         {SUGGESTION_COLUMNS.map((column) => (
           <div
             key={column.id}
-            className="group/card flex flex-col items-start p-4 sm:p-5 rounded-2xl border border-[var(--border)] bg-[var(--surface-raised)] transition-all duration-300 hover:border-[var(--border-hover)] shadow-card"
+            className="group/card flex flex-col items-start p-4 rounded-xl border border-[var(--border)] bg-[var(--surface-raised)] transition-colors hover:border-[var(--border-hover)]"
           >
-            <div className="flex items-center justify-between w-full mb-3.5 border-b border-[var(--border)] pb-2">
+            <div className="flex items-center justify-between w-full mb-3 border-b border-[var(--border)] pb-2">
               <h2
-                className="font-serif text-lg font-normal tracking-wide transition-all duration-300"
+                className="font-sans text-sm font-medium tracking-normal text-[var(--txt)]"
                 style={getHeaderStyle(column.headerThemeRole)}
               >
                 {column.title}
               </h2>
-              <span className="text-[9px] font-mono uppercase tracking-widest text-[var(--txt-muted)]">
+              <span className="text-[11px] font-mono text-[var(--txt-muted)]">
                 {column.id}
               </span>
             </div>
-            <div className="flex flex-col items-start gap-2 w-full">
+            <div className="flex flex-col items-start gap-1.5 w-full">
               {column.items.map((item) => (
                 <button
                   key={item.id}
                   type="button"
                   onClick={() => onSelectPrompt(item.prompt)}
-                  className="group/btn w-full inline-flex items-center gap-2 px-3.5 py-2.5 min-h-[44px] rounded-xl border border-[var(--border)] bg-[var(--surface)] hover:bg-[var(--surface-hover)] hover:border-[var(--border-accent)] transition-all duration-200 cursor-pointer active:scale-[0.99] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[var(--border-accent)] touch-target text-left"
+                  className="group/btn w-full inline-flex items-center gap-2.5 px-3 py-2.5 min-h-[44px] rounded-lg border border-[var(--border)] bg-[var(--surface)] hover:bg-[var(--surface-hover)] hover:border-[var(--border-hover)] transition-colors cursor-pointer active:scale-[0.99] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[var(--border-accent)] touch-target text-left"
                   aria-label={`Ask suggestion: ${item.label}`}
                 >
                   {item.badge && renderBadge(item.badge.type)}
-                  <span className="truncate text-xs sm:text-[13px] text-[var(--txt)] font-normal transition-colors">
+                  <span className="truncate text-xs text-[var(--txt)] font-normal">
                     {item.label}
                   </span>
                 </button>
