@@ -30,7 +30,7 @@ In accordance with the Master Directive, core frontend skills (`responsive-mobil
 
 ### Mobile Multi-Touch Parallax in Canvas Engines
 - Bound `touchstart` and `touchmove` listeners with `{ passive: true }` in [`AtmosphereCanvasEngine`](file:///c:/Tanixai-main/src/components/background/atmosphere-canvas-engine.tsx) and [`AtmosphericParticles`](file:///c:/Tanixai-main/src/components/background/atmospheric-particles.tsx).
-- On phones and tablets, the cinematic studio projection beam and radiant grid illumination mask now smoothly track touch interactions in real time.
+- On phones and tablets, the ambient spotlight cone and radiant grid illumination mask now smoothly track touch interactions in real time.
 
 ---
 

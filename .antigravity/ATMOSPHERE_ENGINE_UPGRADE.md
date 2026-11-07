@@ -5,7 +5,7 @@ In strict conformance with the Master Directive, 21st.dev flagship UI benchmarks
 
 | Old / Deprecated Engine | Replacement Flagship Engine | Component Heritage & Aesthetic Model |
 | :--- | :--- | :--- |
-| `bloom` (Bloom Mesh) | **Cinematic Studio** (`cinematic-studio`) | 21st.dev / Mobbin 35mm Projection Beam, Anamorphic Streak & Analog Dust Motes |
+| `bloom` (Bloom Mesh) | **Ambient Spotlight** (`ambient-spotlight`) | Aceternity / 21st.dev Luxury Studio Conical Spotlight & Specular Ground Pool |
 | `warp-speed` (Hyper Warp) | **Celestial Meteors** (`meteor-shower`) | 21st.dev Incandescent Shooting Stars with Gradient Trails & Starry Sky |
 | `cyber-grid` (Tron Grid) | **Radiant Grid** (`radiant-grid`) | Linear / Vercel Architectural 44px Grid with Dynamic Cursor Radial Spotlight Mask |
 | `zen-minimal` (Zen Obsidian) | **Fluid Aurora** (`fluid-aurora`) | 21st.dev Multi-Chromatic Plasma Ribbons with Gaussian Dispersion (`screen` blend) |
@@ -15,14 +15,11 @@ In strict conformance with the Master Directive, 21st.dev flagship UI benchmarks
 
 ## 2. Technical Architecture & Mathematical Models
 
-### 1. Cinematic Studio (`cinematic-studio`) — Signature Default
-- **35mm Projection Beam:** Gaussian conical projection beam tracking the viewport focal point, rendering with soft edge falloff and calibrated optical luminance.
-- **Anamorphic Streak & Horizon Trace:** Ultra-fine 1px horizontal anamorphic laser trace with optical pulse and desaturated cinema blue/silver gamut.
-- **Analog Silver Film Motes:** Exactly 18 photorealistic dust motes floating with focal depth-of-field, distance scaling, and proximity shimmer.
-- **Theatrical 2.39:1 Letterbox Framing:** Subtle top and bottom letterbox vignette boundaries for authentic cinema aspect-ratio staging and WCAG AAA text contrast.
-
-
-- **Reduced Motion Fallback:** Displays a static, centered cinematic projection frame with steady-state horizon glow at $t=0$.
+### 1. Ambient Spotlight (`ambient-spotlight`) — Signature Default
+- **Volumetric Conical Beam:** Originating at top-center (`originY = -height * 0.12`), smoothly tracking `smoothMouse.x` with spring dampening (`lerp = 0.04`). The cone spreads outward with a dual-tier radial gradient (`rgba(r2, g2, b2, 0.24)` apex to transparent).
+- **Ground Specular Diffusion:** Dynamic elliptical radial gradient centered at `smoothMouse` ($R = 380px$, $y$-scale $0.55$) with Gaussian falloff.
+- **Volumetric Micro-Photons:** 36 atmospheric motes drifting inside the light cone; when passing through the spotlight beam, their luminance and twinkle amplitude boost smoothly.
+- **Reduced Motion Fallback:** Displays a static, centered ambient spotlight beam at $t=0$.
 
 ### 2. Celestial Meteors (`meteor-shower`)
 - **Incandescent Shooting Stars:** 18 meteors traveling at a 215° diagonal angle (top-right to bottom-left) with variable velocity ($4.0 - 9.0$ px/frame) and staggered offscreen respawns.

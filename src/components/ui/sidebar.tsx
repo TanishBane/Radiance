@@ -3,7 +3,7 @@
 import { cn } from "@/lib/utils/cn";
 import React, { useState, createContext, useContext } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
-import { X } from "lucide-react";
+import { IconMenu2, IconX } from "@tabler/icons-react";
 import { getMotionTransition } from "@/lib/motion/presets";
 
 export interface SidebarLinkItem {
@@ -144,7 +144,7 @@ export const MobileSidebar = ({
                 onClick={() => setOpen(false)}
                 aria-label="Close drawer"
               >
-                <X className="h-5 w-5" />
+                <IconX className="h-5 w-5" />
               </button>
               {children}
             </motion.div>
@@ -182,15 +182,15 @@ export const SidebarLink = ({
       </motion.span>
 
       {link.badge && open && (
-        <kbd className="ml-auto text-[10px] font-mono px-1.5 py-0.5 rounded bg-[var(--surface)] text-[var(--txt-muted)] border border-[var(--border)]">
+        <span className="ml-auto text-[9px] font-mono px-1.5 py-0.5 rounded bg-[var(--accent-d)] text-[var(--accent)] border border-[var(--accent)]/30">
           {link.badge}
-        </kbd>
+        </span>
       )}
     </>
   );
 
   const baseClasses = cn(
-    "flex items-center justify-start gap-3 group/sidebar py-2 px-2.5 min-h-[44px] touch-target rounded-xl transition-all duration-200 cursor-pointer select-none",
+    "flex items-center justify-start gap-3 group/sidebar py-2 px-2 rounded-xl transition-all duration-200 cursor-pointer select-none",
     link.active
       ? "bg-[var(--accent-d)] text-[var(--accent)] border border-[var(--accent)]/30 shadow-sm"
       : "text-[var(--txt-dim)] hover:text-[var(--txt)] hover:bg-[var(--surface-hover)] border border-transparent",
