@@ -46,12 +46,12 @@ export function Topbar({
         </div>
 
         {/* On Desktop: Clean Context Badge (Default Assistant) */}
-        <div className="hidden md:flex items-center gap-2 px-2.5 py-1 rounded-xl bg-[var(--surface)] border border-[var(--border)]">
-          <span className="w-2 h-2 rounded-full bg-[var(--accent)] animate-pulse" />
-          <span className="font-mono text-xs font-semibold text-[var(--txt)] tracking-wide">
+        <div className="hidden md:flex items-center gap-2 px-2.5 py-1 rounded-lg bg-[var(--surface)] border border-[var(--border)]">
+          <span className="w-1.5 h-1.5 rounded-full bg-[var(--txt-muted)]" />
+          <span className="font-mono text-xs text-[var(--txt)]">
             Default Assistant
           </span>
-          <span className="font-mono text-[9px] uppercase tracking-widest px-1.5 py-0.2 rounded-full border border-[var(--accent)]/30 text-[var(--accent)] bg-[var(--accent-d)]">
+          <span className="font-mono text-[10px] text-[var(--txt-muted)]">
             v1.0
           </span>
         </div>

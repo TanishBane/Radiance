@@ -2,11 +2,23 @@ import { Conversation } from "@/lib/types/chat";
 
 const CONV_PREFIX = "radiance_chat_";
 
+const memoryStore = new Map<string, string>();
+
+function getStorage(): Storage | null {
+  if (typeof window === "undefined") return null;
+  try {
+    if (window.localStorage && typeof window.localStorage.getItem === "function") {
+      return window.localStorage;
+    }
+  } catch {}
+  return null;
+}
+
 export const safeLocalStorage = {
   get<T>(key: string, defaultValue: T): T {
-    if (typeof window === "undefined") return defaultValue;
     try {
-      const item = window.localStorage.getItem(key);
+      const storage = getStorage();
+      const item = storage ? storage.getItem(key) : memoryStore.get(key);
       return item ? (JSON.parse(item) as T) : defaultValue;
     } catch {
       return defaultValue;
@@ -14,9 +26,14 @@ export const safeLocalStorage = {
   },
 
   set<T>(key: string, value: T): boolean {
-    if (typeof window === "undefined") return false;
     try {
-      window.localStorage.setItem(key, JSON.stringify(value));
+      const serialized = JSON.stringify(value);
+      const storage = getStorage();
+      if (storage) {
+        storage.setItem(key, serialized);
+      } else {
+        memoryStore.set(key, serialized);
+      }
       return true;
     } catch (e) {
       console.warn(`[Radiance Storage] Storage quota reached or write failed for key: ${key}`, e);
@@ -25,16 +42,22 @@ export const safeLocalStorage = {
   },
 
   remove(key: string): void {
-    if (typeof window === "undefined") return;
     try {
-      window.localStorage.removeItem(key);
+      const storage = getStorage();
+      if (storage) {
+        storage.removeItem(key);
+      } else {
+        memoryStore.delete(key);
+      }
     } catch {}
   },
 
   listConversations(): Conversation[] {
-    if (typeof window === "undefined") return [];
     try {
-      const keys = Object.keys(window.localStorage).filter((k) => k.startsWith(CONV_PREFIX));
+      const storage = getStorage();
+      const keys = storage
+        ? Object.keys(storage).filter((k) => k.startsWith(CONV_PREFIX))
+        : Array.from(memoryStore.keys()).filter((k) => k.startsWith(CONV_PREFIX));
       const convs: Conversation[] = [];
       for (const k of keys) {
         const item = safeLocalStorage.get<Conversation | null>(k, null);
@@ -61,10 +84,15 @@ export const safeLocalStorage = {
   },
 
   deleteAllConversations(): void {
-    if (typeof window === "undefined") return;
     try {
-      const keys = Object.keys(window.localStorage).filter((k) => k.startsWith(CONV_PREFIX));
-      keys.forEach((k) => window.localStorage.removeItem(k));
+      const storage = getStorage();
+      if (storage) {
+        const keys = Object.keys(storage).filter((k) => k.startsWith(CONV_PREFIX));
+        keys.forEach((k) => storage.removeItem(k));
+      } else {
+        const keys = Array.from(memoryStore.keys()).filter((k) => k.startsWith(CONV_PREFIX));
+        keys.forEach((k) => memoryStore.delete(k));
+      }
     } catch {}
   },
 };
