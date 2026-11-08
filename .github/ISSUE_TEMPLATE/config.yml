@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: GitHub Discussions
+    url: https://github.com/TanishBane/Tanixai/discussions
+    about: Ask questions, discuss architecture ideas, and share workflows.
+  - name: Security Vulnerabilities
+    url: https://github.com/TanishBane/Tanixai/security/advisories/new
+    about: Privately report a security vulnerability in accordance with SECURITY.md.

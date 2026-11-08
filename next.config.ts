@@ -1,12 +1,13 @@
 import type { NextConfig } from "next";
+import { withSentryConfig } from "@sentry/nextjs/config";
 
 const cspHeader = [
   "default-src 'self'",
-  "script-src 'self' 'unsafe-eval' 'unsafe-inline'",
+  "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://va.vercel-scripts.com",
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' blob: data: https://image.pollinations.ai",
   "font-src 'self' data:",
-  "connect-src 'self' https://*.supabase.co https://*.upstash.io https://api.groq.com https://generativelanguage.googleapis.com https://openrouter.ai https://image.pollinations.ai",
+  "connect-src 'self' https://*.supabase.co https://*.upstash.io https://api.groq.com https://generativelanguage.googleapis.com https://openrouter.ai https://image.pollinations.ai https://*.sentry.io https://*.ingest.sentry.io https://*.ingest.us.sentry.io https://va.vercel-scripts.com https://vitals.vercel-insights.com",
   "frame-ancestors 'none'",
   "base-uri 'self'",
   "form-action 'self'",
@@ -40,4 +41,13 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+export default withSentryConfig(nextConfig, {
+  org: process.env.SENTRY_ORG,
+  project: process.env.SENTRY_PROJECT,
+  silent: !process.env.CI,
+  widenClientFileUpload: true,
+  tunnelRoute: "/monitoring",
+  sourcemaps: {
+    deleteSourcemapsAfterUpload: true,
+  },
+});
