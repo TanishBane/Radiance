@@ -448,12 +448,12 @@ export function ChatComposer({
       )}
 
       {/* Main Composer Box with Complete Theme Gradient Glassmorphism */}
-      <div className="relative rounded-2xl bg-gradient-to-br from-[var(--surface-raised)]/90 via-[var(--deep)]/85 to-[var(--accent-d)]/30 border border-white/[0.12] focus-within:border-[var(--border-accent)] focus-within:shadow-[0_0_36px_-4px_var(--accent-g),0_16px_48px_-12px_rgba(0,0,0,0.7)] transition-all duration-300 backdrop-blur-3xl shadow-[0_8px_32px_0_rgba(0,0,0,0.4),0_0_20px_-6px_var(--accent-g)] p-3 sm:p-3.5 group/composer overflow-hidden">
+      <div className="relative rounded-2xl bg-gradient-to-br from-[var(--surface-raised)]/90 via-[var(--deep)]/85 to-[var(--accent-d)]/30 border border-white/[0.12] focus-within:border-[var(--border-accent)] focus-within:shadow-[0_0_36px_-4px_var(--accent-g),0_16px_48px_-12px_rgba(0,0,0,0.7)] transition-all duration-300 backdrop-blur-3xl shadow-[0_8px_32px_0_rgba(0,0,0,0.4),0_0_20px_-6px_var(--accent-g)] p-3 sm:p-3.5 group/composer overflow-visible z-20">
         {/* Theme Ambient Radial Glass Sheen */}
-        <div className="absolute inset-0 bg-gradient-to-tr from-[var(--accent)]/[0.05] via-transparent to-[var(--accent-c)]/[0.06] pointer-events-none" />
+        <div className="absolute inset-0 rounded-2xl bg-gradient-to-tr from-[var(--accent)]/[0.05] via-transparent to-[var(--accent-c)]/[0.06] pointer-events-none" />
 
         {/* Optical Top Rim Specular Reflection */}
-        <div className="absolute inset-x-4 top-0 h-[1.5px] bg-gradient-to-r from-transparent via-[var(--accent-b)]/40 to-transparent pointer-events-none" />
+        <div className="absolute inset-x-4 top-0 h-[1.5px] rounded-t-2xl bg-gradient-to-r from-transparent via-[var(--accent-b)]/40 to-transparent pointer-events-none" />
 
         {/* @ Context Mention Popover */}
         {contextMenuOpen && (
@@ -555,7 +555,7 @@ export function ChatComposer({
               {modeMenuOpen && (
                 <div
                   onClick={(e) => e.stopPropagation()}
-                  className="fixed left-3 sm:absolute sm:left-0 bottom-20 sm:bottom-full mb-0 sm:mb-2 w-40 rounded-xl p-1.5 z-50 bg-[var(--deep)]/95 backdrop-blur-2xl border border-white/[0.12] shadow-[0_12px_36px_0_rgba(0,0,0,0.6),0_0_20px_-4px_var(--accent-g)] flex flex-col gap-0.5 animate-in fade-in zoom-in-95 duration-150"
+                  className="absolute left-0 bottom-full mb-2 w-44 rounded-xl p-1.5 z-50 bg-[var(--deep)]/95 backdrop-blur-2xl border border-white/[0.12] shadow-[0_12px_36px_0_rgba(0,0,0,0.6),0_0_20px_-4px_var(--accent-g)] flex flex-col gap-0.5 animate-in fade-in zoom-in-95 duration-150"
                 >
                   {orderedModes.map((m) => {
                     const isSelected = m === mode;
