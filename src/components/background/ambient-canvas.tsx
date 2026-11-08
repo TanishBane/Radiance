@@ -40,7 +40,8 @@ export function AmbientCanvas({ accentColor = "#7c5cff" }: AmbientCanvasProps) {
       window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const motionScale = reduceMotion ? 0.15 : 1;
 
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, isMobile ? 1.5 : 2));
     renderer.setClearColor(0x000000, 0);
 
     const scene = new THREE.Scene();
@@ -175,7 +176,7 @@ export function AmbientCanvas({ accentColor = "#7c5cff" }: AmbientCanvasProps) {
     }
 
     const spriteTexture = makeSprite();
-    const PARTICLE_COUNT = 2200;
+    const PARTICLE_COUNT = isMobile ? 650 : 2200;
     const positions = new Float32Array(PARTICLE_COUNT * 3);
     for (let i = 0; i < PARTICLE_COUNT; i++) {
       const r = 6 + Math.random() * 10;

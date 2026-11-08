@@ -22,6 +22,7 @@ import { SidebarDock } from "@/components/navigation/sidebar-dock";
 import { HistoryDrawer } from "@/components/navigation/history-drawer";
 import { SettingsDrawer } from "@/components/navigation/settings-drawer";
 import { ShortcutsDialog } from "@/components/modals/shortcuts-dialog";
+import { MobileBottomNav } from "@/components/navigation/mobile-bottom-nav";
 
 // Feature Modules
 import { useChatSession } from "@/features/chat/hooks/use-chat-session";
@@ -318,6 +319,39 @@ export default function RadianceApp() {
             onRetry={handleRetry}
           />
         </div>
+        {/* Mobile Thumb-Zone Bottom Navigation */}
+        <MobileBottomNav
+          activeTab={
+            historyOpen
+              ? "history"
+              : settingsOpen
+              ? "settings"
+              : shortcutsOpen
+              ? "shortcuts"
+              : "chat"
+          }
+          onNewChat={handleNewChat}
+          onToggleHistory={() => {
+            setSettingsOpen(false);
+            setShortcutsOpen(false);
+            setHistoryOpen((prev) => !prev);
+          }}
+          onToggleSettings={() => {
+            setHistoryOpen(false);
+            setShortcutsOpen(false);
+            setSettingsOpen((prev) => !prev);
+          }}
+          onOpenShortcuts={() => {
+            setHistoryOpen(false);
+            setSettingsOpen(false);
+            setShortcutsOpen(true);
+          }}
+          onFocusChat={() => {
+            setHistoryOpen(false);
+            setSettingsOpen(false);
+            setShortcutsOpen(false);
+          }}
+        />
       </main>
 
       {/* Slide-out Navigation Drawers & Dialogs */}

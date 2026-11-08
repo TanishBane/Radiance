@@ -1,7 +1,7 @@
 "use client";
 
-import React from "react";
-import { Plane, Play, Bed } from "lucide-react";
+import React, { useState } from "react";
+import { Plane, Play, Bed, Sparkles, Compass, Lightbulb } from "lucide-react";
 import { motion, useReducedMotion } from "motion/react";
 import { getMotionTransition } from "@/lib/motion/presets";
 import { RadianceLogo } from "@/components/branding/radiance-logo";
@@ -106,6 +106,7 @@ interface WelcomeCardProps {
 
 export function WelcomeCard({ onSelectPrompt }: WelcomeCardProps) {
   const prefersReducedMotion = useReducedMotion() ?? false;
+  const [activeCategory, setActiveCategory] = useState<string>("understand");
 
   const titleName = "Radiance";
   const description =
@@ -140,36 +141,38 @@ export function WelcomeCard({ onSelectPrompt }: WelcomeCardProps) {
     );
   }
 
+  const activeCol = SUGGESTION_COLUMNS.find((c) => c.id === activeCategory) || SUGGESTION_COLUMNS[0];
+
   return (
     <motion.div
       initial={{ opacity: 0, y: prefersReducedMotion ? 0 : 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={getMotionTransition("entrance", prefersReducedMotion)}
-      className="flex flex-col items-center justify-center w-full max-w-4xl mx-auto px-4 py-8 text-center gap-6"
+      className="flex flex-col items-center justify-center w-full max-w-4xl mx-auto px-3 sm:px-4 py-4 sm:py-8 text-center gap-4 sm:gap-6"
     >
       {/* Brand Icon Gem with Dynamic Ambient Glow */}
       <div
-        className="w-16 h-16 rounded-2xl flex items-center justify-center border border-[var(--border)] shadow-card transition-all duration-300 hover:scale-105 select-none hover:border-[var(--accent)]/40 hover:shadow-[0_8px_24px_var(--accent-d)] p-3 text-[var(--txt)]"
+        className="w-12 h-12 sm:w-16 sm:h-16 rounded-2xl flex items-center justify-center border border-[var(--border)] shadow-card transition-all duration-300 hover:scale-105 select-none hover:border-[var(--accent)]/40 hover:shadow-[0_8px_24px_var(--accent-d)] p-2 sm:p-3 text-[var(--txt)]"
         style={{
           background: "linear-gradient(135deg, var(--surface-raised), rgba(255, 255, 255, 0.02))",
         }}
       >
-        <RadianceLogo variant="symbol" size="lg" showWordmark={false} animated glow className="w-10 h-9" />
+        <RadianceLogo variant="symbol" size="md" showWordmark={false} animated glow className="w-7 h-7 sm:w-10 sm:h-9" />
       </div>
 
       {/* Hero Title (Signature TanixAI Cormorant Garamond + 3-Stop Chromatic Gradient) */}
-      <div className="flex flex-col gap-2.5">
-        <h1 className="font-serif text-3xl sm:text-5xl md:text-6xl font-light text-[var(--txt)] tracking-tight leading-tight select-none">
+      <div className="flex flex-col gap-1.5 sm:gap-2.5">
+        <h1 className="font-serif text-2xl sm:text-5xl md:text-6xl font-light text-[var(--txt)] tracking-tight leading-tight select-none">
           Hello, I Am <em className="not-italic font-bold gradient-text-brand drop-shadow-sm">{titleName}</em>
         </h1>
-        <p className="text-sm md:text-base text-[var(--txt-dim)] font-light max-w-lg leading-relaxed mx-auto font-sans">
+        <p className="text-xs sm:text-base text-[var(--txt-dim)] font-light max-w-lg leading-relaxed mx-auto font-sans line-clamp-2 sm:line-clamp-none">
           {description}
         </p>
       </div>
 
       {/* Dynamic Subtitle matched with Background Atmosphere */}
-      <div className="w-full max-w-3xl flex flex-col items-start mt-2">
-        <p className="text-sm sm:text-base text-[var(--txt)] font-medium text-left drop-shadow-[0_2px_12px_rgba(0,0,0,0.9)] flex items-center gap-2">
+      <div className="w-full max-w-3xl flex flex-col items-start mt-1 sm:mt-2">
+        <p className="text-xs sm:text-base text-[var(--txt)] font-medium text-left drop-shadow-[0_2px_12px_rgba(0,0,0,0.9)] flex items-center gap-2">
           <span
             className="w-2 h-2 rounded-full inline-block animate-pulse shrink-0 shadow-[0_0_8px_var(--accent)]"
             style={{ backgroundColor: "var(--accent)" }}
@@ -179,10 +182,82 @@ export function WelcomeCard({ onSelectPrompt }: WelcomeCardProps) {
         </p>
       </div>
 
-      {/* 3-Column Suggestions Architecture automatically harmonized with Theme & Palette */}
+      {/* ══ MOBILE-FIRST INTERACTIVE CATEGORY TABS (< md) ══ */}
+      <div className="md:hidden w-full max-w-3xl flex flex-col gap-3">
+        {/* Category Pill Tabs Row */}
+        <div className="flex items-center gap-2 overflow-x-auto pb-1 pt-0.5 px-0.5 overscroll-contain [-webkit-overflow-scrolling:touch]">
+          {SUGGESTION_COLUMNS.map((col) => {
+            const isSelected = col.id === activeCategory;
+            return (
+              <button
+                key={col.id}
+                type="button"
+                onClick={() => setActiveCategory(col.id)}
+                className={`min-h-[44px] px-4 py-1.5 rounded-full text-xs font-medium font-sans border transition-all cursor-pointer whitespace-nowrap touch-target flex items-center gap-1.5 shrink-0 ${
+                  isSelected
+                    ? "bg-[var(--accent-d)] border-[var(--accent)] text-[var(--accent-b)] font-semibold shadow-[0_0_12px_var(--accent-g)]"
+                    : "bg-[var(--surface)] border-[var(--border)] text-[var(--txt-muted)] hover:text-[var(--txt)] hover:bg-[var(--surface-hover)]"
+                }`}
+                aria-pressed={isSelected}
+              >
+                {col.id === "understand" && <Lightbulb className="w-3.5 h-3.5" />}
+                {col.id === "create" && <Sparkles className="w-3.5 h-3.5" />}
+                {col.id === "explore" && <Compass className="w-3.5 h-3.5" />}
+                <span>{col.title}</span>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Selected Category Prompt Cards Container */}
+        <div
+          className="flex flex-col gap-2 p-3.5 rounded-2xl border text-left"
+          style={{
+            background:
+              "linear-gradient(180deg, var(--user-bg, rgba(255, 255, 255, 0.04)) 0%, rgba(10, 9, 16, 0.82) 100%)",
+            backdropFilter: "blur(20px)",
+            WebkitBackdropFilter: "blur(20px)",
+            borderColor: "var(--border)",
+            boxShadow: "0 10px 30px -8px rgba(0, 0, 0, 0.6)",
+          }}
+        >
+          <div className="flex items-center justify-between mb-1">
+            <span
+              className="text-xs font-semibold uppercase tracking-wider font-sans"
+              style={getHeaderStyle(activeCol.headerThemeRole)}
+            >
+              {activeCol.title} Prompts
+            </span>
+            <span className="text-[10px] font-mono text-[var(--txt-muted)]">Tap to ask</span>
+          </div>
+
+          <div className="flex flex-col gap-2 w-full">
+            {activeCol.items.map((item) => (
+              <motion.button
+                key={item.id}
+                type="button"
+                whileTap={prefersReducedMotion ? undefined : { scale: 0.98 }}
+                onClick={() => onSelectPrompt(item.prompt)}
+                className="w-full text-left flex items-center justify-between gap-2.5 px-3 py-2.5 min-h-[44px] rounded-xl border border-white/[0.08] bg-white/[0.04] hover:bg-[var(--accent-d)] hover:border-[var(--border-accent)] transition-all cursor-pointer touch-target shadow-xs"
+                aria-label={`Ask suggestion: ${item.label}`}
+              >
+                <div className="flex items-center gap-2 min-w-0">
+                  {item.badge && renderBadge(item.badge.type)}
+                  <span className="text-xs text-[var(--txt)] font-normal truncate">
+                    {item.label}
+                  </span>
+                </div>
+                <span className="text-[11px] text-[var(--accent-b)] font-mono shrink-0">→</span>
+              </motion.button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* ══ DESKTOP 3-COLUMN SUGGESTIONS ARCHITECTURE (>= md) ══ */}
       <div
         data-testid="prompt-categories"
-        className="w-full max-w-3xl grid grid-cols-1 md:grid-cols-3 gap-3.5 sm:gap-4 text-left"
+        className="hidden md:grid w-full max-w-3xl grid-cols-3 gap-4 text-left"
       >
         {SUGGESTION_COLUMNS.map((column) => (
           <div
