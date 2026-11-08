@@ -20,7 +20,6 @@ export interface ColorTheme {
 }
 
 export type GradientStyle =
-  | "ambient-spotlight"
   | "waves"
   | "cosmic"
   | "aurora-curtains"
@@ -29,7 +28,7 @@ export type GradientStyle =
   | "quantum-field"
   | "liquid-lava"
   | "matrix-rain"
-  | "fluid-aurora"
+  | "silk-ribbons"
   | "radial-pulse"
   | "solar-corona"
   | "bokeh-blur";
@@ -563,13 +562,6 @@ export interface AtmosphereEngineInfo {
 
 export const ATMOSPHERE_ENGINES: AtmosphereEngineInfo[] = [
   {
-    id: "ambient-spotlight",
-    label: "Cinematic Atmosphere",
-    tag: "Cinematic",
-    description: "21st.dev & Mobbin immersive cinematic studio with anamorphic lens flares, volumetric beams, and optical motes.",
-    iconName: "Film",
-  },
-  {
     id: "waves",
     label: "Ribbon Waves",
     tag: "Gradient",
@@ -626,11 +618,11 @@ export const ATMOSPHERE_ENGINES: AtmosphereEngineInfo[] = [
     iconName: "Terminal",
   },
   {
-    id: "fluid-aurora",
-    label: "Fluid Aurora",
-    tag: "Aurora",
-    description: "Multi-chromatic plasma ribbons with soft Gaussian dispersion and screen superposition.",
-    iconName: "Wind",
+    id: "silk-ribbons",
+    label: "Silk Ribbons",
+    tag: "Ribbon",
+    description: "Multi-layered undulating silk ribbon waves drifting with continuous harmonic curvature and luminous gradient contours.",
+    iconName: "Waves",
   },
   {
     id: "radial-pulse",
