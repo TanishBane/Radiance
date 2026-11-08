@@ -1,12 +1,12 @@
 "use client";
 
 import React, { useState, useEffect, useRef, useMemo } from "react";
+import { motion, useReducedMotion } from "motion/react";
 import {
   FileText,
   X,
   Square,
   ChevronDown,
-  Cpu,
   Atom,
   Check,
 } from "lucide-react";
@@ -78,6 +78,7 @@ export function ChatComposer({
   selectedModel,
   onSelectModel,
 }: ChatComposerProps) {
+  const shouldReduceMotion = useReducedMotion();
   const [input, setInput] = useState("");
   const [attachments, setAttachments] = useState<Attachment[]>([]);
   const [mode, setMode] = useState<ComposerMode>("Build");
@@ -366,18 +367,18 @@ export function ChatComposer({
     <div className="w-full max-w-3xl mx-auto px-3 sm:px-4 pb-[max(1rem,env(safe-area-inset-bottom,0px))] z-20 select-none">
       {/* Attached Files Preview Bar */}
       {attachments.length > 0 && (
-        <div className="flex flex-wrap gap-2 mb-2 p-2 rounded-xl bg-[var(--surface)] border border-[var(--border)] animate-in fade-in slide-in-from-bottom-2 duration-200">
+        <div className="flex flex-wrap gap-2 mb-2 p-2 rounded-xl bg-[var(--surface)] border border-[var(--border)] shadow-sm animate-in fade-in slide-in-from-bottom-2 duration-200">
           {attachments.map((att) => (
             <div
               key={att.id}
-              className="flex items-center gap-2 pl-2.5 pr-1.5 py-1 rounded-lg bg-[var(--deep)] border border-[var(--border)] text-xs text-[var(--txt)]"
+              className="flex items-center gap-2 pl-2.5 pr-1.5 py-1 rounded-lg bg-[var(--deep)] border border-[var(--border)] text-xs text-[var(--txt)] shadow-xs"
             >
               <FileText className="w-3.5 h-3.5 text-[var(--accent)] shrink-0" />
               <span className="font-mono text-[11px] truncate max-w-[150px]">{att.name}</span>
               <button
                 type="button"
                 onClick={() => removeAttachment(att.id)}
-                className="p-1 rounded-md text-[var(--txt-muted)] hover:text-[var(--danger)] hover:bg-white/5 transition-colors"
+                className="p-1 rounded-md text-[var(--txt-muted)] hover:text-[var(--danger)] hover:bg-white/5 transition-colors cursor-pointer"
                 title="Remove attachment"
                 aria-label="Remove attachment"
               >
@@ -408,12 +409,15 @@ export function ChatComposer({
       )}
 
       {/* Main Composer Box */}
-      <div className="relative rounded-2xl bg-[var(--surface-raised)] border border-[var(--border)] focus-within:border-[var(--border-accent)] focus-within:shadow-card transition-all duration-200 backdrop-blur-2xl shadow-card p-3">
+      <div className="relative rounded-2xl bg-[var(--surface-raised)] border border-[var(--border)] focus-within:border-[var(--border-accent)] focus-within:shadow-[0_0_32px_-6px_var(--accent-g),0_12px_40px_-8px_rgba(0,0,0,0.6)] transition-all duration-300 backdrop-blur-2xl shadow-card p-3 sm:p-3.5 group/composer">
+        {/* Subtle Top Rim Optical Specular Reflection */}
+        <div className="absolute inset-x-6 top-0 h-[1px] bg-gradient-to-r from-transparent via-white/[0.12] to-transparent pointer-events-none" />
+
         {/* @ Context Mention Popover */}
         {contextMenuOpen && (
           <div
             onClick={(e) => e.stopPropagation()}
-            className="absolute left-4 bottom-[74px] w-56 rounded-xl p-1.5 z-40 bg-[var(--deep)]/95 backdrop-blur-xl border border-[var(--border)] shadow-modal animate-in fade-in duration-150"
+            className="absolute left-4 bottom-[74px] w-56 rounded-xl p-1.5 z-40 bg-[var(--deep)]/95 backdrop-blur-xl border border-[var(--border)] shadow-modal flex flex-col gap-0.5 animate-in fade-in zoom-in-95 duration-150"
           >
             <div className="px-2.5 py-1 text-[10px] font-mono uppercase tracking-wider text-[var(--txt-muted)] font-semibold">
               Add Context
@@ -423,7 +427,7 @@ export function ChatComposer({
                 key={item.tag}
                 type="button"
                 onClick={(e) => handleInsertContextTag(e, item.tag)}
-                className="w-full text-left px-2.5 py-1.5 rounded-lg text-xs flex items-center justify-between text-[var(--txt)] hover:bg-[var(--surface-hover)] transition-colors"
+                className="w-full text-left px-2.5 py-1.5 rounded-lg text-xs flex items-center justify-between text-[var(--txt)] hover:bg-[var(--surface-hover)] transition-colors cursor-pointer"
               >
                 <span className="font-mono text-[var(--accent)]">{item.tag}</span>
                 <span className="text-[10px] text-[var(--txt-muted)]">{item.category}</span>
@@ -447,7 +451,7 @@ export function ChatComposer({
             }, 120);
           }}
           placeholder="Ask RADIANCE anything... (Shift+Enter for newline)"
-          className="w-full bg-transparent border-0 outline-none resize-none text-base sm:text-sm text-[var(--txt)] placeholder:text-[var(--txt-muted)] py-1.5 max-h-[140px] leading-relaxed font-sans mb-2"
+          className="w-full bg-transparent border-0 outline-none resize-none text-base sm:text-sm text-[var(--txt)] placeholder:text-[var(--txt-muted)]/70 py-1.5 max-h-[140px] leading-relaxed font-sans mb-2 tracking-[-0.01em] selection:bg-[var(--accent-d)] selection:text-[var(--txt)]"
         />
 
         {/* Hidden File Input */}
@@ -465,40 +469,51 @@ export function ChatComposer({
           {/* Left Controls: Add Files, Mode Selector, Model Trigger */}
           <div className="flex items-center gap-1.5 sm:gap-2 min-w-0 flex-1 overflow-x-visible">
             {/* 1. Add Files Expanding Button */}
-            <button
+            <motion.button
               type="button"
+              whileHover={shouldReduceMotion ? undefined : { scale: 1.04 }}
+              whileTap={shouldReduceMotion ? undefined : { scale: 0.96 }}
               onClick={() => fileInputRef.current?.click()}
-              className="group/btn h-8 px-2.5 rounded-full border border-[var(--border)] bg-[var(--surface)] hover:bg-[var(--surface-hover)] text-[var(--txt-muted)] hover:text-[var(--txt)] transition-all flex items-center gap-1.5 text-xs font-mono touch-target"
+              className="group/btn h-8 px-2.5 rounded-full border border-[var(--border)] bg-[var(--surface)] hover:bg-[var(--surface-hover)] hover:border-[var(--border-accent)] text-[var(--txt-muted)] hover:text-[var(--txt)] transition-all flex items-center gap-1.5 text-xs font-sans font-medium touch-target cursor-pointer"
               title="Attach file or media"
               aria-label="Add files"
             >
-              <span className="text-base leading-none font-bold">+</span>
-              <span className="hidden sm:inline-block max-w-0 overflow-hidden whitespace-nowrap group-hover/btn:max-w-[80px] transition-all duration-300">
+              <span className="text-base leading-none font-bold transition-transform duration-200 group-hover/btn:rotate-90">
+                +
+              </span>
+              <span className="hidden sm:inline-block max-w-0 overflow-hidden whitespace-nowrap group-hover/btn:max-w-[80px] transition-all duration-300 text-[11px] font-sans">
                 Add files
               </span>
-            </button>
+            </motion.button>
 
             {/* 2. Mode Selector (Build / Plan / Ask) */}
             <div className="relative">
-              <button
+              <motion.button
                 type="button"
+                whileHover={shouldReduceMotion ? undefined : { scale: 1.02 }}
+                whileTap={shouldReduceMotion ? undefined : { scale: 0.98 }}
                 onClick={(e) => {
                   e.stopPropagation();
                   setModelMenuOpen(false);
                   setModeMenuOpen((prev) => !prev);
                 }}
-                className="h-8 px-2.5 rounded-full border border-[var(--border)] bg-[var(--surface)] hover:bg-[var(--surface-hover)] text-[var(--txt)] transition-all flex items-center gap-1.5 text-xs font-mono touch-target"
+                className="h-8 px-2.5 rounded-full border border-[var(--border)] bg-[var(--surface)] hover:bg-[var(--surface-hover)] hover:border-[var(--border-accent)] text-[var(--txt)] transition-all flex items-center gap-1.5 text-xs font-sans font-medium touch-target cursor-pointer"
                 aria-haspopup="true"
                 aria-expanded={modeMenuOpen}
               >
+                <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent)] shrink-0" />
                 <span>{mode}</span>
-                <ChevronDown className="w-3 h-3 text-[var(--txt-muted)]" />
-              </button>
+                <ChevronDown
+                  className={`w-3 h-3 text-[var(--txt-muted)] transition-transform duration-200 ${
+                    modeMenuOpen ? "rotate-180" : ""
+                  }`}
+                />
+              </motion.button>
 
               {modeMenuOpen && (
                 <div
                   onClick={(e) => e.stopPropagation()}
-                  className="fixed left-3 sm:absolute sm:left-0 bottom-24 sm:bottom-full mb-0 sm:mb-2 w-36 rounded-xl p-1.5 z-50 bg-[var(--deep)]/95 backdrop-blur-xl border border-[var(--border)] shadow-modal animate-in fade-in zoom-in-95 duration-150 flex flex-col gap-0.5"
+                  className="fixed left-3 sm:absolute sm:left-0 bottom-24 sm:bottom-full mb-0 sm:mb-2 w-36 rounded-xl p-1.5 z-50 bg-[var(--deep)]/95 backdrop-blur-xl border border-[var(--border)] shadow-modal flex flex-col gap-0.5 animate-in fade-in zoom-in-95 duration-150"
                 >
                   {orderedModes.map((m) => {
                     const isSelected = m === mode;
@@ -511,9 +526,18 @@ export function ChatComposer({
                           setMode(m);
                           setModeMenuOpen(false);
                         }}
-                        className="w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-mono flex items-center justify-between text-[var(--txt)] hover:bg-[var(--surface-hover)] transition-colors"
+                        className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-sans font-medium flex items-center justify-between text-[var(--txt)] hover:bg-[var(--surface-hover)] transition-colors cursor-pointer ${
+                          isSelected ? "bg-[var(--accent-d)] text-[var(--accent)]" : ""
+                        }`}
                       >
-                        <span>{m}</span>
+                        <div className="flex items-center gap-1.5">
+                          <span
+                            className={`w-1.5 h-1.5 rounded-full ${
+                              isSelected ? "bg-[var(--accent)]" : "bg-transparent"
+                            }`}
+                          />
+                          <span>{m}</span>
+                        </div>
                         {isSelected && <CheckmarkIcon />}
                       </button>
                     );
@@ -524,22 +548,24 @@ export function ChatComposer({
 
             {/* 3. Real Model Selector Pill (Image 2) */}
             <div className="relative inline-flex items-center">
-              <button
+              <motion.button
                 ref={modelTriggerRef}
                 id="composer-model-trigger"
                 type="button"
                 data-testid="composer-model-trigger"
+                whileHover={shouldReduceMotion ? undefined : { scale: 1.02 }}
+                whileTap={shouldReduceMotion ? undefined : { scale: 0.98 }}
                 onClick={handleOpenModelMenu}
                 onKeyDown={handleTriggerKeyDown}
                 title={activeModel.name}
-                className="h-8 px-2.5 sm:px-3 rounded-full border border-[var(--border)] bg-[var(--surface)] hover:bg-[var(--surface-hover)] hover:border-[var(--border-accent)] text-[var(--txt)] transition-all flex items-center gap-1.5 sm:gap-2 text-xs font-mono touch-target cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] active:scale-[0.98]"
+                className="h-8 px-2.5 sm:px-3 rounded-full border border-[var(--border)] bg-[var(--surface)] hover:bg-[var(--surface-hover)] hover:border-[var(--border-accent)] text-[var(--txt)] transition-all flex items-center gap-1.5 sm:gap-2 text-xs font-sans font-medium touch-target cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
                 aria-haspopup="listbox"
                 aria-expanded={modelMenuOpen}
                 aria-controls="composer-model-listbox"
                 aria-label={`Select AI model. Current model: ${activeModel.name}`}
               >
                 <Atom className="w-3.5 h-3.5 text-[#c084fc] shrink-0" aria-hidden="true" />
-                <span className="font-mono text-xs sm:text-[13px] font-medium text-[var(--txt)] truncate max-w-[70px] xs:max-w-[110px] sm:max-w-none">
+                <span className="font-sans text-xs sm:text-[13px] font-medium text-[var(--txt)] truncate max-w-[70px] xs:max-w-[110px] sm:max-w-none">
                   {activeModel.name}
                 </span>
                 <ChevronDown
@@ -548,7 +574,7 @@ export function ChatComposer({
                   }`}
                   aria-hidden="true"
                 />
-              </button>
+              </motion.button>
 
               {/* Model Selector Popover */}
               {modelMenuOpen && (
@@ -564,7 +590,7 @@ export function ChatComposer({
                   tabIndex={-1}
                   onKeyDown={handleListboxKeyDown}
                   onClick={(e) => e.stopPropagation()}
-                  className="absolute -left-16 sm:left-0 bottom-full mb-2 w-72 sm:w-80 max-w-[calc(100vw-2rem)] rounded-2xl p-2 z-50 bg-[var(--deep)]/95 backdrop-blur-2xl border border-[var(--border)] shadow-modal animate-in fade-in zoom-in-95 duration-150 flex flex-col gap-1 max-h-80 overflow-y-auto"
+                  className="absolute -left-16 sm:left-0 bottom-full mb-2 w-72 sm:w-80 max-w-[calc(100vw-2rem)] rounded-2xl p-2 z-50 bg-[var(--deep)]/95 backdrop-blur-2xl border border-[var(--border)] shadow-modal flex flex-col gap-1 max-h-80 overflow-y-auto animate-in fade-in zoom-in-95 duration-150"
                 >
                   <div className="px-3 py-1.5 text-[10px] font-mono uppercase tracking-widest text-[var(--txt-muted)] border-b border-[var(--border)] flex items-center justify-between select-none">
                     <span>Frontier Inference Models</span>
@@ -592,7 +618,7 @@ export function ChatComposer({
                               handleSelectModel(e, m);
                             }
                           }}
-                          className={`flex items-start gap-2.5 p-2.5 rounded-xl text-left transition-colors font-mono cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[var(--accent)] ${
+                          className={`flex items-start gap-2.5 p-2.5 rounded-xl text-left transition-all font-sans cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[var(--accent)] ${
                             isSelected
                               ? "bg-[var(--accent-d)] border border-[var(--accent)] text-[var(--txt)] ring-1 ring-[var(--accent)]/40 shadow-sm"
                               : "hover:bg-[var(--surface-hover)] text-[var(--txt-dim)] hover:text-[var(--txt)] border border-transparent"
@@ -601,7 +627,7 @@ export function ChatComposer({
                           <span className="text-base mt-0.5 shrink-0 select-none">{m.icon}</span>
                           <div className="flex flex-col flex-1 min-w-0">
                             <div className="flex items-center justify-between gap-1">
-                              <span className="text-xs font-semibold font-mono text-[var(--txt)] truncate">
+                              <span className="text-xs font-semibold font-sans text-[var(--txt)] truncate">
                                 {m.name}
                               </span>
                               <div className="flex items-center gap-1.5 shrink-0">
@@ -611,12 +637,12 @@ export function ChatComposer({
                                 {isSelected && <CheckmarkIcon />}
                               </div>
                             </div>
-                            <p className="text-[11px] text-[var(--txt-muted)] line-clamp-1 mt-0.5 leading-tight">
+                            <p className="text-[11px] text-[var(--txt-muted)] line-clamp-1 mt-0.5 leading-tight font-sans">
                               {m.sub}
                             </p>
                             <div className="flex items-center gap-2 mt-1.5 text-[9px] font-mono text-[var(--txt-muted)]">
                               {m.contextWindow && (
-                                <span>{(m.contextWindow / 1024).toFixed(0)}k ctx</span>
+                                <span className="tabular-nums">{(m.contextWindow / 1024).toFixed(0)}k ctx</span>
                               )}
                               {m.supportsVision && (
                                 <span className="text-[var(--accent)] font-medium">✦ Multimodal</span>
@@ -636,77 +662,100 @@ export function ChatComposer({
           </div>
 
           {/* Right Controls: Voice Toggle & Send/Stop Buttons */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 sm:gap-2">
             {/* 4. Voice Input Expanding Button */}
-            <button
+            <motion.button
               type="button"
+              whileHover={shouldReduceMotion ? undefined : { scale: 1.04 }}
+              whileTap={shouldReduceMotion ? undefined : { scale: 0.96 }}
               onClick={toggleVoice}
-              className={`group/rec h-8 px-2.5 rounded-full border border-[var(--border)] transition-all flex items-center gap-1.5 text-xs font-mono touch-target ${
+              className={`group/rec h-8 px-2.5 rounded-full border border-[var(--border)] transition-all flex items-center gap-1.5 text-xs font-sans font-medium touch-target cursor-pointer ${
                 isRecording
-                  ? "bg-red-500/20 border-red-500/40 text-red-400 animate-pulse"
-                  : "bg-[var(--surface)] text-[var(--txt-muted)] hover:text-[var(--txt)] hover:bg-[var(--surface-hover)]"
+                  ? "bg-red-500/20 border-red-500/40 text-red-400 ring-2 ring-red-500/20"
+                  : "bg-[var(--surface)] text-[var(--txt-muted)] hover:text-[var(--txt)] hover:bg-[var(--surface-hover)] hover:border-[var(--border-accent)]"
               }`}
               title={isRecording ? "Stop recording" : "Record voice input"}
               aria-label="Record voice input"
             >
               {isRecording ? (
-                <span className="w-2 h-2 rounded-full bg-red-500 animate-ping" />
+                <span className="flex items-center gap-0.5 h-3.5 px-0.5">
+                  <span className="w-0.5 h-2 bg-red-400 rounded-full animate-pulse" />
+                  <span className="w-0.5 h-3.5 bg-red-400 rounded-full animate-pulse [animation-delay:150ms]" />
+                  <span className="w-0.5 h-2 bg-red-400 rounded-full animate-pulse [animation-delay:300ms]" />
+                </span>
               ) : (
                 <span className="text-sm">🎙</span>
               )}
-              <span className="hidden sm:inline-block max-w-0 overflow-hidden whitespace-nowrap group-hover/rec:max-w-[80px] transition-all duration-300">
+              <span className="hidden sm:inline-block max-w-0 overflow-hidden whitespace-nowrap group-hover/rec:max-w-[80px] transition-all duration-300 font-mono text-[11px]">
                 {isRecording ? formattedRecordingTime : "Record"}
               </span>
-            </button>
+            </motion.button>
 
             {/* 5. Send / Stop Toggle */}
             {isGenerating ? (
-              <button
+              <motion.button
                 type="button"
+                whileHover={shouldReduceMotion ? undefined : { scale: 1.08 }}
+                whileTap={shouldReduceMotion ? undefined : { scale: 0.92 }}
                 onClick={() => onStop()}
                 aria-label="Stop response generation"
                 data-testid="stop-button"
-                className="w-8 h-8 rounded-full bg-[var(--danger)] text-white hover:bg-[var(--danger)]/90 transition-all shadow-sm shrink-0 flex items-center justify-center touch-target"
+                className="w-8 h-8 rounded-full bg-[var(--danger)] text-white hover:bg-[var(--danger)]/90 transition-all shadow-[0_0_12px_rgba(232,85,85,0.4)] shrink-0 flex items-center justify-center touch-target cursor-pointer"
                 title="Stop response generation"
               >
                 <Square className="w-3.5 h-3.5 fill-white" />
-              </button>
+              </motion.button>
             ) : (
-              <button
+              <motion.button
                 type="button"
+                whileHover={isSubmitReady && !shouldReduceMotion ? { scale: 1.08 } : undefined}
+                whileTap={isSubmitReady && !shouldReduceMotion ? { scale: 0.92 } : undefined}
                 onClick={handleSubmit}
                 disabled={(!input.trim() && attachments.length === 0) || disabled}
                 aria-label="Send message"
                 data-testid="send-button"
-                className={`w-8 h-8 rounded-full transition-all shadow-sm shrink-0 flex items-center justify-center touch-target ${
+                className={`group/send w-8 h-8 rounded-full transition-all shadow-sm shrink-0 flex items-center justify-center touch-target cursor-pointer ${
                   isSubmitReady
-                    ? "bg-gradient-to-br from-[var(--accent-b)] to-[var(--accent)] text-[var(--void)] font-bold hover:opacity-90"
+                    ? "bg-gradient-to-tr from-[var(--accent)] via-[var(--accent-b)] to-[var(--accent-c)] text-[var(--void)] font-bold shadow-[0_0_18px_var(--accent-g)] hover:brightness-110 active:brightness-95"
                     : "bg-[var(--surface)] border border-[var(--border)] text-[var(--txt-muted)] opacity-40 pointer-events-none"
                 }`}
                 title="Send message (Enter)"
               >
-                <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
+                <svg
+                  width="15"
+                  height="15"
+                  viewBox="0 0 16 16"
+                  fill="none"
+                  className="transition-transform duration-200 group-hover/send:-translate-y-0.5"
+                >
                   <path
                     d="M8 12.8V3.2M8 3.2L3.8 7.4M8 3.2L12.2 7.4"
                     stroke="currentColor"
-                    strokeWidth="1.65"
+                    strokeWidth="1.8"
                     strokeLinecap="round"
                     strokeLinejoin="round"
                   />
                 </svg>
-              </button>
+              </motion.button>
             )}
           </div>
         </div>
 
-        {/* Footer Hints */}
-        <div className="flex items-center justify-between px-1 pt-2 text-[10px] text-[var(--txt-muted)] font-mono">
-          <span>{input.length} chars</span>
-          <span className="hidden sm:inline">Enter send · Shift+Enter newline · @ for context</span>
+        {/* Footer Hints & Precision Character Counter */}
+        <div className="flex items-center justify-between px-1 pt-2.5 text-[10px] text-[var(--txt-muted)] font-mono border-t border-white/[0.04] mt-1">
+          <div className="flex items-center gap-1.5">
+            <span className="tabular-nums font-mono tracking-wider">{input.length} chars</span>
+            {input.length > 0 && (
+              <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent)] animate-pulse" />
+            )}
+          </div>
+          <span className="hidden sm:inline font-mono tracking-tight text-[var(--txt-muted)]/75">
+            Enter send · Shift+Enter newline · @ for context
+          </span>
         </div>
       </div>
 
-      <div className="text-center text-[10px] text-[var(--txt-muted)] font-light mt-2 opacity-70">
+      <div className="text-center text-[10px] text-[var(--txt-muted)]/60 font-sans tracking-wide mt-2">
         Radiance generates high-precision responses. Verify mission-critical details.
       </div>
     </div>
