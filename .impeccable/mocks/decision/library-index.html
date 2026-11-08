@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Personal Index — Radiance</title>
+<style>
+:root{color-scheme:dark;--void:#06050a;--deep:#0c0b14;--ink:#f3f1ec;--muted:#b4b0c1;--quiet:#8b8798;--line:rgba(243,241,236,.13);--violet:#9b83ff;--serif:Georgia,'Times New Roman',serif;--sans:Arial,Helvetica,sans-serif}
+*{box-sizing:border-box}
+html,body{margin:0;width:1440px;height:900px;overflow:hidden;background:var(--void);color:var(--ink);font-family:var(--sans);-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+.page{width:1200px;margin:0 auto}
+header{height:78px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line);font-size:13px}
+.brand{display:flex;align-items:center;gap:10px;font:600 15px var(--serif);letter-spacing:.12em}
+.brand-mark{width:22px;height:22px;border:1px solid var(--violet);display:grid;place-items:center;color:var(--violet);font:500 13px var(--serif)}
+nav{display:flex;gap:32px;color:var(--muted)}
+.cta{display:inline-flex;align-items:center;justify-content:center;height:46px;padding:0 20px;background:var(--ink);color:var(--void);font-size:14px;font-weight:600}
+.hero{display:flex;align-items:end;justify-content:space-between;padding:48px 0 32px;border-bottom:1px solid var(--line)}
+h1{max-width:800px;margin:0;font:400 68px/1.02 var(--serif);letter-spacing:-.035em;text-wrap:balance}
+.intro{max-width:360px;margin:0 0 6px 36px;color:var(--muted);font-size:15px;line-height:1.6}
+.index{display:grid;grid-template-columns:220px 1fr;min-height:500px;border-bottom:1px solid var(--line)}
+.rail{padding:30px 28px 0 0;border-right:1px solid var(--line)}
+.rail h2{margin:0 0 24px;color:var(--quiet);font-size:11px;font-weight:500;letter-spacing:.13em}
+.rail a{display:flex;align-items:center;gap:12px;padding:13px 0;border-top:1px solid var(--line);font-size:13px;color:var(--muted)}
+.rail a:last-child{border-bottom:1px solid var(--line)}
+.rail b{font:400 12px var(--serif);color:var(--violet)}
+.entry{padding:28px 0 0 36px}
+.caption{display:flex;justify-content:space-between;align-items:center;color:var(--quiet);font-size:12px;letter-spacing:0}
+.caption span:last-child{letter-spacing:0;text-transform:none;color:var(--muted)}
+.entry-title{margin:18px 0 24px;font:400 34px/1.1 var(--serif)}
+.rows{border-top:1px solid var(--line)}
+.row{display:grid;grid-template-columns:74px 170px 1fr;align-items:center;min-height:50px;border-bottom:1px solid var(--line)}
+.ref{font:400 12px var(--serif);color:var(--violet)}
+.kind{font-size:12px;color:var(--quiet)}
+.value{font:400 15px/1.4 var(--serif);color:var(--ink)}
+.question{display:grid;grid-template-columns:74px 170px 1fr;align-items:center;min-height:54px;border-bottom:1px solid var(--line);background:rgba(124,92,255,.055)}
+.reply{display:grid;grid-template-columns:244px 1fr;gap:0;padding:22px 24px;margin-top:18px;background:var(--deep);border:1px solid var(--line)}
+.reply-label{font-size:12px;color:var(--violet)}
+.reply p{max-width:620px;margin:0;color:var(--muted);font:400 16px/1.55 var(--serif)}
+.note{display:flex;justify-content:space-between;margin-top:14px;color:var(--quiet);font-size:11px}
+.note strong{color:var(--muted);font-weight:400}
+footer{display:flex;justify-content:space-between;padding:20px 0;color:var(--quiet);font-size:12px}
+footer .line{color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="page">
+<header>
+  <a class="brand" href="/"><span class="brand-mark">R</span><span>RADIANCE</span></a>
+  <nav aria-label="Primary"><a href="#product">Product</a><a href="#intelligence">Personal Intelligence</a><a href="#privacy">Privacy</a></nav>
+  <a class="cta" href="/chat">Chat with Radiance</a>
+</header>
+<main>
+  <section class="hero" aria-labelledby="title">
+    <h1 id="title">A personal index for the context you choose</h1>
+    <p class="intro">Save a note. Set how you want answers shaped. Bring the relevant details into a later chat when sharing is on.</p>
+  </section>
+  <section class="index" aria-label="Illustrative context index">
+    <aside class="rail">
+      <h2>In this example</h2>
+      <a href="#note"><b>01</b><span>Saved notes</span></a>
+      <a href="#style"><b>02</b><span>Answer style</span></a>
+      <a href="#sharing"><b>03</b><span>Sharing choice</span></a>
+      <div style="margin-top:30px;color:var(--quiet);font:400 13px/1.5 var(--serif)">Your list stays yours to edit, export, or clear.</div>
+    </aside>
+    <div class="entry">
+      <h2 class="entry-title">A later question finds just enough context</h2>
+      <div class="caption"><span>Illustrative example</span><span>Not connected to your vault</span></div>
+      <div class="rows">
+        <div class="row" id="note"><span class="ref">01</span><span class="kind">Saved note</span><span class="value">Thesis: keep citations inline</span></div>
+        <div class="row" id="style"><span class="ref">02</span><span class="kind">Preference</span><span class="value">More concise answers</span></div>
+        <div class="question"><span class="ref">Ask</span><span class="kind">Later question</span><span class="value">Outline the next chapter</span></div>
+      </div>
+      <div class="reply">
+        <div class="reply-label">A reply shaped by 01 + 02</div>
+        <p>Use three section headings, with inline citations where each claim needs support.</p>
+      </div>
+      <div class="note" id="sharing"><span><strong>Sharing is opt-in.</strong> Relevant notes are sent to the selected provider only when enabled.</span><span>Learn how it works</span></div>
+    </div>
+  </section>
+</main>
+<footer><span class="line">Notes you save · Preferences you set · Control you keep</span><span>Radiance · Personal Intelligence</span></footer>
+</div>
+</body>
+</html>

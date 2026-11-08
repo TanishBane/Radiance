@@ -1,0 +1,135 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-09T00:41:06+05:30",
+  "title": "Design System: Radiance",
+  "extensions": {
+    "colorMeta": {
+      "violet-primary": {
+        "role": "primary",
+        "displayName": "Radiance Violet",
+        "canonical": "#7c5cff",
+        "tonalRamp": ["oklch(15% 0.03 285)", "oklch(25% 0.07 285)", "oklch(35% 0.12 285)", "oklch(45% 0.17 285)", "oklch(55% 0.2 285)", "oklch(65% 0.18 285)", "oklch(78% 0.12 285)", "oklch(95% 0.03 285)"]
+      },
+      "violet-lilac": {
+        "role": "secondary",
+        "displayName": "Soft Lilac",
+        "canonical": "#bfa7ff",
+        "tonalRamp": ["oklch(15% 0.025 295)", "oklch(25% 0.06 295)", "oklch(35% 0.1 295)", "oklch(45% 0.14 295)", "oklch(55% 0.17 295)", "oklch(65% 0.15 295)", "oklch(78% 0.1 295)", "oklch(95% 0.025 295)"]
+      },
+      "violet-orchid": {
+        "role": "tertiary",
+        "displayName": "Orchid",
+        "canonical": "#e27aff",
+        "tonalRamp": ["oklch(15% 0.025 325)", "oklch(25% 0.06 325)", "oklch(35% 0.11 325)", "oklch(45% 0.16 325)", "oklch(55% 0.2 325)", "oklch(65% 0.18 325)", "oklch(78% 0.12 325)", "oklch(95% 0.025 325)"]
+      },
+      "void": {
+        "role": "neutral",
+        "displayName": "Void",
+        "canonical": "#06050a",
+        "tonalRamp": ["oklch(15% 0.008 285)", "oklch(25% 0.012 285)", "oklch(35% 0.016 285)", "oklch(45% 0.02 285)", "oklch(55% 0.022 285)", "oklch(65% 0.018 285)", "oklch(78% 0.012 285)", "oklch(95% 0.004 285)"]
+      },
+      "deep-violet": {
+        "role": "neutral",
+        "displayName": "Deep Violet",
+        "canonical": "#0c0b14",
+        "tonalRamp": ["oklch(15% 0.012 285)", "oklch(25% 0.018 285)", "oklch(35% 0.024 285)", "oklch(45% 0.03 285)", "oklch(55% 0.033 285)", "oklch(65% 0.027 285)", "oklch(78% 0.018 285)", "oklch(95% 0.006 285)"]
+      },
+      "warm-ink": {
+        "role": "neutral",
+        "displayName": "Warm White",
+        "canonical": "#f3f1ec",
+        "tonalRamp": ["oklch(15% 0.006 90)", "oklch(25% 0.008 90)", "oklch(35% 0.01 90)", "oklch(45% 0.012 90)", "oklch(55% 0.014 90)", "oklch(65% 0.013 90)", "oklch(78% 0.01 90)", "oklch(95% 0.006 90)"]
+      }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Editorial display", "purpose": "Prominent page and section headings." },
+      "body": { "displayName": "Interface body", "purpose": "Default interface and explanatory copy." },
+      "label": { "displayName": "Technical label", "purpose": "Code labels and compact technical markers." }
+    },
+    "shadows": [
+      { "name": "glass-panel", "value": "0 4px 20px -2px rgba(0, 0, 0, 0.45), inset 0 1px 0 0 rgba(255, 255, 255, 0.05)", "purpose": "Standard glass surfaces." },
+      { "name": "glass-panel-raised", "value": "0 16px 40px -8px rgba(0, 0, 0, 0.65), inset 0 1px 0 0 rgba(255, 255, 255, 0.08)", "purpose": "Raised overlays and content." },
+      { "name": "shadow-modal", "value": "0 20px 50px -10px rgba(0, 0, 0, 0.7), inset 0 1px 0 0 rgba(255, 255, 255, 0.08)", "purpose": "Modal layering." },
+      { "name": "tooltip-surface", "value": "0 8px 24px rgba(0, 0, 0, 0.5)", "purpose": "Compact floating labels." }
+    ],
+    "motion": [
+      { "name": "feedback", "value": "150ms", "purpose": "Fast hover and control feedback." },
+      { "name": "interaction", "value": "200ms", "purpose": "Default interface transitions." },
+      { "name": "entrance", "value": "280ms", "purpose": "Brief appearance transitions." },
+      { "name": "ease-standard", "value": "cubic-bezier(0.2, 0.8, 0.2, 1)", "purpose": "Standard state and entrance easing." }
+    ],
+    "breakpoints": [
+      { "name": "small", "value": "480px" },
+      { "name": "medium", "value": "640px" },
+      { "name": "mobile-app", "value": "767px" },
+      { "name": "navigation", "value": "900px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Filled chat action",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Prominent homepage action linking directly to the real chat route.",
+      "html": "<a class=\"ds-cta\" href=\"/chat\">Chat with Radiance</a>",
+      "css": ".ds-cta { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 0 18px; border: 0; border-radius: 8px; background: var(--txt); color: var(--void); font: 600 0.9375rem/1.2 var(--font-sans), sans-serif; text-decoration: none; transition: background-color 150ms ease-out, transform 150ms ease-out; } .ds-cta:hover { background: #fff; } .ds-cta:active { transform: translateY(1px); } .ds-cta:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }"
+    },
+    {
+      "name": "Ghost action",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "Secondary homepage action with a quiet outlined treatment.",
+      "html": "<a class=\"ds-cta-ghost\" href=\"#product\">See how it works</a>",
+      "css": ".ds-cta-ghost { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 0 18px; border: 1px solid var(--border); border-radius: 8px; background: transparent; color: var(--txt); font: 600 0.9375rem/1.2 var(--font-sans), sans-serif; text-decoration: none; transition: color 150ms ease-out, background-color 150ms ease-out, border-color 150ms ease-out; } .ds-cta-ghost:hover { background: var(--surface-hover); border-color: var(--border-hover); } .ds-cta-ghost:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }"
+    },
+    {
+      "name": "Search field",
+      "kind": "input",
+      "refersTo": "input-search",
+      "description": "Searches explicit notes in Personal Intelligence settings.",
+      "html": "<input class=\"ds-input-search\" type=\"search\" aria-label=\"Search saved notes\" placeholder=\"Search saved notes\">",
+      "css": ".ds-input-search { display: block; width: 100%; min-height: 44px; padding: 0 12px; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); color: var(--txt); font: 400 0.875rem/1.4 var(--font-sans), sans-serif; } .ds-input-search::placeholder { color: var(--txt-muted); } .ds-input-search:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--accent); }"
+    },
+    {
+      "name": "Navigation link",
+      "kind": "nav",
+      "description": "Quiet route or section navigation with a clear hover state.",
+      "html": "<nav class=\"ds-nav\" aria-label=\"Primary\"><a href=\"#product\">Product</a><a href=\"#privacy\">Privacy</a></nav>",
+      "css": ".ds-nav { display: flex; align-items: center; gap: 30px; } .ds-nav a { display: inline-flex; align-items: center; min-height: 44px; color: var(--txt-dim); font: 400 0.9375rem/1.4 var(--font-sans), sans-serif; text-decoration: none; transition: color 150ms ease-out; } .ds-nav a:hover { color: var(--txt); } .ds-nav a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }"
+    },
+    {
+      "name": "Glass panel",
+      "kind": "card",
+      "refersTo": "surface-glass",
+      "description": "Translucent raised container for grouped content.",
+      "html": "<section class=\"ds-glass-panel\"><h2>Personal Intelligence</h2><p>Notes you choose to save stay under your control.</p></section>",
+      "css": ".ds-glass-panel { padding: 20px; border: 1px solid var(--border); border-radius: 12px; background: var(--surface-raised); color: var(--txt); box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.45), inset 0 1px 0 0 rgba(255, 255, 255, 0.05); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); } .ds-glass-panel h2 { margin: 0; color: var(--txt); font: 500 1.25rem/1.35 var(--font-serif), Georgia, serif; } .ds-glass-panel p { margin: 8px 0 0; color: var(--txt-dim); font: 400 1rem/1.6 var(--font-sans), sans-serif; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "Radiance’s dark-violet workspace",
+    "overview": "Radiance uses a near-black violet canvas, a restrained violet accent range, and warm-white text. Editorial serif headings distinguish moments of emphasis from the Plus Jakarta Sans interface copy; JetBrains Mono is reserved for code and technical labels. The established identity comes from this pairing and its contrast, not from any one page arrangement.\n\nSurfaces use quiet tonal differences, fine borders, and selective blur or shadow to establish depth. Controls retain familiar shapes and states, with visible focus and short transitions. Page structure belongs to the surface: the homepage’s annotated-reader composition is recorded in its surface brief and is not a global layout rule.",
+    "keyCharacteristics": [
+      "Dark violet ground with warm-white foreground text.",
+      "Cormorant Garamond display voice, Plus Jakarta Sans interface copy, and JetBrains Mono technical labels.",
+      "Violet accent is reserved for emphasis, selected states, links, and focus.",
+      "Layered surfaces and fine borders provide depth without displacing content."
+    ],
+    "rules": [
+      { "name": "The Two-Voice Rule", "body": "Use the editorial serif for display emphasis and the sans-serif for interface reading; keep mono to technical content and labels.", "section": "typography" }
+    ],
+    "dos": [
+      "Do use the established dark-violet surfaces and warm-white text roles.",
+      "Do keep display headings serif, interface copy sans-serif, and code or technical markers monospace.",
+      "Do use violet for focus and concise emphasis, not as a replacement for readable body text.",
+      "Do retain visible keyboard focus, touch targets, and reduced-motion behavior.",
+      "Do let each route define its own composition while reusing Radiance’s identity and interaction patterns."
+    ],
+    "donts": [
+      "Don't treat the homepage’s annotated folio, margin, or composition as a global layout requirement.",
+      "Don't use serif body copy for dense interface controls or mono for ordinary reading.",
+      "Don't remove the global focus treatment or make state changes depend on motion.",
+      "Don't imply unimplemented product capabilities through visual labels or component examples."
+    ]
+  }
+}

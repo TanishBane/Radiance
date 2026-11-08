@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Radiance — The Annotated Edition</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --ground: #06050a;
+      --text: #f3f1ec;
+      --secondary: #c2becb;
+      --muted: #a9a4b4;
+      --line: rgba(243, 241, 236, .13);
+      --violet: #bfa7ff;
+      --sans: "Plus Jakarta Sans", Arial, sans-serif;
+      --serif: "Cormorant Garamond", Georgia, serif;
+      * { box-sizing: border-box; }
+      body { height: 900px; margin: 0; min-width: 320px; overflow: hidden; background: var(--ground); color: var(--text); font: 16px/1.55 var(--sans); }
+      .page { width: min(1200px, calc(100% - 80px)); height: 900px; margin: 0 auto; overflow: hidden; }
+      header { height: 82px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--line); }
+      .brand { color: var(--text); text-decoration: none; font: 600 15px/1 var(--serif); letter-spacing: .14em; }
+      nav { display: flex; align-items: center; gap: 34px; }
+      nav a { color: var(--secondary); text-decoration: none; font-size: 14px; }
+      nav a:hover { color: var(--text); }
+      .cta { min-height: 46px; display: inline-flex; align-items: center; padding: 0 18px; border-radius: 8px; background: var(--text); color: var(--ground); font-size: 14px; font-weight: 600; text-decoration: none; }
+      .cta:hover { background: #fff; }
+      a:focus-visible { outline: 2px solid var(--violet); outline-offset: 4px; }
+      main { padding-top: 62px; }
+      .intro { max-width: 800px; margin-left: 8.5%; }
+      h1 { max-width: 13ch; margin: 0; font: 500 68px/.98 var(--serif); letter-spacing: -.035em; text-wrap: balance; }
+      .lead { max-width: 58ch; margin: 20px 0 23px; color: var(--secondary); font-size: 17px; line-height: 1.65; }
+      .spread { margin-top: 51px; padding-top: 28px; border-top: 1px solid var(--line); display: grid; grid-template-columns: minmax(0, 1fr) 284px; gap: 58px; }
+      .conversation { padding: 2px 0 0 8.5%; }
+      .question { margin: 0 0 18px; color: var(--secondary); font-size: 15px; }
+      .question b { margin-right: 12px; color: var(--violet); font-weight: 500; }
+      .reply { max-width: 67ch; margin: 0; font: 400 22px/1.5 var(--serif); }
+      .reply strong { color: var(--text); font-weight: 500; }
+      .margin { border-left: 1px solid var(--line); padding: 4px 0 0 26px; }
+      .margin h2 { margin: 0 0 20px; font: 500 20px/1.2 var(--serif); }
+      .annotation { position: relative; margin: 0 0 24px; padding-top: 11px; border-top: 1px solid var(--line); }
+      .annotation::before { content: ""; position: absolute; top: -1px; left: -27px; width: 12px; border-top: 1px solid var(--violet); }
+      .annotation dt { color: var(--violet); font-size: 12px; letter-spacing: .04em; }
+      .annotation dd { margin: 5px 0 0; color: var(--secondary); font: 17px/1.4 var(--serif); }
+      .note { margin: 5px 0 0; color: var(--muted); font-size: 12px; }
+      .folio { margin-top: 27px; padding-top: 14px; border-top: 1px solid var(--line); color: var(--muted); font-size: 12px; }
+    </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <a class="brand" href="/" aria-label="Radiance home">RADIANCE</a>
+      <nav aria-label="Primary">
+        <a href="#how-it-works">How it works</a>
+        <a href="#privacy">Privacy</a>
+        <a class="cta" href="/chat">Chat with Radiance</a>
+      </nav>
+    </header>
+    <main>
+      <section class="intro" aria-labelledby="title">
+        <h1 id="title">A little context changes the next answer</h1>
+        <p class="lead">Save the notes and response preferences you choose. Radiance can bring relevant ones into a later conversation when you enable sharing.</p>
+        <a class="cta" href="/chat">Chat with Radiance</a>
+      </section>
+      <section class="spread" aria-label="Illustrative conversation with selected context in the margin">
+        <div class="conversation">
+          <p class="question"><b>Question</b>What belongs in the next chapter outline?</p>
+          <p class="reply"><strong>Start with three sections.</strong> Keep source notes beside the claims they support, with citations inline. That follows the preference you saved and the thesis note you chose to keep.</p>
+          <p class="folio">Illustrative example · not connected to your Personal Intelligence profile</p>
+        </div>
+        <aside class="margin" aria-label="Selected context">
+          <h2>In the margin</h2>
+          <dl class="annotation"><dt>Saved note</dt><dd>Thesis: keep citations inline</dd></dl>
+          <dl class="annotation"><dt>Answer preference</dt><dd>More concise</dd></dl>
+          <p class="note">Relevant notes are shared with the selected provider only when you turn sharing on.</p>
+        </aside>
+      </section>
+    </main>
+  </div>
+</body>
+</html>

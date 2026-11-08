@@ -1,13 +1,9 @@
-import { LandingReveal } from "./landing-reveal";
-
 export function FutureVision() {
   return (
     <section id="vision" className="landing-section">
       <div className="landing-shell landing-split">
-        <LandingReveal>
-          <h2 className="landing-section-title">An intelligence experience that grows with you</h2>
-        </LandingReveal>
-        <LandingReveal>
+        <h2 className="landing-section-title">An intelligence experience that grows with you</h2>
+        <div>
           <p className="landing-copy" style={{ marginTop: 0 }}>
             The longer-term direction is an AI that understands how you communicate, learn, think, and work —
             with richer memory, more adaptive preferences, and subject-specific knowledge.
@@ -20,7 +16,7 @@ export function FutureVision() {
             What exists now is the honest foundation: you write the context, you set the preferences,
             you control whether that material is shared with a model.
           </p>
-        </LandingReveal>
+        </div>
       </div>
     </section>
   );

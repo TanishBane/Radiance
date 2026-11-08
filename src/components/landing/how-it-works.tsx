@@ -1,5 +1,3 @@
-import { LandingReveal } from "./landing-reveal";
-
 const STEPS = [
   {
     index: "01",
@@ -22,13 +20,13 @@ export function HowItWorks() {
   return (
     <section id="how-it-works" className="landing-section">
       <div className="landing-shell">
-        <LandingReveal>
+        <div>
           <h2 className="landing-section-title">How it works today</h2>
           <p className="landing-copy">
             This is the implemented path: explicit save, explicit preferences, bounded retrieval.
             Radiance does not extract memories automatically from a conversation.
           </p>
-        </LandingReveal>
+        </div>
         <div className="landing-steps" style={{ marginTop: 48 }}>
           {STEPS.map((step) => (
             <article key={step.index} className="landing-step">

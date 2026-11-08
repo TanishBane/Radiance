@@ -72,18 +72,67 @@ test.describe("Radiance landing page", () => {
     await expect(page.getByText("A later question retrieves overlap")).toBeVisible();
   });
 
-  test("FAQ entrance motion respects reduced-motion preference", async ({ page }) => {
+  test("annotated hero connects saved notes and preferences to the reply", async ({ page }) => {
     await page.goto("/");
-    const item = page.locator(".landing-faq-item").first();
-    await expect(item).toBeVisible();
-    await expect(item).toHaveCSS("animation-name", "landing-faq-enter");
+    const article = page.getByRole("figure", { name: "An illustrative Radiance conversation" });
+    await expect(article).toBeVisible();
+    await expect(article.getByText("Saved note", { exact: true })).toBeVisible();
+    await expect(article.getByText("Response preference", { exact: true })).toBeVisible();
+    await expect(article.getByText(/illustrative conversation/i)).toBeVisible();
+    await expect(article.getByText("More concise", { exact: true })).toBeVisible();
+  });
+
+  test("annotated hero fits narrow, tablet, and desktop widths", async ({ page }) => {
+    for (const width of [375, 768, 1024, 1440]) {
+      await page.setViewportSize({ width, height: 900 });
+      await page.goto("/");
+      const overflow = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth);
+      expect(overflow, `horizontal overflow at ${width}px`).toBe(false);
+      await expect(page.getByRole("figure", { name: "An illustrative Radiance conversation" })).toBeVisible();
+    }
+  });
+
+  test("mobile opening shows the context proof beside the chat action", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/");
+    await expect(page.locator(".landing-hero a.landing-cta[href='/chat']")).toBeVisible();
+    const proof = page.getByText("More concise", { exact: true });
+    await expect(proof).toBeVisible();
+    const proofBottom = await proof.evaluate((element) => element.getBoundingClientRect().bottom);
+    expect(proofBottom).toBeLessThanOrEqual(844);
+  });
+
+  test("hero and menu motion stay still when reduced motion is requested", async ({ page }) => {
     await page.emulateMedia({ reducedMotion: "reduce" });
-    await expect(item).toHaveCSS("animation-name", "none");
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/");
+    await expect(page.locator(".landing-reference-line").first()).toHaveCSS("animation-name", "none");
+    await page.getByRole("button", { name: "Open menu" }).click();
+    await expect(page.getByRole("dialog", { name: "Menu" })).toHaveCSS("animation-name", "none");
+  });
+
+  test("mobile menu uses its short entrance transition", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/");
+    await page.getByRole("button", { name: "Open menu" }).click();
+    await expect(page.getByRole("dialog", { name: "Menu" })).toHaveCSS("animation-name", "landing-menu-panel-in");
+  });
+
+  test("hero reference line has one finite entrance on standard motion", async ({ page }) => {
+    await page.goto("/");
+    await expect(page.locator(".landing-reference-line").first()).toHaveCSS("animation-name", "landing-reference-draw");
+    await expect(page.locator(".landing-faq-item").first()).toHaveCSS("animation-name", "none");
   });
 
   test("hero chat CTA opens the existing chat experience", async ({ page }) => {
+    // Warm the route first so the first development-server compile does not
+    // make this navigation assertion depend on dev compilation timing.
+    await page.goto("/chat");
+    await expect(page.getByPlaceholder("Ask RADIANCE anything...")).toBeVisible();
     await page.goto("/");
-    await page.locator(".landing-hero a.landing-cta[href='/chat']").click();
+    const cta = page.locator(".landing-hero a.landing-cta[href='/chat']");
+    await expect(cta).toBeVisible();
+    await cta.click();
     await expect(page).toHaveURL(/\/chat$/);
     await expect(page.getByPlaceholder("Ask RADIANCE anything...")).toBeVisible();
   });

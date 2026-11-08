@@ -1,5 +1,3 @@
-import { LandingReveal } from "./landing-reveal";
-
 const FEATURES = [
   {
     title: "Personal memory",
@@ -32,9 +30,7 @@ export function FeatureShowcase() {
   return (
     <section id="features" className="landing-section">
       <div className="landing-shell">
-        <LandingReveal>
-          <h2 className="landing-section-title">What you can do now</h2>
-        </LandingReveal>
+        <h2 className="landing-section-title">What you can do now</h2>
         <div className="landing-features" style={{ marginTop: 56 }}>
           {FEATURES.map((feature) => (
             <article key={feature.title} className="landing-feature">
