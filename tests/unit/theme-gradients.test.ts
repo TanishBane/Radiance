@@ -21,7 +21,7 @@ describe("Theme Gradients Configuration & Mathematical Invariants", () => {
     const engineIdStrings = engineIds as Set<string>;
     expect(engineIds.size).toBe(12);
 
-    // Engines list with Cinematic Atmosphere removed and Fluid Aurora replaced by Prismatic Caustics
+    // Engines list with Cinematic Atmosphere removed and replaced with Silk Ribbons (ribbon waves engine)
     expect(engineIdStrings.has("ambient-spotlight")).toBe(false);
     expect(engineIdStrings.has("bloom")).toBe(false);
     expect(engineIdStrings.has("silk-caustics")).toBe(false);
@@ -43,7 +43,8 @@ describe("Theme Gradients Configuration & Mathematical Invariants", () => {
     expect(engineIds.has("matrix-rain")).toBe(true);
 
     expect(engineIdStrings.has("fluid-aurora")).toBe(false);
-    expect(engineIds.has("prismatic-caustics")).toBe(true);
+    expect(engineIdStrings.has("prismatic-caustics")).toBe(false);
+    expect(engineIds.has("silk-ribbons")).toBe(true);
     expect(engineIdStrings.has("zen-minimal")).toBe(false);
     expect(engineIdStrings.has("celestial-dust")).toBe(false);
 

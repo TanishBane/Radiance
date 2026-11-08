@@ -28,7 +28,7 @@ export type GradientStyle =
   | "quantum-field"
   | "liquid-lava"
   | "matrix-rain"
-  | "prismatic-caustics"
+  | "silk-ribbons"
   | "radial-pulse"
   | "solar-corona"
   | "bokeh-blur";
@@ -618,11 +618,11 @@ export const ATMOSPHERE_ENGINES: AtmosphereEngineInfo[] = [
     iconName: "Terminal",
   },
   {
-    id: "prismatic-caustics",
-    label: "Prismatic Caustics",
-    tag: "Spectral",
-    description: "Refractive optical chromatic caustics shifting dynamically across deep space with spectral wave dispersion.",
-    iconName: "Sparkles",
+    id: "silk-ribbons",
+    label: "Silk Ribbons",
+    tag: "Ribbon",
+    description: "Multi-layered undulating silk ribbon waves drifting with continuous harmonic curvature and luminous gradient contours.",
+    iconName: "Waves",
   },
   {
     id: "radial-pulse",
