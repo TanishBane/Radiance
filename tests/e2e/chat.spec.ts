@@ -2,8 +2,7 @@ import { test, expect } from "@playwright/test";
 
 test.describe("Radiance AI Platform E2E Workflows", () => {
   test.beforeEach(async ({ page }) => {
-    // Navigate to root
-    await page.goto("/");
+    await page.goto("/chat");
     await page.waitForLoadState("networkidle");
     await expect(page.getByText("Illuminate what is possible", { exact: true })).toHaveCount(0, { timeout: 7000 });
   });
@@ -61,7 +60,7 @@ test.describe("Radiance AI Platform E2E Workflows", () => {
 
   test("reduced motion keeps dialog transitions immediate", async ({ page }) => {
     await page.emulateMedia({ reducedMotion: "reduce" });
-    await page.goto("/");
+    await page.goto("/chat");
     await page.waitForLoadState("networkidle");
     if ((page.viewportSize()?.width ?? 0) < 768) {
       await page.getByTestId("bottom-nav-settings").click();
@@ -89,7 +88,7 @@ test.describe("Radiance AI Platform E2E Workflows", () => {
 
   test("390px workspace does not overflow horizontally", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto("/");
+    await page.goto("/chat");
     const widths = await page.evaluate(() => ({
       viewport: document.documentElement.clientWidth,
       content: document.documentElement.scrollWidth,
@@ -109,7 +108,7 @@ test.describe("Radiance AI Platform E2E Workflows", () => {
 
   test("prompt suggestion columns remain inside their desktop row", async ({ page }) => {
     await page.setViewportSize({ width: 1366, height: 900 });
-    await page.goto("/");
+    await page.goto("/chat");
     await page.waitForLoadState("networkidle");
     const promptCategories = page.getByTestId("prompt-categories");
     const fits = await promptCategories.evaluate((element) => {

@@ -1,7 +1,7 @@
 import React from "react";
 import { render, screen, fireEvent, act, waitFor } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import RadianceApp from "@/app/page";
+import RadianceApp from "@/features/chat/components/radiance-app";
 import { safeLocalStorage } from "@/lib/utils/storage";
 import { conversationService } from "@/lib/db/conversations";
 
