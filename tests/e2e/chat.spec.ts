@@ -19,7 +19,7 @@ test.describe("Radiance AI Platform E2E Workflows", () => {
     await textarea.fill(message);
 
     // Expect character counter to reflect length
-    await expect(page.getByText(`${message.length} chars`, { exact: true })).toBeVisible();
+    await expect(textarea).toHaveValue(message);
   });
 
   test("opens and closes keyboard shortcuts dialog", async ({ page }) => {

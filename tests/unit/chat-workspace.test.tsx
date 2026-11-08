@@ -301,7 +301,7 @@ describe("ChatWorkspace Component (Inference & Error States)", () => {
       render(<ChatWorkspace {...defaultProps} onSend={onSendMock} />);
 
       const textarea = screen.getByPlaceholderText(
-        "Ask RADIANCE anything... (Shift+Enter for newline)"
+        "Ask RADIANCE anything..."
       );
       const sendBtn = screen.getByTestId("send-button");
 

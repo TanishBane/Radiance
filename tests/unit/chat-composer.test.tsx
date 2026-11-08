@@ -17,7 +17,7 @@ describe("ChatComposer Component & Deduplication Controls", () => {
       render(<ChatComposer onSend={onSend} onStop={onStop} isGenerating={false} />);
 
       const textarea = screen.getByPlaceholderText(
-        "Ask RADIANCE anything... (Shift+Enter for newline)"
+        "Ask RADIANCE anything..."
       );
       expect(textarea).toBeDefined();
     });
@@ -35,7 +35,7 @@ describe("ChatComposer Component & Deduplication Controls", () => {
       render(<ChatComposer onSend={onSend} onStop={onStop} isGenerating={false} />);
 
       const textarea = screen.getByPlaceholderText(
-        "Ask RADIANCE anything... (Shift+Enter for newline)"
+        "Ask RADIANCE anything..."
       );
       const sendButton = screen.getByTestId("send-button");
 
@@ -54,7 +54,7 @@ describe("ChatComposer Component & Deduplication Controls", () => {
       render(<ChatComposer onSend={onSend} onStop={onStop} isGenerating={false} />);
 
       const textarea = screen.getByPlaceholderText(
-        "Ask RADIANCE anything... (Shift+Enter for newline)"
+        "Ask RADIANCE anything..."
       );
       const sendButton = screen.getByTestId("send-button");
 
@@ -70,7 +70,7 @@ describe("ChatComposer Component & Deduplication Controls", () => {
       render(<ChatComposer onSend={onSend} onStop={onStop} isGenerating={false} />);
 
       const textarea = screen.getByPlaceholderText(
-        "Ask RADIANCE anything... (Shift+Enter for newline)"
+        "Ask RADIANCE anything..."
       );
 
       fireEvent.change(textarea, { target: { value: "Enter message" } });
@@ -85,7 +85,7 @@ describe("ChatComposer Component & Deduplication Controls", () => {
       render(<ChatComposer onSend={onSend} onStop={onStop} isGenerating={false} />);
 
       const textarea = screen.getByPlaceholderText(
-        "Ask RADIANCE anything... (Shift+Enter for newline)"
+        "Ask RADIANCE anything..."
       );
 
       fireEvent.change(textarea, { target: { value: "Line 1" } });
@@ -100,7 +100,7 @@ describe("ChatComposer Component & Deduplication Controls", () => {
       render(<ChatComposer onSend={onSend} onStop={onStop} isGenerating={false} />);
 
       const textarea = screen.getByPlaceholderText(
-        "Ask RADIANCE anything... (Shift+Enter for newline)"
+        "Ask RADIANCE anything..."
       );
 
       fireEvent.change(textarea, { target: { value: "nihon" } });
@@ -122,7 +122,7 @@ describe("ChatComposer Component & Deduplication Controls", () => {
       render(<ChatComposer onSend={onSend} onStop={onStop} isGenerating={false} />);
 
       const textarea = screen.getByPlaceholderText(
-        "Ask RADIANCE anything... (Shift+Enter for newline)"
+        "Ask RADIANCE anything..."
       );
 
       fireEvent.change(textarea, { target: { value: "hangul" } });
@@ -136,7 +136,7 @@ describe("ChatComposer Component & Deduplication Controls", () => {
       render(<ChatComposer onSend={onSend} onStop={onStop} isGenerating={false} />);
 
       const textarea = screen.getByPlaceholderText(
-        "Ask RADIANCE anything... (Shift+Enter for newline)"
+        "Ask RADIANCE anything..."
       );
 
       fireEvent.change(textarea, { target: { value: "Confirmed text" } });
@@ -197,7 +197,7 @@ describe("ChatComposer Component & Deduplication Controls", () => {
       render(<ChatComposer onSend={onSend} onStop={onStop} isGenerating={false} />);
 
       const textarea = screen.getByPlaceholderText(
-        "Ask RADIANCE anything... (Shift+Enter for newline)"
+        "Ask RADIANCE anything..."
       );
       const sendButton = screen.getByTestId("send-button");
 
@@ -217,7 +217,7 @@ describe("ChatComposer Component & Deduplication Controls", () => {
       render(<ChatComposer onSend={onSend} onStop={onStop} isGenerating={false} />);
 
       const textarea = screen.getByPlaceholderText(
-        "Ask RADIANCE anything... (Shift+Enter for newline)"
+        "Ask RADIANCE anything..."
       );
 
       fireEvent.change(textarea, { target: { value: "Double enter test" } });
@@ -237,7 +237,7 @@ describe("ChatComposer Component & Deduplication Controls", () => {
       render(<ChatComposer onSend={onSend} onStop={onStop} isGenerating={false} disabled={true} />);
 
       const textarea = screen.getByPlaceholderText(
-        "Ask RADIANCE anything... (Shift+Enter for newline)"
+        "Ask RADIANCE anything..."
       );
       const sendButton = screen.getByTestId("send-button");
 
