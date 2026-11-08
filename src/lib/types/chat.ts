@@ -25,6 +25,7 @@ export interface ChatMessage {
   isError?: boolean;
   errorDetails?: string;
   feedback?: FeedbackRating;
+  personalization?: { memoryIds: string[]; preferenceIds: string[]; mode: "build" | "plan" | "ask" };
 }
 
 export interface Conversation {
@@ -97,7 +98,7 @@ export interface UseChatStreamReturn {
   isGenerating: boolean;
   streamingContent: string;
   streamError: Error | null;
-  send: (messages: ChatMessage[], modelId?: string, mode?: string) => Promise<void>;
+  send: (messages: ChatMessage[], modelId?: string, mode?: string, personalization?: { provider: { memories: Array<{ category: string; content: string }>; preferences: string[] }; memoryIds: string[]; preferenceIds: string[] }) => Promise<void>;
   stop: (discardPartial?: boolean) => void;
   retryLast: () => Promise<void>;
 }

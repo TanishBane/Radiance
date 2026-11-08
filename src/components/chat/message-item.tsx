@@ -25,6 +25,8 @@ import {
   AlertCircle,
   RefreshCw,
   Clock,
+  BookmarkPlus,
+  Sparkles,
 } from "lucide-react";
 
 const CODE_EXT_MAP: Record<string, string> = {
@@ -49,6 +51,8 @@ export interface MessageItemProps {
   onEdit?: (newContent: string) => void;
   onDelete?: (messageId: string) => void;
   onFeedback?: (messageId: string, feedback: FeedbackRating) => void;
+  onRemember?: (messageId: string, content: string) => void;
+  onOpenPersonalIntelligence?: () => void;
   onRetry?: () => void;
 }
 
@@ -61,6 +65,8 @@ export function MessageItem({
   onEdit,
   onDelete,
   onFeedback,
+  onRemember,
+  onOpenPersonalIntelligence,
   onRetry,
 }: MessageItemProps) {
   const isUser = message.role === "user";
@@ -481,6 +487,13 @@ export function MessageItem({
               </button>
             )}
 
+            {isUser && onRemember && !message.isError && (
+              <button type="button" onClick={() => onRemember(message.id, message.content)} className={ACTION_BTN_CLS} title="Save this message as a note" aria-label="Remember this message" data-testid="remember-message-button"><BookmarkPlus className="w-3.5 h-3.5" /></button>
+            )}
+            {!isUser && message.personalization && onOpenPersonalIntelligence && (
+              <button type="button" onClick={onOpenPersonalIntelligence} className="inline-flex min-h-8 items-center gap-1 rounded-lg px-2 text-[11px] text-[var(--accent-b)] hover:bg-[var(--surface-hover)]" aria-label="Review saved context used for this response"><Sparkles className="h-3 w-3" />{message.personalization.memoryIds.length ? `Personalized · ${message.personalization.memoryIds.length} saved note${message.personalization.memoryIds.length === 1 ? "" : "s"}` : "Adapted to saved preferences"}</button>
+            )}
+
             {/* Regenerate Assistant Response */}
             {!isUser && !message.isError && onRegenerate && !isStreaming && (
               <button
@@ -636,6 +649,10 @@ export function MessageItem({
                       <Edit2 className="w-4 h-4 text-[var(--txt-muted)] shrink-0" />
                       <span>Edit prompt</span>
                     </DropdownMenu.Item>
+                  )}
+
+                  {isUser && onRemember && !message.isError && (
+                    <DropdownMenu.Item onSelect={() => onRemember(message.id, message.content)} className={DROPDOWN_ITEM_CLS} data-testid="mobile-action-remember"><BookmarkPlus className="h-4 w-4 text-[var(--txt-muted)]" /><span>Remember this note</span></DropdownMenu.Item>
                   )}
 
                   {/* Regenerate (Assistant only) */}

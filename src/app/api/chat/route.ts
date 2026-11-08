@@ -7,6 +7,7 @@ import { getModelInstance } from "@/lib/ai/providers";
 import { composeSystemPrompt } from "@/lib/ai/prompts";
 import { resolveCapabilityModel } from "@/lib/ai/models";
 import { aiTelemetry } from "@/lib/observability/ai-telemetry";
+import { applyPersonalizationToMessages } from "@/lib/ai/personalization-context";
 
 export const runtime = "nodejs";
 
@@ -57,7 +58,10 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const { messages, modelId, mode, tone, language, customInstructions, temperature } = parsed.data;
+  const { messages, modelId, mode, tone, language, customInstructions, temperature, personalization } = parsed.data;
+  const providerMessages = personalization
+    ? applyPersonalizationToMessages(messages, personalization)
+    : messages;
 
   // 3. Multimodal Content Detection & Capability Resolution
   const hasMultimodal = messages.some((m) =>
@@ -82,7 +86,7 @@ export async function POST(req: NextRequest) {
   const systemPrompt = composeSystemPrompt(tone, language, mode, customInstructions);
 
   // 6. Map Messages to CoreMessage Format With Attachment Injection
-  const coreMessages: CoreMessage[] = messages.map((m) => {
+  const coreMessages: CoreMessage[] = providerMessages.map((m) => {
     let textContent = m.content;
 
     // Append text, document, and PDF attachments safely

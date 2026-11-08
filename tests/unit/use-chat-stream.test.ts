@@ -593,6 +593,38 @@ describe("useChatStream — Streaming Lifecycle, Buffer & Error State Specificat
   });
 
   describe("4. Retry Mechanism (retryLast)", () => {
+    it("sends only the provider projection and keeps memory IDs in local response metadata", async () => {
+      const fetchMock = vi.fn().mockResolvedValue({
+        ok: true,
+        status: 200,
+        body: createMockStream(['0:"Personalized answer"\n']),
+      });
+      global.fetch = fetchMock;
+      const onStreamComplete = vi.fn();
+      const { result } = renderHook(() => useChatStream({
+        modelId: "groq-llama-3.3-70b", tone: "default", language: "en", onStreamComplete,
+      }));
+
+      await act(async () => {
+        await result.current.send([sampleUserMessage], undefined, "build", {
+          provider: { memories: [{ category: "knowledge", content: "I use Python." }], preferences: ["more-concise"] },
+          memoryIds: ["local-memory-id"],
+          preferenceIds: ["local-preference-id"],
+        });
+      });
+
+      const requestBody = JSON.parse(fetchMock.mock.calls[0][1].body);
+      expect(requestBody.personalization).toEqual({
+        memories: [{ category: "knowledge", content: "I use Python." }],
+        preferences: ["more-concise"],
+      });
+      expect(JSON.stringify(requestBody)).not.toContain("local-memory-id");
+      expect(JSON.stringify(requestBody)).not.toContain("local-preference-id");
+      expect(onStreamComplete.mock.calls[0][0].personalization).toEqual({
+        memoryIds: ["local-memory-id"], preferenceIds: ["local-preference-id"], mode: "build",
+      });
+    });
+
     it("re-submits the exact prior prompt messages when retryLast() is invoked", async () => {
       const fetchMock = vi
         .fn()
