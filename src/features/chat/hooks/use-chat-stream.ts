@@ -31,6 +31,7 @@ export function useChatStream({
   const discardPartialRef = useRef(false);
 
   const lastModeRef = useRef<string | undefined>(undefined);
+  const lastPersonalizationRef = useRef<Parameters<UseChatStreamReturn["send"]>[3]>(undefined);
 
   const stop = useCallback((discardPartial: boolean | unknown = false) => {
     if (discardPartial === true) {
@@ -46,12 +47,13 @@ export function useChatStream({
   }, []);
 
   const send = useCallback(
-    async (messagesToSend: ChatMessage[], overrideModelId?: string, overrideMode?: string) => {
+    async (messagesToSend: ChatMessage[], overrideModelId?: string, overrideMode?: string, personalization?: Parameters<UseChatStreamReturn["send"]>[3]) => {
       if (isGeneratingRef.current) return;
 
       lastMessagesRef.current = messagesToSend;
       lastModelIdRef.current = overrideModelId;
       lastModeRef.current = overrideMode;
+      lastPersonalizationRef.current = personalization;
 
       discardPartialRef.current = false;
       isGeneratingRef.current = true;
@@ -81,6 +83,9 @@ export function useChatStream({
             tone,
             language,
             customInstructions,
+            ...(personalization?.provider && (personalization.provider.memories.length || personalization.provider.preferences.length)
+              ? { personalization: personalization.provider }
+              : {}),
           }),
         });
 
@@ -163,6 +168,13 @@ export function useChatStream({
           role: "assistant",
           content: accumulated || "*(No response generated)*",
           createdAt: Date.now(),
+          ...(personalization && (personalization.memoryIds.length || personalization.preferenceIds.length) ? {
+            personalization: {
+              memoryIds: personalization.memoryIds,
+              preferenceIds: personalization.preferenceIds,
+              mode: overrideMode === "plan" || overrideMode === "ask" ? overrideMode : "build",
+            },
+          } : {}),
         };
 
         setStreamingContent("");
@@ -186,6 +198,13 @@ export function useChatStream({
               role: "assistant",
               content: accumulated,
               createdAt: Date.now(),
+              ...(lastPersonalizationRef.current && (lastPersonalizationRef.current.memoryIds.length || lastPersonalizationRef.current.preferenceIds.length) ? {
+                personalization: {
+                  memoryIds: lastPersonalizationRef.current.memoryIds,
+                  preferenceIds: lastPersonalizationRef.current.preferenceIds,
+                  mode: lastModeRef.current === "plan" || lastModeRef.current === "ask" ? lastModeRef.current : "build",
+                },
+              } : {}),
             };
             onStreamComplete(assistantMsg);
           }
@@ -212,7 +231,7 @@ export function useChatStream({
   const retryLast = useCallback(async () => {
     if (isGeneratingRef.current) return;
     if (!lastMessagesRef.current || lastMessagesRef.current.length === 0) return;
-    await send(lastMessagesRef.current, lastModelIdRef.current, lastModeRef.current);
+    await send(lastMessagesRef.current, lastModelIdRef.current, lastModeRef.current, lastPersonalizationRef.current);
   }, [send]);
 
   return {

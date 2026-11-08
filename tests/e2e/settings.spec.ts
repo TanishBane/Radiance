@@ -56,6 +56,24 @@ test.describe("Radiance Settings Center", () => {
     await expect(page.getByLabel("Response language")).toHaveValue("hi");
   });
 
+  test("manages explicit local intelligence notes with sharing off by default", async ({ page }) => {
+    await page.goto("/");
+    await page.waitForLoadState("networkidle");
+    await openSettings(page);
+    await selectSection(page, "Personal Intelligence");
+
+    const sharing = page.getByRole("checkbox", { name: /Share relevant saved context/i });
+    await expect(sharing).not.toBeChecked();
+    await expect(page.getByText(/in this browser only/i)).toBeVisible();
+    await page.getByLabel("New note").fill("I use Python for data analysis");
+    await page.getByRole("button", { name: "Add note" }).click();
+    await expect(page.getByText("I use Python for data analysis", { exact: true })).toBeVisible();
+    const profile = await page.evaluate(() => JSON.parse(localStorage.getItem("radiance_personal_intelligence_v1") || "null"));
+    expect(profile.personalizationEnabled).toBe(false);
+    expect(profile.memories).toHaveLength(1);
+    expect(profile.memories[0].confidence).toBe("user-confirmed");
+  });
+
   test("Enter-to-send preference keeps Enter as a newline when disabled", async ({ page }) => {
     await page.goto("/");
     await page.waitForLoadState("networkidle");

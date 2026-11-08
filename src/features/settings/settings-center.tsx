@@ -12,11 +12,14 @@ import { getMotionTransition } from "@/lib/motion/presets";
 import { KEYBOARD_SHORTCUTS } from "./keyboard-shortcuts";
 import { DEFAULT_SETTINGS } from "./settings-service";
 import type { RadianceSettings } from "./settings-schema";
+import { PersonalIntelligenceCenter } from "@/features/intelligence/personal-intelligence-center";
+import type { PersonalIntelligenceProfile } from "@/features/intelligence/profile-schema";
 
 const SECTIONS = [
   { id: "general", label: "General" },
   { id: "appearance", label: "Appearance" },
   { id: "personalization", label: "Personalization" },
+  { id: "personal-intelligence", label: "Personal Intelligence" },
   { id: "models", label: "AI & Models" },
   { id: "composer", label: "Chat & Composer" },
   { id: "data", label: "Data Controls" },
@@ -36,6 +39,7 @@ const SEARCH_TARGETS: Array<{ label: string; section: SectionId; id: string }> =
   { label: "Response tone", section: "personalization", id: "response-tone" },
   { label: "Response language", section: "personalization", id: "response-language-setting" },
   { label: "Custom instructions", section: "personalization", id: "custom-instructions" },
+  { label: "Personal Intelligence", section: "personal-intelligence", id: "personal-intelligence-center" },
   { label: "Default model", section: "models", id: "default-model" },
   { label: "Enter to send", section: "composer", id: "enter-to-send" },
   { label: "Export conversations", section: "data", id: "export-conversations" },
@@ -54,6 +58,8 @@ interface SettingsCenterProps {
   onExportConversations: () => boolean;
   onClearConversations: () => Promise<boolean>;
   conversationCount: number;
+  intelligenceProfile: PersonalIntelligenceProfile;
+  onIntelligenceProfileChange: (profile: PersonalIntelligenceProfile) => boolean;
 }
 
 function SwitchRow({
@@ -136,6 +142,8 @@ export function SettingsCenter({
   onExportConversations,
   onClearConversations,
   conversationCount,
+  intelligenceProfile,
+  onIntelligenceProfileChange,
 }: SettingsCenterProps) {
   const reducedMotion = useReducedMotion() ?? false;
   const [activeSection, setActiveSection] = useState<SectionId>("general");
@@ -263,7 +271,7 @@ export function SettingsCenter({
             </Dialog.Close>
           </header>
 
-          <div className="border-b border-[var(--border)] px-4 py-3 sm:hidden">
+          <div className="border-b border-[var(--border)] px-4 py-3 md:hidden">
             <label htmlFor="settings-section-mobile" className="sr-only">Settings section</label>
             <select
               id="settings-section-mobile"
@@ -494,6 +502,10 @@ export function SettingsCenter({
                     </div>
                   )}
 
+                  {activeSection === "personal-intelligence" && (
+                    <PersonalIntelligenceCenter profile={intelligenceProfile} onChange={onIntelligenceProfileChange} />
+                  )}
+
                   {activeSection === "composer" && (
                     <div>
                       <SwitchRow
@@ -584,6 +596,7 @@ function sectionDescription(section: SectionId): string {
     case "general": return "Keyboard access and the current session’s storage behavior.";
     case "appearance": return "Curate the color and atmospheric rendering used across your workspace.";
     case "personalization": return "Set the response style and preferences sent with new AI requests.";
+    case "personal-intelligence": return "Review the notes and explicit response preferences stored in this browser, and control what is shared with an AI provider.";
     case "models": return "Choose the default registered model for your next request.";
     case "composer": return "Adjust how the message composer handles the Enter key.";
     case "data": return "Export or remove local conversation data and reset preferences independently.";

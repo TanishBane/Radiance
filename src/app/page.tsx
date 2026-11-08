@@ -16,6 +16,9 @@ import {
 } from "@/features/settings/settings-service";
 import type { RadianceSettings } from "@/features/settings/settings-schema";
 import { matchesShortcut } from "@/features/settings/keyboard-shortcuts";
+import { addMemory, createDefaultIntelligenceProfile, INTELLIGENCE_STORAGE_KEY, loadIntelligenceProfile, saveIntelligenceProfile } from "@/features/intelligence/profile-store";
+import { buildPersonalizationContext, toProviderPersonalization } from "@/features/intelligence/retrieval";
+import type { PersonalIntelligenceProfile, PersonalizationScope } from "@/features/intelligence/profile-schema";
 
 // Background & Branding
 import { AmbientCanvas } from "@/components/background/ambient-canvas";
@@ -37,6 +40,7 @@ import { ChatWorkspace } from "@/features/chat/components/chat-workspace";
 export default function RadianceApp() {
   const [showSplash, setShowSplash] = useState(true);
   const [settings, setSettings] = useState<RadianceSettings>(DEFAULT_SETTINGS);
+  const [intelligenceProfile, setIntelligenceProfile] = useState<PersonalIntelligenceProfile>(() => createDefaultIntelligenceProfile());
   const theme = (settings.theme || "violet") as ThemeId;
   const gradientStyle = (settings.gradientStyle || "waves") as GradientStyle;
   const modelId = settings.modelId || DEFAULT_MODEL_ID;
@@ -60,6 +64,22 @@ export default function RadianceApp() {
     setSettings(withThemeHistory);
     return true;
   }, [settings]);
+
+  const handleIntelligenceProfileChange = useCallback((nextProfile: PersonalIntelligenceProfile) => {
+    if (!saveIntelligenceProfile(nextProfile)) return false;
+    setIntelligenceProfile(nextProfile);
+    return true;
+  }, []);
+
+  const makePersonalizationRequest = useCallback((query: string, mode?: string) => {
+    const scope: PersonalizationScope = mode === "plan" || mode === "ask" ? mode : "build";
+    const context = buildPersonalizationContext(intelligenceProfile, query, scope);
+    return {
+      provider: toProviderPersonalization(context),
+      memoryIds: context.memories.map((memory) => memory.id),
+      preferenceIds: context.preferences.map((preference) => preference.id),
+    };
+  }, [intelligenceProfile]);
 
   const openSettings = useCallback((section = "general") => {
     setSettingsSection(section);
@@ -123,11 +143,13 @@ export default function RadianceApp() {
   // Restore and validate local preferences; rotate palettes through the registered theme set.
   useEffect(() => {
     setSettings(loadSettings(undefined, true));
+    setIntelligenceProfile(loadIntelligenceProfile());
   }, []);
 
   useEffect(() => {
     const handleStorage = (event: StorageEvent) => {
       if (event.key === SETTINGS_STORAGE_KEY) setSettings(loadSettings());
+      if (event.key === INTELLIGENCE_STORAGE_KEY) setIntelligenceProfile(loadIntelligenceProfile());
     };
     window.addEventListener("storage", handleStorage);
     return () => window.removeEventListener("storage", handleStorage);
@@ -235,10 +257,21 @@ export default function RadianceApp() {
   const handleSend = useCallback(
     (text: string, attachments: Attachment[] = [], mode?: string) => {
       const nextMessages = appendUserMessage(text, attachments);
-      send(nextMessages, undefined, mode);
+      send(nextMessages, undefined, mode, makePersonalizationRequest(text, mode));
     },
-    [appendUserMessage, send]
+    [appendUserMessage, send, makePersonalizationRequest]
   );
+
+  const handleRememberMessage = useCallback((messageId: string, text: string) => {
+    const result = addMemory(intelligenceProfile, {
+      content: text,
+      category: "context",
+      importance: 3,
+      source: activeConvId ? { type: "conversation", conversationId: activeConvId, messageId } : { type: "manual" },
+    });
+    if (result.ok) handleIntelligenceProfileChange(result.profile);
+    openSettings("personal-intelligence");
+  }, [intelligenceProfile, activeConvId, handleIntelligenceProfileChange, openSettings]);
 
   const handleRegenerate = useCallback(
     async (messageId: string) => {
@@ -276,9 +309,10 @@ export default function RadianceApp() {
         }
       }
 
-      await send(prunedMessages);
+      const latestUserText = prunedMessages.filter((message) => message.role === "user").at(-1)?.content ?? "";
+      await send(prunedMessages, undefined, "build", makePersonalizationRequest(latestUserText, "build"));
     },
-    [isGenerating, stop, activeConvId, setMessages, setConversations, send]
+    [isGenerating, stop, activeConvId, setMessages, setConversations, send, makePersonalizationRequest]
   );
 
   const handleEditUserMessage = useCallback(
@@ -290,10 +324,11 @@ export default function RadianceApp() {
 
       const truncatedMessages = await editUserMessage(messageId, newContent);
       if (truncatedMessages && truncatedMessages.length > 0) {
-        await send(truncatedMessages);
+        const latestUserText = truncatedMessages.filter((message) => message.role === "user").at(-1)?.content ?? "";
+        await send(truncatedMessages, undefined, "build", makePersonalizationRequest(latestUserText, "build"));
       }
     },
-    [isGenerating, stop, editUserMessage, send]
+    [isGenerating, stop, editUserMessage, send, makePersonalizationRequest]
   );
 
   const handleDeleteMessage = useCallback(
@@ -375,6 +410,8 @@ export default function RadianceApp() {
             onEditUserMessage={handleEditUserMessage}
             onDeleteMessage={handleDeleteMessage}
             onFeedback={handleFeedback}
+            onRememberMessage={handleRememberMessage}
+            onOpenPersonalIntelligence={() => openSettings("personal-intelligence")}
             onRetry={handleRetry}
           />
         </div>
@@ -429,6 +466,8 @@ export default function RadianceApp() {
         onExportConversations={handleExportConversations}
         onClearConversations={handleClearConversations}
         conversationCount={conversations.length}
+        intelligenceProfile={intelligenceProfile}
+        onIntelligenceProfileChange={handleIntelligenceProfileChange}
       />
     </div>
   );

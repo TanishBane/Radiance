@@ -31,6 +31,8 @@ export interface ChatWorkspaceProps {
   onEditMessage?: (messageId: string, newContent: string) => void;
   onDeleteMessage?: (messageId: string) => void;
   onFeedback?: (messageId: string, feedback: FeedbackRating) => void;
+  onRememberMessage?: (messageId: string, content: string) => void;
+  onOpenPersonalIntelligence?: () => void;
 }
 
 interface ChatErrorCardProps {
@@ -117,6 +119,8 @@ export function ChatWorkspace({
   onEditMessage,
   onDeleteMessage,
   onFeedback,
+  onRememberMessage,
+  onOpenPersonalIntelligence,
 }: ChatWorkspaceProps) {
   const chatScrollRef = useRef<HTMLDivElement | null>(null);
   const handleEdit = onEditUserMessage || onEditMessage;
@@ -154,6 +158,8 @@ export function ChatWorkspace({
                   onEdit={handleEdit ? (newText) => handleEdit(msg.id, newText) : undefined}
                   onDelete={onDeleteMessage}
                   onFeedback={onFeedback}
+                  onRemember={onRememberMessage}
+                  onOpenPersonalIntelligence={onOpenPersonalIntelligence}
                   onRetry={onRetry}
                 />
               )

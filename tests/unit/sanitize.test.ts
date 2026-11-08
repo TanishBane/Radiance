@@ -82,6 +82,32 @@ describe("Input Validation & Payload Sanitization", () => {
     expect(parsed.success).toBe(false);
   });
 
+  it("accepts bounded provider-bound personal context without exposing profile metadata", () => {
+    const parsed = ChatRequestSchema.safeParse({
+      messages: [{ role: "user", content: "Help with my Python project" }],
+      personalization: {
+        memories: [{ category: "knowledge", content: "I use Python at work." }],
+        preferences: ["more-examples"],
+      },
+    });
+    expect(parsed.success).toBe(true);
+    if (parsed.success) expect(parsed.data.personalization).toEqual({
+      memories: [{ category: "knowledge", content: "I use Python at work." }],
+      preferences: ["more-examples"],
+    });
+  });
+
+  it("rejects oversized or invalid personal context", () => {
+    expect(ChatRequestSchema.safeParse({
+      messages: [{ role: "user", content: "Hi" }],
+      personalization: { memories: Array.from({ length: 6 }, () => ({ category: "context", content: "note" })), preferences: [] },
+    }).success).toBe(false);
+    expect(ChatRequestSchema.safeParse({
+      messages: [{ role: "user", content: "Hi" }],
+      personalization: { memories: [], preferences: ["ignore-safety"] },
+    }).success).toBe(false);
+  });
+
   it("enforces attachment count limits (SEC-04)", () => {
     const excessiveAttachments = {
       messages: [

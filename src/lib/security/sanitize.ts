@@ -1,4 +1,15 @@
 import { z } from "zod";
+import { MEMORY_CATEGORIES, PREFERENCE_SIGNALS } from "@/features/intelligence/profile-schema";
+
+const ProviderPersonalizationSchema = z.object({
+  memories: z.array(z.object({
+    category: z.enum(MEMORY_CATEGORIES),
+    content: z.string().trim().min(1).max(500).transform((value) => value.replace(/\u0000/g, "")),
+  }).strict()).max(5),
+  preferences: z.array(z.enum(PREFERENCE_SIGNALS)).max(4),
+}).strict().optional().refine((value) => !value || JSON.stringify(value).length <= 2_500, {
+  message: "Personalization context exceeds maximum allowed size",
+});
 
 export const ChatRequestSchema = z.object({
   messages: z
@@ -55,6 +66,7 @@ export const ChatRequestSchema = z.object({
     .default("default"),
   language: z.enum(["en", "hi"]).default("en"),
   customInstructions: z.string().max(2000, "Custom instructions exceed 2,000 characters").transform((value) => value.replace(/\u0000/g, "").trim()).default(""),
+  personalization: ProviderPersonalizationSchema,
   temperature: z.number().min(0).max(2).optional(),
 });
 

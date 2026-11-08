@@ -3,6 +3,7 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { SettingsCenter } from "@/features/settings/settings-center";
 import { DEFAULT_SETTINGS } from "@/features/settings/settings-service";
+import { createDefaultIntelligenceProfile } from "@/features/intelligence/profile-store";
 
 function renderSettings(overrides: Record<string, unknown> = {}) {
   const props = {
@@ -15,6 +16,8 @@ function renderSettings(overrides: Record<string, unknown> = {}) {
     onExportConversations: vi.fn(),
     onClearConversations: vi.fn(async () => true),
     conversationCount: 2,
+    intelligenceProfile: createDefaultIntelligenceProfile("test-profile"),
+    onIntelligenceProfileChange: vi.fn(() => true),
     ...overrides,
   };
   render(<SettingsCenter {...props} />);
@@ -56,5 +59,13 @@ describe("Settings Center", () => {
     renderSettings();
     expect(screen.getByText("Local session")).toBeDefined();
     expect(screen.queryByText(/synced to cloud/i)).toBeNull();
+  });
+
+  it("opens Personal Intelligence and discloses local storage and provider sharing", async () => {
+    renderSettings();
+    fireEvent.click(screen.getByRole("button", { name: "Personal Intelligence" }));
+    expect(await screen.findByRole("checkbox", { name: /Share relevant saved context/i })).toBeDefined();
+    expect(screen.getByText(/in this browser only/i)).toBeDefined();
+    expect(screen.getByText(/currently selected AI provider/i)).toBeDefined();
   });
 });
