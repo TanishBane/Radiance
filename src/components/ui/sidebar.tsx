@@ -86,30 +86,27 @@ export const DesktopSidebar = ({
   children,
   ...props
 }: React.ComponentProps<typeof motion.div>) => {
-  const { open, setOpen, animate } = useSidebar();
-  const prefersReducedMotion = useReducedMotion() ?? false;
+  const { open, setOpen } = useSidebar();
   return (
-    <motion.div
+    <motion.aside
+      aria-label="Primary sidebar dock"
       className={cn(
-        "relative h-full px-3 py-4 hidden md:flex md:flex-col bg-gradient-to-b from-[var(--surface-raised)]/95 via-[var(--deep)]/90 to-[var(--void)]/95 backdrop-blur-3xl border-r border-white/[0.08] shadow-[4px_0_24px_-4px_rgba(0,0,0,0.5),0_0_20px_-6px_var(--accent-g)] shrink-0 z-30 transition-[background-color,border-color] duration-300 overflow-hidden",
+        "relative h-full hidden md:flex md:flex-col bg-[var(--void)]/95 backdrop-blur-3xl border-r border-white/[0.08] shadow-[4px_0_24px_-4px_rgba(0,0,0,0.5)] shrink-0 z-30 transition-[width,padding] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] select-none will-change-[width] overflow-hidden",
+        open ? "w-[260px] px-3.5 py-4" : "w-[68px] px-3.5 py-4",
         className
       )}
-      animate={{
-        width: animate ? (open ? "260px" : "68px") : "260px",
-      }}
-      transition={getMotionTransition("drawer", prefersReducedMotion)}
       onMouseEnter={() => setOpen(true)}
       onMouseLeave={() => setOpen(false)}
       {...props}
     >
       {/* Theme Ambient Radial Glass Sheen */}
-      <div className="absolute inset-0 bg-gradient-to-b from-[var(--accent)]/[0.04] via-transparent to-[var(--accent-c)]/[0.05] pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-b from-[var(--accent)]/[0.03] via-transparent to-[var(--accent-c)]/[0.04] pointer-events-none" />
       {/* Optical Right Border Specular Hairline */}
-      <div className="absolute inset-y-0 right-0 w-[1px] bg-gradient-to-b from-transparent via-[var(--accent-b)]/30 to-transparent pointer-events-none" />
-      <div className="relative z-10 flex flex-col justify-between h-full">
+      <div className="absolute inset-y-0 right-0 w-[1px] bg-gradient-to-b from-white/[0.12] via-white/[0.04] to-transparent pointer-events-none" />
+      <div className="relative z-10 flex flex-col justify-between h-full w-full">
         {children as React.ReactNode}
       </div>
-    </motion.div>
+    </motion.aside>
   );
 };
 
@@ -134,19 +131,20 @@ export const MobileSidebar = ({
               className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[90]"
               aria-hidden="true"
             />
-            <motion.div
+            <motion.aside
+              aria-label="Mobile navigation drawer"
               initial={{ x: "-100%", opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
               exit={{ x: "-100%", opacity: 0 }}
               transition={getMotionTransition("drawer", prefersReducedMotion)}
               className={cn(
-                "fixed h-[100dvh] w-[280px] max-w-[85vw] inset-y-0 left-0 bg-gradient-to-b from-[var(--surface-raised)]/95 via-[var(--deep)]/95 to-[var(--void)]/98 backdrop-blur-3xl border-r border-white/[0.10] p-6 pt-[max(1.5rem,env(safe-area-inset-top,0px))] pb-[max(1.5rem,env(safe-area-inset-bottom,0px))] pl-[max(1.5rem,env(safe-area-inset-left,0px))] z-[100] flex flex-col justify-between shadow-[8px_0_36px_rgba(0,0,0,0.7),0_0_30px_-8px_var(--accent-g)] overflow-hidden",
+                "fixed h-[100dvh] w-[280px] max-w-[85vw] inset-y-0 left-0 bg-gradient-to-b from-[var(--surface-raised)]/98 via-[var(--deep)]/95 to-[var(--void)]/98 backdrop-blur-3xl border-r border-white/[0.10] p-5 pt-[max(1.5rem,env(safe-area-inset-top,0px))] pb-[max(1.5rem,env(safe-area-inset-bottom,0px))] pl-[max(1.5rem,env(safe-area-inset-left,0px))] z-[100] flex flex-col justify-between shadow-[8px_0_36px_rgba(0,0,0,0.7),0_0_30px_-8px_var(--accent-g)] overflow-hidden",
                 className
               )}
             >
               {/* Theme Ambient Radial Glass Sheen */}
-              <div className="absolute inset-0 bg-gradient-to-b from-[var(--accent)]/[0.05] via-transparent to-[var(--accent-c)]/[0.06] pointer-events-none" />
-              <div className="relative z-10 flex flex-col justify-between h-full">
+              <div className="absolute inset-0 bg-gradient-to-b from-[var(--accent)]/[0.04] via-transparent to-[var(--accent-c)]/[0.05] pointer-events-none" />
+              <div className="relative z-10 flex flex-col justify-between h-full w-full">
                 <motion.button
                   type="button"
                   whileHover={prefersReducedMotion ? undefined : { scale: 1.1, rotate: 90 }}
@@ -157,9 +155,9 @@ export const MobileSidebar = ({
                 >
                   <IconX className="h-4 w-4" />
                 </motion.button>
-                {children}
+                {children as React.ReactNode}
               </div>
-            </motion.div>
+            </motion.aside>
           </>
         )}
       </AnimatePresence>
@@ -174,51 +172,65 @@ export const SidebarLink = ({
   link: SidebarLinkItem;
   className?: string;
 }) => {
-  const { open, animate } = useSidebar();
+  const { open } = useSidebar();
   const prefersReducedMotion = useReducedMotion() ?? false;
+  const isPrimary = link.label === "New Chat";
 
   const content = (
-    <>
-      <div className="shrink-0">{link.icon}</div>
+    <div className={cn("flex items-center w-full", open ? "gap-3" : "justify-center")}>
+      <div className="shrink-0 flex items-center justify-center">
+        {link.icon}
+      </div>
 
-      <motion.span
-        animate={{
-          display: animate ? (open ? "inline-block" : "none") : "inline-block",
-          opacity: animate ? (open ? 1 : 0) : 1,
-          x: animate ? (open ? 0 : -4) : 0,
-        }}
-        transition={getMotionTransition("feedback", prefersReducedMotion)}
-        className="text-[var(--txt-dim)] group-hover/sidebar:text-[var(--txt)] text-xs font-medium tracking-wide group-hover/sidebar:translate-x-0.5 transition duration-150 whitespace-pre inline-block !p-0 !m-0 font-sans"
-      >
-        {link.label}
-      </motion.span>
-
-      {link.badge && open && (
-        <span
-          className={cn(
-            "ml-auto text-[10px] font-mono px-2 py-0.5 rounded-md border shadow-xs transition-colors",
-            link.badge === "Local"
-              ? "text-emerald-400 bg-emerald-500/10 border-emerald-500/25 font-semibold flex items-center gap-1.5"
-              : "bg-[var(--surface)]/90 text-[var(--txt-muted)] border-white/[0.08] group-hover/sidebar:border-[var(--accent)]/30 group-hover/sidebar:text-[var(--accent-b)]"
-          )}
+      {open && (
+        <motion.div
+          initial={prefersReducedMotion ? undefined : { opacity: 0, x: -6 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={prefersReducedMotion ? undefined : { opacity: 0, x: -6 }}
+          transition={{ duration: 0.15, ease: "easeOut" }}
+          className="flex items-center justify-between flex-1 min-w-0"
         >
-          {link.badge === "Local" && (
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+          <span
+            className={cn(
+              "text-xs font-sans tracking-wide truncate",
+              isPrimary
+                ? "font-semibold text-[var(--txt)]"
+                : link.active
+                  ? "font-semibold text-[var(--accent-b)]"
+                  : "font-medium text-[var(--txt-dim)] group-hover/sidebar:text-[var(--txt)] transition-colors"
+            )}
+          >
+            {link.label}
+          </span>
+
+          {link.badge && (
+            <span
+              className={cn(
+                "ml-auto text-[10px] font-mono px-2 py-0.5 rounded-md border shadow-xs transition-colors shrink-0",
+                link.badge === "Local"
+                  ? "text-emerald-400 bg-emerald-500/10 border-emerald-500/25 font-semibold flex items-center gap-1.5"
+                  : "bg-[var(--surface)] text-[var(--txt-muted)] border-white/[0.08] group-hover/sidebar:border-[var(--accent)]/30 group-hover/sidebar:text-[var(--accent-b)]"
+              )}
+            >
+              {link.badge === "Local" && (
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              )}
+              {link.badge}
+            </span>
           )}
-          {link.badge}
-        </span>
+        </motion.div>
       )}
-    </>
+    </div>
   );
 
-  const isPrimary = link.label === "New Chat";
   const baseClasses = cn(
-    "flex items-center justify-start gap-3 group/sidebar py-2 px-2.5 rounded-xl transition-all duration-200 cursor-pointer select-none",
+    "group/sidebar flex items-center rounded-xl transition-all duration-200 cursor-pointer select-none",
+    open ? "w-full h-10 px-2.5" : "w-10 h-10 mx-auto justify-center",
     isPrimary
-      ? "bg-gradient-to-r from-[var(--accent)]/15 via-[var(--accent-b)]/10 to-[var(--accent-c)]/15 hover:from-[var(--accent)]/25 hover:via-[var(--accent-b)]/20 hover:to-[var(--accent-c)]/25 border border-[var(--accent)]/30 hover:border-[var(--accent)]/60 text-[var(--txt)] shadow-[0_0_16px_-4px_var(--accent-g)] font-semibold"
+      ? "bg-gradient-to-r from-[var(--accent)]/20 via-[var(--accent-b)]/15 to-[var(--accent-c)]/20 hover:from-[var(--accent)]/30 hover:to-[var(--accent-c)]/30 border border-[var(--accent)]/35 hover:border-[var(--accent)]/65 text-[var(--txt)] shadow-[0_0_16px_-4px_var(--accent-g)]"
       : link.active
-        ? "bg-gradient-to-r from-[var(--accent-d)] to-transparent text-[var(--accent-b)] border-l-2 border-l-[var(--accent)] border-y-transparent border-r-transparent font-medium shadow-xs"
-        : "text-[var(--txt-dim)] hover:text-[var(--txt)] hover:bg-[var(--surface-hover)] border border-transparent hover:border-white/[0.06]",
+        ? "bg-white/[0.08] text-[var(--accent-b)] border border-[var(--accent)]/40 shadow-xs"
+        : "text-[var(--txt-dim)] hover:text-[var(--txt)] hover:bg-white/[0.06] border border-transparent hover:border-white/[0.06]",
     className
   );
 
@@ -226,12 +238,13 @@ export const SidebarLink = ({
     return (
       <motion.button
         type="button"
-        whileHover={prefersReducedMotion ? undefined : { x: 2, scale: 1.01 }}
+        whileHover={prefersReducedMotion ? undefined : { scale: 1.02 }}
         whileTap={prefersReducedMotion ? undefined : { scale: 0.98 }}
         transition={{ type: "spring", stiffness: 450, damping: 25 }}
         onClick={link.onClick}
         className={baseClasses}
         title={link.label}
+        aria-label={link.label}
       >
         {content}
       </motion.button>
@@ -241,11 +254,12 @@ export const SidebarLink = ({
   return (
     <motion.a
       href={link.href || "#"}
-      whileHover={prefersReducedMotion ? undefined : { x: 2, scale: 1.01 }}
+      whileHover={prefersReducedMotion ? undefined : { scale: 1.02 }}
       whileTap={prefersReducedMotion ? undefined : { scale: 0.98 }}
       transition={{ type: "spring", stiffness: 450, damping: 25 }}
       className={baseClasses}
       title={link.label}
+      aria-label={link.label}
     >
       {content}
     </motion.a>

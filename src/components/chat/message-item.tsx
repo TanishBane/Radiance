@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { motion, useReducedMotion } from "motion/react";
@@ -69,6 +69,15 @@ export function MessageItem({
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editContent, setEditContent] = useState(message.content);
+  const copyTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (copyTimeoutRef.current) {
+        clearTimeout(copyTimeoutRef.current);
+      }
+    };
+  }, []);
   const safeImageUrl = message.generatedImageUrl && isSafeUrl(message.generatedImageUrl) ? message.generatedImageUrl : null;
 
   useEffect(() => {
@@ -84,7 +93,12 @@ export function MessageItem({
       // Fallback silently if clipboard is restricted
     }
     setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
+    copyTimeoutRef.current = setTimeout(() => {
+      if (typeof window !== "undefined") {
+        setCopied(false);
+      }
+    }, 2000);
   };
 
   // ── Safe Client-Side Export (Markdown Blob Download) ──
