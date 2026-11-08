@@ -29,6 +29,25 @@ describe("Input Validation & Payload Sanitization", () => {
     }
   });
 
+  it("accepts and sanitizes bounded custom response instructions", () => {
+    const parsed = ChatRequestSchema.safeParse({
+      messages: [{ role: "user", content: "Hi" }],
+      customInstructions: "  Use metric units\u0000.  ",
+    });
+
+    expect(parsed.success).toBe(true);
+    if (parsed.success) expect(parsed.data.customInstructions).toBe("Use metric units.");
+  });
+
+  it("rejects custom response instructions beyond the server character limit", () => {
+    const parsed = ChatRequestSchema.safeParse({
+      messages: [{ role: "user", content: "Hi" }],
+      customInstructions: "x".repeat(2001),
+    });
+
+    expect(parsed.success).toBe(false);
+  });
+
   it("rejects payloads with empty messages array", () => {
     const invalid = {
       messages: [],

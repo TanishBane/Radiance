@@ -3,13 +3,19 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { ToneKey, Attachment, ModelOption, ChatMessage, FeedbackRating } from "@/lib/types/chat";
 import { ThemeId, THEMES, GradientStyle } from "@/lib/types/theme";
-import {
-  initializeDynamicTheme,
-  applyThemeToDom,
-  persistManualTheme,
-} from "@/lib/theme/dynamic-theme";
+import { applyThemeToDom } from "@/lib/theme/dynamic-theme";
 import { DEFAULT_MODEL_ID, getModelById } from "@/lib/ai/models";
 import { conversationService } from "@/lib/db/conversations";
+import { safeLocalStorage } from "@/lib/utils/storage";
+import {
+  DEFAULT_SETTINGS,
+  loadSettings,
+  resetSettings,
+  saveSettings,
+  SETTINGS_STORAGE_KEY,
+} from "@/features/settings/settings-service";
+import type { RadianceSettings } from "@/features/settings/settings-schema";
+import { matchesShortcut } from "@/features/settings/keyboard-shortcuts";
 
 // Background & Branding
 import { AmbientCanvas } from "@/components/background/ambient-canvas";
@@ -20,9 +26,8 @@ import { IntroSplash } from "@/components/branding/intro-splash";
 import { Topbar } from "@/components/navigation/topbar";
 import { SidebarDock } from "@/components/navigation/sidebar-dock";
 import { HistoryDrawer } from "@/components/navigation/history-drawer";
-import { SettingsDrawer } from "@/components/navigation/settings-drawer";
-import { ShortcutsDialog } from "@/components/modals/shortcuts-dialog";
 import { MobileBottomNav } from "@/components/navigation/mobile-bottom-nav";
+import { SettingsCenter } from "@/features/settings/settings-center";
 
 // Feature Modules
 import { useChatSession } from "@/features/chat/hooks/use-chat-session";
@@ -31,17 +36,37 @@ import { ChatWorkspace } from "@/features/chat/components/chat-workspace";
 
 export default function RadianceApp() {
   const [showSplash, setShowSplash] = useState(true);
-  const [theme, setTheme] = useState<ThemeId>("violet");
-  const [gradientStyle, setGradientStyle] = useState<GradientStyle>("waves");
-  const [modelId, setModelId] = useState(DEFAULT_MODEL_ID);
-  const [tone, setTone] = useState<ToneKey>("default");
-  const [language, setLanguage] = useState<"en" | "hi">("en");
+  const [settings, setSettings] = useState<RadianceSettings>(DEFAULT_SETTINGS);
+  const theme = (settings.theme || "violet") as ThemeId;
+  const gradientStyle = (settings.gradientStyle || "waves") as GradientStyle;
+  const modelId = settings.modelId || DEFAULT_MODEL_ID;
+  const tone = settings.tone as ToneKey;
+  const language = settings.language;
 
   // Drawers & Modals State
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [historyOpen, setHistoryOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
-  const [shortcutsOpen, setShortcutsOpen] = useState(false);
+  const [settingsSection, setSettingsSection] = useState("general");
+
+  const handleSettingsChange = useCallback((nextSettings: RadianceSettings) => {
+    const withThemeHistory = nextSettings.theme !== settings.theme
+      ? {
+          ...nextSettings,
+          themeHistory: [nextSettings.theme, ...settings.themeHistory.filter((id) => id !== nextSettings.theme)].slice(0, 5),
+        }
+      : nextSettings;
+    if (!saveSettings(withThemeHistory)) return false;
+    setSettings(withThemeHistory);
+    return true;
+  }, [settings]);
+
+  const openSettings = useCallback((section = "general") => {
+    setSettingsSection(section);
+    setSettingsOpen(true);
+    setHistoryOpen(false);
+    setMobileSidebarOpen(false);
+  }, []);
 
   // Feature Hooks
   const {
@@ -87,6 +112,7 @@ export default function RadianceApp() {
     modelId,
     tone,
     language,
+    customInstructions: settings.customInstructions,
     onStreamComplete: handleStreamComplete,
     onError: handleStreamError,
   });
@@ -94,23 +120,23 @@ export default function RadianceApp() {
   const selectedTheme = THEMES[theme] || THEMES.violet;
   const selectedModel = getModelById(modelId);
 
-  // Dynamic Color Theme System: automatically assign a fresh theme on site visit
+  // Restore and validate local preferences; rotate palettes through the registered theme set.
   useEffect(() => {
-    const assignedTheme = initializeDynamicTheme();
-    setTheme(assignedTheme);
+    setSettings(loadSettings(undefined, true));
+  }, []);
+
+  useEffect(() => {
+    const handleStorage = (event: StorageEvent) => {
+      if (event.key === SETTINGS_STORAGE_KEY) setSettings(loadSettings());
+    };
+    window.addEventListener("storage", handleStorage);
+    return () => window.removeEventListener("storage", handleStorage);
   }, []);
 
   // Apply Theme CSS Tokens to document root with complete variable coverage
   useEffect(() => {
     applyThemeToDom(selectedTheme);
   }, [selectedTheme]);
-
-  const handleSelectTheme = useCallback((themeId: string) => {
-    if (THEMES[themeId]) {
-      setTheme(themeId);
-      persistManualTheme(themeId);
-    }
-  }, []);
 
   // Safe Conversation Navigation (prevents cross-session stream contamination)
   const handleNewChat = useCallback(() => {
@@ -156,25 +182,53 @@ export default function RadianceApp() {
   // Global Keyboard Shortcuts
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
-      if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === "N") {
+      if (e.defaultPrevented) return;
+      if (matchesShortcut(e, "new-chat")) {
         e.preventDefault();
+        setSettingsOpen(false);
         handleNewChat();
-      } else if ((e.ctrlKey || e.metaKey) && e.key === "k") {
+      } else if (matchesShortcut(e, "settings-shortcuts")) {
         e.preventDefault();
-        setShortcutsOpen((prev) => !prev);
-      } else if ((e.ctrlKey || e.metaKey) && e.key === "l") {
+        openSettings("general");
+      } else if (matchesShortcut(e, "history")) {
         e.preventDefault();
+        setSettingsOpen(false);
         setHistoryOpen((prev) => !prev);
       } else if (e.key === "Escape") {
         setMobileSidebarOpen(false);
         setHistoryOpen(false);
         setSettingsOpen(false);
-        setShortcutsOpen(false);
       }
     };
     window.addEventListener("keydown", handleKey);
     return () => window.removeEventListener("keydown", handleKey);
-  }, [handleNewChat]);
+  }, [handleNewChat, openSettings]);
+
+  const handleExportConversations = useCallback(() => {
+    const localConversations = safeLocalStorage.listConversations();
+    if (localConversations.length === 0) return false;
+    try {
+      const file = new Blob([JSON.stringify(localConversations, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(file);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `radiance-conversations-${new Date().toISOString().slice(0, 10)}.json`;
+      link.click();
+      URL.revokeObjectURL(url);
+      return true;
+    } catch {
+      return false;
+    }
+  }, []);
+
+  const handleClearConversations = useCallback(async () => {
+    try {
+      await handleDeleteAllConversations();
+      return true;
+    } catch {
+      return false;
+    }
+  }, [handleDeleteAllConversations]);
 
   // ── Action Handlers ──
 
@@ -283,17 +337,21 @@ export default function RadianceApp() {
       <SidebarDock
         open={mobileSidebarOpen}
         setOpen={setMobileSidebarOpen}
+        settingsActive={settingsOpen}
+        activeSettingsSection={settingsSection}
         onNewChat={handleNewChat}
-        onToggleHistory={() => setHistoryOpen((h) => !h)}
-        onToggleSettings={() => setSettingsOpen((s) => !s)}
-        onOpenShortcuts={() => setShortcutsOpen(true)}
+        onToggleHistory={() => {
+          setSettingsOpen(false);
+          setHistoryOpen((h) => !h);
+        }}
+        onToggleSettings={openSettings}
       />
 
       {/* Right: Main Application Pane */}
       <main className="flex-1 flex flex-col min-w-0 h-full overflow-hidden relative z-10">
         <Topbar
           language={language}
-          onToggleLanguage={(l) => setLanguage(l)}
+          onToggleLanguage={(l) => handleSettingsChange({ ...settings, language: l })}
           onClearChat={handleNewChat}
           onNewChat={handleNewChat}
           onToggleMobileMenu={() => setMobileSidebarOpen((prev) => !prev)}
@@ -311,7 +369,8 @@ export default function RadianceApp() {
             onSelectSuggestion={handleSend}
             onOpenSettings={() => setSettingsOpen(true)}
             selectedModel={selectedModel}
-            onSelectModel={(m: ModelOption) => setModelId(m.id)}
+            onSelectModel={(m: ModelOption) => handleSettingsChange({ ...settings, modelId: m.id })}
+            enterToSend={settings.enterToSend}
             onRegenerate={handleRegenerate}
             onEditUserMessage={handleEditUserMessage}
             onDeleteMessage={handleDeleteMessage}
@@ -326,30 +385,20 @@ export default function RadianceApp() {
               ? "history"
               : settingsOpen
               ? "settings"
-              : shortcutsOpen
-              ? "shortcuts"
               : "chat"
           }
           onNewChat={handleNewChat}
           onToggleHistory={() => {
             setSettingsOpen(false);
-            setShortcutsOpen(false);
             setHistoryOpen((prev) => !prev);
           }}
           onToggleSettings={() => {
             setHistoryOpen(false);
-            setShortcutsOpen(false);
-            setSettingsOpen((prev) => !prev);
-          }}
-          onOpenShortcuts={() => {
-            setHistoryOpen(false);
-            setSettingsOpen(false);
-            setShortcutsOpen(true);
+            openSettings("general");
           }}
           onFocusChat={() => {
             setHistoryOpen(false);
             setSettingsOpen(false);
-            setShortcutsOpen(false);
           }}
         />
       </main>
@@ -366,18 +415,21 @@ export default function RadianceApp() {
         onDeleteAll={handleDeleteAllConversations}
       />
 
-      <SettingsDrawer
-        isOpen={settingsOpen}
-        onClose={() => setSettingsOpen(false)}
-        activeTone={tone}
-        onSelectTone={setTone}
-        activeTheme={theme}
-        onSelectTheme={handleSelectTheme}
-        gradientStyle={gradientStyle}
-        onSelectGradientStyle={setGradientStyle}
+      <SettingsCenter
+        open={settingsOpen}
+        onOpenChange={setSettingsOpen}
+        section={settingsSection}
+        settings={settings}
+        onChange={handleSettingsChange}
+        onReset={() => {
+          if (!resetSettings()) return false;
+          setSettings(DEFAULT_SETTINGS);
+          return true;
+        }}
+        onExportConversations={handleExportConversations}
+        onClearConversations={handleClearConversations}
+        conversationCount={conversations.length}
       />
-
-      <ShortcutsDialog isOpen={shortcutsOpen} onClose={() => setShortcutsOpen(false)} />
     </div>
   );
 }

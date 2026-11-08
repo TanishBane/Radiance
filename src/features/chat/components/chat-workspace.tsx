@@ -21,6 +21,7 @@ export interface ChatWorkspaceProps {
   onOpenSettings?: () => void;
   selectedModel?: ModelOption;
   onSelectModel?: (model: ModelOption) => void;
+  enterToSend?: boolean;
 
   // Milestone 3 Extensions: Inference, Errors & Actions
   streamError?: Error | null;
@@ -108,6 +109,7 @@ export function ChatWorkspace({
   onOpenSettings: _onOpenSettings,
   selectedModel,
   onSelectModel,
+  enterToSend = true,
   streamError,
   onRetry,
   onRegenerate,
@@ -241,6 +243,7 @@ export function ChatWorkspace({
         isGenerating={isGenerating}
         selectedModel={selectedModel}
         onSelectModel={onSelectModel}
+        enterToSend={enterToSend}
       />
     </div>
   );

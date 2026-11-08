@@ -93,6 +93,19 @@ describe("ChatComposer Component & Deduplication Controls", () => {
 
       expect(onSend).not.toHaveBeenCalled();
     });
+
+    it("keeps Enter for a new line when send-on-Enter is disabled and sends on Ctrl+Enter", () => {
+      render(<ChatComposer onSend={onSend} onStop={onStop} isGenerating={false} enterToSend={false} />);
+      const textarea = screen.getByPlaceholderText("Ask RADIANCE anything...");
+
+      fireEvent.change(textarea, { target: { value: "Multi-line prompt" } });
+      fireEvent.keyDown(textarea, { key: "Enter", shiftKey: false });
+      expect(onSend).not.toHaveBeenCalled();
+      expect((textarea as HTMLTextAreaElement).value).toBe("Multi-line prompt");
+
+      fireEvent.keyDown(textarea, { key: "Enter", ctrlKey: true, shiftKey: false });
+      expect(onSend).toHaveBeenCalledWith("Multi-line prompt", []);
+    });
   });
 
   describe("3. CJK IME Composition Guard", () => {

@@ -810,6 +810,12 @@ li {
 .radiance-dialog-center[data-state="closed"] {
   animation: radiance-dialog-out var(--motion-feedback) ease-in both;
 }
+.radiance-dialog-center.radiance-settings-panel[data-state="open"] {
+  animation-name: radiance-settings-in;
+}
+.radiance-dialog-center.radiance-settings-panel[data-state="closed"] {
+  animation-name: radiance-settings-out;
+}
 
 @keyframes radiance-overlay-in { from { opacity: 0; } to { opacity: 1; } }
 @keyframes radiance-overlay-out { from { opacity: 1; } to { opacity: 0; } }
@@ -817,6 +823,19 @@ li {
 @keyframes radiance-drawer-out { from { opacity: 1; transform: translateX(0); } to { opacity: 0; transform: translateX(14px); } }
 @keyframes radiance-dialog-in { from { opacity: 0; transform: translate(-50%, -50%) scale(0.97); } to { opacity: 1; transform: translate(-50%, -50%) scale(1); } }
 @keyframes radiance-dialog-out { from { opacity: 1; transform: translate(-50%, -50%) scale(1); } to { opacity: 0; transform: translate(-50%, -50%) scale(0.97); } }
+@keyframes radiance-settings-in { from { opacity: 0; transform: scale(0.985); } to { opacity: 1; transform: scale(1); } }
+@keyframes radiance-settings-out { from { opacity: 1; } to { opacity: 0; } }
+
+@media (max-width: 767px) {
+  .radiance-dialog-center.radiance-settings-panel[data-state="open"] {
+    animation-name: radiance-settings-mobile-in;
+  }
+  .radiance-dialog-center.radiance-settings-panel[data-state="closed"] {
+    animation-name: radiance-settings-out;
+  }
+}
+
+@keyframes radiance-settings-mobile-in { from { opacity: 0; transform: scale(0.995); } to { opacity: 1; transform: scale(1); } }
 
 @media (prefers-reduced-motion: reduce) {
   :root {

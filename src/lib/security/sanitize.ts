@@ -54,6 +54,7 @@ export const ChatRequestSchema = z.object({
     ])
     .default("default"),
   language: z.enum(["en", "hi"]).default("en"),
+  customInstructions: z.string().max(2000, "Custom instructions exceed 2,000 characters").transform((value) => value.replace(/\u0000/g, "").trim()).default(""),
   temperature: z.number().min(0).max(2).optional(),
 });
 
