@@ -155,6 +155,7 @@ export function ChatComposer({
   const modelTriggerRef = useRef<HTMLButtonElement | null>(null);
   const optionRefs = useRef<(HTMLButtonElement | null)[]>([]);
   const [focusedIndex, setFocusedIndex] = useState<number>(-1);
+  const [isFocused, setIsFocused] = useState(false);
 
   useEffect(() => {
     isSubmittingRef.current = false;
@@ -326,7 +327,20 @@ export function ChatComposer({
     const files = Array.from(e.target.files || []);
     if (files.length === 0) return;
 
-    for (const file of files) {
+    if (attachments.length >= 10) {
+      showNotice("Maximum limit of 10 attachments per message reached.");
+      e.target.value = "";
+      return;
+    }
+
+    const availableSlots = 10 - attachments.length;
+    if (files.length > availableSlots) {
+      showNotice(`Only ${availableSlots} more attachment${availableSlots === 1 ? "" : "s"} allowed (max 10 total).`);
+    }
+
+    const allowedFiles = files.slice(0, availableSlots);
+
+    for (const file of allowedFiles) {
       if (file.size > 10 * 1024 * 1024) {
         showNotice(`${file.name} exceeds the 10MB limit.`);
         continue;
@@ -408,52 +422,93 @@ export function ChatComposer({
       {attachments.length > 0 && (
         <div className="flex flex-wrap gap-2 mb-2 p-2 rounded-xl bg-gradient-to-r from-[var(--surface-raised)]/90 via-[var(--surface-raised)]/70 to-[var(--accent-d)]/20 border border-white/[0.10] shadow-sm backdrop-blur-xl animate-in fade-in slide-in-from-bottom-2 duration-200">
           {attachments.map((att) => (
-            <div
+            <motion.div
               key={att.id}
+              initial={shouldReduceMotion ? undefined : { opacity: 0, scale: 0.9, y: 4 }}
+              animate={shouldReduceMotion ? undefined : { opacity: 1, scale: 1, y: 0 }}
+              transition={{ type: "spring", stiffness: 400, damping: 25 }}
               className="flex items-center gap-2 pl-2.5 pr-1.5 py-1 rounded-lg bg-[var(--deep)]/90 border border-white/[0.08] text-xs text-[var(--txt)] shadow-xs"
             >
               <FileText className="w-3.5 h-3.5 text-[var(--accent)] shrink-0" />
               <span className="font-mono text-[11px] truncate max-w-[150px]">{att.name}</span>
-              <button
+              <motion.button
                 type="button"
+                whileHover={shouldReduceMotion ? undefined : { scale: 1.15 }}
+                whileTap={shouldReduceMotion ? undefined : { scale: 0.9 }}
                 onClick={() => removeAttachment(att.id)}
                 className="p-1 rounded-md text-[var(--txt-muted)] hover:text-[var(--danger)] hover:bg-white/5 transition-colors cursor-pointer"
                 title="Remove attachment"
                 aria-label="Remove attachment"
               >
                 <X className="w-3 h-3" />
-              </button>
-            </div>
+              </motion.button>
+            </motion.div>
           ))}
         </div>
       )}
 
       {/* Inline Non-blocking Notification Banner */}
       {composerNotice && (
-        <div
+        <motion.div
           role="status"
           aria-live="polite"
-          className="mb-2 px-3 py-1.5 rounded-xl text-xs font-mono bg-[var(--danger-d)] border border-[var(--danger)]/30 text-[var(--danger)] flex items-center justify-between shadow-sm backdrop-blur-xl animate-in fade-in slide-in-from-bottom-1 duration-150"
+          initial={shouldReduceMotion ? undefined : { opacity: 0, y: 4, scale: 0.98 }}
+          animate={shouldReduceMotion ? undefined : { opacity: 1, y: 0, scale: 1 }}
+          transition={{ type: "spring", stiffness: 400, damping: 28 }}
+          className="mb-2 px-3 py-1.5 rounded-xl text-xs font-mono bg-[var(--danger-d)] border border-[var(--danger)]/30 text-[var(--danger)] flex items-center justify-between shadow-sm backdrop-blur-xl"
         >
           <span>{composerNotice}</span>
-          <button
+          <motion.button
             type="button"
+            whileHover={shouldReduceMotion ? undefined : { scale: 1.15 }}
+            whileTap={shouldReduceMotion ? undefined : { scale: 0.9 }}
             onClick={() => setComposerNotice(null)}
             className="ml-2 hover:opacity-80 cursor-pointer p-0.5"
             aria-label="Dismiss notice"
           >
             <X className="w-3.5 h-3.5" />
-          </button>
-        </div>
+          </motion.button>
+        </motion.div>
       )}
 
       {/* Main Composer Box with Complete Theme Gradient Glassmorphism */}
-      <div className="relative rounded-2xl bg-gradient-to-br from-[var(--surface-raised)]/90 via-[var(--deep)]/85 to-[var(--accent-d)]/30 border border-white/[0.12] focus-within:border-[var(--border-accent)] focus-within:shadow-[0_0_36px_-4px_var(--accent-g),0_16px_48px_-12px_rgba(0,0,0,0.7)] transition-all duration-300 backdrop-blur-3xl shadow-[0_8px_32px_0_rgba(0,0,0,0.4),0_0_20px_-6px_var(--accent-g)] p-3 sm:p-3.5 group/composer overflow-visible z-20">
+      <motion.div
+        className="relative rounded-2xl bg-gradient-to-br from-[var(--surface-raised)]/90 via-[var(--deep)]/85 to-[var(--accent-d)]/30 border border-white/[0.12] focus-within:border-[var(--border-accent)] focus-within:shadow-[0_0_36px_-4px_var(--accent-g),0_16px_48px_-12px_rgba(0,0,0,0.7)] transition-all duration-300 backdrop-blur-3xl shadow-[0_8px_32px_0_rgba(0,0,0,0.4),0_0_20px_-6px_var(--accent-g)] p-3 sm:p-3.5 group/composer overflow-visible z-20"
+        animate={
+          shouldReduceMotion
+            ? undefined
+            : {
+                y: isFocused ? -1 : 0,
+              }
+        }
+        transition={{ type: "spring", stiffness: 350, damping: 25 }}
+      >
         {/* Theme Ambient Radial Glass Sheen */}
-        <div className="absolute inset-0 rounded-2xl bg-gradient-to-tr from-[var(--accent)]/[0.05] via-transparent to-[var(--accent-c)]/[0.06] pointer-events-none" />
+        <motion.div
+          className="absolute inset-0 rounded-2xl bg-gradient-to-tr from-[var(--accent)]/[0.05] via-transparent to-[var(--accent-c)]/[0.06] pointer-events-none"
+          animate={
+            shouldReduceMotion
+              ? undefined
+              : {
+                  opacity: isFocused ? 0.9 : 0.45,
+                }
+          }
+          transition={{ duration: 0.3, ease: "easeOut" }}
+        />
 
         {/* Optical Top Rim Specular Reflection */}
-        <div className="absolute inset-x-4 top-0 h-[1.5px] rounded-t-2xl bg-gradient-to-r from-transparent via-[var(--accent-b)]/40 to-transparent pointer-events-none" />
+        <motion.div
+          className="absolute inset-x-4 top-0 h-[1.5px] rounded-t-2xl bg-gradient-to-r from-transparent via-[var(--accent-b)]/40 to-transparent pointer-events-none"
+          animate={
+            shouldReduceMotion
+              ? undefined
+              : {
+                  opacity: isFocused ? 0.95 : 0.45,
+                  scaleX: isFocused ? 1 : 0.88,
+                }
+          }
+          transition={{ type: "spring", stiffness: 350, damping: 28 }}
+        />
 
         {/* @ Context Mention Popover */}
         {contextMenuOpen && (
@@ -486,11 +541,15 @@ export function ChatComposer({
           onChange={handleInput}
           onKeyDown={handleKeyDown}
           onFocus={() => {
+            setIsFocused(true);
             setTimeout(() => {
               if (typeof textareaRef.current?.scrollIntoView === "function") {
                 textareaRef.current.scrollIntoView({ behavior: "smooth", block: "nearest" });
               }
             }, 120);
+          }}
+          onBlur={() => {
+            setIsFocused(false);
           }}
           placeholder="Ask RADIANCE anything..."
           className="w-full bg-transparent border-0 outline-none resize-none text-base sm:text-sm text-[var(--txt)] placeholder:text-[var(--txt-muted)]/70 py-1 max-h-[140px] leading-relaxed font-sans mb-1.5 tracking-[-0.01em] selection:bg-[var(--accent-d)] selection:text-[var(--txt)] relative z-10"
@@ -513,8 +572,9 @@ export function ChatComposer({
             {/* 1. Add Files Expanding Glass Pill */}
             <motion.button
               type="button"
-              whileHover={shouldReduceMotion ? undefined : { scale: 1.04 }}
+              whileHover={shouldReduceMotion ? undefined : { scale: 1.04, y: -0.5 }}
               whileTap={shouldReduceMotion ? undefined : { scale: 0.96 }}
+              transition={{ type: "spring", stiffness: 400, damping: 20 }}
               onClick={() => fileInputRef.current?.click()}
               className="group/btn h-8 px-2.5 rounded-full border border-white/[0.10] bg-[var(--surface)] hover:bg-[var(--surface-hover)] hover:border-[var(--border-accent)] text-[var(--txt-muted)] hover:text-[var(--txt)] transition-all flex items-center gap-1.5 text-xs font-sans font-medium touch-target cursor-pointer backdrop-blur-md shadow-xs"
               title="Attach file or media"
@@ -532,8 +592,9 @@ export function ChatComposer({
             <div className="relative">
               <motion.button
                 type="button"
-                whileHover={shouldReduceMotion ? undefined : { scale: 1.02 }}
-                whileTap={shouldReduceMotion ? undefined : { scale: 0.98 }}
+                whileHover={shouldReduceMotion ? undefined : { scale: 1.03, y: -0.5 }}
+                whileTap={shouldReduceMotion ? undefined : { scale: 0.97 }}
+                transition={{ type: "spring", stiffness: 400, damping: 20 }}
                 onClick={(e) => {
                   e.stopPropagation();
                   setModelMenuOpen(false);
@@ -545,11 +606,13 @@ export function ChatComposer({
               >
                 {renderModeIcon(mode)}
                 <span>{mode}</span>
-                <ChevronDown
-                  className={`w-3 h-3 text-[var(--txt-muted)] transition-transform duration-200 ${
-                    modeMenuOpen ? "rotate-180" : ""
-                  }`}
-                />
+                <motion.span
+                  animate={shouldReduceMotion ? undefined : { rotate: modeMenuOpen ? 180 : 0 }}
+                  transition={{ type: "spring", stiffness: 350, damping: 25 }}
+                  className="inline-flex items-center justify-center text-[var(--txt-muted)]"
+                >
+                  <ChevronDown className="w-3 h-3" />
+                </motion.span>
               </motion.button>
 
               {modeMenuOpen && (
@@ -560,9 +623,11 @@ export function ChatComposer({
                   {orderedModes.map((m) => {
                     const isSelected = m === mode;
                     return (
-                      <button
+                      <motion.button
                         key={m}
                         type="button"
+                        whileHover={shouldReduceMotion ? undefined : { x: 2 }}
+                        transition={{ type: "spring", stiffness: 500, damping: 30 }}
                         onClick={(e) => {
                           e.stopPropagation();
                           setMode(m);
@@ -577,7 +642,7 @@ export function ChatComposer({
                           <span>{m}</span>
                         </div>
                         {isSelected && <CheckmarkIcon />}
-                      </button>
+                      </motion.button>
                     );
                   })}
                 </div>
@@ -591,8 +656,9 @@ export function ChatComposer({
                 id="composer-model-trigger"
                 type="button"
                 data-testid="composer-model-trigger"
-                whileHover={shouldReduceMotion ? undefined : { scale: 1.02 }}
-                whileTap={shouldReduceMotion ? undefined : { scale: 0.98 }}
+                whileHover={shouldReduceMotion ? undefined : { scale: 1.03, y: -0.5 }}
+                whileTap={shouldReduceMotion ? undefined : { scale: 0.97 }}
+                transition={{ type: "spring", stiffness: 400, damping: 20 }}
                 onClick={handleOpenModelMenu}
                 onKeyDown={handleTriggerKeyDown}
                 title={activeModel.name}
@@ -606,12 +672,14 @@ export function ChatComposer({
                 <span className="font-sans text-xs sm:text-[13px] font-medium text-[var(--txt)] truncate max-w-[70px] xs:max-w-[110px] sm:max-w-none">
                   {activeModel.name}
                 </span>
-                <ChevronDown
-                  className={`w-3.5 h-3.5 text-[var(--txt-muted)] transition-transform duration-200 ${
-                    modelMenuOpen ? "rotate-180" : ""
-                  }`}
+                <motion.span
+                  animate={shouldReduceMotion ? undefined : { rotate: modelMenuOpen ? 180 : 0 }}
+                  transition={{ type: "spring", stiffness: 350, damping: 25 }}
+                  className="inline-flex items-center justify-center text-[var(--txt-muted)]"
                   aria-hidden="true"
-                />
+                >
+                  <ChevronDown className="w-3.5 h-3.5" />
+                </motion.span>
               </motion.button>
 
               {/* Model Selector Popover */}
@@ -639,7 +707,7 @@ export function ChatComposer({
                       const isSelected = m.id === activeModel.id;
                       const isItemFocused = focusedIndex === idx;
                       return (
-                        <button
+                        <motion.button
                           key={m.id}
                           ref={(el) => {
                             optionRefs.current[idx] = el;
@@ -650,6 +718,8 @@ export function ChatComposer({
                           tabIndex={isItemFocused ? 0 : -1}
                           aria-selected={isSelected}
                           data-testid={`model-option-${m.id}`}
+                          whileHover={shouldReduceMotion ? undefined : { x: 2 }}
+                          transition={{ type: "spring", stiffness: 500, damping: 30 }}
                           onClick={(e) => handleSelectModel(e, m)}
                           onKeyDown={(e) => {
                             if (e.key === "Enter" || e.key === " ") {
@@ -692,7 +762,7 @@ export function ChatComposer({
                               )}
                             </div>
                           </div>
-                        </button>
+                        </motion.button>
                       );
                     })}
                   </div>
@@ -706,8 +776,9 @@ export function ChatComposer({
             {/* 4. Voice Input Expanding Button with Professional Mic Icon */}
             <motion.button
               type="button"
-              whileHover={shouldReduceMotion ? undefined : { scale: 1.04 }}
+              whileHover={shouldReduceMotion ? undefined : { scale: 1.04, y: -0.5 }}
               whileTap={shouldReduceMotion ? undefined : { scale: 0.96 }}
+              transition={{ type: "spring", stiffness: 400, damping: 20 }}
               onClick={toggleVoice}
               className={`group/rec h-8 px-2.5 rounded-full border transition-all flex items-center gap-1.5 text-xs font-sans font-medium touch-target cursor-pointer backdrop-blur-md shadow-xs ${
                 isRecording
@@ -719,11 +790,35 @@ export function ChatComposer({
             >
               {isRecording ? (
                 <>
-                  <Mic className="w-3.5 h-3.5 text-red-400 animate-pulse shrink-0" strokeWidth={2.2} />
-                  <span className="flex items-center gap-0.5 h-3 px-0.5">
-                    <span className="w-0.5 h-2 bg-red-400 rounded-full animate-pulse" />
-                    <span className="w-0.5 h-3 bg-red-400 rounded-full animate-pulse [animation-delay:150ms]" />
-                    <span className="w-0.5 h-2 bg-red-400 rounded-full animate-pulse [animation-delay:300ms]" />
+                  <motion.div
+                    animate={shouldReduceMotion ? undefined : { scale: [1, 1.15, 1] }}
+                    transition={{ duration: 1, repeat: Infinity, ease: "easeInOut" }}
+                    className="shrink-0"
+                  >
+                    <Mic className="w-3.5 h-3.5 text-red-400 shrink-0" strokeWidth={2.2} />
+                  </motion.div>
+                  <span className="flex items-center gap-0.5 h-3.5 px-0.5" aria-hidden="true">
+                    {[0, 1, 2, 3].map((barIndex) => (
+                      <motion.span
+                        key={barIndex}
+                        className="w-[2px] bg-red-400 rounded-full inline-block origin-center"
+                        animate={
+                          shouldReduceMotion
+                            ? undefined
+                            : {
+                                scaleY: [0.3, 1, 0.4, 0.9, 0.3],
+                              }
+                        }
+                        transition={{
+                          duration: 0.55 + barIndex * 0.1,
+                          repeat: Infinity,
+                          repeatType: "mirror",
+                          ease: "easeInOut",
+                          delay: barIndex * 0.08,
+                        }}
+                        style={{ height: "12px" }}
+                      />
+                    ))}
                   </span>
                 </>
               ) : (
@@ -740,6 +835,24 @@ export function ChatComposer({
                 type="button"
                 whileHover={shouldReduceMotion ? undefined : { scale: 1.08 }}
                 whileTap={shouldReduceMotion ? undefined : { scale: 0.92 }}
+                animate={
+                  shouldReduceMotion
+                    ? undefined
+                    : {
+                        scale: [1, 1.04, 1],
+                        boxShadow: [
+                          "0 0 10px rgba(232,85,85,0.4)",
+                          "0 0 18px rgba(232,85,85,0.7)",
+                          "0 0 10px rgba(232,85,85,0.4)",
+                        ],
+                      }
+                }
+                transition={{
+                  duration: 1.6,
+                  repeat: Infinity,
+                  repeatType: "mirror",
+                  ease: "easeInOut",
+                }}
                 onClick={() => onStop()}
                 aria-label="Stop response generation"
                 data-testid="stop-button"
@@ -753,6 +866,14 @@ export function ChatComposer({
                 type="button"
                 whileHover={isSubmitReady && !shouldReduceMotion ? { scale: 1.08 } : undefined}
                 whileTap={isSubmitReady && !shouldReduceMotion ? { scale: 0.92 } : undefined}
+                animate={
+                  shouldReduceMotion
+                    ? undefined
+                    : {
+                        scale: isSubmitReady ? 1 : 0.96,
+                      }
+                }
+                transition={{ type: "spring", stiffness: 450, damping: 25 }}
                 onClick={handleSubmit}
                 disabled={(!input.trim() && attachments.length === 0) || disabled}
                 aria-label="Send message"
@@ -764,12 +885,13 @@ export function ChatComposer({
                 }`}
                 title="Send message (Enter)"
               >
-                <svg
+                <motion.svg
                   width="15"
                   height="15"
                   viewBox="0 0 16 16"
                   fill="none"
-                  className="transition-transform duration-200 group-hover/send:-translate-y-0.5"
+                  whileHover={shouldReduceMotion ? undefined : { y: -1.5 }}
+                  transition={{ type: "spring", stiffness: 400, damping: 20 }}
                 >
                   <path
                     d="M8 12.8V3.2M8 3.2L3.8 7.4M8 3.2L12.2 7.4"
@@ -778,12 +900,12 @@ export function ChatComposer({
                     strokeLinecap="round"
                     strokeLinejoin="round"
                   />
-                </svg>
+                </motion.svg>
               </motion.button>
             )}
           </div>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 }
