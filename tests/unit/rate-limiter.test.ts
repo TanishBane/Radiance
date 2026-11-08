@@ -6,7 +6,7 @@ import {
 
 describe("Distributed & Layered Rate Limiting", () => {
   it("extracts trusted edge IP headers and avoids spoofed forwarded headers", () => {
-    // Edge header: x-real-ip takes highest priority
+    // Edge header: x-real-ip when no platform edge header is present
     const headers1 = new Headers({
       "x-real-ip": "203.0.113.195",
       "x-forwarded-for": "10.0.0.1, 10.0.0.2",
@@ -18,6 +18,20 @@ describe("Distributed & Layered Rate Limiting", () => {
       "x-vercel-forwarded-for": "198.51.100.44, 10.0.0.1",
     });
     expect(getTrustedClientIp(headers2)).toBe("198.51.100.44");
+
+    // SEC-07: Prioritizes verified platform edge headers (Vercel) over spoofed x-real-ip
+    const headersSpoofVercel = new Headers({
+      "x-real-ip": "1.2.3.4", // Attacker injected spoofed IP
+      "x-vercel-forwarded-for": "198.51.100.44, 10.0.0.1",
+    });
+    expect(getTrustedClientIp(headersSpoofVercel)).toBe("198.51.100.44");
+
+    // SEC-07: Prioritizes verified platform edge headers (Cloudflare) over spoofed x-real-ip
+    const headersSpoofCf = new Headers({
+      "x-real-ip": "5.6.7.8", // Attacker injected spoofed IP
+      "cf-connecting-ip": "198.51.100.77",
+    });
+    expect(getTrustedClientIp(headersSpoofCf)).toBe("198.51.100.77");
 
     // Default fallback
     const headersEmpty = new Headers();

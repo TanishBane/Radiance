@@ -11,7 +11,10 @@ export const ChatRequestSchema = z.object({
           .array(
             z.object({
               id: z.string().max(128),
-              name: z.string().max(256),
+              name: z
+                .string()
+                .max(256)
+                .transform((val) => val.replace(/[\0\r\n]/g, " ").trim()),
               type: z.enum(["image", "pdf", "text", "csv", "doc"]),
               mime: z.string().max(128),
               size: z.number().max(10 * 1024 * 1024, "File size exceeds 10MB limit"),

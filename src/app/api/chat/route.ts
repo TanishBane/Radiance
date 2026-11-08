@@ -85,7 +85,8 @@ export async function POST(req: NextRequest) {
     if (textAttachments && textAttachments.length > 0) {
       textAttachments.forEach((att) => {
         if (att.extractedText) {
-          textContent += `\n\n[Attached File: ${att.name}]\n${att.extractedText.slice(0, 16000)}`;
+          const safeName = att.name.replace(/[\0\r\n]/g, " ").slice(0, 128);
+          textContent += `\n\n[Attached File: ${safeName}]\n${att.extractedText.slice(0, 16000)}`;
         }
       });
     }
