@@ -29,7 +29,7 @@ const CANVAS_ENGINES: GradientStyle[] = [
   "quantum-field",
   "liquid-lava",
   "matrix-rain",
-  "prismatic-caustics",
+  "silk-ribbons",
   "radial-pulse",
   "solar-corona",
   "bokeh-blur",
@@ -468,71 +468,69 @@ export function AtmosphereCanvasEngine({ theme, engine }: AtmosphereCanvasEngine
     };
 
     // ═════════════════════════════════════════════════════════════════════════
-    // ── 8. PRISMATIC CAUSTICS: Optical Chromatic Dispersion & Refraction Mesh
+    // ── 8. SILK RIBBONS: Multi-Layered Undulating Harmonic Silk Wave Flow
     // ═════════════════════════════════════════════════════════════════════════
-    const drawPrismaticCaustics = (t: number) => {
+    const drawSilkRibbons = (t: number) => {
+      // Stratified dark base backdrop
       ctx.fillStyle = theme.bloomColors[0];
       ctx.fillRect(0, 0, width, height);
 
       ctx.save();
       ctx.globalCompositeOperation = "screen";
 
-      const mx = (smoothMouse.x / width - 0.5) * 60;
-      const my = (smoothMouse.y / height - 0.5) * 40;
+      const [c0, c1, c2, c3] = theme.ribbonColors;
+      const mouseBiasX = (smoothMouse.x / width - 0.5) * 50;
+      const mouseBiasY = (smoothMouse.y / height - 0.5) * 35;
 
-      // 3 overlapping spectral chromatic bands: AccentB, Primary Accent, AccentC
-      const bands = [
-        { r: r2, g: g2, b: b2, offset: 0, amp: 55, freq: 0.0035, speed: 0.4 },
-        { r: r1, g: g1, b: b1, offset: Math.PI * 0.4, amp: 48, freq: 0.0042, speed: 0.5 },
-        { r: r3, g: g3, b: b3, offset: Math.PI * 0.8, amp: 42, freq: 0.005, speed: 0.35 },
+      const ribbonLayers = [
+        { color: c1, amp: 85, freq: 0.0024, speed: 0.32, phase: 0.0, baseY: 0.28 },
+        { color: c2, amp: 70, freq: 0.0031, speed: 0.42, phase: 1.4, baseY: 0.42 },
+        { color: c3, amp: 60, freq: 0.0038, speed: 0.36, phase: 2.8, baseY: 0.56 },
+        { color: c2, amp: 75, freq: 0.0027, speed: 0.48, phase: 4.2, baseY: 0.70 },
       ];
 
-      bands.forEach((band) => {
-        const ribbonCount = 4;
-        for (let j = 0; j < ribbonCount; j++) {
-          const cy = height * (0.24 + (j / (ribbonCount - 1)) * 0.52) + my * (j * 0.2);
+      ribbonLayers.forEach((layer, idx) => {
+        const cy = height * layer.baseY + mouseBiasY * (0.3 + idx * 0.15);
+        const crestPoints: { x: number; y: number }[] = [];
+
+        ctx.beginPath();
+        ctx.moveTo(-40, height + 40);
+
+        const step = 20;
+        for (let x = -40; x <= width + 40; x += step) {
+          const wave1 = Math.sin(x * layer.freq + t * layer.speed + layer.phase) * layer.amp;
+          const wave2 = Math.cos(x * 0.0018 - t * 0.22 + layer.phase * 0.5) * (layer.amp * 0.45);
+          const wave3 = Math.sin((x + mouseBiasX) * 0.0012 + t * 0.12) * 18;
+          const y = cy + wave1 + wave2 + wave3;
+          crestPoints.push({ x, y });
+          ctx.lineTo(x, y);
+        }
+
+        ctx.lineTo(width + 40, height + 40);
+        ctx.closePath();
+
+        // Layered silk gradient fill
+        const grad = ctx.createLinearGradient(0, cy - layer.amp, 0, height);
+        grad.addColorStop(0, layer.color);
+        grad.addColorStop(0.35, `${c1}88`);
+        grad.addColorStop(0.7, `${c0}44`);
+        grad.addColorStop(1, "transparent");
+
+        ctx.fillStyle = grad;
+        ctx.fill();
+
+        // Lustrous specular sheen stroke along the silk ribbon crest
+        if (crestPoints.length > 1) {
           ctx.beginPath();
-          ctx.moveTo(-20, height + 20);
-
-          const step = 28;
-          for (let x = -20; x <= width + 28; x += step) {
-            const wave1 = Math.sin(x * band.freq + t * band.speed + band.offset + j * 0.6) * band.amp;
-            const wave2 = Math.cos(x * 0.002 - t * 0.25 + j * 0.4) * (band.amp * 0.45);
-            const wave3 = Math.sin((x + mx) * 0.0015 + t * 0.15) * 20;
-            const y = cy + wave1 + wave2 + wave3;
-            ctx.lineTo(x, y);
+          ctx.moveTo(crestPoints[0].x, crestPoints[0].y);
+          for (let p = 1; p < crestPoints.length; p++) {
+            ctx.lineTo(crestPoints[p].x, crestPoints[p].y);
           }
-
-          ctx.lineTo(width + 20, height + 20);
-          ctx.closePath();
-
-          const alpha = 0.09 + (1 - j / ribbonCount) * 0.09;
-          const grad = ctx.createLinearGradient(0, cy - band.amp, 0, height);
-          grad.addColorStop(0, `rgba(${band.r}, ${band.g}, ${band.b}, ${alpha * 1.5})`);
-          grad.addColorStop(0.45, `rgba(${band.r}, ${band.g}, ${band.b}, ${alpha * 0.5})`);
-          grad.addColorStop(1, "transparent");
-
-          ctx.fillStyle = grad;
-          ctx.fill();
+          ctx.strokeStyle = idx % 2 === 0 ? "rgba(255, 255, 255, 0.35)" : `${c3}99`;
+          ctx.lineWidth = 1.6;
+          ctx.stroke();
         }
       });
-
-      // Refractive caustic nodes along wave intersections
-      const sparkleCount = 16;
-      for (let s = 0; s < sparkleCount; s++) {
-        const sx = ((s * 211 + t * 40) % (width + 120)) - 60;
-        const sy = (height * 0.36) + Math.sin(sx * 0.004 + t * 0.45 + s) * 85 + Math.cos(s * 1.6) * 35;
-        const pulse = Math.sin(t * 2.0 + s * 1.4) * 0.5 + 0.5;
-        const sGrad = ctx.createRadialGradient(sx, sy, 0, sx, sy, 16);
-        sGrad.addColorStop(0, `rgba(255, 255, 255, ${0.45 * pulse})`);
-        sGrad.addColorStop(0.35, `rgba(${r1}, ${g1}, ${b1}, ${0.22 * pulse})`);
-        sGrad.addColorStop(1, "transparent");
-
-        ctx.fillStyle = sGrad;
-        ctx.beginPath();
-        ctx.arc(sx, sy, 16, 0, Math.PI * 2);
-        ctx.fill();
-      }
 
       ctx.restore();
     };
@@ -712,7 +710,7 @@ export function AtmosphereCanvasEngine({ theme, engine }: AtmosphereCanvasEngine
 
     if (prefersReducedMotion) {
       // Draw static first frame for accessibility
-      drawPrismaticCaustics(0);
+      drawSilkRibbons(0);
       return;
     }
 
@@ -745,8 +743,8 @@ export function AtmosphereCanvasEngine({ theme, engine }: AtmosphereCanvasEngine
         case "matrix-rain":
           if (frame % 2 === 0) drawMatrixRain();
           break;
-        case "prismatic-caustics":
-          drawPrismaticCaustics(t);
+        case "silk-ribbons":
+          drawSilkRibbons(t);
           break;
         case "radial-pulse":
           drawRadialPulse(t);
