@@ -6,7 +6,7 @@ import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { motion, useReducedMotion } from "motion/react";
 import { ChatMessage, FeedbackRating } from "@/lib/types/chat";
 import { getMotionTransition } from "@/lib/motion/presets";
-import { formatMarkdown, formatRelativeTime } from "@/lib/utils/format";
+import { formatMarkdown, formatRelativeTime, isSafeUrl } from "@/lib/utils/format";
 import { RadianceLogo } from "@/components/branding/radiance-logo";
 import { FollowUpChips } from "./follow-up-chips";
 import {
@@ -69,6 +69,7 @@ export function MessageItem({
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editContent, setEditContent] = useState(message.content);
+  const safeImageUrl = message.generatedImageUrl && isSafeUrl(message.generatedImageUrl) ? message.generatedImageUrl : null;
 
   useEffect(() => {
     setEditContent(message.content);
@@ -384,7 +385,7 @@ export function MessageItem({
           {isStreaming && <span className="stream-cursor" />}
 
           {/* Generated Image Display (Pollinations Flux) */}
-          {message.generatedImageUrl && (
+          {safeImageUrl && (
             <div className="mt-3.5 flex flex-col gap-2 rounded-xl overflow-hidden border border-[var(--border)] bg-[var(--deep)] p-2.5">
               <div className="font-mono text-[9px] uppercase tracking-widest text-[var(--accent)] flex items-center justify-between">
                 <span>Synthesized Flux Visual</span>
@@ -392,7 +393,7 @@ export function MessageItem({
               </div>
               <div className="relative aspect-square max-w-sm rounded-lg overflow-hidden bg-black/40 shadow-inner">
                 <Image
-                  src={message.generatedImageUrl}
+                  src={safeImageUrl}
                   alt="Generated visual"
                   fill
                   unoptimized
@@ -401,7 +402,7 @@ export function MessageItem({
               </div>
               <div className="flex justify-end gap-2 pt-1">
                 <a
-                  href={message.generatedImageUrl}
+                  href={safeImageUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-mono rounded-lg bg-[var(--surface)] border border-[var(--border)] text-[var(--accent)] hover:bg-[var(--surface-hover)] transition-colors touch-target"

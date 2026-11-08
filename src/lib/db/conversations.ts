@@ -2,6 +2,8 @@ import { getSupabaseBrowserClient } from "./client";
 import { Conversation, ChatMessage } from "@/lib/types/chat";
 import { safeLocalStorage } from "@/lib/utils/storage";
 
+const ID_REGEX = /^[a-zA-Z0-9_-]{1,128}$/;
+
 export const conversationService = {
   /**
    * Persists a conversation to Supabase if client & session exist,
@@ -15,11 +17,15 @@ export const conversationService = {
     const supabase = getSupabaseBrowserClient();
     if (!supabase || !userId) return;
 
+    // Validate conversation ID to prevent PostgREST parameter injection (SEC-08)
+    if (!ID_REGEX.test(conv.id)) return;
+
     try {
+      const sanitizedTitle = (conv.title || "New Chat").slice(0, 256).replace(/\u0000/g, "");
       const { error: convError } = await supabase.from("conversations").upsert({
         id: conv.id,
         user_id: userId,
-        title: conv.title,
+        title: sanitizedTitle,
         pinned: conv.pinned,
         updated_at: new Date(conv.updatedAt).toISOString(),
       });
@@ -27,24 +33,29 @@ export const conversationService = {
       if (convError) throw convError;
 
       // Upsert active messages and prune deleted/removed messages
-      const activeIds = conv.messages.map((m: ChatMessage) => m.id);
+      // Filter & validate IDs strictly to prevent PostgREST filter injection (SEC-08)
+      const safeActiveIds = (conv.messages || [])
+        .map((m: ChatMessage) => m.id)
+        .filter((id): id is string => typeof id === "string" && ID_REGEX.test(id));
 
-      if (activeIds.length > 0) {
+      if (safeActiveIds.length > 0) {
         // Prune any messages from this conversation that were deleted
         await supabase
           .from("messages")
           .delete()
           .eq("conversation_id", conv.id)
-          .not("id", "in", `(${activeIds.join(",")})`);
+          .not("id", "in", `(${safeActiveIds.join(",")})`);
 
-        const messageRows = conv.messages.map((m: ChatMessage) => ({
-          id: m.id,
-          conversation_id: conv.id,
-          role: m.role,
-          content: m.content,
-          image_url: m.generatedImageUrl,
-          created_at: new Date(m.createdAt).toISOString(),
-        }));
+        const messageRows = conv.messages
+          .filter((m) => safeActiveIds.includes(m.id))
+          .map((m: ChatMessage) => ({
+            id: m.id,
+            conversation_id: conv.id,
+            role: m.role,
+            content: m.content,
+            image_url: m.generatedImageUrl,
+            created_at: new Date(m.createdAt).toISOString(),
+          }));
 
         const { error: msgError } = await supabase.from("messages").upsert(messageRows, {
           onConflict: "id",
@@ -136,6 +147,8 @@ export const conversationService = {
     const supabase = getSupabaseBrowserClient();
     if (!supabase || !userId) return;
 
+    if (!ID_REGEX.test(convId)) return;
+
     try {
       await supabase.from("conversations").delete().eq("id", convId).eq("user_id", userId);
     } catch (err) {
@@ -171,6 +184,8 @@ export const conversationService = {
 
     const supabase = getSupabaseBrowserClient();
     if (!supabase || !userId) return;
+
+    if (!ID_REGEX.test(convId)) return;
 
     try {
       await supabase
