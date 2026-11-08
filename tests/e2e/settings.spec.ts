@@ -1,7 +1,7 @@
 import { test, expect, Page } from "@playwright/test";
 
 async function openSettings(page: Page) {
-  await expect(page.getByText("Illuminate what is possible", { exact: true })).toHaveCount(0, { timeout: 7000 });
+  await expect(page.getByPlaceholder("Ask RADIANCE anything...")).toBeVisible();
   if ((page.viewportSize()?.width ?? 0) < 768) {
     const bottomSettings = page.getByTestId("bottom-nav-settings");
     if (await bottomSettings.isVisible()) {
@@ -27,7 +27,7 @@ async function selectSection(page: Page, label: string) {
 
 test.describe("Radiance Settings Center", () => {
   test("opens the shortcut reference, searches settings, and persists choices", async ({ page }) => {
-    await page.goto("/");
+    await page.goto("/chat");
     await page.waitForLoadState("networkidle");
     await openSettings(page);
 
@@ -57,7 +57,7 @@ test.describe("Radiance Settings Center", () => {
   });
 
   test("manages explicit local intelligence notes with sharing off by default", async ({ page }) => {
-    await page.goto("/");
+    await page.goto("/chat");
     await page.waitForLoadState("networkidle");
     await openSettings(page);
     await selectSection(page, "Personal Intelligence");
@@ -75,7 +75,7 @@ test.describe("Radiance Settings Center", () => {
   });
 
   test("Enter-to-send preference keeps Enter as a newline when disabled", async ({ page }) => {
-    await page.goto("/");
+    await page.goto("/chat");
     await page.waitForLoadState("networkidle");
     await openSettings(page);
     await selectSection(page, "Chat & Composer");
@@ -107,7 +107,7 @@ test.describe("Radiance Settings Center", () => {
         messages: [{ id: "msg_settings_e2e", role: "user", content: "Fixture", createdAt: 1 }],
       },
     });
-    await page.goto("/");
+    await page.goto("/chat");
     await page.waitForLoadState("networkidle");
     await openSettings(page);
     await selectSection(page, "Data Controls");
