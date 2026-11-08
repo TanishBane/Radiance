@@ -6,10 +6,13 @@ import { circuitBreaker } from "@/lib/ai/circuit-breaker";
 import { getModelInstance } from "@/lib/ai/providers";
 import { composeSystemPrompt } from "@/lib/ai/prompts";
 import { resolveCapabilityModel } from "@/lib/ai/models";
+import { aiTelemetry } from "@/lib/observability/ai-telemetry";
 
 export const runtime = "nodejs";
 
 export async function POST(req: NextRequest) {
+  const requestId = req.headers.get("x-request-id") || `req_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+
   // 1. Enforce Layered Rate Limiting (Upstash Redis with Local Fallback)
   const clientIp = getTrustedClientIp(req.headers);
   const rateLimit = await checkRateLimit(clientIp, "chat");
@@ -25,6 +28,7 @@ export async function POST(req: NextRequest) {
         headers: {
           "Content-Type": "application/json",
           "Retry-After": String(rateLimit.retryAfter || 10),
+          "X-Request-ID": requestId,
           "X-RateLimit-Distributed": String(rateLimit.isDistributed),
         },
       }
@@ -36,7 +40,10 @@ export async function POST(req: NextRequest) {
   try {
     body = await req.json();
   } catch {
-    return new Response(JSON.stringify({ error: "Invalid JSON payload" }), { status: 400 });
+    return new Response(
+      JSON.stringify({ error: "Invalid JSON payload" }),
+      { status: 400, headers: { "Content-Type": "application/json", "X-Request-ID": requestId } }
+    );
   }
 
   const parsed = ChatRequestSchema.safeParse(body);
@@ -46,7 +53,7 @@ export async function POST(req: NextRequest) {
         error: "Validation error",
         issues: parsed.error.issues,
       }),
-      { status: 400, headers: { "Content-Type": "application/json" } }
+      { status: 400, headers: { "Content-Type": "application/json", "X-Request-ID": requestId } }
     );
   }
 
@@ -67,7 +74,7 @@ export async function POST(req: NextRequest) {
       JSON.stringify({
         error: "All AI inference providers are currently experiencing elevated latency or rate limits. Please retry in a few moments.",
       }),
-      { status: 503, headers: { "Content-Type": "application/json" } }
+      { status: 503, headers: { "Content-Type": "application/json", "X-Request-ID": requestId } }
     );
   }
 
@@ -118,6 +125,13 @@ export async function POST(req: NextRequest) {
   let lastError: Error | null = null;
 
   for (const modelOption of candidateModels) {
+    const telemetry = aiTelemetry.startRequest(
+      requestId,
+      modelOption.provider,
+      modelOption.id,
+      hasMultimodal ? "multimodal" : "chat"
+    );
+
     try {
       const model = getModelInstance(modelOption);
       const result = streamText({
@@ -127,10 +141,20 @@ export async function POST(req: NextRequest) {
         temperature: temperature ?? 0.7,
         maxTokens: modelOption.maxTokens,
         abortSignal: req.signal, // Propagate client cancellation directly to provider
+        onChunk: () => {
+          aiTelemetry.recordFirstToken(telemetry);
+        },
+        onFinish: (event) => {
+          aiTelemetry.completeSuccess(telemetry, event.usage);
+        },
+        onError: (event) => {
+          aiTelemetry.recordFailure(telemetry, event.error);
+        },
       });
 
       return result.toDataStreamResponse({
         headers: {
+          "X-Request-ID": requestId,
           "X-Radiance-Provider": modelOption.provider,
           "X-Radiance-Model": modelOption.id,
           "X-RateLimit-Distributed": String(rateLimit.isDistributed),
@@ -147,6 +171,7 @@ export async function POST(req: NextRequest) {
     } catch (err: unknown) {
       const error = err instanceof Error ? err : new Error(String(err));
       lastError = error;
+      aiTelemetry.recordFailure(telemetry, error, true);
 
       const errStr = error.message.toLowerCase();
       if (
@@ -171,6 +196,6 @@ export async function POST(req: NextRequest) {
     JSON.stringify({
       error: "Inference failed across available providers. Please try again shortly.",
     }),
-    { status: 500, headers: { "Content-Type": "application/json" } }
+    { status: 500, headers: { "Content-Type": "application/json", "X-Request-ID": requestId } }
   );
 }

@@ -10,6 +10,7 @@
 
 # Testing & Coverage
 /coverage/
+/test-results/
 
 # Environment files
 .env

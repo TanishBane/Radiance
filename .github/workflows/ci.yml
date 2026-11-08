@@ -6,32 +6,39 @@ on:
   pull_request:
     branches: [main]
 
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   quality-gate:
     name: Verify & Build
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
 
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Setup Node.js v24
+      - name: Setup Node.js Runtime
         uses: actions/setup-node@v4
         with:
-          node-version: 24
+          node-version: 22
 
-      - name: Install pnpm
-        uses: pnpm/action-setup@v3
+      - name: Install pnpm Package Manager
+        uses: pnpm/action-setup@v4
         with:
           version: 10.30.3
 
-      - name: Get pnpm store directory
+      - name: Get pnpm Store Directory
         shell: bash
         run: |
           echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
 
-      - name: Setup pnpm cache
+      - name: Restore / Save pnpm Cache
         uses: actions/cache@v4
         with:
           path: ${{ env.STORE_PATH }}
@@ -39,16 +46,19 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pnpm-store-
 
-      - name: Install Dependencies
+      - name: Install Dependencies (Frozen Lockfile)
         run: pnpm install --frozen-lockfile
+
+      - name: Dependency Security Audit
+        run: pnpm audit --audit-level=critical --registry=https://registry.npmjs.org/ || echo "::warning::Audit identified advisories. Check Dependabot alerts."
 
       - name: TypeScript Strict Typecheck
         run: pnpm run typecheck
 
-      - name: ESLint Code Quality
+      - name: ESLint Code Quality Inspection
         run: pnpm run lint
 
-      - name: Automated Unit & Integration Tests
+      - name: Automated Unit & Integration Tests (Vitest)
         run: pnpm run test
 
       - name: Next.js Production Build
