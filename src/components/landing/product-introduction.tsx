@@ -1,13 +1,9 @@
-import { LandingReveal } from "./landing-reveal";
-
 export function ProductIntroduction() {
   return (
     <section id="product" className="landing-section">
       <div className="landing-shell landing-split">
-        <LandingReveal>
-          <h2 className="landing-section-title">Not just another conversation</h2>
-        </LandingReveal>
-        <LandingReveal>
+        <h2 className="landing-section-title">Not just another conversation</h2>
+        <div>
           <p className="landing-copy" style={{ marginTop: 0 }}>
             A conventional chatbot treats every session as a clean slate. You restate the same constraints,
             the same project facts, the same preference for brevity or depth.
@@ -21,7 +17,7 @@ export function ProductIntroduction() {
             Nothing is inferred in the background. Notes are saved when you save them. Retrieval is bounded
             lexical matching against those notes, not a hidden profile of who you are.
           </p>
-        </LandingReveal>
+        </div>
       </div>
     </section>
   );

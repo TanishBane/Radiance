@@ -1,5 +1,3 @@
-import { LandingReveal } from "./landing-reveal";
-
 const IDEAS = [
   {
     title: "Personal context",
@@ -24,14 +22,14 @@ export function PersonalIntelligenceSection() {
   return (
     <section id="intelligence" className="landing-section">
       <div className="landing-shell">
-        <LandingReveal>
+        <div>
           <h2 className="landing-section-title">Your AI. Your context. Your way</h2>
           <p className="landing-copy">
             Personal Intelligence is the control surface for notes and response preferences.
             It lives in Settings, on this device, and only participates in a reply when you have
             enabled sharing for retrieved context.
           </p>
-        </LandingReveal>
+        </div>
         <div className="landing-mosaic" style={{ marginTop: 48 }}>
           {IDEAS.map((idea) => (
             <article key={idea.title} className={`landing-panel${"wide" in idea && idea.wide ? " landing-panel-wide" : ""}`}>

@@ -1,0 +1,49 @@
+{
+  "title": "Choose a homepage composition",
+  "question": "Which first-screen structure should carry Radiance’s story? Each keeps the current dark-violet identity, editorial serif, truthful Personal Intelligence details, and a direct path to the real chat.",
+  "options": [
+    {
+      "id": "editorial-proof",
+      "kind": "assigned",
+      "label": "The Working Proof",
+      "kicker": "THE ROLL",
+      "thesis": "An editor’s proof sheet connects a note you chose to the shape of a later answer.",
+      "palette": ["#06050a", "#0c0b14", "#7c5cff", "#f3f1ec"],
+      "materials": ["working proof", "margin rules", "violet reference marks"],
+      "viewport": "One broad proof sheet holds the promise, a working Chat action, and a continuous note-to-question-to-reply example.",
+      "risk": "The proof-sheet form could feel like publishing software unless the real chat action stays prominent.",
+      "html": ".impeccable/mocks/decision/editorial-proof.html",
+      "htmlFrame": "1440x900",
+      "comp": ".impeccable/mocks/decision/editorial-proof.png"
+    },
+    {
+      "id": "annotated-edition",
+      "kind": "dealt",
+      "label": "The Annotated Edition",
+      "thesis": "A reader’s edition places a later question beside the notes and answer preferences that inform it.",
+      "palette": ["#06050a", "#0c0b14", "#7c5cff", "#f3f1ec"],
+      "materials": ["open folio", "wide marginalia", "cross-reference rules"],
+      "viewport": "An oversized promise opens into a readable conversation passage, with the selected context in a functional outer margin and the Chat action above the fold.",
+      "risk": "The literary form may make Radiance feel like a reading product rather than an AI workspace.",
+      "html": ".impeccable/mocks/decision/annotated-edition.html",
+      "htmlFrame": "1440x900",
+      "comp": ".impeccable/mocks/decision/annotated-edition.png"
+    },
+    {
+      "id": "library-index",
+      "kind": "dealt",
+      "label": "The Personal Index",
+      "thesis": "A reference index makes saved context, answer preferences, and sharing control easy to scan.",
+      "palette": ["#06050a", "#0c0b14", "#7c5cff", "#f3f1ec"],
+      "materials": ["catalogue folios", "index tabs", "single-ink rules"],
+      "viewport": "A clear typographic index leads into one featured note and a later question, with the primary Chat action embedded in the page masthead.",
+      "risk": "An index can read like Settings and underplay the conversational outcome.",
+      "html": ".impeccable/mocks/decision/library-index.html",
+      "htmlFrame": "1440x900",
+      "comp": ".impeccable/mocks/decision/library-index.png"
+    }
+  ],
+  "reroll": { "registers": ["safer", "bolder"] },
+  "buildPath": { "value": "code", "toggle": true },
+  "steer": true
+}

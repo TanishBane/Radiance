@@ -1,14 +1,11 @@
 import Link from "next/link";
-import { LandingReveal } from "./landing-reveal";
 
 export function PrivacySection() {
   return (
     <section id="privacy" className="landing-section">
       <div className="landing-shell landing-split">
-        <LandingReveal>
-          <h2 className="landing-section-title">Your intelligence. Your control</h2>
-        </LandingReveal>
-        <LandingReveal>
+        <h2 className="landing-section-title">Your intelligence. Your control</h2>
+        <div>
           <p className="landing-copy" style={{ marginTop: 0 }}>
             You save notes explicitly. You manage and delete them. You set response preferences.
             Sharing retrieved context with the selected AI provider is opt-in.
@@ -26,7 +23,7 @@ export function PrivacySection() {
           <p className="landing-copy">
             <Link href="/privacy">Read the current privacy model</Link>
           </p>
-        </LandingReveal>
+        </div>
       </div>
     </section>
   );

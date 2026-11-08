@@ -52,9 +52,9 @@ export function LandingNav() {
               </button>
             </Dialog.Trigger>
             <Dialog.Portal>
-              <Dialog.Overlay className="fixed inset-0 z-50 bg-[color-mix(in_srgb,var(--void)_78%,transparent)]" />
+              <Dialog.Overlay className="landing-menu-overlay fixed inset-0 z-50 bg-[color-mix(in_srgb,var(--void)_78%,transparent)]" />
               <Dialog.Content
-                className="fixed inset-y-0 right-0 z-50 w-[min(100%,360px)] bg-[var(--void)] border-l border-[var(--border)] p-6 pt-[calc(16px+var(--sat))]"
+                className="landing-menu-panel fixed inset-y-0 right-0 z-50 w-[min(100%,360px)] bg-[var(--void)] border-l border-[var(--border)] p-6 pt-[calc(16px+var(--sat))]"
                 aria-describedby={undefined}
               >
                 <div className="flex items-center justify-between">
