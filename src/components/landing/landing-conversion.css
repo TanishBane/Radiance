@@ -1,0 +1,68 @@
+/* Scoped finishing styles for the trust and conversion sections. */
+.landing-root .landing-eyebrow {
+  display: inline-block;
+  margin-bottom: 18px;
+  color: var(--accent-b);
+  font-size: .72rem;
+  font-weight: 600;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+
+.landing-root .landing-privacy { background: linear-gradient(110deg, color-mix(in srgb, var(--deep) 48%, transparent), transparent 70%); }
+.landing-root .landing-privacy-heading { position: sticky; top: 120px; }
+.landing-root .landing-privacy-note { max-width: 32ch; margin: 18px 0 0; color: var(--landing-quiet); line-height: 1.65; }
+.landing-root .landing-privacy-copy { padding-left: 28px; border-left: 1px solid var(--landing-hairline); }
+.landing-root .landing-privacy-copy .landing-copy { margin-top: 0; }
+.landing-root .landing-privacy-copy .landing-copy + .landing-copy { margin-top: 18px; }
+.landing-root .landing-privacy-link { display: inline-flex; align-items: center; gap: 10px; color: var(--txt) !important; font-weight: 600; text-decoration-thickness: 1px; text-underline-offset: 5px; }
+.landing-root .landing-privacy-link span { color: var(--accent-b); transition: transform 160ms ease-out; }
+.landing-root .landing-privacy-link:hover span { transform: translate(2px, -2px); }
+
+.landing-root .landing-faq { display: grid; grid-template-columns: minmax(220px, .7fr) minmax(0, 1.3fr); gap: clamp(36px, 7vw, 96px); align-items: start; }
+.landing-root .landing-faq-heading { position: sticky; top: 120px; }
+.landing-root .landing-faq-list { border-top: 1px solid var(--landing-hairline); }
+.landing-root .landing-faq-item { border-bottom: 1px solid var(--landing-hairline); }
+.landing-root .landing-faq-item h3 { margin: 0; }
+.landing-root .landing-faq-item button { display: flex; width: 100%; min-height: 68px; align-items: center; justify-content: space-between; gap: 24px; padding: 16px 2px; border: 0; background: transparent; color: var(--txt); text-align: left; font: inherit; cursor: pointer; }
+.landing-root .landing-faq-item button span:first-child { font-size: 1rem; font-weight: 500; }
+.landing-root .landing-faq-item button span:last-child { color: var(--accent-b); font-size: 1.3rem; }
+.landing-root .landing-faq-item button:hover span:first-child { color: var(--accent-b); }
+.landing-root .landing-faq-item > p { max-width: 64ch; margin: -2px 36px 22px 2px; color: var(--landing-muted); font-size: .94rem; line-height: 1.7; }
+
+.landing-root .landing-conversion { position: relative; overflow: hidden; isolation: isolate; padding-block: clamp(88px, 12vw, 156px); text-align: center; }
+.landing-root .landing-conversion::before { position: absolute; z-index: -1; inset: 0; background: radial-gradient(ellipse at 50% 45%, color-mix(in srgb, var(--accent) 16%, transparent), transparent 58%); content: ""; pointer-events: none; }
+.landing-root .landing-conversion-inner { display: flex; flex-direction: column; align-items: center; }
+.landing-root .landing-conversion .landing-eyebrow { margin-bottom: 22px; }
+.landing-root .landing-conversion .landing-section-title { max-width: 15ch; font-size: clamp(2.8rem, 6vw, 5rem); }
+.landing-root .landing-conversion .landing-copy { max-width: 48ch; margin-top: 20px; }
+.landing-root .landing-conversion-actions { justify-content: center; margin-top: 30px; }
+.landing-root .landing-conversion .landing-final-cta { box-shadow: 0 8px 32px color-mix(in srgb, var(--accent) 28%, transparent); }
+.landing-root .landing-conversion-caption { margin: 16px 0 0; color: var(--landing-quiet); font-size: .82rem; }
+
+.landing-root .landing-footer { padding: 48px 0 calc(24px + var(--sab)); border-top: 1px solid var(--landing-hairline); background: color-mix(in srgb, var(--deep) 58%, var(--void)); }
+.landing-root .landing-footer-grid { display: grid; grid-template-columns: minmax(0, 1.5fr) repeat(2, minmax(120px, .65fr)); gap: 42px; }
+.landing-root .landing-footer-grid > div:first-child .landing-copy { max-width: 42ch; margin-top: 16px; font-size: .9rem; }
+.landing-root .landing-footer-grid > div:not(:first-child) { display: flex; flex-direction: column; align-items: flex-start; gap: 9px; }
+.landing-root .landing-footer-grid > div:not(:first-child) p { margin: 0 0 5px !important; font-size: .83rem; font-weight: 600; }
+.landing-root .landing-footer-grid br { display: none; }
+.landing-root .landing-footer-grid a { color: var(--landing-quiet); font-size: .87rem; text-decoration: none; transition: color 150ms ease-out; }
+.landing-root .landing-footer-grid a:hover { color: var(--txt); }
+.landing-root .landing-footer-meta { margin: 38px 0 0; padding-top: 18px; border-top: 1px solid var(--landing-hairline); color: var(--landing-quiet); font-size: .75rem; }
+
+@media (max-width: 760px) {
+  .landing-root .landing-privacy-heading, .landing-root .landing-faq-heading { position: static; }
+  .landing-root .landing-privacy-copy { padding-left: 18px; }
+  .landing-root .landing-faq { grid-template-columns: minmax(0, 1fr); gap: 30px; }
+  .landing-root .landing-footer-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px 24px; }
+  .landing-root .landing-footer-grid > div:first-child { grid-column: 1 / -1; }
+}
+
+@media (max-width: 420px) {
+  .landing-root .landing-footer-grid { grid-template-columns: minmax(0, 1fr); gap: 26px; }
+  .landing-root .landing-footer-grid > div:first-child { grid-column: auto; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .landing-root .landing-privacy-link span { transition: none; }
+}

@@ -1,21 +1,21 @@
+import React from "react";
 import { LandingCta } from "./landing-cta";
 
 export function FinalCta() {
   return (
-    <section id="start" className="landing-section landing-finale">
-      <div className="landing-shell" style={{ position: "relative" }}>
-        <h2 className="landing-section-title">Start a more personal conversation</h2>
+    <section id="start" className="landing-section landing-finale landing-conversion">
+      <div className="landing-shell landing-conversion-inner">
+        <span className="landing-eyebrow">A better conversation starts with context</span>
+        <h2 className="landing-section-title">Make room for a more personal kind of AI.</h2>
         <p className="landing-copy">
-          Bring your context. Shape your experience. Discover what a more personal AI can feel like.
+          Save what matters. Set the terms. Bring the context when you choose.
         </p>
-        <div className="landing-hero-actions">
+        <div className="landing-hero-actions landing-conversion-actions">
           <LandingCta size="lg" className="landing-final-cta">
             Chat with Radiance
           </LandingCta>
         </div>
-        <p className="landing-copy" style={{ color: "var(--txt-muted)" }}>
-          Your next conversation starts here
-        </p>
+        <p className="landing-conversion-caption">No setup story. Just start with a conversation.</p>
       </div>
     </section>
   );

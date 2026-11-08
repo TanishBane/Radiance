@@ -1,3 +1,4 @@
+import React, { type ReactNode } from "react";
 import Link from "next/link";
 import { cn } from "@/lib/utils/cn";
 
@@ -9,7 +10,7 @@ export function LandingCta({
   className,
 }: {
   href?: string;
-  children?: React.ReactNode;
+  children?: ReactNode;
   variant?: "solid" | "ghost";
   size?: "md" | "lg";
   className?: string;
