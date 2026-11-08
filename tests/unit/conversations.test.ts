@@ -68,4 +68,36 @@ describe("Conversation Persistence Service", () => {
     const list = await conversationService.list();
     expect(list.find((c) => c.id === "conv_delete_test")).toBeUndefined();
   });
+
+  it("safely handles conversations with adversarial or injection IDs (SEC-08)", async () => {
+    const maliciousConv: Conversation = {
+      id: "conv_malicious_123",
+      title: "Adversarial Injection Attempt",
+      pinned: false,
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+      messages: [
+        {
+          id: "msg_valid_1",
+          role: "user",
+          content: "Valid message",
+          createdAt: Date.now(),
+        },
+        {
+          id: "msg_2),id.neq.0", // PostgREST URL filter parameter injection attempt
+          role: "assistant",
+          content: "Injected ID message",
+          createdAt: Date.now(),
+        },
+      ],
+    };
+
+    // Should not throw or crash
+    await expect(conversationService.save(maliciousConv, "user_123")).resolves.not.toThrow();
+
+    // Verify local storage was saved properly
+    const local = safeLocalStorage.getConversation("conv_malicious_123");
+    expect(local).not.toBeNull();
+    expect(local?.id).toBe("conv_malicious_123");
+  });
 });

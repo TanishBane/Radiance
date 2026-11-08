@@ -379,4 +379,33 @@ describe("MessageItem Component & Action Menus Specifications", () => {
       expect(mobileTrigger.className).toContain("touch-target");
     });
   });
+
+  describe("9. Synthesized Image Security & Safe Protocol Invariants (SEC-09)", () => {
+    it("renders valid HTTPS generated image and download link", () => {
+      const msgWithImage: ChatMessage = {
+        ...baseAssistantMessage,
+        id: "msg_img_1",
+        generatedImageUrl: "https://image.pollinations.ai/prompt/cyberpunk%20city?width=768&height=768",
+      };
+
+      const { container } = render(<MessageItem message={msgWithImage} />);
+      expect(screen.getByText("Synthesized Flux Visual")).toBeDefined();
+      const downloadLink = container.querySelector('a[href*="pollinations.ai"]');
+      expect(downloadLink).not.toBeNull();
+      expect(downloadLink?.getAttribute("href")).toContain("https://image.pollinations.ai");
+    });
+
+    it("blocks dangerous javascript: URL in generatedImageUrl from rendering (SEC-09)", () => {
+      const msgWithHostileUrl: ChatMessage = {
+        ...baseAssistantMessage,
+        id: "msg_hostile_img",
+        generatedImageUrl: "javascript:alert(document.cookie)",
+      };
+
+      const { container } = render(<MessageItem message={msgWithHostileUrl} />);
+      expect(screen.queryByText("Synthesized Flux Visual")).toBeNull();
+      const dangerousAnchor = container.querySelector('a[href^="javascript:"]');
+      expect(dangerousAnchor).toBeNull();
+    });
+  });
 });

@@ -180,22 +180,27 @@ function sanitizeAndValidateIp(candidate: string | null | undefined): string | n
 }
 
 /**
- * Derives trusted client IP avoiding spoofed x-forwarded-for headers.
+ * Derives trusted client IP avoiding spoofed headers.
+ * Prioritizes platform-authenticated edge headers (Cloudflare, Vercel)
+ * to prevent spoofed X-Real-IP / X-Forwarded-For rate-limit bypasses (SEC-07).
  */
 export function getTrustedClientIp(headers: Headers): string {
-  // Edge-verified headers
-  const realIp = sanitizeAndValidateIp(headers.get("x-real-ip"));
-  if (realIp) return realIp;
+  // 1. Edge-verified Cloudflare header
+  const cfIp = sanitizeAndValidateIp(headers.get("cf-connecting-ip"));
+  if (cfIp) return cfIp;
 
+  // 2. Edge-verified Vercel header
   const vercelIp = headers.get("x-vercel-forwarded-for");
   if (vercelIp && vercelIp.trim().length > 0) {
     const validated = sanitizeAndValidateIp(vercelIp.split(",")[0]);
     if (validated) return validated;
   }
 
-  const cfIp = sanitizeAndValidateIp(headers.get("cf-connecting-ip"));
-  if (cfIp) return cfIp;
+  // 3. Reverse proxy header (e.g. Nginx/Caddy when explicitly configured)
+  const realIp = sanitizeAndValidateIp(headers.get("x-real-ip"));
+  if (realIp) return realIp;
 
+  // 4. Fallback forwarded header
   const forwarded = headers.get("x-forwarded-for");
   if (forwarded && forwarded.trim().length > 0) {
     const parts = forwarded.split(",").map((s) => s.trim());
