@@ -6,17 +6,15 @@ import {
   MessageSquare,
   History,
   Plus,
-  Sliders,
-  Command,
+  Settings,
 } from "lucide-react";
 import { getMotionTransition } from "@/lib/motion/presets";
 
 export interface MobileBottomNavProps {
-  activeTab?: "chat" | "history" | "settings" | "shortcuts";
+  activeTab?: "chat" | "history" | "settings";
   onNewChat: () => void;
   onToggleHistory: () => void;
   onToggleSettings: () => void;
-  onOpenShortcuts: () => void;
   onFocusChat?: () => void;
   isComposerFocused?: boolean;
 }
@@ -26,7 +24,6 @@ export function MobileBottomNav({
   onNewChat,
   onToggleHistory,
   onToggleSettings,
-  onOpenShortcuts,
   onFocusChat,
   isComposerFocused = false,
 }: MobileBottomNavProps) {
@@ -110,7 +107,7 @@ export function MobileBottomNav({
           </motion.button>
         </div>
 
-        {/* 4. Settings / Personalization */}
+        {/* 4. Settings Center */}
         <button
           type="button"
           onClick={onToggleSettings}
@@ -119,11 +116,11 @@ export function MobileBottomNav({
               ? "text-[var(--accent-b)] font-semibold"
               : "text-[var(--txt-muted)] hover:text-[var(--txt)]"
           }`}
-          aria-label="Personalization & Themes"
+            aria-label="Settings"
           data-testid="bottom-nav-settings"
         >
           <div className="relative">
-            <Sliders className="w-4 h-4" />
+            <Settings className="w-4 h-4" />
             {activeTab === "settings" && (
               <motion.span
                 layoutId="bottom-nav-active-dot"
@@ -135,30 +132,6 @@ export function MobileBottomNav({
           <span className="text-[10px] mt-0.5 tracking-tight">Settings</span>
         </button>
 
-        {/* 5. Shortcuts */}
-        <button
-          type="button"
-          onClick={onOpenShortcuts}
-          className={`flex-1 flex flex-col items-center justify-center min-h-[44px] min-w-[44px] py-1 rounded-xl transition-all cursor-pointer touch-target ${
-            activeTab === "shortcuts"
-              ? "text-[var(--accent-b)] font-semibold"
-              : "text-[var(--txt-muted)] hover:text-[var(--txt)]"
-          }`}
-          aria-label="Keyboard Shortcuts"
-          data-testid="bottom-nav-shortcuts"
-        >
-          <div className="relative">
-            <Command className="w-4 h-4" />
-            {activeTab === "shortcuts" && (
-              <motion.span
-                layoutId="bottom-nav-active-dot"
-                className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-[var(--accent)] shadow-[0_0_6px_var(--accent)]"
-                transition={getMotionTransition("feedback", prefersReducedMotion)}
-              />
-            )}
-          </div>
-          <span className="text-[10px] mt-0.5 tracking-tight">More</span>
-        </button>
       </div>
     </nav>
   );

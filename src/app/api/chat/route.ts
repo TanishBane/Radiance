@@ -57,7 +57,7 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const { messages, modelId, mode, tone, language, temperature } = parsed.data;
+  const { messages, modelId, mode, tone, language, customInstructions, temperature } = parsed.data;
 
   // 3. Multimodal Content Detection & Capability Resolution
   const hasMultimodal = messages.some((m) =>
@@ -79,7 +79,7 @@ export async function POST(req: NextRequest) {
   }
 
   // 5. Construct System Prompt (Default Assistant + Tone + Language + Mode)
-  const systemPrompt = composeSystemPrompt(tone, language, mode);
+  const systemPrompt = composeSystemPrompt(tone, language, mode, customInstructions);
 
   // 6. Map Messages to CoreMessage Format With Attachment Injection
   const coreMessages: CoreMessage[] = messages.map((m) => {

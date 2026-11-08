@@ -5,6 +5,7 @@ test.describe("Radiance AI Platform E2E Workflows", () => {
     // Navigate to root
     await page.goto("/");
     await page.waitForLoadState("networkidle");
+    await expect(page.getByText("Illuminate what is possible", { exact: true })).toHaveCount(0, { timeout: 7000 });
   });
 
   test("loads application workspace with Radiance branding", async ({ page }) => {
@@ -22,19 +23,16 @@ test.describe("Radiance AI Platform E2E Workflows", () => {
     await expect(textarea).toHaveValue(message);
   });
 
-  test("opens and closes keyboard shortcuts dialog", async ({ page }) => {
+  test("opens settings to the keyboard shortcut reference and closes it", async ({ page }) => {
     if ((page.viewportSize()?.width ?? 0) < 768) {
-      await page.getByRole("button", { name: "Open navigation menu" }).click();
-      await page.getByRole("button", { name: "Shortcuts" }).click();
+      await page.getByTestId("bottom-nav-settings").click();
     } else {
       await page.keyboard.press("Control+k");
     }
 
-    // Modal should become visible
+    await expect(page.getByRole("dialog", { name: "Radiance Settings" })).toBeVisible();
     await expect(page.getByRole("heading", { name: "Keyboard Shortcuts" })).toBeVisible();
-    await expect(page.getByRole("dialog", { name: "Keyboard Shortcuts" })).toBeVisible();
 
-    // Escape closes modal
     await page.keyboard.press("Escape");
     await expect(page.getByRole("heading", { name: "Keyboard Shortcuts" })).not.toBeVisible();
   });
@@ -55,7 +53,8 @@ test.describe("Radiance AI Platform E2E Workflows", () => {
       await page.getByRole("button", { name: "Open navigation menu" }).click();
     }
     await page.getByRole("button", { name: "Personalization" }).click();
-    await expect(page.getByRole("dialog", { name: "Personalization" })).toBeVisible();
+    await expect(page.getByRole("dialog", { name: "Radiance Settings" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Personalization" })).toBeVisible();
     await page.keyboard.press("Escape");
     await expect(page.getByRole("dialog", { name: "Personalization" })).not.toBeVisible();
   });
@@ -65,13 +64,12 @@ test.describe("Radiance AI Platform E2E Workflows", () => {
     await page.goto("/");
     await page.waitForLoadState("networkidle");
     if ((page.viewportSize()?.width ?? 0) < 768) {
-      await page.getByRole("button", { name: "Open navigation menu" }).click();
-      await page.getByRole("button", { name: "Shortcuts" }).click();
+      await page.getByTestId("bottom-nav-settings").click();
     } else {
       await page.keyboard.press("Control+k");
     }
 
-    const dialog = page.getByRole("dialog", { name: "Keyboard Shortcuts" });
+    const dialog = page.getByRole("dialog", { name: "Radiance Settings" });
     await expect(dialog).toBeVisible();
     const durationMs = await dialog.evaluate((element) => {
       const duration = getComputedStyle(element).animationDuration;
@@ -101,7 +99,7 @@ test.describe("Radiance AI Platform E2E Workflows", () => {
     await expect(page.getByRole("button", { name: "Radiance home" })).toBeVisible();
     await expect(page.getByRole("button", { name: "Clear active conversation" })).toBeVisible();
 
-    const category = page.getByRole("button", { name: "Code & Architecture" });
+    const category = page.getByRole("button", { name: "Create", exact: true });
     const categoryWidth = await category.evaluate((element) => ({
       client: element.clientWidth,
       content: element.scrollWidth,
@@ -109,17 +107,17 @@ test.describe("Radiance AI Platform E2E Workflows", () => {
     expect(categoryWidth.content).toBeLessThanOrEqual(categoryWidth.client);
   });
 
-  test("prompt categories remain inside their desktop navigation row", async ({ page }) => {
+  test("prompt suggestion columns remain inside their desktop row", async ({ page }) => {
     await page.setViewportSize({ width: 1366, height: 900 });
     await page.goto("/");
     await page.waitForLoadState("networkidle");
-    const fluxCategory = page.getByRole("button", { name: "Flux Visuals" });
-    const fits = await fluxCategory.evaluate((element) => {
-      const row = element.parentElement;
-      if (!row) return false;
-      const item = element.getBoundingClientRect();
-      const bounds = row.getBoundingClientRect();
-      return item.left >= bounds.left && item.right <= bounds.right;
+    const promptCategories = page.getByTestId("prompt-categories");
+    const fits = await promptCategories.evaluate((element) => {
+      const bounds = element.getBoundingClientRect();
+      return [...element.children].every((child) => {
+        const item = child.getBoundingClientRect();
+        return item.left >= bounds.left && item.right <= bounds.right;
+      });
     });
 
     expect(fits).toBe(true);

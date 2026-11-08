@@ -4,6 +4,7 @@ import React from "react";
 import { RadianceLogo } from "@/components/branding/radiance-logo";
 import { Trash2 } from "lucide-react";
 import { IconMenu2 } from "@tabler/icons-react";
+import { APP_VERSION } from "@/lib/app-info";
 
 interface TopbarProps {
   language: "en" | "hi";
@@ -56,7 +57,7 @@ export function Topbar({
             {modelName || "Default Assistant"}
           </span>
           <span className="font-mono text-[9px] uppercase tracking-widest px-1.5 py-0.2 rounded-full border border-[var(--accent)]/30 text-[var(--accent)] bg-[var(--accent-d)]">
-            v1.0
+            v{APP_VERSION}
           </span>
         </div>
       </div>

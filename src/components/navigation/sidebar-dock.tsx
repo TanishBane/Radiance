@@ -11,17 +11,19 @@ import {
   IconPlus,
   IconHistory,
   IconAdjustmentsHorizontal,
-  IconCommand,
+  IconSettings,
 } from "@tabler/icons-react";
 import { motion, useReducedMotion } from "motion/react";
 import { RadianceLogo } from "@/components/branding/radiance-logo";
 import { cn } from "@/lib/utils/cn";
+import { APP_VERSION } from "@/lib/app-info";
 
 interface SidebarDockProps {
   onNewChat: () => void;
   onToggleHistory: () => void;
-  onToggleSettings: () => void;
-  onOpenShortcuts: () => void;
+  onToggleSettings: (section?: string) => void;
+  settingsActive?: boolean;
+  activeSettingsSection?: string;
   open?: boolean;
   setOpen?: React.Dispatch<React.SetStateAction<boolean>>;
 }
@@ -30,7 +32,8 @@ export function SidebarDock({
   onNewChat,
   onToggleHistory,
   onToggleSettings,
-  onOpenShortcuts,
+  settingsActive = false,
+  activeSettingsSection = "general",
   open: controlledOpen,
   setOpen: controlledSetOpen,
 }: SidebarDockProps) {
@@ -74,17 +77,18 @@ export function SidebarDock({
           <IconAdjustmentsHorizontal className="w-4 h-4 stroke-[1.8]" />
         </div>
       ),
-      onClick: () => handleAction(onToggleSettings),
+      onClick: () => handleAction(() => onToggleSettings("personalization")),
+      active: settingsActive && activeSettingsSection === "personalization",
     },
     {
-      label: "Shortcuts",
+      label: "Settings",
       icon: (
         <div className="w-5 h-5 flex items-center justify-center text-[var(--txt-muted)] group-hover/sidebar:text-[var(--accent-b)] transition-colors">
-          <IconCommand className="w-4 h-4 stroke-[1.8]" />
+          <IconSettings className="w-4 h-4 stroke-[1.8]" />
         </div>
       ),
-      onClick: () => handleAction(onOpenShortcuts),
-      badge: "Ctrl+K",
+      onClick: () => handleAction(() => onToggleSettings("general")),
+      active: settingsActive && activeSettingsSection !== "personalization",
     },
   ];
 
@@ -120,7 +124,7 @@ export function SidebarDock({
                   </span>
                   <span className="flex items-center gap-1 font-mono text-[9px] uppercase tracking-wider px-2 py-0.5 rounded-full border border-[var(--accent)]/30 text-[var(--accent-b)] bg-[var(--accent-d)]/60 shadow-xs">
                     <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent)] animate-pulse" />
-                    v1.0
+                    v{APP_VERSION}
                   </span>
                 </div>
                 <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-[var(--accent-b)]/80 mt-0.5">

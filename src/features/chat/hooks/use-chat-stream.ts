@@ -7,6 +7,7 @@ export interface UseChatStreamOptions {
   modelId: string;
   tone: string;
   language: string;
+  customInstructions?: string;
   onStreamComplete: (assistantMessage: ChatMessage) => void;
   onError?: (error: Error) => void;
 }
@@ -15,6 +16,7 @@ export function useChatStream({
   modelId,
   tone,
   language,
+  customInstructions = "",
   onStreamComplete,
   onError,
 }: UseChatStreamOptions): UseChatStreamReturn {
@@ -78,6 +80,7 @@ export function useChatStream({
             mode: overrideMode || "build",
             tone,
             language,
+            customInstructions,
           }),
         });
 
@@ -203,7 +206,7 @@ export function useChatStream({
         onError?.(error);
       }
     },
-    [modelId, tone, language, onStreamComplete, onError]
+    [modelId, tone, language, customInstructions, onStreamComplete, onError]
   );
 
   const retryLast = useCallback(async () => {

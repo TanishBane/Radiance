@@ -107,6 +107,7 @@ export interface ChatComposerProps {
   disabled?: boolean;
   selectedModel?: ModelOption;
   onSelectModel?: (model: ModelOption) => void;
+  enterToSend?: boolean;
 }
 
 export function ChatComposer({
@@ -116,6 +117,7 @@ export function ChatComposer({
   disabled = false,
   selectedModel,
   onSelectModel,
+  enterToSend = true,
 }: ChatComposerProps) {
   const shouldReduceMotion = useReducedMotion();
   const [input, setInput] = useState("");
@@ -263,7 +265,8 @@ export function ChatComposer({
     if (e.nativeEvent.isComposing || e.keyCode === 229) {
       return;
     }
-    if (e.key === "Enter" && !e.shiftKey) {
+    if (e.key === "Enter" && e.shiftKey) return;
+    if (e.key === "Enter" && (enterToSend ? !e.ctrlKey && !e.metaKey : e.ctrlKey || e.metaKey)) {
       e.preventDefault();
       handleSubmit();
     }
