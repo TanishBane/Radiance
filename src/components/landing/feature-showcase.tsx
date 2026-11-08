@@ -1,50 +1,32 @@
+import React from "react";
+
 const FEATURES = [
-  {
-    title: "Personal memory",
-    copy: "Save and manage notes up to 500 characters each. Common credential patterns are blocked. You can search, edit, export, or clear the vault on this device.",
-    visual: "Notes stay in a list you own. Nothing is added unless you save it from chat or from Settings.",
-  },
-  {
-    title: "Personalized responses",
-    copy: "Choose answer style along a few axes: concise or detailed, technical or simpler language, more examples, more practical guidance.",
-    visual: "Preferences are recorded as explicit signals, not guessed from tone of voice.",
-  },
-  {
-    title: "Context-aware conversations",
-    copy: "When sharing is on, a later question can pull in up to five lexically relevant notes plus a handful of preference labels.",
-    visual: "Retrieval scores overlap between your question and saved text. Unrelated notes stay out of the request.",
-  },
-  {
-    title: "Provider sharing control",
-    copy: "Sharing retrieved context with the selected AI provider is opt-in and independent from chat history.",
-    visual: "If sharing is off, notes remain on the device and are not attached to the inference request.",
-  },
-  {
-    title: "Personal Intelligence settings",
-    copy: "Open Settings and go to Personal Intelligence to review notes, preferences, sharing, export, and deletion.",
-    visual: "The same panel is available from a remembered chat message or from the sidebar.",
-  },
+  { number: "01", title: "A useful note, not a hidden profile", copy: "Keep project details in notes you can review, edit, export, or remove.", visual: "A short list, written and maintained by you.", kind: "notes" },
+  { number: "02", title: "Answers shaped around your preferences", copy: "Choose the response style that works for you, then update it whenever your needs change.", visual: "Concise  ─────●──  Detailed", kind: "preferences" },
+  { number: "03", title: "Only relevant context moves forward", copy: "With sharing enabled, up to five notes can be selected for a question using bounded lexical matching.", visual: "Question  →  Matching notes  →  Provider request", kind: "retrieval" },
 ] as const;
 
 export function FeatureShowcase() {
   return (
-    <section id="features" className="landing-section">
+    <section id="features" className="landing-section story-features">
       <div className="landing-shell">
-        <h2 className="landing-section-title">What you can do now</h2>
-        <div className="landing-features" style={{ marginTop: 56 }}>
+        <div className="story-section-heading story-feature-heading">
+          <div><p className="story-eyebrow">Made for the way you work</p><h2 className="landing-section-title">Thoughtful by default.<br />Useful by choice.</h2></div>
+          <p className="landing-copy">A closer look at what Personal Intelligence does today, and where your choices shape it.</p>
+        </div>
+        <div className="story-feature-list">
           {FEATURES.map((feature) => (
-            <article key={feature.title} className="landing-feature">
-              <div className="landing-feature-copy">
-                <span className="landing-mark" aria-hidden="true" />
-                <h3>{feature.title}</h3>
-                <p>{feature.copy}</p>
-              </div>
-              <div className="landing-panel">
-                <p style={{ margin: 0 }}>{feature.visual}</p>
+            <article className="story-feature" key={feature.number}>
+              <div className="story-feature-copy"><span className="story-feature-number">{feature.number}</span><h3>{feature.title}</h3><p>{feature.copy}</p></div>
+              <div className={`story-feature-visual story-feature-${feature.kind}`} aria-hidden="true">
+                {feature.kind === "notes" ? <><span className="story-mini-note"><i /> Project milestones <b>01</b></span><span className="story-mini-note"><i /> Writing preferences <b>02</b></span><span className="story-mini-note"><i /> Research context <b>03</b></span></> : null}
+                {feature.kind === "preferences" ? <><span className="story-preference-label">YOUR ANSWER LENGTH</span><span className="story-preference-track"><i /></span><span className="story-preference-ends"><span>Concise</span><span>Detailed</span></span></> : null}
+                {feature.kind === "retrieval" ? <><span className="story-retrieval-question">“What are the milestones for this project?”</span><span className="story-retrieval-arrow" aria-hidden="true">↓</span><span className="story-retrieval-match">2 relevant notes selected</span></> : null}
               </div>
             </article>
           ))}
         </div>
+        <div className="story-sharing-note"><span className="story-sharing-dot" aria-hidden="true" /><p><strong>Your notes stay here unless you opt in.</strong> When sharing is off, retrieved notes are not attached to provider requests.</p><span className="story-sharing-toggle" role="img" aria-label="Example provider sharing setting"><i /></span></div>
       </div>
     </section>
   );

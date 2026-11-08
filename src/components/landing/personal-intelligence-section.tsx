@@ -1,43 +1,42 @@
-const IDEAS = [
-  {
-    title: "Personal context",
-    copy: "Save information you consider important. Each note is stored in Personal Intelligence, with a category you choose, and can be edited or deleted later.",
-    wide: true,
-  },
-  {
-    title: "Adaptive preferences",
-    copy: "Set how answers should be structured: more concise or more detailed, more technical or simpler language, more examples, or more practical guidance.",
-  },
-  {
-    title: "Relevant retrieval",
-    copy: "When you ask a new question, Radiance scores saved notes against the query with bounded lexical matching and can attach a small relevant subset.",
-  },
-  {
-    title: "User control",
-    copy: "Sharing starts off. You decide what is saved and whether retrieved notes and preference labels may be sent to the selected provider.",
-  },
+import React from "react";
+
+const CONTROLS = [
+  { number: "01", title: "Notes you choose to keep", copy: "Save, edit, search, export, or delete your notes whenever you like.", tag: "ON THIS DEVICE" },
+  { number: "02", title: "A style that feels like yours", copy: "Set your preferred level of detail, language complexity, examples, and practical guidance.", tag: "YOUR PREFERENCES" },
+  { number: "03", title: "Sharing starts off", copy: "Choose whether relevant saved context can be included with a request to your selected provider.", tag: "OPT IN" },
 ] as const;
 
 export function PersonalIntelligenceSection() {
   return (
-    <section id="intelligence" className="landing-section">
+    <section id="intelligence" className="landing-section story-intelligence">
       <div className="landing-shell">
-        <div>
-          <h2 className="landing-section-title">Your AI. Your context. Your way</h2>
-          <p className="landing-copy">
-            Personal Intelligence is the control surface for notes and response preferences.
-            It lives in Settings, on this device, and only participates in a reply when you have
-            enabled sharing for retrieved context.
-          </p>
+        <div className="story-section-heading">
+          <div>
+            <p className="story-eyebrow">Personal Intelligence</p>
+            <h2 className="landing-section-title">A little more you.<br />A lot more in reach.</h2>
+          </div>
+          <p className="landing-copy">One considered place in Settings for the context you want to carry forward. You stay in charge of what lives here and what gets shared.</p>
         </div>
-        <div className="landing-mosaic" style={{ marginTop: 48 }}>
-          {IDEAS.map((idea) => (
-            <article key={idea.title} className={`landing-panel${"wide" in idea && idea.wide ? " landing-panel-wide" : ""}`}>
-              <span className="landing-mark" aria-hidden="true" />
-              <h3>{idea.title}</h3>
-              <p>{idea.copy}</p>
-            </article>
-          ))}
+        <div className="story-control-layout">
+          <div className="story-control-list">
+            {CONTROLS.map((item) => (
+              <article className="story-control" key={item.number}>
+                <span className="story-control-number">{item.number}</span>
+                <div><h3>{item.title}</h3><p>{item.copy}</p></div>
+                <span className="story-control-tag">{item.tag}</span>
+              </article>
+            ))}
+          </div>
+          <aside className="story-settings" aria-label="Illustration of Personal Intelligence settings">
+            <div className="story-settings-top"><span>RADIANCE / SETTINGS</span><span>•••</span></div>
+            <p className="story-settings-kicker">YOUR WORKSPACE</p>
+            <h3>Personal Intelligence</h3>
+            <p className="story-settings-description">Choose what to remember and how to respond.</p>
+            <div className="story-setting-row"><span><strong>Saved notes</strong><small>Project details and useful context</small></span><span className="story-setting-count">04</span></div>
+            <div className="story-setting-row"><span><strong>Answer style</strong><small>Concise · Practical · More examples</small></span><span aria-hidden="true">↗</span></div>
+            <div className="story-setting-row"><span><strong>Share relevant notes</strong><small>Include notes with provider requests</small></span><span className="story-toggle" role="img" aria-label="Sharing is off"><span /></span></div>
+            <p className="story-settings-footnote">OFF · Your notes are not attached to requests</p>
+          </aside>
         </div>
       </div>
     </section>

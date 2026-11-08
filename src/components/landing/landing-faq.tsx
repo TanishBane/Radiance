@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, useState } from "react";
+import React, { useId, useState } from "react";
 
 // The card reveal and open-state treatment adapt Hirael's MIT FAQ Accordion Reveal from 21st.dev.
 
@@ -50,7 +50,10 @@ export function LandingFaq() {
   return (
     <section id="faq" className="landing-section">
       <div className="landing-shell landing-faq">
-        <h2 className="landing-section-title">Questions</h2>
+        <div className="landing-faq-heading">
+          <span className="landing-eyebrow">Good to know</span>
+          <h2 className="landing-section-title">Questions, answered.</h2>
+        </div>
         <div className="landing-faq-list">
           {QUESTIONS.map((item, index) => {
             const panelId = `${baseId}-panel-${index}`;

@@ -1,3 +1,5 @@
+import React from "react";
+
 export function IntelligenceField() {
   return (
     <figure
@@ -5,6 +7,7 @@ export function IntelligenceField() {
       aria-label="An illustrative Radiance conversation"
     >
       <div className="landing-conversation">
+        <span className="landing-chat-label" aria-hidden="true">Radiance · New conversation</span>
         <p className="landing-question">
           <span>Question</span>
           What belongs in the next chapter outline?
@@ -14,10 +17,10 @@ export function IntelligenceField() {
           <path className="landing-reference-line" pathLength="1" d="M508 192 C 525 200, 535 208, 550 214" />
         </svg>
         <p className="landing-answer">
-          <strong>Start with three sections.</strong> Keep citations inline and the outline concise.
+          <strong>Start with three sections.</strong> First, the question that frames the chapter. Then the evidence and its counterpoint. Close with what the reader should carry forward. Keep citations inline so each idea stays connected to its source.
         </p>
         <figcaption className="landing-demo-caption">
-          Illustrative conversation · not connected to your profile
+          Illustrative conversation · not connected to a profile or AI provider
         </figcaption>
       </div>
 
