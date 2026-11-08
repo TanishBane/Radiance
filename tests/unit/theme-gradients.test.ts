@@ -15,14 +15,14 @@ describe("Theme Gradients Configuration & Mathematical Invariants", () => {
     expect(categories.has("cosmic")).toBe(true);
   });
 
-  it("should define exactly 13 unique atmosphere engines", () => {
-    expect(ATMOSPHERE_ENGINES.length).toBe(13);
+  it("should define exactly 12 unique atmosphere engines", () => {
+    expect(ATMOSPHERE_ENGINES.length).toBe(12);
     const engineIds = new Set(ATMOSPHERE_ENGINES.map((e) => e.id));
     const engineIdStrings = engineIds as Set<string>;
-    expect(engineIds.size).toBe(13);
+    expect(engineIds.size).toBe(12);
 
-    // 5 New Flagship 21st.dev Engines
-    expect(engineIds.has("ambient-spotlight")).toBe(true);
+    // Engines list with Cinematic Atmosphere removed and Fluid Aurora replaced by Prismatic Caustics
+    expect(engineIdStrings.has("ambient-spotlight")).toBe(false);
     expect(engineIdStrings.has("bloom")).toBe(false);
     expect(engineIdStrings.has("silk-caustics")).toBe(false);
 
@@ -42,7 +42,8 @@ describe("Theme Gradients Configuration & Mathematical Invariants", () => {
     expect(engineIds.has("liquid-lava")).toBe(true);
     expect(engineIds.has("matrix-rain")).toBe(true);
 
-    expect(engineIds.has("fluid-aurora")).toBe(true);
+    expect(engineIdStrings.has("fluid-aurora")).toBe(false);
+    expect(engineIds.has("prismatic-caustics")).toBe(true);
     expect(engineIdStrings.has("zen-minimal")).toBe(false);
     expect(engineIdStrings.has("celestial-dust")).toBe(false);
 

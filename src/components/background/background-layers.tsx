@@ -15,7 +15,7 @@ interface BackgroundLayersProps {
 export function BackgroundLayers({
   bgGradient,
   theme,
-  gradientStyle = "ambient-spotlight",
+  gradientStyle = "waves",
 }: BackgroundLayersProps) {
   const isWaves = gradientStyle === "waves";
   const isCosmic = gradientStyle === "cosmic";
