@@ -11,20 +11,19 @@ import "./hero-landscape.css";
 export function HeroLandscape() {
   return (
     <section 
-      className="hero-landscape-section section-atmosphere-hero landing-hero landing-hero-showcase landing-hero-redesign"
+      className="hero-landscape-section section-atmosphere-hero landing-hero"
       aria-labelledby="hero-display-heading"
     >
-      <div className="hero-landscape-shell landing-shell">
-        {/* Narrative Copy */}
+      <div className="hero-landscape-shell">
+        {/* Centered Narrative Copy */}
         <motion.div 
-          className="hero-narrative-block landing-hero-copy"
+          className="hero-narrative-block"
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
         >
-          <div className="hero-eyebrow-badge hero-eyebrow">
+          <div className="hero-eyebrow-badge">
             <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
-            <span aria-hidden="true" />
             <span>Personal Intelligence, Reimagined</span>
           </div>
 
@@ -52,8 +51,9 @@ export function HeroLandscape() {
           </p>
         </motion.div>
 
-        {/* Central Luminous Product Stage (Screenshot faithful recreation) */}
+        {/* Central Luminous Product Stage (Full-width, perfectly centered) */}
         <motion.div
+          className="hero-stage-wrapper"
           style={{ width: "100%", maxWidth: "980px" }}
           initial={{ opacity: 0, scale: 0.97, y: 32 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -62,8 +62,9 @@ export function HeroLandscape() {
           <HeroProductStage />
         </motion.div>
 
-        {/* Live Interactive Context Proof */}
+        {/* Live Interactive Context Proof (Centered below product stage) */}
         <motion.div
+          className="hero-field-wrapper"
           style={{ width: "100%", maxWidth: "980px", marginTop: "3.5rem" }}
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}

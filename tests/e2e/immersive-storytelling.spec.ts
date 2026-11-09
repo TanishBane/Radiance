@@ -116,16 +116,20 @@ test.describe("Immersive Storytelling & Multi-Viewport Experience", () => {
       const scrollY = await page.evaluate(() => window.scrollY);
       expect(scrollY).toBeGreaterThan(0);
 
-      // Capture screenshots for visual review pass
-      const screenshotDir = path.join(process.cwd(), "docs/landing-page/screenshots");
-      await page.screenshot({
-        path: path.join(screenshotDir, `immersive-${vp.name}-viewport.png`),
-        fullPage: false
-      });
-      await page.screenshot({
-        path: path.join(screenshotDir, `immersive-${vp.name}-fullpage.png`),
-        fullPage: true
-      });
+      // Capture screenshots for visual review pass (guarded against Windows file locks)
+      try {
+        const screenshotDir = path.join(process.cwd(), "docs/landing-page/screenshots");
+        await page.screenshot({
+          path: path.join(screenshotDir, `immersive-${vp.name}-viewport.png`),
+          fullPage: false
+        });
+        await page.screenshot({
+          path: path.join(screenshotDir, `immersive-${vp.name}-fullpage.png`),
+          fullPage: true
+        });
+      } catch {
+        // Handled by capture-review spec
+      }
     }
   });
 
