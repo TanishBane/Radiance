@@ -22,6 +22,7 @@ test.describe("Visual Quality Inspection & Multi-Viewport Screenshot Capture", (
       await page.setViewportSize({ width: vp.width, height: vp.height });
       await page.goto("/");
       await page.waitForLoadState("networkidle");
+      await page.waitForTimeout(1200);
 
       // Above the fold
       await page.screenshot({
