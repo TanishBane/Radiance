@@ -19,13 +19,13 @@ export function LandingNav() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
 
-  useEffect(() => {
-    const root = document.querySelector(".landing-root");
-    if (!root) return;
-    const onScroll = () => setScrolled(root.scrollTop > 8);
+    useEffect(() => {
+    const onScroll = () => {
+      setScrolled(window.scrollY > 16);
+    };
     onScroll();
-    root.addEventListener("scroll", onScroll, { passive: true });
-    return () => root.removeEventListener("scroll", onScroll);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
   return (

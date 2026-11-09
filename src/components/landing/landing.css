@@ -7,10 +7,12 @@
   --landing-ink: var(--txt);
   --landing-muted: var(--txt-dim);
   --landing-quiet: var(--txt-dim);
-  height: 100dvh;
-  overflow-x: hidden;
-  overflow-y: auto;
-  overscroll-behavior-y: contain;
+  min-height: 100vh;
+  min-height: 100dvh;
+  height: auto;
+  overflow-x: clip;
+  overflow-y: visible;
+  overscroll-behavior-y: auto;
   background: var(--void);
   color: var(--landing-ink);
   scrollbar-gutter: stable;

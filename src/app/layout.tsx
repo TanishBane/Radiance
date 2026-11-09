@@ -144,7 +144,7 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </head>
-      <body className="antialiased font-sans bg-[#06060a] text-[#f0ede6] h-[100dvh] overflow-hidden selection:bg-[var(--accent)] selection:text-[var(--void)]">
+      <body className="antialiased font-sans bg-[#06060a] text-[#f0ede6] min-h-[100dvh] selection:bg-[var(--accent)] selection:text-[var(--void)]">
         {children}
         <Analytics />
         <SpeedInsights />
