@@ -58,11 +58,6 @@ export function PersonalIntelligenceStory() {
           viewport={{ once: true, amount: 0.2 }}
           transition={{ duration: 0.6 }}
         >
-          <div className="intelligence-story-eyebrow">
-            <Sparkles className="w-3.5 h-3.5 text-violet-400" />
-            <span>The Personal Intelligence Core</span>
-          </div>
-
           <h2 id="intelligence-story-title" className="intelligence-story-title">
             An AI experience shaped around your context.
           </h2>
@@ -73,7 +68,7 @@ export function PersonalIntelligenceStory() {
         </motion.div>
 
         {/* 4 Pillars Grid */}
-        <div className="intelligence-pillars-grid">
+        <div className="intelligence-pillars-grid" data-ui>
           {PILLARS.map((pillar, idx) => (
             <motion.div
               key={pillar.id}

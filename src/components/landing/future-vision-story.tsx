@@ -47,11 +47,6 @@ export function FutureVisionStory() {
           viewport={{ once: true, amount: 0.2 }}
           transition={{ duration: 0.6 }}
         >
-          <div className="vision-eyebrow">
-            <Sparkles className="w-3.5 h-3.5 text-pink-400" />
-            <span>Future Architectural Horizon</span>
-          </div>
-
           <h2 id="vision-heading" className="vision-title">
             Personal intelligence, with room to evolve.
           </h2>

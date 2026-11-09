@@ -44,11 +44,6 @@ export function HeroLandscape() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
           >
-            <div className="hero-eyebrow-badge">
-              <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
-              <span>Personal Intelligence, Reimagined</span>
-            </div>
-
             <h1 id="hero-display-heading" className="hero-narrative-title landing-display">
               AI that brings your{" "}
               <em className="hero-serif-accent">context forward.</em>

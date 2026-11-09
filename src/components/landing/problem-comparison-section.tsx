@@ -28,11 +28,6 @@ export function ProblemComparisonSection() {
           viewport={{ once: true, amount: 0.2 }}
           transition={{ duration: 0.6 }}
         >
-          <div className="problem-eyebrow">
-            <RotateCcw className="w-3.5 h-3.5 text-blue-400" />
-            <span>The Context Disconnect</span>
-          </div>
-
           <h2 id="problem-heading" className="problem-title">
             Your context shouldn&apos;t disappear between conversations.
           </h2>
@@ -43,7 +38,7 @@ export function ProblemComparisonSection() {
         </motion.div>
 
         {/* Side-by-Side Comparison */}
-        <div className="problem-comparison-grid">
+        <div className="problem-comparison-grid" data-ui>
           {/* Left: Without Saved Context */}
           <motion.div 
             className="problem-panel problem-panel-generic"

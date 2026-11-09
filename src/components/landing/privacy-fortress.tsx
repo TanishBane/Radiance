@@ -49,11 +49,6 @@ export function PrivacyFortress() {
           viewport={{ once: true, amount: 0.2 }}
           transition={{ duration: 0.6 }}
         >
-          <div className="privacy-eyebrow">
-            <Lock className="w-3.5 h-3.5 text-emerald-400" />
-            <span>Honest Engineering &amp; Data Control</span>
-          </div>
-
           <h2 id="privacy-heading" className="privacy-title">
             Your context. Your choice.
           </h2>

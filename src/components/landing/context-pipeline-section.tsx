@@ -14,28 +14,32 @@ import "./context-pipeline.css";
 
 const STAGES = [
   {
-    step: "01",
+    key: "store",
+    step: "Local Store",
     title: "Local Note Store",
     desc: "Saved notes and preferences remain encrypted in browser localStorage until an active prompt triggers context assembly.",
     icon: <Database className="w-5 h-5 text-cyan-400" />,
     iconBg: "rgba(6, 182, 212, 0.15)"
   },
   {
-    step: "02",
+    key: "matcher",
+    step: "Lexical Match",
     title: "Bounded Lexical Matcher",
     desc: "Keyword-driven token matching checks incoming prompt tokens against saved note triggers without executing unverified vector extrapolations.",
     icon: <Search className="w-5 h-5 text-amber-400" />,
     iconBg: "rgba(245, 158, 11, 0.15)"
   },
   {
-    step: "03",
+    key: "envelope",
+    step: "Context Envelope",
     title: "Context Injection Envelope",
     desc: "Matched constraints are assembled into an isolated system preamble, clearly demarcated to prevent prompt injection or drift.",
     icon: <Workflow className="w-5 h-5 text-coral-400" />,
     iconBg: "rgba(251, 146, 60, 0.15)"
   },
   {
-    step: "04",
+    key: "synthesis",
+    step: "Model Synthesis",
     title: "Model Synthesis Stream",
     desc: "Target model (Groq, Gemini, OpenRouter) streams formatted reasoning tokens adhering strictly to your verified preferences.",
     icon: <Cpu className="w-5 h-5 text-blue-400" />,
@@ -58,11 +62,6 @@ export function ContextPipelineSection() {
           viewport={{ once: true, amount: 0.2 }}
           transition={{ duration: 0.6 }}
         >
-          <div className="pipeline-eyebrow">
-            <Zap className="w-3.5 h-3.5 text-amber-400" />
-            <span>Architecture &amp; Retrieval Flow</span>
-          </div>
-
           <h2 id="pipeline-heading" className="pipeline-title">
             The right context. At the right moment.
           </h2>
@@ -73,10 +72,10 @@ export function ContextPipelineSection() {
         </motion.div>
 
         {/* 4-Stage Pathway Grid */}
-        <div className="pipeline-track">
+        <div className="pipeline-track" data-ui>
           {STAGES.map((stage, idx) => (
             <motion.div
-              key={stage.step}
+              key={stage.key}
               className="pipeline-node"
               initial={{ opacity: 0, y: 24 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -84,7 +83,7 @@ export function ContextPipelineSection() {
               transition={{ duration: 0.5, delay: idx * 0.12 }}
             >
               <div className="flex items-center justify-between">
-                <span className="pipeline-node-step">STAGE {stage.step}</span>
+                <span className="pipeline-node-step">{stage.step}</span>
                 <div 
                   className="pipeline-node-icon"
                   style={{ background: stage.iconBg }}

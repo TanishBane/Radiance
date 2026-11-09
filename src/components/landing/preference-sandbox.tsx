@@ -105,11 +105,6 @@ export function PreferenceSandbox() {
           viewport={{ once: true, amount: 0.2 }}
           transition={{ duration: 0.6 }}
         >
-          <div className="preference-eyebrow">
-            <Sliders className="w-3.5 h-3.5 text-coral-400" />
-            <span>Interactive Demonstration</span>
-          </div>
-
           <h2 id="preferences-heading" className="preference-title">
             An answer should feel right for you.
           </h2>

@@ -82,7 +82,7 @@
 .landing-root .landing-conversion .landing-final-cta:hover { background: linear-gradient(115deg, #9a3412, #9d174d 55%, #3730a3); }
 .landing-root .landing-conversion-caption { margin: 16px 0 0; color: #706b7d; font-size: .82rem; }
 
-.landing-root .landing-footer { padding: 48px 0 calc(24px + var(--sab)); border-top: 1px solid var(--landing-hairline); background: #fbfaff; }
+.landing-root .landing-footer { padding: 48px 0 calc(24px + var(--sab)); border-top: 1px solid var(--landing-hairline); background: #020409; }
 .landing-root .landing-footer-grid { display: grid; grid-template-columns: minmax(0, 1.5fr) repeat(2, minmax(120px, .65fr)); gap: 42px; }
 .landing-root .landing-footer-grid > div:first-child .landing-copy { max-width: 42ch; margin-top: 16px; font-size: .9rem; }
 .landing-root .landing-footer-grid nav { display: flex; flex-direction: column; align-items: flex-start; gap: 9px; }
