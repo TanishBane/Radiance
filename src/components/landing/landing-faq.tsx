@@ -2,8 +2,6 @@
 
 import React, { useId, useState } from "react";
 
-// The card reveal and open-state treatment adapt Hirael's MIT FAQ Accordion Reveal from 21st.dev.
-
 const QUESTIONS = [
   {
     q: "What is Radiance?",
@@ -64,7 +62,6 @@ export function LandingFaq() {
                 key={item.q}
                 className="landing-faq-item"
                 data-open={isOpen}
-                style={{ animationDelay: `${360 + index * 50}ms` }}
               >
                 <h3>
                   <button
@@ -78,11 +75,9 @@ export function LandingFaq() {
                     <span aria-hidden="true">{isOpen ? "–" : "+"}</span>
                   </button>
                 </h3>
-                {isOpen ? (
-                  <p id={panelId} role="region" aria-labelledby={buttonId}>
-                    {item.a}
-                  </p>
-                ) : null}
+                <div id={panelId} role="region" aria-labelledby={buttonId} hidden={!isOpen}>
+                  <p>{item.a}</p>
+                </div>
               </div>
             );
           })}

@@ -122,7 +122,7 @@ test.describe("Radiance landing page", () => {
   });
 
   test("annotated hero fits narrow, tablet, and desktop widths", async ({ page }) => {
-    for (const width of [375, 768, 1024, 1440]) {
+    for (const width of [360, 375, 390, 430, 768, 1024, 1280, 1440, 1920]) {
       await page.setViewportSize({ width, height: 900 });
       await page.goto("/");
       const overflow = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth);

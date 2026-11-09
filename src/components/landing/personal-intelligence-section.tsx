@@ -27,15 +27,15 @@ export function PersonalIntelligenceSection() {
               </article>
             ))}
           </div>
-          <aside className="story-settings" aria-label="Illustration of Personal Intelligence settings">
+          <aside className="story-settings" aria-label="Illustrative Personal Intelligence settings preview">
             <div className="story-settings-top"><span>RADIANCE / SETTINGS</span><span>•••</span></div>
-            <p className="story-settings-kicker">YOUR WORKSPACE</p>
+            <span className="story-settings-kicker">ILLUSTRATIVE PREVIEW · SAMPLE DATA</span>
             <h3>Personal Intelligence</h3>
             <p className="story-settings-description">Choose what to remember and how to respond.</p>
             <div className="story-setting-row"><span><strong>Saved notes</strong><small>Project details and useful context</small></span><span className="story-setting-count">04</span></div>
             <div className="story-setting-row"><span><strong>Answer style</strong><small>Concise · Practical · More examples</small></span><span aria-hidden="true">↗</span></div>
-            <div className="story-setting-row"><span><strong>Share relevant notes</strong><small>Include notes with provider requests</small></span><span className="story-toggle" role="img" aria-label="Sharing is off"><span /></span></div>
-            <p className="story-settings-footnote">OFF · Your notes are not attached to requests</p>
+            <div className="story-setting-row"><span><strong>Share relevant notes</strong><small>Include notes with provider requests</small></span><span className="story-toggle" aria-hidden="true"><span /></span></div>
+            <span className="story-settings-footnote">EXAMPLE · Sharing is off; notes are not attached to requests.</span>
           </aside>
         </div>
       </div>

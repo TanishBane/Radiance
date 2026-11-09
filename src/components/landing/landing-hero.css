@@ -47,7 +47,7 @@
 .landing-root .landing-question { margin: 0 0 18px; padding: 14px 16px; border: 1px solid var(--landing-hairline); border-radius: 12px 12px 3px 12px; background: color-mix(in srgb, var(--surface-hover) 70%, transparent); color: var(--txt); font-size: .9rem; }
 .landing-root .landing-answer { position: relative; z-index: 1; font-size: clamp(1.25rem, 1.7vw, 1.55rem); }
 .landing-root .landing-answer strong { color: var(--accent); }
-.landing-root .landing-demo-caption { position: absolute; bottom: 18px; left: clamp(22px, 3vw, 38px); margin: 0; font-size: .68rem; }
+.landing-root .landing-demo-caption { grid-column: 1 / -1; position: static; margin: 0; padding: 10px 20px; border-top: 1px solid var(--landing-hero-line); background: rgb(255 255 255 / 62%); font-size: .68rem; line-height: 1.5; }
 .landing-root .landing-annotations { padding: 30px 20px 22px; border-left: 1px solid var(--landing-hairline); background: color-mix(in srgb, var(--deep) 36%, transparent); }
 .landing-root .landing-annotations h2 { margin-bottom: 22px; font-size: 1.15rem; }
 .landing-root .landing-annotation { margin-bottom: 20px; padding-top: 12px; }
@@ -69,7 +69,7 @@
   .landing-root .landing-hero-actions .landing-cta { flex: 1 1 auto; padding-inline: 12px; font-size: .88rem; }
   .landing-root .landing-field { grid-template-columns: minmax(0, 1fr); min-height: auto; }
   .landing-root .landing-conversation { min-height: 250px; padding: 42px 20px 48px; }
-  .landing-root .landing-demo-caption { left: 20px; }
+  .landing-root .landing-demo-caption { padding: 10px 20px; }
   .landing-root .landing-annotations { display: grid; grid-template-columns: 1fr 1fr; gap: 0 16px; padding: 20px; border-top: 1px solid var(--landing-hairline); border-left: 0; }
   .landing-root .landing-annotations h2, .landing-root .landing-annotation-note { grid-column: 1 / -1; }
   .landing-root .landing-annotations h2 { margin-bottom: 14px; }

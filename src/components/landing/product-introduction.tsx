@@ -17,15 +17,19 @@ export function ProductIntroduction() {
           </p>
           <p className="story-boundary">Nothing is inferred in the background. A note is saved only when you choose to save it.</p>
         </div>
-        <div className="story-visual story-note-visual" aria-label="Illustration of a saved project note">
-          <div className="story-note-sheet">
-            <span className="story-note-label">SAVED NOTE <span>01</span></span>
-            <p>Current project</p>
-            <strong>Building a thoughtful, private AI workspace.</strong>
-            <span className="story-note-rule" />
-            <small>Added by you · Available on this device</small>
-          </div>
-          <span className="story-note-orbit" aria-hidden="true" />
+        <div className="story-visual story-compare" aria-label="Illustrative comparison: a conversation without personal context and with a saved Radiance note">
+          <article className="story-compare-panel story-before">
+            <span className="story-compare-label">WITHOUT SAVED CONTEXT</span>
+            <p className="story-compare-question">“Help me draft the next chapter.”</p>
+            <p className="story-compare-answer">What should I keep in mind about your outline and citation style?</p>
+            <span className="story-compare-foot">You start from zero again.</span>
+          </article>
+          <article className="story-compare-panel story-after">
+            <span className="story-compare-label">WITH YOUR SAVED CONTEXT</span>
+            <p className="story-compare-question">“Help me draft the next chapter.”</p>
+            <p className="story-compare-answer">I’ll keep citations inline and focus on your thesis outline.</p>
+            <span className="story-compare-foot">Your note is used only when sharing is enabled.</span>
+          </article>
         </div>
       </div>
     </section>

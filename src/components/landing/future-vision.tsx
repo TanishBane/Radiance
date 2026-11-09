@@ -1,21 +1,20 @@
 export function FutureVision() {
   return (
-    <section id="vision" className="landing-section">
-      <div className="landing-shell landing-split">
-        <h2 className="landing-section-title">An intelligence experience that grows with you</h2>
-        <div>
-          <p className="landing-copy" style={{ marginTop: 0 }}>
-            The longer-term direction is an AI that understands how you communicate, learn, think, and work —
-            with richer memory, more adaptive preferences, and subject-specific knowledge.
-          </p>
-          <p className="landing-copy">
-            That is not the product shipping today. Semantic retrieval, automatic memory extraction,
-            cross-device sync, and encryption are future work, not present claims.
-          </p>
-          <p className="landing-copy">
-            What exists now is the honest foundation: you write the context, you set the preferences,
-            you control whether that material is shared with a model.
-          </p>
+    <section id="vision" className="landing-section landing-vision">
+      <div className="landing-shell landing-vision-inner">
+        <div className="landing-vision-orbit" aria-hidden="true">
+          <span className="landing-orbit landing-orbit-one" />
+          <span className="landing-orbit landing-orbit-two" />
+          <span className="landing-orbit landing-orbit-three" />
+          <span className="landing-orbit-core">R</span>
+          <span className="landing-orbit-dot landing-orbit-dot-one" />
+          <span className="landing-orbit-dot landing-orbit-dot-two" />
+        </div>
+        <div className="landing-vision-copy">
+          <span className="landing-eyebrow">A direction, not a promise</span>
+          <h2 className="landing-section-title">An intelligence experience that grows with you.</h2>
+          <p className="landing-copy">We imagine an AI that better understands how you communicate, learn, think, and work, with richer memory, more adaptive preferences, and knowledge shaped around your interests.</p>
+          <p className="landing-vision-disclaimer">That is the horizon, not the product shipping today. Semantic retrieval, automatic memory extraction, cross-device sync, and encryption are future work. Today, you write the context, set the preferences, and decide whether they are shared with a model.</p>
         </div>
       </div>
     </section>

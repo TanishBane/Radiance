@@ -1,9 +1,9 @@
 import React from "react";
 
 const FEATURES = [
-  { number: "01", title: "A useful note, not a hidden profile", copy: "Keep project details in notes you can review, edit, export, or remove.", visual: "A short list, written and maintained by you.", kind: "notes" },
-  { number: "02", title: "Answers shaped around your preferences", copy: "Choose the response style that works for you, then update it whenever your needs change.", visual: "Concise  ─────●──  Detailed", kind: "preferences" },
-  { number: "03", title: "Only relevant context moves forward", copy: "With sharing enabled, up to five notes can be selected for a question using bounded lexical matching.", visual: "Question  →  Matching notes  →  Provider request", kind: "retrieval" },
+  { number: "01", title: "A useful note, not a hidden profile", copy: "Keep project details in notes you can review, edit, export, or remove.", visual: "A short list, written and maintained by you.", kind: "notes", status: "AVAILABLE NOW" },
+  { number: "02", title: "Answers shaped around your preferences", copy: "Choose the response style that works for you, then update it whenever your needs change.", visual: "Concise  ─────●──  Detailed", kind: "preferences", status: "AVAILABLE NOW" },
+  { number: "03", title: "Only relevant context moves forward", copy: "With sharing enabled, up to five notes can be selected for a question using bounded lexical matching.", visual: "Question  →  Matching notes  →  Provider request", kind: "retrieval", status: "AVAILABLE NOW" },
 ] as const;
 
 export function FeatureShowcase() {
@@ -17,7 +17,7 @@ export function FeatureShowcase() {
         <div className="story-feature-list">
           {FEATURES.map((feature) => (
             <article className="story-feature" key={feature.number}>
-              <div className="story-feature-copy"><span className="story-feature-number">{feature.number}</span><h3>{feature.title}</h3><p>{feature.copy}</p></div>
+              <div className="story-feature-copy"><span className="story-feature-number">{feature.number}</span><span className="story-feature-status">{feature.status}</span><h3>{feature.title}</h3><p>{feature.copy}</p></div>
               <div className={`story-feature-visual story-feature-${feature.kind}`} aria-hidden="true">
                 {feature.kind === "notes" ? <><span className="story-mini-note"><i /> Project milestones <b>01</b></span><span className="story-mini-note"><i /> Writing preferences <b>02</b></span><span className="story-mini-note"><i /> Research context <b>03</b></span></> : null}
                 {feature.kind === "preferences" ? <><span className="story-preference-label">YOUR ANSWER LENGTH</span><span className="story-preference-track"><i /></span><span className="story-preference-ends"><span>Concise</span><span>Detailed</span></span></> : null}

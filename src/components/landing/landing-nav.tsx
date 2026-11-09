@@ -29,7 +29,7 @@ export function LandingNav() {
   }, []);
 
   return (
-    <header className={cn("landing-nav", scrolled && "is-scrolled")}>
+    <header className={cn("landing-nav", scrolled && "is-scrolled", "landing-nav-redesign")}>
       <div className="landing-shell landing-nav-row">
         <Link href="/" className="inline-flex items-center min-h-11" aria-label="Radiance home">
           <RadianceLogo variant="lockup" size="sm" aria-hidden />
@@ -47,14 +47,14 @@ export function LandingNav() {
           <LandingCta className="landing-cta-desktop" />
           <Dialog.Root open={open} onOpenChange={setOpen}>
             <Dialog.Trigger asChild>
-              <button type="button" className="landing-menu-btn" aria-label="Open menu">
+              <button type="button" className="landing-menu-btn" aria-label="Open menu" aria-haspopup="dialog">
                 <Menu size={18} strokeWidth={1.5} />
               </button>
             </Dialog.Trigger>
             <Dialog.Portal>
               <Dialog.Overlay className="landing-menu-overlay fixed inset-0 z-50 bg-[color-mix(in_srgb,var(--void)_78%,transparent)]" />
               <Dialog.Content
-                className="landing-menu-panel fixed inset-y-0 right-0 z-50 w-[min(100%,360px)] bg-[var(--void)] border-l border-[var(--border)] p-6 pt-[calc(16px+var(--sat))]"
+                className="landing-menu-panel fixed inset-y-0 right-0 z-50 w-[min(100%,360px)] bg-[var(--void)] border-l border-[var(--border)] p-6 pt-[calc(16px+var(--sat))] landing-menu-redesign"
                 aria-describedby={undefined}
               >
                 <div className="flex items-center justify-between">

@@ -19,9 +19,6 @@ export function IntelligenceField() {
         <p className="landing-answer">
           <strong>Start with three sections.</strong> First, the question that frames the chapter. Then the evidence and its counterpoint. Close with what the reader should carry forward. Keep citations inline so each idea stays connected to its source.
         </p>
-        <figcaption className="landing-demo-caption">
-          Illustrative conversation · not connected to a profile or AI provider
-        </figcaption>
       </div>
 
       <aside className="landing-annotations" aria-label="Selected context">
@@ -34,10 +31,17 @@ export function IntelligenceField() {
           <dt>Response preference</dt>
           <dd>More concise</dd>
         </dl>
-        <p className="landing-annotation-note">
-          Relevant notes are shared with the selected provider only when you turn sharing on.
-        </p>
+          <div className="hero-sharing-control">
+            <span><strong>Share context with provider</strong><small>Illustrative · off by default</small></span>
+            <span className="hero-demo-toggle" role="img" aria-label="Example setting: sharing is off"><i /></span>
+          </div>
+          <p className="landing-annotation-note">
+            Relevant notes and preference labels are sent to the selected provider only when you turn sharing on.
+          </p>
       </aside>
+      <figcaption className="landing-demo-caption">
+        <strong>A little context changes the next answer.</strong> Illustrative conversation · not connected to a profile or AI provider
+      </figcaption>
     </figure>
   );
 }

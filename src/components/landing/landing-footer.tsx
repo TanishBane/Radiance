@@ -14,22 +14,18 @@ export function LandingFooter() {
               that can use them when you allow it.
             </p>
           </div>
-          <div>
-            <p style={{ margin: "0 0 12px", color: "var(--txt)" }}>Product</p>
-            <Link href="#product">Product</Link>
-            <br />
+          <nav aria-label="Product">
+            <p className="landing-footer-heading">Product</p>
+            <Link href="#product">Product overview</Link>
             <Link href="#intelligence">Personal Intelligence</Link>
-            <br />
             <Link href="/chat">Chat</Link>
-          </div>
-          <div>
-            <p style={{ margin: "0 0 12px", color: "var(--txt)" }}>Information</p>
+          </nav>
+          <nav aria-label="Learn more">
+            <p className="landing-footer-heading">Learn more</p>
             <Link href="#privacy">Privacy on this page</Link>
-            <br />
             <Link href="/privacy">Privacy model</Link>
-            <br />
-            <Link href="#vision">Vision</Link>
-          </div>
+            <Link href="#vision">Future vision</Link>
+          </nav>
         </div>
         <p className="landing-footer-meta">© {new Date().getFullYear()} Radiance</p>
       </div>
