@@ -27,7 +27,7 @@ export function PersonalIntelligenceSection() {
   const [sharingOn, setSharingOn] = useState(false);
 
   return (
-    <section id="intelligence" className="landing-section story-intelligence">
+    <section id="intelligence-controls" className="landing-section story-intelligence">
       <div className="landing-shell">
         <div className="story-section-heading">
           <div>

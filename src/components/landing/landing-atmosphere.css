@@ -1,0 +1,194 @@
+/* ==========================================================================
+   RADIANCE — IMMERSIVE SECTION ATMOSPHERES & MULTICOLOUR DESIGN SYSTEM
+   Inherited from the Radiance AI Chat UI Source of Truth
+   ========================================================================== */
+
+:root {
+  /* --- Primary Atmospheric Color Families --- */
+  --radiance-atmosphere-teal: #082935;
+  --radiance-aurora-cyan: #06b6d4;
+  --radiance-aurora-teal: #14b8a6;
+  --radiance-deep-ocean: #050d1a;
+  --radiance-sapphire: #1e40af;
+  --radiance-electric-blue: #3b82f6;
+  --radiance-indigo: #6366f1;
+  --radiance-violet: #8b5cf6;
+  --radiance-lavender: #c084fc;
+  --radiance-rose: #f43f5e;
+  --radiance-coral: #fb923c;
+  --radiance-amber: #f59e0b;
+  --radiance-emerald: #10b981;
+  --radiance-mint: #34d399;
+
+  /* --- Translucent Glassmorphic Surface Tokens --- */
+  --glass-surface: rgba(14, 25, 44, 0.65);
+  --glass-surface-elevated: rgba(18, 32, 58, 0.75);
+  --glass-border: rgba(255, 255, 255, 0.09);
+  --glass-border-highlight: rgba(6, 182, 212, 0.35);
+  --glass-inner-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
+
+  /* --- Atmospheric Halos & Glows --- */
+  --glow-teal: 0 0 40px rgba(6, 182, 212, 0.22);
+  --glow-blue: 0 0 40px rgba(59, 130, 246, 0.22);
+  --glow-violet: 0 0 40px rgba(139, 92, 246, 0.22);
+  --glow-coral: 0 0 40px rgba(251, 146, 60, 0.2);
+  --glow-emerald: 0 0 40px rgba(16, 185, 129, 0.22);
+}
+
+/* ==========================================================================
+   SECTION COLOR ENVIRONMENTS (PROGRESSIVE CONTINUUM)
+   ========================================================================== */
+
+/* 1. HERO ATMOSPHERE: Deep Ocean, Cyan Aurora, Teal Mist, Violet Rim */
+.section-atmosphere-hero {
+  position: relative;
+  background: radial-gradient(circle at 50% -20%, rgba(6, 182, 212, 0.18) 0%, transparent 60%),
+              radial-gradient(circle at 85% 30%, rgba(139, 92, 246, 0.15) 0%, transparent 55%),
+              radial-gradient(circle at 15% 40%, rgba(13, 148, 136, 0.18) 0%, transparent 50%),
+              linear-gradient(180deg, #040811 0%, #061122 65%, #050d1a 100%);
+  overflow: hidden;
+}
+
+.section-atmosphere-hero::before {
+  content: "";
+  position: absolute;
+  top: -10%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 140%;
+  height: 60%;
+  background: radial-gradient(ellipse at center, rgba(6, 182, 212, 0.15) 0%, rgba(59, 130, 246, 0.08) 45%, transparent 70%);
+  filter: blur(60px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* 2. THE PROBLEM: Sapphire, Electric Blue, Cool Slate */
+.section-atmosphere-problem {
+  position: relative;
+  background: radial-gradient(circle at 20% 50%, rgba(30, 64, 175, 0.15) 0%, transparent 55%),
+              radial-gradient(circle at 80% 60%, rgba(59, 130, 246, 0.12) 0%, transparent 50%),
+              linear-gradient(180deg, #050d1a 0%, #071326 50%, #081428 100%);
+  border-top: 1px solid rgba(59, 130, 246, 0.12);
+  border-bottom: 1px solid rgba(139, 92, 246, 0.12);
+}
+
+/* 3. PERSONAL INTELLIGENCE: Lavender, Indigo, Rose, Soft Cyan */
+.section-atmosphere-intelligence {
+  position: relative;
+  background: radial-gradient(circle at 50% 20%, rgba(139, 92, 246, 0.18) 0%, transparent 60%),
+              radial-gradient(circle at 80% 70%, rgba(244, 63, 94, 0.12) 0%, transparent 50%),
+              radial-gradient(circle at 20% 80%, rgba(6, 182, 212, 0.14) 0%, transparent 50%),
+              linear-gradient(180deg, #081428 0%, #0f122c 55%, #111430 100%);
+  overflow: hidden;
+}
+
+/* 4. PREFERENCES: Coral, Rose, Violet, Warm Gold */
+.section-atmosphere-preferences {
+  position: relative;
+  background: radial-gradient(circle at 75% 30%, rgba(251, 146, 60, 0.15) 0%, transparent 55%),
+              radial-gradient(circle at 25% 70%, rgba(244, 63, 94, 0.14) 0%, transparent 50%),
+              linear-gradient(180deg, #111430 0%, #1a152e 50%, #151128 100%);
+  border-top: 1px solid rgba(251, 146, 60, 0.12);
+}
+
+/* 5. CONTEXT RETRIEVAL PIPELINE: Flowing Cyan, Coral, Amber */
+.section-atmosphere-pipeline {
+  position: relative;
+  background: radial-gradient(circle at 50% 50%, rgba(245, 158, 11, 0.12) 0%, transparent 60%),
+              radial-gradient(circle at 10% 20%, rgba(6, 182, 212, 0.16) 0%, transparent 50%),
+              radial-gradient(circle at 90% 80%, rgba(251, 146, 60, 0.14) 0%, transparent 50%),
+              linear-gradient(180deg, #151128 0%, #14162a 50%, #0a1728 100%);
+}
+
+/* 6. PRIVACY FORTRESS: Emerald, Mint, Teal */
+.section-atmosphere-privacy {
+  position: relative;
+  background: radial-gradient(circle at 30% 40%, rgba(16, 185, 129, 0.18) 0%, transparent 55%),
+              radial-gradient(circle at 70% 60%, rgba(20, 184, 166, 0.15) 0%, transparent 50%),
+              linear-gradient(180deg, #0a1728 0%, #06191f 50%, #071f24 100%);
+  border-top: 1px solid rgba(16, 185, 129, 0.15);
+  border-bottom: 1px solid rgba(20, 184, 166, 0.15);
+}
+
+/* 7. FUTURE VISION: Cyan, Violet, Magenta, Cosmic Sapphire */
+.section-atmosphere-vision {
+  position: relative;
+  background: radial-gradient(circle at 50% 30%, rgba(139, 92, 246, 0.2) 0%, transparent 60%),
+              radial-gradient(circle at 80% 40%, rgba(236, 72, 153, 0.14) 0%, transparent 50%),
+              radial-gradient(circle at 20% 70%, rgba(6, 182, 212, 0.16) 0%, transparent 50%),
+              linear-gradient(180deg, #071f24 0%, #0d122e 45%, #120e2a 100%);
+}
+
+/* 8. FINAL CTA: Dramatic Multi-Chromatic Sunset Aurora */
+.section-atmosphere-final {
+  position: relative;
+  background: radial-gradient(circle at 50% 0%, rgba(251, 146, 60, 0.2) 0%, transparent 50%),
+              radial-gradient(circle at 20% 40%, rgba(6, 182, 212, 0.2) 0%, transparent 55%),
+              radial-gradient(circle at 80% 40%, rgba(244, 63, 94, 0.18) 0%, transparent 55%),
+              radial-gradient(circle at 50% 90%, rgba(139, 92, 246, 0.18) 0%, transparent 60%),
+              linear-gradient(180deg, #120e2a 0%, #1a1232 40%, #090a14 100%);
+  border-top: 1px solid rgba(251, 146, 60, 0.18);
+  overflow: hidden;
+}
+
+/* ==========================================================================
+   GLASSMORPHIC CARDS & REUSABLE VISUAL UTILITIES
+   ========================================================================== */
+
+.radiance-glass-card {
+  background: var(--glass-surface);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.25s ease,
+              box-shadow 0.25s ease;
+}
+
+.radiance-glass-card:hover {
+  border-color: rgba(255, 255, 255, 0.18);
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+
+.radiance-glass-card-teal {
+  border-top: 1px solid rgba(6, 182, 212, 0.35);
+}
+.radiance-glass-card-teal:hover {
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.45), 0 0 24px rgba(6, 182, 212, 0.2);
+}
+
+.radiance-glass-card-blue {
+  border-top: 1px solid rgba(59, 130, 246, 0.35);
+}
+.radiance-glass-card-blue:hover {
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.45), 0 0 24px rgba(59, 130, 246, 0.2);
+}
+
+.radiance-glass-card-violet {
+  border-top: 1px solid rgba(139, 92, 246, 0.35);
+}
+.radiance-glass-card-violet:hover {
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.45), 0 0 24px rgba(139, 92, 246, 0.2);
+}
+
+.radiance-glass-card-emerald {
+  border-top: 1px solid rgba(16, 185, 129, 0.35);
+}
+.radiance-glass-card-emerald:hover {
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.45), 0 0 24px rgba(16, 185, 129, 0.2);
+}
+
+/* ==========================================================================
+   REDUCED MOTION ACCESSIBILITY OVERRIDES
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .section-atmosphere-hero::before,
+  .radiance-glass-card {
+    transition: none !important;
+    animation: none !important;
+  }
+}

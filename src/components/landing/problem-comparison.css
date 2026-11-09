@@ -1,0 +1,187 @@
+/* ==========================================================================
+   SECTION 02: THE PROBLEM (EVERY CONVERSATION STARTS FROM ZERO)
+   Sapphire, Electric Blue, Cool Slate Atmosphere
+   ========================================================================== */
+
+.problem-section {
+  position: relative;
+  width: 100%;
+  padding: clamp(5rem, 8vw, 8rem) 1.5rem;
+}
+
+.problem-shell {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  z-index: 10;
+}
+
+.problem-header {
+  text-align: center;
+  max-width: 820px;
+  margin-bottom: 3.5rem;
+}
+
+.problem-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0.85rem;
+  border-radius: 9999px;
+  background: rgba(30, 64, 175, 0.15);
+  border: 1px solid rgba(59, 130, 246, 0.28);
+  color: #60a5fa;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 1.25rem;
+}
+
+.problem-title {
+  font-family: var(--font-sans);
+  font-size: clamp(2.25rem, 4.5vw, 3.5rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.12;
+  color: #ffffff;
+  margin: 0 0 1.25rem;
+}
+
+.problem-lede {
+  font-size: clamp(1.05rem, 1.8vw, 1.25rem);
+  line-height: 1.6;
+  color: rgba(226, 232, 240, 0.78);
+  margin: 0;
+}
+
+/* Comparison Grid */
+.problem-comparison-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 2rem;
+  width: 100%;
+}
+
+.problem-panel {
+  border-radius: 20px;
+  padding: clamp(1.5rem, 3vw, 2.25rem);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+/* Left: Generic / Without Context */
+.problem-panel-generic {
+  background: rgba(15, 23, 42, 0.5);
+  border: 1px solid rgba(148, 163, 184, 0.12);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.4);
+}
+
+.problem-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  margin-bottom: 1.25rem;
+}
+
+.problem-badge-state {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0.3rem 0.65rem;
+  border-radius: 6px;
+}
+
+.problem-badge-red {
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  color: #f87171;
+}
+
+.problem-badge-cyan {
+  background: rgba(6, 182, 212, 0.12);
+  border: 1px solid rgba(6, 182, 212, 0.25);
+  color: #38bdf8;
+}
+
+/* Dialogue Simulation */
+.problem-dialogue-flow {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  flex-grow: 1;
+}
+
+.problem-bubble-user {
+  align-self: flex-end;
+  max-width: 85%;
+  padding: 0.85rem 1.15rem;
+  border-radius: 14px 14px 4px 14px;
+  background: rgba(59, 130, 246, 0.15);
+  border: 1px solid rgba(59, 130, 246, 0.25);
+  color: #f1f5f9;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.problem-bubble-ai {
+  align-self: flex-start;
+  max-width: 90%;
+  padding: 0.95rem 1.25rem;
+  border-radius: 14px 14px 14px 4px;
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #cbd5e1;
+  font-size: 0.9rem;
+  line-height: 1.55;
+}
+
+.problem-panel-footer {
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: 0.85rem;
+  color: #94a3b8;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Right: With Radiance Personal Intelligence */
+.problem-panel-radiance {
+  background: rgba(14, 25, 48, 0.7);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  border-top: 1px solid rgba(6, 182, 212, 0.5);
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.5), 0 0 40px rgba(59, 130, 246, 0.15);
+}
+
+.problem-active-context-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.6rem 0.85rem;
+  border-radius: 8px;
+  background: rgba(6, 182, 212, 0.09);
+  border: 1px solid rgba(6, 182, 212, 0.22);
+  margin-bottom: 1.25rem;
+  font-size: 0.825rem;
+  color: #38bdf8;
+  font-weight: 500;
+}
+
+@media (max-width: 860px) {
+  .problem-comparison-grid {
+    grid-template-columns: 1fr;
+  }
+}

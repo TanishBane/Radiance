@@ -1,0 +1,218 @@
+/* ==========================================================================
+   SECTIONS 06 & 07: PRIVACY FORTRESS & FUTURE VISION
+   Emerald, Mint, Teal, Cosmic Violet, Magenta Atmospheres
+   ========================================================================== */
+
+/* Section 06: Privacy Fortress */
+.privacy-section-container {
+  position: relative;
+  width: 100%;
+  padding: clamp(5rem, 8vw, 8rem) 1.5rem;
+}
+
+.privacy-shell {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  z-index: 10;
+}
+
+.privacy-header {
+  text-align: center;
+  max-width: 820px;
+  margin: 0 auto 3.5rem;
+}
+
+.privacy-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0.85rem;
+  border-radius: 9999px;
+  background: rgba(16, 185, 129, 0.15);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  color: #34d399;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 1.25rem;
+}
+
+.privacy-title {
+  font-family: var(--font-sans);
+  font-size: clamp(2.25rem, 4.5vw, 3.5rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.12;
+  color: #ffffff;
+  margin: 0 0 1.25rem;
+}
+
+.privacy-lede {
+  font-size: clamp(1.05rem, 1.8vw, 1.25rem);
+  line-height: 1.6;
+  color: rgba(240, 244, 255, 0.78);
+  margin: 0;
+}
+
+/* Privacy Truth Grid */
+.privacy-truth-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.75rem;
+  margin-bottom: 2.5rem;
+}
+
+.privacy-card {
+  padding: 1.75rem;
+  border-radius: 18px;
+  background: rgba(8, 26, 32, 0.65);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  border-top: 1px solid rgba(16, 185, 129, 0.45);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.4), 0 0 24px rgba(16, 185, 129, 0.12);
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.privacy-card-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: rgba(16, 185, 129, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.25rem;
+}
+
+.privacy-card-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #ffffff;
+  letter-spacing: -0.02em;
+}
+
+.privacy-card-desc {
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: rgba(203, 213, 225, 0.8);
+}
+
+/* Section 07: Future Vision */
+.vision-section-container {
+  position: relative;
+  width: 100%;
+  padding: clamp(5rem, 8vw, 8rem) 1.5rem;
+}
+
+.vision-shell {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  z-index: 10;
+}
+
+.vision-header {
+  text-align: center;
+  max-width: 820px;
+  margin: 0 auto 3.5rem;
+}
+
+.vision-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0.85rem;
+  border-radius: 9999px;
+  background: rgba(139, 92, 246, 0.18);
+  border: 1px solid rgba(139, 92, 246, 0.35);
+  color: #c084fc;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 1.25rem;
+}
+
+.vision-title {
+  font-family: var(--font-sans);
+  font-size: clamp(2.25rem, 4.5vw, 3.5rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.12;
+  color: #ffffff;
+  margin: 0 0 1.25rem;
+}
+
+.vision-lede {
+  font-size: clamp(1.05rem, 1.8vw, 1.25rem);
+  line-height: 1.6;
+  color: rgba(240, 244, 255, 0.78);
+  margin: 0;
+}
+
+/* Vision Cards Grid */
+.vision-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.75rem;
+}
+
+.vision-card {
+  padding: 1.85rem;
+  border-radius: 18px;
+  background: rgba(18, 14, 38, 0.65);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  border-top: 1px solid rgba(236, 72, 153, 0.4);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.4), 0 0 28px rgba(139, 92, 246, 0.12);
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.vision-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(236, 72, 153, 0.5);
+}
+
+.vision-badge {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.725rem;
+  font-weight: 700;
+  color: #f472b6;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.vision-card-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #ffffff;
+  letter-spacing: -0.02em;
+}
+
+.vision-card-desc {
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: rgba(203, 213, 225, 0.78);
+}
+
+@media (max-width: 860px) {
+  .privacy-truth-grid,
+  .vision-grid {
+    grid-template-columns: 1fr;
+  }
+}

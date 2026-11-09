@@ -1,0 +1,254 @@
+/* ==========================================================================
+   SECTIONS 03 & 04: PERSONAL INTELLIGENCE & PREFERENCE SANDBOX
+   Lavender, Indigo, Rose, Coral, Warm Gold Atmospheres
+   ========================================================================== */
+
+/* Section 03: Story Container */
+.intelligence-story-section {
+  position: relative;
+  width: 100%;
+  padding: clamp(5rem, 8vw, 8rem) 1.5rem;
+}
+
+.intelligence-story-shell {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  z-index: 10;
+}
+
+.intelligence-story-header {
+  text-align: center;
+  max-width: 820px;
+  margin: 0 auto 3.5rem;
+}
+
+.intelligence-story-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0.85rem;
+  border-radius: 9999px;
+  background: rgba(139, 92, 246, 0.15);
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  color: #c084fc;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 1.25rem;
+}
+
+.intelligence-story-title {
+  font-family: var(--font-sans);
+  font-size: clamp(2.25rem, 4.5vw, 3.5rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.12;
+  color: #ffffff;
+  margin: 0 0 1.25rem;
+}
+
+.intelligence-story-lede {
+  font-size: clamp(1.05rem, 1.8vw, 1.25rem);
+  line-height: 1.6;
+  color: rgba(240, 244, 255, 0.78);
+  margin: 0;
+}
+
+/* 4-Pillar Grid */
+.intelligence-pillars-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 4rem;
+}
+
+.intelligence-pillar-card {
+  padding: 1.65rem 1.4rem;
+  border-radius: 18px;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.intelligence-pillar-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(139, 92, 246, 0.35);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.45), 0 0 24px rgba(139, 92, 246, 0.15);
+}
+
+.intelligence-pillar-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.25rem;
+}
+
+.intelligence-pillar-title {
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: #ffffff;
+  letter-spacing: -0.02em;
+}
+
+.intelligence-pillar-desc {
+  font-size: 0.885rem;
+  line-height: 1.55;
+  color: rgba(203, 213, 225, 0.75);
+}
+
+/* Section 04: Preference Sandbox */
+.preference-sandbox-section {
+  position: relative;
+  width: 100%;
+  padding: clamp(5rem, 8vw, 8rem) 1.5rem;
+}
+
+.preference-sandbox-shell {
+  max-width: 1040px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  z-index: 10;
+}
+
+.preference-sandbox-header {
+  text-align: center;
+  max-width: 780px;
+  margin-bottom: 3rem;
+}
+
+.preference-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0.85rem;
+  border-radius: 9999px;
+  background: rgba(251, 146, 60, 0.15);
+  border: 1px solid rgba(251, 146, 60, 0.3);
+  color: #fb923c;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 1.25rem;
+}
+
+.preference-title {
+  font-family: var(--font-sans);
+  font-size: clamp(2.25rem, 4.5vw, 3.5rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.12;
+  color: #ffffff;
+  margin: 0 0 1.25rem;
+}
+
+.preference-lede {
+  font-size: clamp(1.05rem, 1.8vw, 1.25rem);
+  line-height: 1.6;
+  color: rgba(240, 244, 255, 0.78);
+  margin: 0;
+}
+
+/* Sandbox Interactive Stage */
+.preference-stage-container {
+  width: 100%;
+  padding: clamp(1.75rem, 3.5vw, 2.5rem);
+  border-radius: 24px;
+  background: rgba(18, 17, 34, 0.75);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(251, 146, 60, 0.25);
+  border-top: 1px solid rgba(251, 146, 60, 0.5);
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.5), 0 0 48px rgba(251, 146, 60, 0.12);
+}
+
+.preference-toggle-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  background: rgba(0, 0, 0, 0.35);
+  padding: 0.4rem;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  max-width: 440px;
+  margin: 0 auto 2rem;
+  position: relative;
+}
+
+.preference-toggle-btn {
+  flex: 1;
+  padding: 0.65rem 1.15rem;
+  border-radius: 9px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #cbd5e1;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  position: relative;
+  transition: color 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+}
+
+.preference-toggle-btn-active {
+  color: #ffffff;
+  background: rgba(251, 146, 60, 0.2);
+  border: 1px solid rgba(251, 146, 60, 0.4);
+  box-shadow: 0 2px 12px rgba(251, 146, 60, 0.25);
+}
+
+.preference-result-card {
+  padding: 1.5rem;
+  border-radius: 16px;
+  background: rgba(10, 10, 20, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.preference-result-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.preference-result-body {
+  font-size: 0.95rem;
+  line-height: 1.65;
+  color: #e2e8f0;
+}
+
+@media (max-width: 860px) {
+  .intelligence-pillars-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 540px) {
+  .intelligence-pillars-grid {
+    grid-template-columns: 1fr;
+  }
+}
