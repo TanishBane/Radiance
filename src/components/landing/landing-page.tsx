@@ -17,7 +17,8 @@ import "./context-pipeline.css";
 import "./privacy-and-vision.css";
 import "./ascend-planet-landing.css";
 
-import { WebGLPlanet } from "./webgl-planet";
+import { WebGLStarfield } from "./webgl-starfield";
+import { DynamicThemeIndicator } from "./dynamic-theme-indicator";
 import { LandingNav } from "./landing-nav";
 import { AscendHero } from "./ascend-hero";
 import { AscendFeatures } from "./ascend-features";
@@ -95,8 +96,11 @@ export function LandingPage() {
         Skip to content
       </a>
 
-      {/* Fixed WebGL 3D Planet Canvas */}
-      <WebGLPlanet />
+      {/* Fixed WebGL Starfield Canvas (Three.js r0.143 with 45s Dynamic Theme Fading) */}
+      <WebGLStarfield />
+
+      {/* Floating Dynamic 45-Second Theme HUD Indicator */}
+      <DynamicThemeIndicator />
 
       {/* Global Navigation with Radix Dialog Menu */}
       <LandingNav />
