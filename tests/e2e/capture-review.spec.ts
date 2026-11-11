@@ -86,6 +86,17 @@ test.describe("Visual Quality Inspection & Multi-Viewport Screenshot Capture", (
         });
       }
 
+      // Scroll to context pipeline section (the point where autumn-road-cyclist fades in)
+      const pipelineSection = page.locator("#pipeline");
+      if ((await pipelineSection.count()) > 0) {
+        await pipelineSection.scrollIntoViewIfNeeded();
+        await page.waitForTimeout(600);
+        await page.screenshot({
+          path: path.join(outDir, `${vp.name}-pipeline-section.png`),
+          fullPage: false,
+        });
+      }
+
       // Full page screenshot
       await page.screenshot({
         path: path.join(outDir, `${vp.name}-fullpage.png`),

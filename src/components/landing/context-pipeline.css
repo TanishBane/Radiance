@@ -49,13 +49,15 @@
   letter-spacing: -0.03em;
   line-height: 1.12;
   color: #ffffff;
+  text-shadow: 0 2px 12px rgba(10, 4, 2, 0.75);
   margin: 0 0 1.25rem;
 }
 
 .pipeline-lede {
   font-size: clamp(1.05rem, 1.8vw, 1.25rem);
   line-height: 1.6;
-  color: rgba(240, 244, 255, 0.78);
+  color: rgba(248, 250, 252, 0.92);
+  text-shadow: 0 1px 8px rgba(10, 4, 2, 0.85);
   margin: 0;
 }
 
