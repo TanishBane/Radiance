@@ -165,11 +165,11 @@ export class Grid {
     this.co.fill(0);
   }
 
-  set(x: number, y: number, char: string, colorKey: number): void {
+  set(x: number, y: number, char: string, colorKey: number | string): void {
     if (x >= 0 && x < this.cols && y >= 0 && y < this.rows) {
       const idx = x + y * this.cols;
       this.ch[idx] = char;
-      this.co[idx] = colorKey;
+      this.co[idx] = typeof colorKey === "string" ? parseInt(colorKey, 36) : colorKey;
     }
   }
 

@@ -4,7 +4,16 @@
 .landing-root .story-intro-grid { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: 28px clamp(36px, 7vw, 100px); align-items: center; }
 .landing-root .story-intro-grid > :first-child { grid-row: span 2; }
 .landing-root .story-intro-grid .landing-section-title { max-width: 11ch; }
-.landing-root .story-intro-copy { max-width: 61ch; }
+.landing-root .story-intro-copy {
+  max-width: 61ch;
+  padding: 24px 28px;
+  background: rgba(8, 12, 28, 0.65);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
+}
 .landing-root .story-intro-copy .landing-copy + .landing-copy { margin-top: 12px; }
 .landing-root .story-boundary { margin: 20px 0 0; padding: 12px 15px; border-left: 2px solid #f2b36f; border-radius: 0 12px 12px 0; background: color-mix(in srgb, #f2b36f 9%, transparent); color: var(--txt-dim); font-size: .85rem; line-height: 1.65; }
 .landing-root .story-visual { position: relative; overflow: hidden; min-height: 240px; border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 20px; }

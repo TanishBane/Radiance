@@ -41,14 +41,14 @@ describe("Balloon Valley Sunrise Engine & Dual-Atmosphere Background", () => {
     expect(hasLevelGlyphs).toBe(true);
   });
 
-  it("renders ArcticIcebergsBackground with dual-canvas structure server-side", () => {
+  it("renders ArcticIcebergsBackground with multi-canvas structure server-side", () => {
     const markup = renderToStaticMarkup(<ArcticIcebergsBackground />);
     // Expect container div with fixed positioning
     expect(markup).toContain("position:fixed");
     expect(markup).toContain("background-color:#02050c");
-    // Expect 2 canvas elements (one for Icebergs, one for Balloon Valley)
+    // Expect 3 canvas elements (Icebergs, Balloon Valley, Moonlit Sea)
     const canvasMatches = markup.match(/<canvas/g);
     expect(canvasMatches).not.toBeNull();
-    expect(canvasMatches?.length).toBe(2);
+    expect(canvasMatches?.length).toBe(3);
   });
 });
