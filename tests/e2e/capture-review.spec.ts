@@ -64,6 +64,17 @@ test.describe("Visual Quality Inspection & Multi-Viewport Screenshot Capture", (
         });
       }
 
+      // Scroll to personal intelligence section (the point where nyc-skyline-night fades in)
+      const intelligenceSection = page.locator("#intelligence");
+      if ((await intelligenceSection.count()) > 0) {
+        await intelligenceSection.scrollIntoViewIfNeeded();
+        await page.waitForTimeout(600);
+        await page.screenshot({
+          path: path.join(outDir, `${vp.name}-intelligence-section.png`),
+          fullPage: false,
+        });
+      }
+
       // Full page screenshot
       await page.screenshot({
         path: path.join(outDir, `${vp.name}-fullpage.png`),

@@ -180,6 +180,22 @@ export class Grid {
     }
   }
 
+  hline(x1: number, x2: number, y: number, char: string, colorKey: number | string): void {
+    const startX = Math.min(x1, x2);
+    const endX = Math.max(x1, x2);
+    for (let x = startX; x <= endX; x++) {
+      this.set(x, y, char, colorKey);
+    }
+  }
+
+  vline(x: number, y1: number, y2: number, char: string, colorKey: number | string): void {
+    const startY = Math.min(y1, y2);
+    const endY = Math.max(y1, y2);
+    for (let y = startY; y <= endY; y++) {
+      this.set(x, y, char, colorKey);
+    }
+  }
+
   frame(): GridFrame {
     return {
       ch: this.ch,
