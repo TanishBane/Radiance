@@ -20,10 +20,7 @@ import "./ascend-planet-landing.css";
 import { WebGLStarfield } from "./webgl-starfield";
 import { DynamicThemeIndicator } from "./dynamic-theme-indicator";
 import { LandingNav } from "./landing-nav";
-import { AscendHero } from "./ascend-hero";
-import { AscendFeatures } from "./ascend-features";
-import { AscendShowcase } from "./ascend-showcase";
-import { AscendCta } from "./ascend-cta";
+import { HeroLandscape } from "./hero-landscape";
 import { ProblemComparisonSection } from "./problem-comparison-section";
 import { ProductIntroduction } from "./product-introduction";
 import { ProductPreview } from "./product-preview";
@@ -31,8 +28,10 @@ import { PersonalIntelligenceStory } from "./personal-intelligence-story";
 import { PreferenceSandbox } from "./preference-sandbox";
 import { ContextPipelineSection } from "./context-pipeline-section";
 import { PrivacyFortress } from "./privacy-fortress";
-import { FutureVisionStory } from "./future-vision-story";
 import { LandingFaq } from "./landing-faq";
+import { FutureVisionStory } from "./future-vision-story";
+import { ImmersiveFinalCta } from "./immersive-final-cta";
+import { LandingFooter } from "./landing-footer";
 
 export function LandingPage() {
   useEffect(() => {
@@ -75,33 +74,43 @@ export function LandingPage() {
       <LandingNav />
 
       <main id="main">
-        {/* SECTION 1 · HERO (Ascend - Scale Smarter, Not Harder) */}
-        <AscendHero />
+        {/* HERO: Authentic Radiance AI Personal Intelligence with Interactive Product Stage */}
+        <HeroLandscape />
 
-        {/* SECTION 2 · FEATURES (Everything in orbit · 6 Cards) */}
-        <AscendFeatures />
-
-        {/* SECTION 3 · SHOWCASE + STATS (Built for momentum · Live Pipeline Q3 Dashboard) */}
-        <AscendShowcase />
-
-        {/* ══ CORE PRODUCT & INTELLIGENCE STORYTELLING ══ */}
+        {/* ══ CORE AUTHENTIC PRODUCT & INTELLIGENCE STORYTELLING ══ */}
+        {/* 1. Problem Comparison: Without Saved Context vs With Radiance Context */}
         <ProblemComparisonSection />
+
+        {/* 2. Product Introduction: Saved by you. Ready when it matters. */}
         <ProductIntroduction />
+
+        {/* 3. Product Preview: Interactive walkthrough of context path */}
         <ProductPreview />
 
+        {/* 4. Personal Intelligence Story: Saved notes, preferences, retrieval, sharing */}
         <PersonalIntelligenceStory />
+
+        {/* 5. Preference Sandbox: Interactive concise / detailed / structured modes */}
         <PreferenceSandbox />
 
+        {/* 6. Context Pipeline: Note store -> Lexical match -> Context injection -> Model synthesis */}
         <ContextPipelineSection />
 
+        {/* 7. Privacy Fortress: Browser plaintext storage, opt-in sharing, reset controls */}
         <PrivacyFortress />
+
+        {/* 8. FAQ: Clear, transparent answers on storage, privacy, and models */}
         <LandingFaq />
 
+        {/* 9. Future Vision: Adaptive memory, multi-doc synthesis, cross-model translation */}
         <FutureVisionStory />
 
-        {/* SECTION 4 · CTA + FOOTER (Ready when you are · Trajectory · Ascend Footer) */}
-        <AscendCta />
+        {/* 10. Immersive Final CTA: "Your next conversation can feel different." */}
+        <ImmersiveFinalCta />
       </main>
+
+      {/* Global Landing Footer */}
+      <LandingFooter />
     </div>
   );
 }

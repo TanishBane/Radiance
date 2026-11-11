@@ -9,7 +9,7 @@
   text-transform: uppercase;
 }
 
-.landing-root .landing-privacy { background: linear-gradient(110deg, color-mix(in srgb, var(--deep) 48%, transparent), transparent 70%); }
+.landing-root .landing-privacy { background: transparent; }
 .landing-root .landing-privacy-heading { position: sticky; top: 120px; }
 .landing-root .landing-privacy-note { max-width: 32ch; margin: 18px 0 0; color: var(--landing-quiet); line-height: 1.65; }
 .landing-root .landing-privacy-copy { padding-left: 28px; border-left: 1px solid var(--landing-hairline); }
@@ -30,8 +30,8 @@
 .landing-root .landing-faq-item button:hover span:first-child { color: var(--accent-b); }
 .landing-root .landing-faq-item > p { max-width: 64ch; margin: -2px 36px 22px 2px; color: var(--landing-muted); font-size: .94rem; line-height: 1.7; }
 
-.landing-root .landing-conversion { position: relative; overflow: hidden; isolation: isolate; padding-block: clamp(88px, 12vw, 156px); text-align: center; }
-.landing-root .landing-conversion::before { position: absolute; z-index: -1; inset: 0; background: radial-gradient(ellipse at 50% 45%, color-mix(in srgb, var(--accent) 16%, transparent), transparent 58%); content: ""; pointer-events: none; }
+.landing-root .landing-conversion { position: relative; overflow: hidden; isolation: isolate; padding-block: clamp(88px, 12vw, 156px); text-align: center; background: transparent; }
+.landing-root .landing-conversion::before { display: none; }
 .landing-root .landing-conversion-inner { display: flex; flex-direction: column; align-items: center; }
 .landing-root .landing-conversion .landing-eyebrow { margin-bottom: 22px; }
 .landing-root .landing-conversion .landing-section-title { max-width: 15ch; font-size: clamp(2.8rem, 6vw, 5rem); }
@@ -40,7 +40,7 @@
 .landing-root .landing-conversion .landing-final-cta { box-shadow: 0 8px 32px color-mix(in srgb, var(--accent) 28%, transparent); }
 .landing-root .landing-conversion-caption { margin: 16px 0 0; color: var(--landing-quiet); font-size: .82rem; }
 
-.landing-root .landing-footer { padding: 48px 0 calc(24px + var(--sab)); border-top: 1px solid var(--landing-hairline); background: color-mix(in srgb, var(--deep) 58%, var(--void)); }
+.landing-root .landing-footer { padding: 48px 0 calc(24px + var(--sab)); border-top: 1px solid var(--landing-hairline); background: transparent; }
 .landing-root .landing-footer-grid { display: grid; grid-template-columns: minmax(0, 1.5fr) repeat(2, minmax(120px, .65fr)); gap: 42px; }
 .landing-root .landing-footer-grid > div:first-child .landing-copy { max-width: 42ch; margin-top: 16px; font-size: .9rem; }
 .landing-root .landing-footer-grid > div:not(:first-child) { display: flex; flex-direction: column; align-items: flex-start; gap: 9px; }

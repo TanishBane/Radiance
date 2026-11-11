@@ -7,6 +7,7 @@
 .privacy-section-container {
   position: relative;
   width: 100%;
+  background: transparent;
   padding: clamp(5rem, 8vw, 8rem) 1.5rem;
 }
 
@@ -70,12 +71,12 @@
 .privacy-card {
   padding: 1.75rem;
   border-radius: 18px;
-  background: rgba(8, 26, 32, 0.65);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(16, 185, 129, 0.2);
-  border-top: 1px solid rgba(16, 185, 129, 0.45);
-  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.4), 0 0 24px rgba(16, 185, 129, 0.12);
+  background: rgba(8, 12, 28, 0.45);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-top: 1px solid rgba(16, 185, 129, 0.35);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.4);
   display: flex;
   flex-direction: column;
   gap: 0.85rem;
@@ -109,6 +110,7 @@
 .vision-section-container {
   position: relative;
   width: 100%;
+  background: transparent;
   padding: clamp(5rem, 8vw, 8rem) 1.5rem;
 }
 
@@ -171,12 +173,12 @@
 .vision-card {
   padding: 1.85rem;
   border-radius: 18px;
-  background: rgba(18, 14, 38, 0.65);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(139, 92, 246, 0.2);
-  border-top: 1px solid rgba(236, 72, 153, 0.4);
-  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.4), 0 0 28px rgba(139, 92, 246, 0.12);
+  background: rgba(8, 12, 28, 0.45);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-top: 1px solid rgba(236, 72, 153, 0.35);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.4);
   display: flex;
   flex-direction: column;
   gap: 0.85rem;

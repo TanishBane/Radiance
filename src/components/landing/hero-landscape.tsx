@@ -31,6 +31,7 @@ export function HeroLandscape() {
 
   return (
     <section 
+      id="hero"
       className="hero-landscape-section section-atmosphere-hero landing-hero"
       aria-labelledby="hero-display-heading"
     >

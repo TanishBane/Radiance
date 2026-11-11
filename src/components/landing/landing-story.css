@@ -6,8 +6,8 @@
 .story-intro-copy .landing-copy + .landing-copy { margin-top: 12px; }
 .story-boundary { margin: 19px 0 0; padding-left: 15px; border-left: 1px solid var(--accent); color: var(--landing-quiet); font-size: .875rem; line-height: 1.65; }
 .story-visual { position: relative; overflow: hidden; min-height: 218px; border-top: 1px solid var(--landing-hairline); border-bottom: 1px solid var(--landing-hairline); }
-.story-note-visual { display: grid; align-items: center; justify-items: center; background: radial-gradient(ellipse at 65% 42%, color-mix(in srgb, var(--accent) 10%, transparent), transparent 58%); }
-.story-note-sheet { z-index: 1; width: min(100% - 48px, 390px); padding: 22px 24px; border: 1px solid var(--landing-hairline); background: color-mix(in srgb, var(--deep) 80%, var(--void)); box-shadow: 0 24px 55px color-mix(in srgb, var(--void) 35%, transparent); transform: rotate(-1deg); transition: transform 220ms ease-out, border-color 220ms ease-out; }
+.story-note-visual { display: grid; align-items: center; justify-items: center; background: transparent; }
+.story-note-sheet { z-index: 1; width: min(100% - 48px, 390px); padding: 22px 24px; border: 1px solid rgba(255, 255, 255, 0.08); background: rgba(8, 12, 28, 0.45); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); box-shadow: 0 24px 55px color-mix(in srgb, var(--void) 35%, transparent); transform: rotate(-1deg); transition: transform 220ms ease-out, border-color 220ms ease-out; }
 .story-note-visual:hover .story-note-sheet { transform: rotate(0); border-color: color-mix(in srgb, var(--accent) 45%, var(--landing-hairline)); }
 .story-note-label { display: flex; justify-content: space-between; color: var(--accent); font-size: .65rem; letter-spacing: .08em; }
 .story-note-label span { color: var(--landing-quiet); font-variant-numeric: tabular-nums; }

@@ -36,146 +36,138 @@
 }
 
 /* ==========================================================================
-   SECTION COLOR ENVIRONMENTS (PROGRESSIVE CONTINUUM)
+   SECTION COLOR ENVIRONMENTS (ALL TRANSPARENT BACKGROUNDS FOR THREE.JS CANVAS)
    ========================================================================== */
 
-/* 1. HERO ATMOSPHERE: Deep Ocean, Cyan Aurora, Teal Mist, Violet Rim */
+/* 1. HERO ATMOSPHERE */
 .section-atmosphere-hero {
   position: relative;
-  background: radial-gradient(circle at 50% -20%, rgba(6, 182, 212, 0.18) 0%, transparent 60%),
-              radial-gradient(circle at 85% 30%, rgba(139, 92, 246, 0.15) 0%, transparent 55%),
-              radial-gradient(circle at 15% 40%, rgba(13, 148, 136, 0.18) 0%, transparent 50%),
-              linear-gradient(180deg, #040811 0%, #061122 65%, #050d1a 100%);
+  background: transparent !important;
   overflow: hidden;
 }
 
 .section-atmosphere-hero::before {
-  content: "";
-  position: absolute;
-  top: -10%;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 140%;
-  height: 60%;
-  background: radial-gradient(ellipse at center, rgba(6, 182, 212, 0.15) 0%, rgba(59, 130, 246, 0.08) 45%, transparent 70%);
-  filter: blur(60px);
-  pointer-events: none;
-  z-index: 0;
+  display: none !important;
 }
 
-/* 2. THE PROBLEM: Sapphire, Electric Blue, Cool Slate */
+/* 2. THE PROBLEM */
 .section-atmosphere-problem {
   position: relative;
-  background: radial-gradient(circle at 20% 50%, rgba(30, 64, 175, 0.15) 0%, transparent 55%),
-              radial-gradient(circle at 80% 60%, rgba(59, 130, 246, 0.12) 0%, transparent 50%),
-              linear-gradient(180deg, #050d1a 0%, #071326 50%, #081428 100%);
-  border-top: 1px solid rgba(59, 130, 246, 0.12);
-  border-bottom: 1px solid rgba(139, 92, 246, 0.12);
+  background: transparent !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-/* 3. PERSONAL INTELLIGENCE: Lavender, Indigo, Rose, Soft Cyan */
+/* 3. PERSONAL INTELLIGENCE */
 .section-atmosphere-intelligence {
   position: relative;
-  background: radial-gradient(circle at 50% 20%, rgba(139, 92, 246, 0.18) 0%, transparent 60%),
-              radial-gradient(circle at 80% 70%, rgba(244, 63, 94, 0.12) 0%, transparent 50%),
-              radial-gradient(circle at 20% 80%, rgba(6, 182, 212, 0.14) 0%, transparent 50%),
-              linear-gradient(180deg, #081428 0%, #0f122c 55%, #111430 100%);
+  background: transparent !important;
   overflow: hidden;
 }
 
-/* 4. PREFERENCES: Coral, Rose, Violet, Warm Gold */
+/* 4. PREFERENCES */
 .section-atmosphere-preferences {
   position: relative;
-  background: radial-gradient(circle at 75% 30%, rgba(251, 146, 60, 0.15) 0%, transparent 55%),
-              radial-gradient(circle at 25% 70%, rgba(244, 63, 94, 0.14) 0%, transparent 50%),
-              linear-gradient(180deg, #111430 0%, #1a152e 50%, #151128 100%);
-  border-top: 1px solid rgba(251, 146, 60, 0.12);
+  background: transparent !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-/* 5. CONTEXT RETRIEVAL PIPELINE: Flowing Cyan, Coral, Amber */
+/* 5. CONTEXT RETRIEVAL PIPELINE */
 .section-atmosphere-pipeline {
   position: relative;
-  background: radial-gradient(circle at 50% 50%, rgba(245, 158, 11, 0.12) 0%, transparent 60%),
-              radial-gradient(circle at 10% 20%, rgba(6, 182, 212, 0.16) 0%, transparent 50%),
-              radial-gradient(circle at 90% 80%, rgba(251, 146, 60, 0.14) 0%, transparent 50%),
-              linear-gradient(180deg, #151128 0%, #14162a 50%, #0a1728 100%);
+  background: transparent !important;
 }
 
-/* 6. PRIVACY FORTRESS: Emerald, Mint, Teal */
+/* 6. PRIVACY FORTRESS */
 .section-atmosphere-privacy {
   position: relative;
-  background: radial-gradient(circle at 30% 40%, rgba(16, 185, 129, 0.18) 0%, transparent 55%),
-              radial-gradient(circle at 70% 60%, rgba(20, 184, 166, 0.15) 0%, transparent 50%),
-              linear-gradient(180deg, #0a1728 0%, #06191f 50%, #071f24 100%);
-  border-top: 1px solid rgba(16, 185, 129, 0.15);
-  border-bottom: 1px solid rgba(20, 184, 166, 0.15);
+  background: transparent !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-/* 7. FUTURE VISION: Cyan, Violet, Magenta, Cosmic Sapphire */
+/* 7. FUTURE VISION */
 .section-atmosphere-vision {
   position: relative;
-  background: radial-gradient(circle at 50% 30%, rgba(139, 92, 246, 0.2) 0%, transparent 60%),
-              radial-gradient(circle at 80% 40%, rgba(236, 72, 153, 0.14) 0%, transparent 50%),
-              radial-gradient(circle at 20% 70%, rgba(6, 182, 212, 0.16) 0%, transparent 50%),
-              linear-gradient(180deg, #071f24 0%, #0d122e 45%, #120e2a 100%);
+  background: transparent !important;
 }
 
-/* 8. FINAL CTA: Dramatic Multi-Chromatic Sunset Aurora */
+/* 8. FINAL CTA */
 .section-atmosphere-final {
   position: relative;
-  background: radial-gradient(circle at 50% 0%, rgba(251, 146, 60, 0.2) 0%, transparent 50%),
-              radial-gradient(circle at 20% 40%, rgba(6, 182, 212, 0.2) 0%, transparent 55%),
-              radial-gradient(circle at 80% 40%, rgba(244, 63, 94, 0.18) 0%, transparent 55%),
-              radial-gradient(circle at 50% 90%, rgba(139, 92, 246, 0.18) 0%, transparent 60%),
-              linear-gradient(180deg, #120e2a 0%, #1a1232 40%, #090a14 100%);
-  border-top: 1px solid rgba(251, 146, 60, 0.18);
+  background: transparent !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
   overflow: hidden;
 }
 
 /* ==========================================================================
-   GLASSMORPHIC CARDS & REUSABLE VISUAL UTILITIES
+   TRANSLUCENT GLASS CARDS (THREE.JS CANVAS VISIBLE DRIFTING BEHIND)
+   Formula: rgba(8, 12, 28, 0.45), 1px solid rgba(255, 255, 255, 0.08), blur(12px)
    ========================================================================== */
 
-.radiance-glass-card {
-  background: var(--glass-surface);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid var(--glass-border);
-  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.1);
-  border-radius: 16px;
-  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
-              border-color 0.25s ease,
-              box-shadow 0.25s ease;
+.radiance-glass-card,
+.problem-panel,
+.problem-panel-generic,
+.problem-panel-radiance,
+.intelligence-pillar-card,
+.preference-stage-container,
+.preference-result-card,
+.pipeline-node,
+.privacy-card,
+.vision-card,
+.hero-stage-container,
+.hero-stage-card,
+.hero-stage-output-preview,
+.hero-stage-composer,
+.hero-telemetry-dock,
+.landing-field,
+.story-compare-panel,
+.story-settings,
+.story-note-sheet,
+.landing-faq-item,
+.planet-card,
+.planet-cta-card {
+  background: rgba(8, 12, 28, 0.45) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.08);
 }
 
-.radiance-glass-card:hover {
-  border-color: rgba(255, 255, 255, 0.18);
-  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+.radiance-glass-card:hover,
+.intelligence-pillar-card:hover,
+.pipeline-node:hover,
+.hero-stage-card:hover,
+.problem-panel:hover,
+.privacy-card:hover,
+.vision-card:hover {
+  border-color: rgba(255, 255, 255, 0.18) !important;
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.12);
 }
 
 .radiance-glass-card-teal {
-  border-top: 1px solid rgba(6, 182, 212, 0.35);
+  border-top: 1px solid rgba(6, 182, 212, 0.35) !important;
 }
 .radiance-glass-card-teal:hover {
   box-shadow: 0 20px 48px rgba(0, 0, 0, 0.45), 0 0 24px rgba(6, 182, 212, 0.2);
 }
 
 .radiance-glass-card-blue {
-  border-top: 1px solid rgba(59, 130, 246, 0.35);
+  border-top: 1px solid rgba(59, 130, 246, 0.35) !important;
 }
 .radiance-glass-card-blue:hover {
   box-shadow: 0 20px 48px rgba(0, 0, 0, 0.45), 0 0 24px rgba(59, 130, 246, 0.2);
 }
 
 .radiance-glass-card-violet {
-  border-top: 1px solid rgba(139, 92, 246, 0.35);
+  border-top: 1px solid rgba(139, 92, 246, 0.35) !important;
 }
 .radiance-glass-card-violet:hover {
   box-shadow: 0 20px 48px rgba(0, 0, 0, 0.45), 0 0 24px rgba(139, 92, 246, 0.2);
 }
 
 .radiance-glass-card-emerald {
-  border-top: 1px solid rgba(16, 185, 129, 0.35);
+  border-top: 1px solid rgba(16, 185, 129, 0.35) !important;
 }
 .radiance-glass-card-emerald:hover {
   box-shadow: 0 20px 48px rgba(0, 0, 0, 0.45), 0 0 24px rgba(16, 185, 129, 0.2);

@@ -6,6 +6,7 @@
 .problem-section {
   position: relative;
   width: 100%;
+  background: transparent;
   padding: clamp(5rem, 8vw, 8rem) 1.5rem;
 }
 
@@ -77,8 +78,10 @@
 
 /* Left: Generic / Without Context */
 .problem-panel-generic {
-  background: rgba(15, 23, 42, 0.5);
-  border: 1px solid rgba(148, 163, 184, 0.12);
+  background: rgba(8, 12, 28, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   box-shadow: 0 16px 36px rgba(0, 0, 0, 0.4);
 }
 
@@ -158,11 +161,11 @@
 
 /* Right: With Radiance Personal Intelligence */
 .problem-panel-radiance {
-  background: rgba(14, 25, 48, 0.7);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border: 1px solid rgba(59, 130, 246, 0.3);
-  border-top: 1px solid rgba(6, 182, 212, 0.5);
+  background: rgba(8, 12, 28, 0.45);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-top: 1px solid rgba(6, 182, 212, 0.35);
   box-shadow: 0 20px 48px rgba(0, 0, 0, 0.5), 0 0 40px rgba(59, 130, 246, 0.15);
 }
 

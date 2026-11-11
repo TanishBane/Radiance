@@ -134,6 +134,15 @@ export function WebGLStarfield() {
     let scrollListener: (() => void) | null = null;
     let mouseMoveListener: ((e: MouseEvent) => void) | null = null;
     let mouseOutListener: (() => void) | null = null;
+    let themeSkipListener: (() => void) | null = null;
+    let themeToggleListener: (() => void) | null = null;
+    let contextLostListener: ((e: Event) => void) | null = null;
+    let contextRestoredListener: (() => void) | null = null;
+
+    let renderer: THREE.WebGLRenderer | null = null;
+    let geometry: THREE.BufferGeometry | null = null;
+    let starMaterial: THREE.ShaderMaterial | null = null;
+    let dummyHalo: THREE.DataTexture | null = null;
 
     async function initStarfield() {
       try {
@@ -144,26 +153,28 @@ export function WebGLStarfield() {
           return new THREE.Vector3(((n >> 16) & 255) / 255, ((n >> 8) & 255) / 255, (n & 255) / 255);
         }
 
+        const prefersReduced = typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
         const CONFIG = {
           bgColor: "#0a0a24",
           flameColor: "#aee9ff",
           flameColor2: "#c79bff",
-          flameAmt: 0.2,
+          flameAmt: 0.22,
           colorA: "#aef6cf",
           colorB: "#5fe6a0",
           colorC: "#eafff2",
-          opacity: 2,
+          opacity: 2.0,
           pointSize: 50,
           brightness: 1.85,
-          drift: 2.35,
-          twinkle: 1,
-          spin: 0.03,
-          repelRadius: 5,
-          repelStrength: 0.35,
-          scrollPush: 8,
-          scrollDrift: 6,
-          scrollSpin: 0.1,
-          parallax: 0.6,
+          drift: prefersReduced ? 0.5 : 2.35,
+          twinkle: prefersReduced ? 0.3 : 1.0,
+          spin: prefersReduced ? 0.005 : 0.03,
+          repelRadius: 5.0,
+          repelStrength: prefersReduced ? 0.0 : 0.35,
+          scrollPush: prefersReduced ? 0.0 : 8.0,
+          scrollDrift: prefersReduced ? 0.0 : 6.0,
+          scrollSpin: prefersReduced ? 0.0 : 0.1,
+          parallax: prefersReduced ? 0.0 : 0.6,
         };
 
         const PREPARED_THEMES = CHATBOT_STARFIELD_THEMES.map((t) => ({
@@ -176,8 +187,16 @@ export function WebGLStarfield() {
           colorCVec: hexToVec3(t.colorC),
         }));
 
-        const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false });
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        const dpr = Math.min(Math.max(window.devicePixelRatio || 1, 1), 2);
+        renderer = new THREE.WebGLRenderer({
+          canvas,
+          antialias: true,
+          alpha: false,
+          powerPreference: "high-performance",
+          stencil: false,
+          depth: true,
+        });
+        renderer.setPixelRatio(dpr);
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.shadowMap.enabled = true;
         renderer.shadowMap.type = THREE.VSMShadowMap;
@@ -195,7 +214,7 @@ export function WebGLStarfield() {
         camera.layers.enable(LAYERS.ENTIRE_SCENE);
         scene.add(camera);
 
-        const dummyHalo = new THREE.DataTexture(new Uint8Array([0, 0, 0, 0]), 1, 1, THREE.RGBAFormat);
+        dummyHalo = new THREE.DataTexture(new Uint8Array([0, 0, 0, 0]), 1, 1, THREE.RGBAFormat);
         dummyHalo.needsUpdate = true;
 
         const renderScene = new RenderPass(scene, camera);
@@ -205,14 +224,16 @@ export function WebGLStarfield() {
         torusComposer.renderToScreen = false;
         torusComposer.addPass(renderScene);
         torusComposer.addPass(new ShaderPass(GammaCorrectionShader));
-        torusComposer.addPass(new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 0.22, 0.2, 0));
+        const torusBloomPass = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 0.22, 0.2, 0);
+        torusComposer.addPass(torusBloomPass);
         torusComposer.addPass(new ShaderPass(CopyShader));
 
         // 2. bloomComposer
         const bloomComposer = new EffectComposer(renderer);
         bloomComposer.renderToScreen = false;
         bloomComposer.addPass(renderScene);
-        bloomComposer.addPass(new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 0.4, 0.55, 0));
+        const bloomPass = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 0.4, 0.55, 0);
+        bloomComposer.addPass(bloomPass);
         bloomComposer.addPass(new ShaderPass(GammaCorrectionShader));
 
         // 3. finalComposer with FinalPass
@@ -220,8 +241,8 @@ export function WebGLStarfield() {
           uniforms: {
             iTime: { value: 0 },
             tDiffuse: { value: null },
-            torusTexture: { value: null },
-            bloomTexture: { value: null },
+            torusTexture: { value: torusComposer.readBuffer.texture },
+            bloomTexture: { value: bloomComposer.readBuffer.texture },
             haloTexture: { value: dummyHalo },
             uBg: { value: hexToVec3(CONFIG.bgColor) },
             uFlameA: { value: hexToVec3(CONFIG.flameColor) },
@@ -248,29 +269,31 @@ export function WebGLStarfield() {
             varying vec2 vUv;
 
             vec3 warp3d(vec3 pos, float t) {
-              float curv = .8, a = 1.9, b = 0.7;
-              pos *= 2.;
+              float curv = 0.8;
+              float a = 1.9;
+              float b = 0.7;
+              pos *= 2.0;
               pos.x += curv * sin(t + a * pos.y) + t * b;
               pos.y += curv * cos(t + a * pos.x);
               pos.z += curv * sin(t + a * pos.z) + t * b;
               pos.z += curv * cos(t + a * pos.y);
               pos.x += curv * sin(t + a * pos.x);
               pos.x += curv * cos(t + a * pos.z);
-              return 0.5 + 0.5 * cos(pos.xyz + vec3(1, 2, 4));
+              return 0.5 + 0.5 * cos(pos.xyz + vec3(1.0, 2.0, 4.0));
             }
 
             void main() {
-              vec2 uv = 2. * vUv - 1.;
+              vec2 uv = 2.0 * vUv - 1.0;
               vec3 w = pow(warp3d(vec3(uv.x, sin(uv.y), uv.y), iTime * 1.5), vec3(1.5));
               vec3 flame = 1.5 * uFlameA * w.x;
               flame *= w.y;
               flame += uFlameB * w.z;
-              flame *= smoothstep(0.25, 1., abs(uv.y));
-              float md = smoothstep(-0.7, 1., -uv.y * uv.x);
+              flame *= (0.35 + 0.65 * smoothstep(0.1, 0.8, abs(uv.y)));
+              float md = smoothstep(-0.7, 1.0, -uv.y * uv.x);
               flame *= md * md;
               vec3 bg = uBg * (1.0 - 0.4 * length(uv));
               vec3 halo = texture2D(haloTexture, vUv).xyz;
-              gl_FragColor = vec4(bg + flame * uFlameAmt + texture2D(bloomTexture, vUv).xyz + texture2D(torusTexture, vUv).xyz + texture2D(tDiffuse, vUv).xyz + halo, 1.);
+              gl_FragColor = vec4(bg + flame * uFlameAmt + texture2D(bloomTexture, vUv).xyz + texture2D(torusTexture, vUv).xyz + texture2D(tDiffuse, vUv).xyz + halo, 1.0);
             }
           `
         };
@@ -279,9 +302,6 @@ export function WebGLStarfield() {
         finalComposer.addPass(renderScene);
         const finalPass = new ShaderPass(FinalPassShader);
         finalComposer.addPass(finalPass);
-
-        finalPass.uniforms.bloomTexture.value = bloomComposer.renderTarget1.texture;
-        finalPass.uniforms.torusTexture.value = torusComposer.renderTarget1.texture;
 
         // Build Starfield BufferGeometry (4200 stars, depth 30)
         const count = 4200;
@@ -304,14 +324,14 @@ export function WebGLStarfield() {
           phases[i]  = Math.random();
         }
 
-        const geometry = new THREE.BufferGeometry();
+        geometry = new THREE.BufferGeometry();
         geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
         geometry.setAttribute('aScale', new THREE.Float32BufferAttribute(scales, 1));
         geometry.setAttribute('aPhase', new THREE.Float32BufferAttribute(phases, 1));
         geometry.setAttribute('aPalette', new THREE.Float32BufferAttribute(palette, 1));
         geometry.setAttribute('aBright', new THREE.Float32BufferAttribute(bright, 1));
 
-        const starMaterial = new THREE.ShaderMaterial({
+        starMaterial = new THREE.ShaderMaterial({
           transparent: true,
           depthWrite: false,
           blending: THREE.AdditiveBlending,
@@ -320,7 +340,7 @@ export function WebGLStarfield() {
             uSize: { value: CONFIG.pointSize },
             uOpacity: { value: CONFIG.opacity },
             uDrift: { value: 0 },
-            uDepth: { value: 30 },
+            uDepth: { value: depth },
             uTwinkle: { value: CONFIG.twinkle },
             uCursor: { value: new THREE.Vector3() },
             uRepelRadius: { value: CONFIG.repelRadius },
@@ -341,7 +361,7 @@ export function WebGLStarfield() {
               vec3 pos = position;
               pos.z = mod(pos.z + uDrift + (uDepth * 0.5), uDepth) - (uDepth * 0.5);
 
-              float tw = sin(uTime * 1.6 + aPhase * 6.2831);
+              float tw = sin(uTime * 1.6 + aPhase * 6.2831853);
               vTwinkle = (1.0 - uTwinkle) + uTwinkle * (0.55 + 0.45 * tw);
 
               vec4 modelPosition = modelMatrix * vec4(pos, 1.0);
@@ -412,7 +432,7 @@ export function WebGLStarfield() {
         mouseOutListener = () => {
           active = false;
         };
-        window.addEventListener("mouseout", mouseOutListener);
+        window.addEventListener("mouseout", mouseOutListener, { passive: true });
 
         // Double-Damped Scroll Smoothing
         let scrollTarget = 0;
@@ -426,26 +446,77 @@ export function WebGLStarfield() {
         };
         window.addEventListener("scroll", scrollListener, { passive: true });
 
-        // 45-Second Dynamic Theme Fading Engine
-        const FADE_PERIOD = 45.0; // 45 seconds slow fading transition
+        // 8-Second Dynamic Theme Fading Engine
+        const FADE_PERIOD = 8.0; // 8 seconds slow, ultra-smooth sinusoidal fading transition
         let pauseTimeAccumulator = 0;
         let isPaused = false;
         let customOffset = 0;
+        let lastEmittedSec = -1;
+        let lastEmittedProgressTime = 0;
 
         // Custom window event listeners for theme controls
-        const handleThemeSkip = () => {
+        themeSkipListener = () => {
           customOffset += 1;
+          emitThemeUpdate(performance.now(), true);
         };
-        const handleThemeToggle = () => {
+        themeToggleListener = () => {
           isPaused = !isPaused;
+          emitThemeUpdate(performance.now(), false);
         };
-        window.addEventListener("radiance:theme-next", handleThemeSkip);
-        window.addEventListener("radiance:theme-toggle-pause", handleThemeToggle);
+        window.addEventListener("radiance:theme-next", themeSkipListener);
+        window.addEventListener("radiance:theme-toggle-pause", themeToggleListener);
+
+        // WebGL context loss handling
+        contextLostListener = (e: Event) => {
+          e.preventDefault();
+          if (animId !== null) {
+            cancelAnimationFrame(animId);
+            animId = null;
+          }
+        };
+        contextRestoredListener = () => {
+          if (!isDisposed) {
+            initStarfield();
+          }
+        };
+        canvas.addEventListener("webglcontextlost", contextLostListener, false);
+        canvas.addEventListener("webglcontextrestored", contextRestoredListener, false);
 
         let t0 = performance.now() / 1000;
         const appearStart = performance.now();
         let uDrift = 0;
-        let lastEmittedSec = -1;
+
+        function emitThemeUpdate(nowMs: number, forceDom: boolean) {
+          const totalTime = pauseTimeAccumulator + customOffset * FADE_PERIOD;
+          const totalCycleDuration = PREPARED_THEMES.length * FADE_PERIOD;
+          const normalizedTime = ((totalTime % totalCycleDuration) + totalCycleDuration) % totalCycleDuration;
+          const cycleProgress = normalizedTime / FADE_PERIOD;
+          const currentIdx = Math.floor(cycleProgress) % PREPARED_THEMES.length;
+          const nextIdx = (currentIdx + 1) % PREPARED_THEMES.length;
+          const localProgress = cycleProgress - Math.floor(cycleProgress);
+          const timeLeft = Math.max(1, Math.ceil(FADE_PERIOD * (1 - localProgress)));
+
+          const themeA = PREPARED_THEMES[currentIdx];
+          const themeB = PREPARED_THEMES[nextIdx];
+
+          if (forceDom) {
+            const root = document.documentElement;
+            root.style.setProperty("--theme-accent", themeA.accent);
+            root.style.setProperty("--theme-accent-next", themeB.accent);
+          }
+
+          window.dispatchEvent(
+            new CustomEvent("radiance:theme-update", {
+              detail: {
+                current: themeA,
+                next: themeB,
+                progress: localProgress,
+                timeLeft,
+                isPaused,
+              },
+            })
+          );
+        }
 
         function renderFrame() {
           if (isDisposed) return;
@@ -460,38 +531,47 @@ export function WebGLStarfield() {
             pauseTimeAccumulator += dt;
           }
 
-          // 45-Second Continuous Theme Cross-Fade
+          // 8-Second Continuous Theme Cross-Fade
           const totalTime = pauseTimeAccumulator + customOffset * FADE_PERIOD;
-          const cycleProgress = (totalTime % (PREPARED_THEMES.length * FADE_PERIOD)) / FADE_PERIOD;
+          const totalCycleDuration = PREPARED_THEMES.length * FADE_PERIOD;
+          const normalizedTime = ((totalTime % totalCycleDuration) + totalCycleDuration) % totalCycleDuration;
+          const cycleProgress = normalizedTime / FADE_PERIOD;
           const currentIdx = Math.floor(cycleProgress) % PREPARED_THEMES.length;
           const nextIdx = (currentIdx + 1) % PREPARED_THEMES.length;
           const localProgress = cycleProgress - Math.floor(cycleProgress);
 
-          // Smooth sinusoidal S-curve interpolation
+          // Ultra-smooth sinusoidal S-curve interpolation
           const blend = 0.5 - 0.5 * Math.cos(localProgress * Math.PI);
 
           const themeA = PREPARED_THEMES[currentIdx];
           const themeB = PREPARED_THEMES[nextIdx];
 
-          starMaterial.uniforms.uColorA.value.lerpVectors(themeA.colorAVec, themeB.colorAVec, blend);
-          starMaterial.uniforms.uColorB.value.lerpVectors(themeA.colorBVec, themeB.colorBVec, blend);
-          starMaterial.uniforms.uColorC.value.lerpVectors(themeA.colorCVec, themeB.colorCVec, blend);
+          if (starMaterial) {
+            starMaterial.uniforms.uColorA.value.lerpVectors(themeA.colorAVec, themeB.colorAVec, blend);
+            starMaterial.uniforms.uColorB.value.lerpVectors(themeA.colorBVec, themeB.colorBVec, blend);
+            starMaterial.uniforms.uColorC.value.lerpVectors(themeA.colorCVec, themeB.colorCVec, blend);
+          }
 
           finalPass.uniforms.uBg.value.lerpVectors(themeA.bgVec, themeB.bgVec, blend);
           finalPass.uniforms.uFlameA.value.lerpVectors(themeA.flameAVec, themeB.flameAVec, blend);
           finalPass.uniforms.uFlameB.value.lerpVectors(themeA.flameBVec, themeB.flameBVec, blend);
 
-          // Emit theme change state to DOM and CustomEvents once per second
+          // Emit theme change state to DOM and CustomEvents smoothly
           const currentSec = Math.floor(t);
-          if (currentSec !== lastEmittedSec) {
+          const shouldEmitSecond = currentSec !== lastEmittedSec;
+          const shouldEmitProgress = now - lastEmittedProgressTime >= 50; // 20Hz update for smooth HUD progress bar
+
+          if (shouldEmitSecond || shouldEmitProgress) {
+            lastEmittedProgressTime = now;
             lastEmittedSec = currentSec;
-            const timeLeft = Math.max(0, Math.ceil(FADE_PERIOD * (1 - localProgress)));
-            
-            // Gracefully update DOM root CSS variable so website components glow in harmony
-            const root = document.documentElement;
-            root.style.setProperty("--theme-accent", themeA.accent);
-            root.style.setProperty("--theme-accent-next", themeB.accent);
-            
+            const timeLeft = Math.max(1, Math.ceil(FADE_PERIOD * (1 - localProgress)));
+
+            if (shouldEmitSecond) {
+              const root = document.documentElement;
+              root.style.setProperty("--theme-accent", themeA.accent);
+              root.style.setProperty("--theme-accent-next", themeB.accent);
+            }
+
             window.dispatchEvent(
               new CustomEvent("radiance:theme-update", {
                 detail: {
@@ -525,8 +605,10 @@ export function WebGLStarfield() {
           const want = active && idleSec < 3 ? 1 : 0;
           POINTER.activity += (want - POINTER.activity) * 0.06;
 
-          starMaterial.uniforms.uCursor.value.copy(POINTER.world);
-          starMaterial.uniforms.uActivity.value = POINTER.activity;
+          if (starMaterial) {
+            starMaterial.uniforms.uCursor.value.copy(POINTER.world);
+            starMaterial.uniforms.uActivity.value = POINTER.activity;
+          }
 
           // Double-Damped Scroll Smoothing
           scrollSmooth += (scrollTarget - scrollSmooth) * 0.1;
@@ -537,9 +619,11 @@ export function WebGLStarfield() {
           const scroll = scrollCurrent;
           const m = mouseSmooth;
 
-          starMaterial.uniforms.uTime.value = t;
-          uDrift += dt * (CONFIG.drift + scroll * CONFIG.scrollDrift);
-          starMaterial.uniforms.uDrift.value = uDrift;
+          if (starMaterial) {
+            starMaterial.uniforms.uTime.value = t;
+            uDrift += dt * (CONFIG.drift + scroll * CONFIG.scrollDrift);
+            starMaterial.uniforms.uDrift.value = uDrift;
+          }
 
           camera.position.set(m.x * CONFIG.parallax, m.y * CONFIG.parallax, 5 - scroll * CONFIG.scrollPush);
           camera.lookAt(m.x * CONFIG.parallax, m.y * CONFIG.parallax, -10);
@@ -547,7 +631,9 @@ export function WebGLStarfield() {
           // Appear Fade-In (immediate baseline visibility)
           const elapsed = now - appearStart;
           const fade = Math.min(Math.max(elapsed / 600, 0), 1);
-          starMaterial.uniforms.uOpacity.value = Math.max(0.75, fade) * CONFIG.opacity;
+          if (starMaterial) {
+            starMaterial.uniforms.uOpacity.value = Math.max(0.75, fade) * CONFIG.opacity;
+          }
 
           group.rotation.z += dt * (CONFIG.spin + scroll * CONFIG.scrollSpin);
 
@@ -570,24 +656,31 @@ export function WebGLStarfield() {
         renderFrame();
 
         resizeListener = () => {
-          const w = window.innerWidth;
-          const h = window.innerHeight;
-          renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+          if (!renderer || isDisposed) return;
+          const w = Math.max(window.innerWidth, 1);
+          const h = Math.max(window.innerHeight, 1);
+          const currentDpr = Math.min(Math.max(window.devicePixelRatio || 1, 1), 2);
+
+          renderer.setPixelRatio(currentDpr);
           renderer.setSize(w, h);
           camera.aspect = w / h;
           camera.updateProjectionMatrix();
 
-          torusComposer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+          torusComposer.setPixelRatio(currentDpr);
           torusComposer.setSize(w, h);
-          bloomComposer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+          torusBloomPass.resolution.set(w, h);
+
+          bloomComposer.setPixelRatio(currentDpr);
           bloomComposer.setSize(w, h);
-          finalComposer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+          bloomPass.resolution.set(w, h);
+
+          finalComposer.setPixelRatio(currentDpr);
           finalComposer.setSize(w, h);
 
           const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
           scrollTarget = maxScroll > 0 ? Math.min(Math.max(window.scrollY / maxScroll, 0), 1) : 0;
         };
-        window.addEventListener("resize", resizeListener);
+        window.addEventListener("resize", resizeListener, { passive: true });
       } catch (err) {
         console.warn("[Radiance Starfield] Initialization fallback:", err);
       }
@@ -597,11 +690,20 @@ export function WebGLStarfield() {
 
     return () => {
       isDisposed = true;
-      if (animId) cancelAnimationFrame(animId);
+      if (animId !== null) cancelAnimationFrame(animId);
       if (resizeListener) window.removeEventListener("resize", resizeListener);
       if (scrollListener) window.removeEventListener("scroll", scrollListener);
       if (mouseMoveListener) window.removeEventListener("mousemove", mouseMoveListener);
       if (mouseOutListener) window.removeEventListener("mouseout", mouseOutListener);
+      if (themeSkipListener) window.removeEventListener("radiance:theme-next", themeSkipListener);
+      if (themeToggleListener) window.removeEventListener("radiance:theme-toggle-pause", themeToggleListener);
+      if (contextLostListener && canvas) canvas.removeEventListener("webglcontextlost", contextLostListener);
+      if (contextRestoredListener && canvas) canvas.removeEventListener("webglcontextrestored", contextRestoredListener);
+
+      if (geometry) geometry.dispose();
+      if (starMaterial) starMaterial.dispose();
+      if (dummyHalo) dummyHalo.dispose();
+      if (renderer) renderer.dispose();
     };
   }, []);
 
@@ -619,6 +721,7 @@ export function WebGLStarfield() {
         display: "block",
         zIndex: 0,
         pointerEvents: "none",
+        backgroundColor: "#0a0a24",
       }}
     />
   );

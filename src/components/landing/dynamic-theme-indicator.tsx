@@ -15,7 +15,7 @@ export function DynamicThemeIndicator() {
     current: CHATBOT_STARFIELD_THEMES[0],
     next: CHATBOT_STARFIELD_THEMES[1],
     progress: 0,
-    timeLeft: 45,
+    timeLeft: 8,
     isPaused: false,
   });
 
@@ -52,7 +52,7 @@ export function DynamicThemeIndicator() {
     <div 
       className="fixed bottom-6 right-6 z-40 hidden sm:flex items-center gap-3 px-3.5 py-2 rounded-full bg-[#0a0f24]/85 border border-white/12 shadow-[0_12px_32px_rgba(0,0,0,0.6)] backdrop-blur-xl text-xs text-slate-300 pointer-events-auto transition-all hover:border-white/25"
       role="region"
-      aria-label="Dynamic 45-second background theme controller"
+      aria-label="Dynamic 8-second background theme controller"
     >
       <div className="flex items-center gap-2">
         <span 
@@ -69,20 +69,30 @@ export function DynamicThemeIndicator() {
         </span>
       </div>
 
-      <span className="text-slate-500 font-mono">→</span>
+      <span className="text-slate-500 font-mono" aria-hidden="true">→</span>
 
       <span className="text-slate-400 font-medium hidden md:inline">
         {themeState.next.name}
       </span>
 
       <div className="flex items-center gap-2 pl-1 border-l border-white/10">
-        <span className="font-mono text-[11px] text-cyan-300 bg-cyan-950/60 px-1.5 py-0.5 rounded border border-cyan-800/40">
+        <span 
+          className="font-mono text-[11px] text-cyan-300 bg-cyan-950/60 px-1.5 py-0.5 rounded border border-cyan-800/40 tabular-nums min-w-[24px] text-center"
+          aria-label={`${themeState.timeLeft} seconds remaining in theme`}
+        >
           {themeState.timeLeft}s
         </span>
 
-        <div className="w-10 h-1.5 bg-white/10 rounded-full overflow-hidden relative">
+        <div 
+          className="w-12 h-1.5 bg-white/10 rounded-full overflow-hidden relative"
+          role="progressbar"
+          aria-valuenow={Math.round(themeState.progress * 100)}
+          aria-valuemin={0}
+          aria-valuemax={100}
+          aria-label="Theme transition progress"
+        >
           <div 
-            className="h-full rounded-full transition-all duration-300"
+            className="h-full rounded-full transition-all duration-100 ease-linear"
             style={{ 
               width: `${Math.round(themeState.progress * 100)}%`,
               backgroundColor: themeState.current.accent 
@@ -93,7 +103,7 @@ export function DynamicThemeIndicator() {
         <button
           type="button"
           onClick={handleNext}
-          className="p-1 rounded hover:bg-white/10 text-slate-400 hover:text-white transition-colors"
+          className="p-1 rounded hover:bg-white/10 text-slate-400 hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400"
           title="Jump to next chatbot theme"
           aria-label="Next theme"
         >
@@ -103,8 +113,8 @@ export function DynamicThemeIndicator() {
         <button
           type="button"
           onClick={handleTogglePause}
-          className="p-1 rounded hover:bg-white/10 text-slate-400 hover:text-white transition-colors"
-          title={themeState.isPaused ? "Resume 45s fade" : "Pause 45s fade"}
+          className="p-1 rounded hover:bg-white/10 text-slate-400 hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400"
+          title={themeState.isPaused ? "Resume 8s fade" : "Pause 8s fade"}
           aria-label={themeState.isPaused ? "Resume theme cycle" : "Pause theme cycle"}
         >
           {themeState.isPaused ? (

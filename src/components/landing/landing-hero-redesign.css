@@ -31,20 +31,11 @@
   min-height: min(740px, calc(100dvh - 72px));
   padding: clamp(54px, 7vw, 88px) max(28px, calc((100vw - 1224px) / 2)) clamp(58px, 7vw, 92px);
   overflow: hidden;
-  background:
-    radial-gradient(ellipse at 88% 17%, rgb(192 227 255 / 82%), transparent 34%),
-    radial-gradient(ellipse at 74% 76%, rgb(197 244 238 / 78%), transparent 34%),
-    radial-gradient(ellipse at 98% 60%, rgb(255 218 212 / 58%), transparent 27%),
-    radial-gradient(ellipse at 55% 17%, rgb(224 213 255 / 42%), transparent 31%),
-    var(--landing-hero-paper);
+  background: transparent;
   color: var(--landing-hero-ink);
 }
 .landing-root .landing-hero-redesign::before {
-  top: auto;
-  right: -4%;
-  bottom: -34%;
-  width: min(58vw, 760px);
-  background: radial-gradient(circle, rgb(211 190 235 / 44%), transparent 68%);
+  display: none;
 }
 .landing-root .landing-hero-redesign .landing-hero-copy { max-width: 590px; }
 .landing-root .hero-eyebrow {

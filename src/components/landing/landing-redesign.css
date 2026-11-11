@@ -46,7 +46,7 @@
   overflow-x: clip;
   overflow-y: visible;
   overscroll-behavior-y: auto;
-  background: #020409;
+  background: transparent;
   color: #ffffff;
   color-scheme: dark;
   font-family: var(--font-sans), "Plus Jakarta Sans", sans-serif;

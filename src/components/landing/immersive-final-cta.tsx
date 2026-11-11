@@ -68,12 +68,6 @@ export function ImmersiveFinalCta() {
           Plaintext local storage · Context sharing starts disabled · Direct LLM reasoning
         </p>
       </div>
-
-      {/* Atmospheric Aurora Accent */}
-      <div 
-        className="absolute inset-0 pointer-events-none opacity-40 mix-blend-screen bg-gradient-to-t from-cyan-500/10 via-transparent to-violet-500/10" 
-        aria-hidden="true" 
-      />
     </section>
   );
 }

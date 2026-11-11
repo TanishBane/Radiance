@@ -13,7 +13,7 @@
   overflow-x: clip;
   overflow-y: visible;
   overscroll-behavior-y: auto;
-  background: var(--void);
+  background: transparent;
   color: var(--landing-ink);
   scrollbar-gutter: stable;
   scrollbar-color: color-mix(in srgb, var(--accent) 38%, var(--deep)) var(--void);
@@ -295,7 +295,14 @@
 .landing-feature-copy .landing-mark { display: none; }
 .landing-feature .landing-panel { padding: 0; border: 0; color: var(--landing-quiet); }
 
-.landing-preview { border-top: 1px solid var(--landing-hairline); border-bottom: 1px solid var(--landing-hairline); background: color-mix(in srgb, var(--deep) 48%, var(--void)); }
+.landing-preview {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+  background: rgba(8, 12, 28, 0.45);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  overflow: hidden;
+}
 .landing-preview-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 16px 0; border-bottom: 1px solid var(--landing-hairline); }
 .landing-preview-steps { display: flex; flex-wrap: wrap; gap: 4px; }
 .landing-preview-steps button {

@@ -9,16 +9,7 @@
   padding: clamp(48px, 7vw, 88px) 0 68px;
 }
 .landing-root .landing-hero-showcase::before {
-  position: absolute;
-  z-index: -1;
-  top: 6%;
-  right: -9%;
-  width: min(58vw, 740px);
-  aspect-ratio: 1;
-  border-radius: 50%;
-  background: radial-gradient(circle, color-mix(in srgb, var(--accent) 15%, transparent), transparent 68%);
-  content: "";
-  pointer-events: none;
+  display: none;
 }
 .landing-root .landing-hero-copy { position: relative; z-index: 1; max-width: 620px; margin: 0; }
 .landing-root .landing-hero-copy .landing-display { max-width: 13ch; font-size: clamp(3.1rem, 5vw, 4.25rem); }
@@ -34,11 +25,12 @@
   margin: 0 -6% 0 0;
   padding: 0;
   overflow: hidden;
-  border: 1px solid color-mix(in srgb, var(--accent) 24%, var(--border));
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 18px;
-  background: color-mix(in srgb, var(--surface) 86%, transparent);
-  box-shadow: 0 30px 90px color-mix(in srgb, #000 38%, transparent), 0 0 70px color-mix(in srgb, var(--accent) 8%, transparent);
-  backdrop-filter: blur(20px);
+  background: rgba(8, 12, 28, 0.45);
+  box-shadow: 0 30px 90px color-mix(in srgb, #000 38%, transparent);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }
 .landing-root .landing-conversation { position: relative; display: flex; flex-direction: column; justify-content: center; min-width: 0; padding: 36px clamp(22px, 3vw, 38px) 50px; }
 .landing-root .landing-chat-label { position: absolute; top: 10px; left: 58px; color: var(--landing-quiet); font-size: .67rem; letter-spacing: .02em; }
