@@ -3,11 +3,11 @@ import { withSentryConfig } from "@sentry/nextjs/config";
 
 const cspHeader = [
   "default-src 'self'",
-  "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://va.vercel-scripts.com",
+  "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://va.vercel-scripts.com https://www.ascii-magic.com",
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' blob: data: https://image.pollinations.ai",
   "font-src 'self' data:",
-  "connect-src 'self' https://*.supabase.co https://*.upstash.io https://api.groq.com https://generativelanguage.googleapis.com https://openrouter.ai https://image.pollinations.ai https://*.sentry.io https://*.ingest.sentry.io https://*.ingest.us.sentry.io https://va.vercel-scripts.com https://vitals.vercel-insights.com",
+  "connect-src 'self' https://*.supabase.co https://*.upstash.io https://api.groq.com https://generativelanguage.googleapis.com https://openrouter.ai https://image.pollinations.ai https://*.sentry.io https://*.ingest.sentry.io https://*.ingest.us.sentry.io https://va.vercel-scripts.com https://vitals.vercel-insights.com https://www.ascii-magic.com",
   "frame-ancestors 'none'",
   "base-uri 'self'",
   "form-action 'self'",

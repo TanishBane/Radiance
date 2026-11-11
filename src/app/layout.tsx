@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import Script from "next/script";
 import { Cormorant_Garamond } from "next/font/google";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
@@ -149,6 +150,12 @@ export default function RootLayout({
         {children}
         <Analytics />
         <SpeedInsights />
+        {/* ASCII Magic Web Component Loader - Loads once per app on the client */}
+        <Script
+          type="module"
+          src="https://www.ascii-magic.com/ascii/ascii.js"
+          strategy="afterInteractive"
+        />
       </body>
     </html>
   );

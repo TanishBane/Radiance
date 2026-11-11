@@ -148,4 +148,24 @@ test.describe("Visual Quality Inspection & Multi-Viewport Screenshot Capture", (
       });
     });
   }
+
+  test("capture 404 page with starry-ridge ascii art", async ({ page }) => {
+    page.on("console", (msg) => console.log("E2E CONSOLE:", msg.type(), msg.text()));
+    page.on("pageerror", (err) => console.log("E2E PAGEERROR:", err.message));
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto("/non-existent-route-for-404-test");
+    await page.waitForTimeout(3000);
+
+    const artOuter = await page.evaluate(() => document.querySelector("ascii-art")?.outerHTML);
+    const shadowInner = await page.evaluate(() => document.querySelector("ascii-art")?.shadowRoot?.innerHTML);
+    const scriptSrcs = await page.evaluate(() => Array.from(document.querySelectorAll("script")).map((s) => s.src || s.type));
+    console.log("E2E SCRIPT TAGS:", scriptSrcs);
+    console.log("E2E ASCII-ART OUTER:", artOuter);
+    console.log("E2E SHADOW INNER:", shadowInner);
+
+    await page.screenshot({
+      path: path.join(outDir, "desktop-1440-not-found-starry-ridge.png"),
+      fullPage: false,
+    });
+  });
 });
