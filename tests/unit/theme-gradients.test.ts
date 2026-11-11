@@ -4,8 +4,8 @@ import { COLOR_THEMES, ATMOSPHERE_ENGINES } from "@/lib/types/theme";
 describe("Theme Gradients Configuration & Mathematical Invariants", () => {
   const themes = Object.values(COLOR_THEMES);
 
-  it("should define exactly 28 atmospheric themes across 5 categories", () => {
-    expect(themes.length).toBe(28);
+  it("should define exactly 29 atmospheric themes across 5 categories", () => {
+    expect(themes.length).toBe(29);
 
     const categories = new Set(themes.map((t) => t.category));
     expect(categories.has("signature")).toBe(true);
@@ -15,11 +15,11 @@ describe("Theme Gradients Configuration & Mathematical Invariants", () => {
     expect(categories.has("cosmic")).toBe(true);
   });
 
-  it("should define exactly 12 unique atmosphere engines", () => {
-    expect(ATMOSPHERE_ENGINES.length).toBe(12);
+  it("should define exactly 13 unique atmosphere engines", () => {
+    expect(ATMOSPHERE_ENGINES.length).toBe(13);
     const engineIds = new Set(ATMOSPHERE_ENGINES.map((e) => e.id));
     const engineIdStrings = engineIds as Set<string>;
-    expect(engineIds.size).toBe(12);
+    expect(engineIds.size).toBe(13);
 
     // Engines list with Cinematic Atmosphere removed and replaced with Silk Ribbons (ribbon waves engine)
     expect(engineIdStrings.has("ambient-spotlight")).toBe(false);
@@ -55,6 +55,7 @@ describe("Theme Gradients Configuration & Mathematical Invariants", () => {
     expect(engineIdStrings.has("neural-lattice")).toBe(false);
 
     expect(engineIds.has("bokeh-blur")).toBe(true);
+    expect(engineIds.has("star-chase")).toBe(true);
   });
 
   it("should provide exactly 6 bloom colors and 4 ribbon colors for every theme", () => {

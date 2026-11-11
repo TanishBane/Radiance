@@ -20,14 +20,15 @@ describe("Dynamic Color Theme Changing System", () => {
   });
 
   describe("Theme Pool & Invariants", () => {
-    it("provides all 28 registered color themes in candidate pool", () => {
+    it("provides all 29 registered color themes in candidate pool", () => {
       const available = getAvailableThemeIds();
-      expect(available.length).toBe(28);
+      expect(available.length).toBe(29);
       expect(available).toContain("violet");
       expect(available).toContain("emerald");
       expect(available).toContain("crimson");
       expect(available).toContain("ocean");
       expect(available).toContain("cyberpunk");
+      expect(available).toContain("star-chase");
     });
   });
 

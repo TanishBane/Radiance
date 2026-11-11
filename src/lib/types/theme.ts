@@ -31,7 +31,8 @@ export type GradientStyle =
   | "silk-ribbons"
   | "radial-pulse"
   | "solar-corona"
-  | "bokeh-blur";
+  | "bokeh-blur"
+  | "star-chase";
 
 export const COLOR_THEMES: Record<string, ColorTheme> = {
   // ══ 1. SIGNATURE & ATMOSPHERIC ══
@@ -547,6 +548,24 @@ export const COLOR_THEMES: Record<string, ColorTheme> = {
     ribbonColors: ["#170410", "#9d174d", "#ec4899", "#fef9c3"],
     ribbonAngle: 155,
   },
+  "star-chase": {
+    id: "star-chase",
+    label: "Starry Ridge",
+    category: "cosmic",
+    swatchGradient: "linear-gradient(135deg, #1f0438, #8c309b, #ffedce)",
+    accent: "#d789d5",
+    accentD: "rgba(215,137,213,0.12)",
+    accentG: "rgba(215,137,213,0.25)",
+    accentB: "#ffedce",
+    accentC: "#a441a5",
+    textGradient: "linear-gradient(135deg, #ffedce 0%, #d789d5 50%, #a441a5 100%)",
+    userBg: "rgba(215,137,213,0.06)",
+    userBorder: "rgba(215,137,213,0.18)",
+    bgGradient: "linear-gradient(135deg, #040011 0%, #130227 45%, #2a0b4b 100%)",
+    bloomColors: ["#040011", "#130227", "#782796", "#2a0b4b", "#d789d5", "#ffedce"],
+    ribbonColors: ["#040011", "#330c55", "#8c309b", "#ffedce"],
+    ribbonAngle: 155,
+  },
 };
 
 export type ThemeId = string;
@@ -644,5 +663,12 @@ export const ATMOSPHERE_ENGINES: AtmosphereEngineInfo[] = [
     tag: "Optical",
     description: "Soft out-of-focus luminous optical circles drifting with layered focal depth.",
     iconName: "Eye",
+  },
+  {
+    id: "star-chase",
+    label: "Star Chase",
+    tag: "Celestial",
+    description: "Starry Ridge Milky Way with diagonal shooting stars chasing across violet mountain ridges.",
+    iconName: "Sparkles",
   },
 ];

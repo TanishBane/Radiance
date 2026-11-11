@@ -33,6 +33,7 @@ const CANVAS_ENGINES: GradientStyle[] = [
   "radial-pulse",
   "solar-corona",
   "bokeh-blur",
+  "star-chase",
 ];
 
 export function AtmosphereCanvasEngine({ theme, engine }: AtmosphereCanvasEngineProps) {
@@ -708,6 +709,148 @@ export function AtmosphereCanvasEngine({ theme, engine }: AtmosphereCanvasEngine
       });
     };
 
+    // ═════════════════════════════════════════════════════════════════════════
+    // ── 11. STAR CHASE: Starry Ridge Milky Way with Chasing Diagonal Meteors
+    // ═════════════════════════════════════════════════════════════════════════
+    interface StarChaseMeteor {
+      x: number;
+      y: number;
+      speed: number;
+      length: number;
+      size: number;
+      alpha: number;
+    }
+
+    const starChaseAngle = (215 * Math.PI) / 180;
+    const cosSC = Math.cos(starChaseAngle);
+    const sinSC = Math.sin(starChaseAngle);
+
+    const starChaseMeteors: StarChaseMeteor[] = Array.from({ length: 8 }, () => ({
+      x: Math.random() * (width + 400) + 100,
+      y: Math.random() * (height * 0.55),
+      speed: Math.random() * 6 + 6,
+      length: Math.random() * 110 + 80,
+      size: Math.random() * 1.8 + 1.2,
+      alpha: Math.random() * 0.5 + 0.5,
+    }));
+
+    const starRidgeStars = Array.from({ length: 72 }, () => ({
+      x: Math.random() * width,
+      y: Math.random() * (height * 0.82),
+      r: Math.random() * 1.4 + 0.4,
+      alpha: Math.random() * 0.6 + 0.2,
+      twinkleSpeed: Math.random() * 2.5 + 1,
+      phase: Math.random() * Math.PI * 2,
+      color: Math.random() > 0.6 ? "#ffedce" : Math.random() > 0.3 ? "#ffd3ca" : "#d789d5",
+    }));
+
+    const ridgeSteps = 36;
+    const ridgePoints: [number, number][] = [];
+    const baseRidgeY = 0.82;
+    for (let i = 0; i <= ridgeSteps; i++) {
+      const rx = i / ridgeSteps;
+      const ry =
+        baseRidgeY +
+        Math.sin(rx * 8.5) * 0.04 +
+        Math.cos(rx * 17.2 + 1.5) * 0.025 +
+        Math.sin(rx * 31.0 + 3.2) * 0.012;
+      ridgePoints.push([rx, ry]);
+    }
+
+    const drawStarChase = (t: number) => {
+      // 1. Deep celestial violet/night void wash
+      ctx.fillStyle = theme.bloomColors[0] || "#040011";
+      ctx.fillRect(0, 0, width, height);
+
+      // 2. Luminous Milky Way diagonal nebula rift
+      const nebulaGrad = ctx.createRadialGradient(
+        width * 0.45 + (smoothMouse.x - width * 0.5) * 0.03,
+        height * 0.35 + (smoothMouse.y - height * 0.5) * 0.03,
+        width * 0.1,
+        width * 0.45,
+        height * 0.35,
+        width * 0.65
+      );
+      nebulaGrad.addColorStop(0, "rgba(215, 137, 213, 0.14)");
+      nebulaGrad.addColorStop(0.35, "rgba(124, 92, 255, 0.10)");
+      nebulaGrad.addColorStop(0.7, "rgba(51, 12, 85, 0.06)");
+      nebulaGrad.addColorStop(1, "transparent");
+
+      ctx.fillStyle = nebulaGrad;
+      ctx.fillRect(0, 0, width, height * 0.85);
+
+      // 3. Quiescent twinkling celestial stars
+      starRidgeStars.forEach((s) => {
+        const twinkle = Math.sin(t * s.twinkleSpeed + s.phase) * 0.35 + 0.65;
+        const px = s.x + (smoothMouse.x - width * 0.5) * (s.r * 0.012);
+        const py = s.y + (smoothMouse.y - height * 0.5) * (s.r * 0.012);
+
+        ctx.fillStyle = s.color;
+        ctx.globalAlpha = s.alpha * twinkle;
+        ctx.beginPath();
+        ctx.arc(px, py, s.r, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.globalAlpha = 1;
+      });
+
+      // 4. Chasing diagonal meteors (Star Chase)
+      starChaseMeteors.forEach((m) => {
+        m.x += cosSC * m.speed;
+        m.y += sinSC * m.speed;
+
+        if (m.x < -150 || m.y > height * 0.8) {
+          m.x = Math.random() * (width + 300) + 150;
+          m.y = -Math.random() * 100 - 30;
+          m.speed = Math.random() * 6 + 6;
+          m.length = Math.random() * 110 + 80;
+          m.alpha = Math.random() * 0.5 + 0.5;
+        }
+
+        const tailX = m.x - cosSC * m.length;
+        const tailY = m.y - sinSC * m.length;
+
+        const trail = ctx.createLinearGradient(m.x, m.y, tailX, tailY);
+        trail.addColorStop(0, `rgba(255, 237, 206, ${m.alpha * 0.95})`);
+        trail.addColorStop(0.2, `rgba(215, 137, 213, ${m.alpha * 0.8})`);
+        trail.addColorStop(0.65, `rgba(124, 92, 255, ${m.alpha * 0.35})`);
+        trail.addColorStop(1, "transparent");
+
+        ctx.strokeStyle = trail;
+        ctx.lineWidth = m.size;
+        ctx.beginPath();
+        ctx.moveTo(m.x, m.y);
+        ctx.lineTo(tailX, tailY);
+        ctx.stroke();
+
+        ctx.fillStyle = `rgba(255, 255, 255, ${m.alpha})`;
+        ctx.beginPath();
+        ctx.arc(m.x, m.y, m.size * 1.15, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = `rgba(215, 137, 213, ${m.alpha * 0.45})`;
+        ctx.beginPath();
+        ctx.arc(m.x, m.y, m.size * 3.4, 0, Math.PI * 2);
+        ctx.fill();
+      });
+
+      // 5. Dark mountain ridge silhouette
+      ctx.beginPath();
+      ctx.moveTo(0, height);
+      ctx.lineTo(0, ridgePoints[0][1] * height);
+      for (let i = 1; i < ridgePoints.length; i++) {
+        ctx.lineTo(ridgePoints[i][0] * width, ridgePoints[i][1] * height);
+      }
+      ctx.lineTo(width, height);
+      ctx.closePath();
+
+      ctx.fillStyle = "#020008";
+      ctx.fill();
+
+      ctx.strokeStyle = "rgba(215, 137, 213, 0.22)";
+      ctx.lineWidth = 1.2;
+      ctx.stroke();
+    };
+
     if (prefersReducedMotion) {
       // Draw static first frame for accessibility
       drawSilkRibbons(0);
@@ -754,6 +897,9 @@ export function AtmosphereCanvasEngine({ theme, engine }: AtmosphereCanvasEngine
           break;
         case "bokeh-blur":
           drawBokehBlur();
+          break;
+        case "star-chase":
+          drawStarChase(t);
           break;
       }
 

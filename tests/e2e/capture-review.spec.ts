@@ -130,6 +130,17 @@ test.describe("Visual Quality Inspection & Multi-Viewport Screenshot Capture", (
         });
       }
 
+      // Scroll to Final CTA section (the point where starry-ridge fades in)
+      const startSection = page.locator("#start");
+      if ((await startSection.count()) > 0) {
+        await startSection.scrollIntoViewIfNeeded();
+        await page.waitForTimeout(600);
+        await page.screenshot({
+          path: path.join(outDir, `${vp.name}-cta-starry-section.png`),
+          fullPage: false,
+        });
+      }
+
       // Full page screenshot
       await page.screenshot({
         path: path.join(outDir, `${vp.name}-fullpage.png`),
