@@ -108,6 +108,17 @@ test.describe("Visual Quality Inspection & Multi-Viewport Screenshot Capture", (
         });
       }
 
+      // Scroll to FAQ section (the point where falling-leaves fades in)
+      const faqSection = page.locator("#faq");
+      if ((await faqSection.count()) > 0) {
+        await faqSection.scrollIntoViewIfNeeded();
+        await page.waitForTimeout(600);
+        await page.screenshot({
+          path: path.join(outDir, `${vp.name}-faq-section.png`),
+          fullPage: false,
+        });
+      }
+
       // Full page screenshot
       await page.screenshot({
         path: path.join(outDir, `${vp.name}-fullpage.png`),

@@ -46,9 +46,9 @@ describe("Balloon Valley Sunrise Engine & Dual-Atmosphere Background", () => {
     // Expect container div with fixed positioning
     expect(markup).toContain("position:fixed");
     expect(markup).toContain("background-color:#02050c");
-    // Expect 8 canvas elements (Icebergs, Balloon Valley, Moonlit Sea, Mountain Sunrise, City Skyline Night, Orbit Window Earth, Autumn Road Cyclist, Autumn Pagoda Maples)
+    // Expect 9 canvas elements (Icebergs, Balloon Valley, Moonlit Sea, Mountain Sunrise, City Skyline Night, Orbit Window Earth, Autumn Road Cyclist, Autumn Pagoda Maples, Falling Leaves)
     const canvasMatches = markup.match(/<canvas/g);
     expect(canvasMatches).not.toBeNull();
-    expect(canvasMatches?.length).toBe(8);
+    expect(canvasMatches?.length).toBe(9);
   });
 });

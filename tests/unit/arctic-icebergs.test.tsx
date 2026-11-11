@@ -107,7 +107,7 @@ describe("ASCII Art Kit & Arctic Icebergs Engine Specifications", () => {
   });
 
   describe("ArcticIcebergsBackground Component", () => {
-    it("renders server-side without crashing and outputs 8 canvas layers", () => {
+    it("renders server-side without crashing and outputs 9 canvas layers", () => {
       const markup = renderToStaticMarkup(<ArcticIcebergsBackground />);
       expect(markup).toContain("data-testid=\"canvas-icebergs\"");
       expect(markup).toContain("data-testid=\"canvas-valley\"");
@@ -117,6 +117,7 @@ describe("ASCII Art Kit & Arctic Icebergs Engine Specifications", () => {
       expect(markup).toContain("data-testid=\"canvas-earth\"");
       expect(markup).toContain("data-testid=\"canvas-cyclist\"");
       expect(markup).toContain("data-testid=\"canvas-pagoda\"");
+      expect(markup).toContain("data-testid=\"canvas-leaves\"");
       expect(markup).toContain("position:fixed");
       expect(markup).toContain("background-color:#02050c");
     });
