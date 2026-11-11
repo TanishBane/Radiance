@@ -162,7 +162,7 @@
   flex-direction: column;
   position: relative;
   padding-top: clamp(84px, 11vh, 130px);
-  background: radial-gradient(125% 62% at 50% -10%, rgba(4, 6, 15, .82) 0%, rgba(4, 6, 15, .28) 44%, transparent 68%);
+  background: radial-gradient(125% 62% at 50% -10%, rgba(4, 6, 15, .32) 0%, rgba(4, 6, 15, .10) 44%, transparent 68%);
 }
 
 .planet-nav {

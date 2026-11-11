@@ -2,7 +2,6 @@
 
 import React, { type ReactNode } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils/cn";
 
 export function LandingCta({
@@ -20,8 +19,6 @@ export function LandingCta({
   className?: string;
   style?: React.CSSProperties;
 }) {
-  const router = useRouter();
-
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     if (href.startsWith("/")) {
       e.preventDefault();

@@ -318,7 +318,7 @@ export function WebGLStarfield() {
           uniforms: {
             uTime: { value: 0 },
             uSize: { value: CONFIG.pointSize },
-            uOpacity: { value: 0 },
+            uOpacity: { value: CONFIG.opacity },
             uDrift: { value: 0 },
             uDepth: { value: 30 },
             uTwinkle: { value: CONFIG.twinkle },
@@ -353,8 +353,12 @@ export function WebGLStarfield() {
 
               vec4 viewPosition = viewMatrix * modelPosition;
               gl_Position = projectionMatrix * viewPosition;
-              gl_PointSize = uSize * aScale;
-              gl_PointSize *= (1.0 / -viewPosition.z);
+              if (viewPosition.z >= -0.1) {
+                gl_PointSize = 0.0;
+              } else {
+                float pz = -viewPosition.z;
+                gl_PointSize = clamp((uSize * aScale) / pz, 2.0, 75.0);
+              }
 
               vec3 base = aPalette < 0.5 ? uColorA : (aPalette < 1.5 ? uColorB : uColorC);
               vColor = base * aBright;
@@ -367,7 +371,7 @@ export function WebGLStarfield() {
               vec2 uv = gl_PointCoord - 0.5;
               float d = length(uv);
               if (d > 0.5) discard;
-              float strength = pow(1.0 - d * 2.0, 4.0);
+              float strength = pow(clamp(1.0 - d * 2.0, 0.0, 1.0), 2.0);
               vec3 color = mix(vec3(0.0), vColor, strength);
               gl_FragColor = vec4(color * uBrightness, strength * uOpacity * vTwinkle);
             }
@@ -540,10 +544,10 @@ export function WebGLStarfield() {
           camera.position.set(m.x * CONFIG.parallax, m.y * CONFIG.parallax, 5 - scroll * CONFIG.scrollPush);
           camera.lookAt(m.x * CONFIG.parallax, m.y * CONFIG.parallax, -10);
 
-          // Appear Fade-In
+          // Appear Fade-In (immediate baseline visibility)
           const elapsed = now - appearStart;
-          const fade = Math.min(Math.max((elapsed - 300) / 1400, 0), 1);
-          starMaterial.uniforms.uOpacity.value = fade * CONFIG.opacity;
+          const fade = Math.min(Math.max(elapsed / 600, 0), 1);
+          starMaterial.uniforms.uOpacity.value = Math.max(0.75, fade) * CONFIG.opacity;
 
           group.rotation.z += dt * (CONFIG.spin + scroll * CONFIG.scrollSpin);
 
