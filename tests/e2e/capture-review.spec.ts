@@ -53,6 +53,17 @@ test.describe("Visual Quality Inspection & Multi-Viewport Screenshot Capture", (
         });
       }
 
+      // Scroll to product preview walkthrough section (the point where mountain-sunrise fades in)
+      const previewSection = page.locator("#preview");
+      if ((await previewSection.count()) > 0) {
+        await previewSection.scrollIntoViewIfNeeded();
+        await page.waitForTimeout(600);
+        await page.screenshot({
+          path: path.join(outDir, `${vp.name}-preview-section.png`),
+          fullPage: false,
+        });
+      }
+
       // Full page screenshot
       await page.screenshot({
         path: path.join(outDir, `${vp.name}-fullpage.png`),

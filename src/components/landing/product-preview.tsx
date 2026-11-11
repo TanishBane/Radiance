@@ -50,9 +50,11 @@ export function ProductPreview() {
   return (
     <section id="preview" className="landing-section">
       <div className="landing-shell">
-        <div style={{ maxWidth: "620px" }}>
-          <h2 className="landing-section-title">A walk through the current path</h2>
-          <p className="landing-copy" style={{ marginTop: "12px" }}>
+        <div style={{ maxWidth: "640px", textShadow: "0 2px 14px rgba(6, 9, 24, 0.85)" }}>
+          <h2 className="landing-section-title" style={{ color: "#ffffff", textShadow: "0 2px 16px rgba(6, 9, 24, 0.9)" }}>
+            A walk through the current path
+          </h2>
+          <p className="landing-copy" style={{ marginTop: "12px", color: "rgba(255, 255, 255, 0.92)", textShadow: "0 2px 12px rgba(6, 9, 24, 0.85)" }}>
             This sequence uses demonstration data. It is not connected to your Personal Intelligence vault.
           </p>
         </div>

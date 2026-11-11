@@ -4,6 +4,7 @@ import React, { useEffect, useRef, useState } from "react";
 import createArcticIcebergs, { meta as icebergsMeta } from "@/lib/ascii-art/arctic-icebergs";
 import createBalloonValley, { meta as valleyMeta, LEVELS, W as VALLEY_W, H as VALLEY_H } from "@/lib/ascii-art/balloon-valley-sunrise";
 import createMoonlitSea, { meta as moonlitMeta } from "@/lib/ascii-art/moonlit-sea";
+import createMountainSunrise, { meta as mountainMeta } from "@/lib/ascii-art/mountain-sunrise";
 
 export interface ArcticIcebergsBackgroundProps {
   className?: string;
@@ -17,17 +18,21 @@ export interface ArcticIcebergsBackgroundProps {
  *    Slowly & smoothly cross-fades into Balloon Valley Sunrise (morning sun, misty mountain valleys, hot air balloons).
  * 3. Product Introduction Section ("Saved by you. Ready when it matters."):
  *    Slowly & smoothly cross-fades into Moonlit Sea (full moon, calm night ocean, breaking swell reflection, twinkling stars).
+ * 4. Product Preview Section ("A walk through the current path"):
+ *    Slowly & smoothly cross-fades into Mountain Sunrise (sun rising behind five layered mountain ranges, valley mist, drifting birds).
  */
 export function ArcticIcebergsBackground({ className }: ArcticIcebergsBackgroundProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const canvasIcebergsRef = useRef<HTMLCanvasElement | null>(null);
   const canvasValleyRef = useRef<HTMLCanvasElement | null>(null);
   const canvasMoonlitRef = useRef<HTMLCanvasElement | null>(null);
+  const canvasMountainRef = useRef<HTMLCanvasElement | null>(null);
 
   const [fadeValley, setFadeValley] = useState(0);
   const [fadeMoonlit, setFadeMoonlit] = useState(0);
+  const [fadeMountain, setFadeMountain] = useState(0);
 
-  // Scroll listener tracking the Problem Comparison and Product Introduction sections
+  // Scroll listener tracking #problem, #product, and #preview sections
   useEffect(() => {
     let ticking = false;
 
@@ -35,27 +40,34 @@ export function ArcticIcebergsBackground({ className }: ArcticIcebergsBackground
       if (!ticking) {
         window.requestAnimationFrame(() => {
           const vh = window.innerHeight;
+          const startFade = vh * 0.92;
+          const endFade = vh * 0.22;
 
           // 1. Problem Comparison Section -> Transition to Balloon Valley
           const problemEl = document.getElementById("problem");
           if (problemEl) {
             const rect = problemEl.getBoundingClientRect();
-            const startFade = vh * 0.92;
-            const endFade = vh * 0.22;
             const raw = Math.max(0, Math.min(1, (startFade - rect.top) / (startFade - endFade)));
             const smooth = raw * raw * (3 - 2 * raw);
             setFadeValley(smooth);
           }
 
-          // 2. Product Introduction Section ("Saved by you. Ready when it matters.") -> Transition to Moonlit Sea
+          // 2. Product Introduction Section ("Saved by you...") -> Transition to Moonlit Sea
           const productEl = document.getElementById("product");
           if (productEl) {
             const rect = productEl.getBoundingClientRect();
-            const startFade = vh * 0.92;
-            const endFade = vh * 0.22;
             const raw = Math.max(0, Math.min(1, (startFade - rect.top) / (startFade - endFade)));
             const smooth = raw * raw * (3 - 2 * raw);
             setFadeMoonlit(smooth);
+          }
+
+          // 3. Product Preview Section ("A walk through the current path") -> Transition to Mountain Sunrise
+          const previewEl = document.getElementById("preview");
+          if (previewEl) {
+            const rect = previewEl.getBoundingClientRect();
+            const raw = Math.max(0, Math.min(1, (startFade - rect.top) / (startFade - endFade)));
+            const smooth = raw * raw * (3 - 2 * raw);
+            setFadeMountain(smooth);
           }
 
           ticking = false;
@@ -116,7 +128,7 @@ export function ArcticIcebergsBackground({ className }: ArcticIcebergsBackground
     handleResize();
     window.addEventListener("resize", handleResize, { passive: true });
 
-    const isLayerActive = fadeValley < 0.99 && fadeMoonlit < 0.99;
+    const isLayerActive = fadeValley < 0.99 && fadeMoonlit < 0.99 && fadeMountain < 0.99;
 
     const handleVisibilityChange = () => {
       isVisible = document.visibilityState === "visible";
@@ -190,7 +202,7 @@ export function ArcticIcebergsBackground({ className }: ArcticIcebergsBackground
       window.removeEventListener("resize", handleResize);
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
-  }, [fadeValley, fadeMoonlit]);
+  }, [fadeValley, fadeMoonlit, fadeMountain]);
 
   // 2. Balloon Valley Sunrise Canvas Controller
   useEffect(() => {
@@ -235,7 +247,7 @@ export function ArcticIcebergsBackground({ className }: ArcticIcebergsBackground
     handleResize();
     window.addEventListener("resize", handleResize, { passive: true });
 
-    const isLayerActive = fadeValley > 0.01 && fadeMoonlit < 0.99;
+    const isLayerActive = fadeValley > 0.01 && fadeMoonlit < 0.99 && fadeMountain < 0.99;
 
     const handleVisibilityChange = () => {
       isVisible = document.visibilityState === "visible";
@@ -307,7 +319,7 @@ export function ArcticIcebergsBackground({ className }: ArcticIcebergsBackground
       window.removeEventListener("resize", handleResize);
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
-  }, [fadeValley, fadeMoonlit]);
+  }, [fadeValley, fadeMoonlit, fadeMountain]);
 
   // 3. Moonlit Sea Canvas Controller
   useEffect(() => {
@@ -351,7 +363,7 @@ export function ArcticIcebergsBackground({ className }: ArcticIcebergsBackground
     handleResize();
     window.addEventListener("resize", handleResize, { passive: true });
 
-    const isLayerActive = fadeMoonlit > 0.01;
+    const isLayerActive = fadeMoonlit > 0.01 && fadeMountain < 0.99;
 
     const handleVisibilityChange = () => {
       isVisible = document.visibilityState === "visible";
@@ -425,7 +437,125 @@ export function ArcticIcebergsBackground({ className }: ArcticIcebergsBackground
       window.removeEventListener("resize", handleResize);
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
-  }, [fadeMoonlit]);
+  }, [fadeMoonlit, fadeMountain]);
+
+  // 4. Mountain Sunrise Canvas Controller
+  useEffect(() => {
+    const canvas = canvasMountainRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d", { alpha: false });
+    if (!ctx) return;
+
+    let animId: number | null = null;
+    let isDisposed = false;
+    let isVisible = true;
+    let lastFrameTime = 0;
+    const targetFps = mountainMeta.fps || 20;
+    const frameInterval = 1000 / targetFps;
+
+    const renderMountain = createMountainSunrise();
+    const { cols, rows, palette } = mountainMeta;
+
+    const prefersReducedMotion =
+      typeof window !== "undefined" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    let displayWidth = window.innerWidth;
+    let displayHeight = window.innerHeight;
+
+    const handleResize = () => {
+      if (!canvas || isDisposed) return;
+      displayWidth = window.innerWidth;
+      displayHeight = window.innerHeight;
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+      canvas.width = Math.floor(displayWidth * dpr);
+      canvas.height = Math.floor(displayHeight * dpr);
+      canvas.style.width = `${displayWidth}px`;
+      canvas.style.height = `${displayHeight}px`;
+
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.scale(dpr, dpr);
+    };
+
+    handleResize();
+    window.addEventListener("resize", handleResize, { passive: true });
+
+    const isLayerActive = fadeMountain > 0.01;
+
+    const handleVisibilityChange = () => {
+      isVisible = document.visibilityState === "visible";
+      if (isVisible && !animId && isLayerActive) {
+        lastFrameTime = performance.now();
+        animId = requestAnimationFrame(renderLoop);
+      }
+    };
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    const startTime = performance.now();
+
+    const renderLoop = (now: number) => {
+      if (isDisposed) return;
+
+      if (!isVisible || !isLayerActive) {
+        animId = null;
+        return;
+      }
+
+      const elapsed = now - lastFrameTime;
+      if (elapsed >= frameInterval) {
+        lastFrameTime = now - (elapsed % frameInterval);
+
+        const t = prefersReducedMotion ? 1.0 : (now - startTime) * 0.001;
+        const frame = renderMountain(t);
+
+        // Mountain twilight sky wash
+        ctx.fillStyle = "#1b1f4d";
+        ctx.fillRect(0, 0, displayWidth, displayHeight);
+
+        const cellW = displayWidth / cols;
+        const cellH = displayHeight / rows;
+        const fontSize = Math.max(9, Math.floor(cellH * 0.92));
+
+        ctx.font = `${fontSize}px "Cascadia Code", "Fira Code", "Courier New", monospace`;
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+
+        const totalCells = cols * rows;
+        for (let idx = 0; idx < totalCells; idx++) {
+          const ch = frame.ch[idx];
+          if (!ch || ch === " ") continue;
+
+          const colorKey = frame.co[idx];
+          const colorHex = palette[colorKey] || "#ffd27f";
+
+          const x = idx % cols;
+          const y = Math.floor(idx / cols);
+
+          ctx.fillStyle = colorHex;
+          ctx.fillText(ch, (x + 0.5) * cellW, (y + 0.5) * cellH);
+        }
+
+        if (prefersReducedMotion) {
+          animId = null;
+          return;
+        }
+      }
+
+      animId = requestAnimationFrame(renderLoop);
+    };
+
+    if (isLayerActive) {
+      animId = requestAnimationFrame(renderLoop);
+    }
+
+    return () => {
+      isDisposed = true;
+      if (animId) cancelAnimationFrame(animId);
+      window.removeEventListener("resize", handleResize);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, [fadeMountain]);
 
   return (
     <div
@@ -452,7 +582,7 @@ export function ArcticIcebergsBackground({ className }: ArcticIcebergsBackground
           inset: 0,
           width: "100%",
           height: "100%",
-          opacity: Math.max(0, (1 - fadeValley) * (1 - fadeMoonlit)),
+          opacity: Math.max(0, (1 - fadeValley) * (1 - fadeMoonlit) * (1 - fadeMountain)),
           transition: "opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1)",
           willChange: "opacity",
         }}
@@ -468,7 +598,7 @@ export function ArcticIcebergsBackground({ className }: ArcticIcebergsBackground
           inset: 0,
           width: "100%",
           height: "100%",
-          opacity: Math.max(0, fadeValley * (1 - fadeMoonlit)),
+          opacity: Math.max(0, fadeValley * (1 - fadeMoonlit) * (1 - fadeMountain)),
           transition: "opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1)",
           willChange: "opacity",
         }}
@@ -484,7 +614,23 @@ export function ArcticIcebergsBackground({ className }: ArcticIcebergsBackground
           inset: 0,
           width: "100%",
           height: "100%",
-          opacity: fadeMoonlit,
+          opacity: Math.max(0, fadeMoonlit * (1 - fadeMountain)),
+          transition: "opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1)",
+          willChange: "opacity",
+        }}
+        aria-hidden="true"
+      />
+
+      {/* 4. Mountain Sunrise Layer (Cross-fades in from Product Preview Section: "A walk through the current path") */}
+      <canvas
+        ref={canvasMountainRef}
+        data-testid="canvas-mountain"
+        style={{
+          position: "absolute",
+          inset: 0,
+          width: "100%",
+          height: "100%",
+          opacity: fadeMountain,
           transition: "opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1)",
           willChange: "opacity",
         }}

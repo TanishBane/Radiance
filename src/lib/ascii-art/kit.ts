@@ -46,6 +46,11 @@ export function gradient(stops: string[], count: number): string[] {
 }
 
 /**
+ * Circle constant tau (2 * PI).
+ */
+export const TAU = Math.PI * 2;
+
+/**
  * Clamps value between min and max (defaults to 0 and 1).
  */
 export function clamp(val: number, min: number = 0, max: number = 1): number {
@@ -166,8 +171,10 @@ export class Grid {
   }
 
   set(x: number, y: number, char: string, colorKey: number | string): void {
-    if (x >= 0 && x < this.cols && y >= 0 && y < this.rows) {
-      const idx = x + y * this.cols;
+    const ix = Math.floor(x);
+    const iy = Math.floor(y);
+    if (ix >= 0 && ix < this.cols && iy >= 0 && iy < this.rows) {
+      const idx = ix + iy * this.cols;
       this.ch[idx] = char;
       this.co[idx] = typeof colorKey === "string" ? parseInt(colorKey, 36) : colorKey;
     }
