@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { motion } from "motion/react";
+import { motion, useReducedMotion } from "motion/react";
 import { 
   Sparkles, 
   BrainCircuit, 
@@ -9,6 +9,7 @@ import {
   Layers3, 
   ArrowRight
 } from "lucide-react";
+import { motionEasing } from "@/lib/motion/presets";
 import "./privacy-and-vision.css";
 
 const HORIZONS = [
@@ -33,6 +34,8 @@ const HORIZONS = [
 ];
 
 export function FutureVisionStory() {
+  const shouldReduceMotion = useReducedMotion();
+
   return (
     <section 
       id="vision"
@@ -42,10 +45,10 @@ export function FutureVisionStory() {
       <div className="vision-shell">
         <motion.div 
           className="vision-header"
-          initial={{ opacity: 0, y: 24 }}
+          initial={shouldReduceMotion ? false : { opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.2 }}
-          transition={{ duration: 0.6 }}
+          transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.6, ease: motionEasing.entrance }}
         >
           <span className="sr-only">Future Architectural Horizon</span>
           <h2 id="vision-heading" className="vision-title">
@@ -63,10 +66,10 @@ export function FutureVisionStory() {
             <motion.div
               key={item.title}
               className="vision-card"
-              initial={{ opacity: 0, y: 24 }}
+              initial={shouldReduceMotion ? false : { opacity: 0, y: 24 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.2 }}
-              transition={{ duration: 0.5, delay: idx * 0.12 }}
+              transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.5, delay: idx * 0.12, ease: motionEasing.entrance }}
             >
               <div className="flex items-center justify-between">
                 <span className="vision-badge">{item.badge}</span>

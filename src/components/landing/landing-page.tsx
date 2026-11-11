@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect } from "react";
+import dynamic from "next/dynamic";
 import "./landing.css";
 import "./landing-hero.css";
 import "./landing-story.css";
@@ -17,7 +18,6 @@ import "./context-pipeline.css";
 import "./privacy-and-vision.css";
 import "./ascend-planet-landing.css";
 
-import { WebGLStarfield } from "./webgl-starfield";
 import { DynamicThemeIndicator } from "./dynamic-theme-indicator";
 import { LandingNav } from "./landing-nav";
 import { HeroLandscape } from "./hero-landscape";
@@ -32,6 +32,11 @@ import { LandingFaq } from "./landing-faq";
 import { FutureVisionStory } from "./future-vision-story";
 import { ImmersiveFinalCta } from "./immersive-final-cta";
 import { LandingFooter } from "./landing-footer";
+
+const WebGLStarfield = dynamic(
+  () => import("./webgl-starfield").then((module) => module.WebGLStarfield),
+  { ssr: false }
+);
 
 export function LandingPage() {
   useEffect(() => {
@@ -53,9 +58,8 @@ export function LandingPage() {
         { threshold: 0.18, rootMargin: "0px 0px -8% 0px" }
       );
       reveals.forEach((el) => observer.observe(el));
+      return () => observer.disconnect();
     }
-
-
   }, []);
 
   return (

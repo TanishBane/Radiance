@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { motion } from "motion/react";
+import { motion, useReducedMotion } from "motion/react";
 import { 
   FileText, 
   Sliders, 
@@ -10,6 +10,7 @@ import {
   Sparkles,
   ArrowRight
 } from "lucide-react";
+import { motionEasing } from "@/lib/motion/presets";
 import "./personal-intelligence-story.css";
 
 const PILLARS = [
@@ -44,6 +45,8 @@ const PILLARS = [
 ];
 
 export function PersonalIntelligenceStory() {
+  const shouldReduceMotion = useReducedMotion();
+
   return (
     <section 
       id="intelligence"
@@ -53,10 +56,10 @@ export function PersonalIntelligenceStory() {
       <div className="intelligence-story-shell">
         <motion.div 
           className="intelligence-story-header"
-          initial={{ opacity: 0, y: 24 }}
+          initial={shouldReduceMotion ? false : { opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.2 }}
-          transition={{ duration: 0.6 }}
+          transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.6, ease: motionEasing.entrance }}
         >
           <h2 id="intelligence-story-title" className="intelligence-story-title">
             An AI experience shaped around your context.
@@ -73,10 +76,10 @@ export function PersonalIntelligenceStory() {
             <motion.div
               key={pillar.id}
               className="intelligence-pillar-card"
-              initial={{ opacity: 0, y: 24 }}
+              initial={shouldReduceMotion ? false : { opacity: 0, y: 24 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.2 }}
-              transition={{ duration: 0.5, delay: idx * 0.1 }}
+              transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.5, delay: idx * 0.1, ease: motionEasing.entrance }}
             >
               <div 
                 className="intelligence-pillar-icon"

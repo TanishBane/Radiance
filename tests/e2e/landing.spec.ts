@@ -150,6 +150,17 @@ test.describe("Radiance landing page", () => {
     await expect(page.getByRole("dialog", { name: "Menu" })).toHaveCSS("animation-name", "none");
   });
 
+  test("reduced motion keeps the product walkthrough operable", async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await page.goto("/");
+
+    const step = page.getByRole("button", { name: "Ask later" });
+    await step.click();
+
+    await expect(step).toHaveAttribute("aria-pressed", "true");
+    await expect(page.getByRole("heading", { name: "A later question retrieves overlap" })).toBeVisible();
+  });
+
   test("mobile menu uses its short entrance transition", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/");

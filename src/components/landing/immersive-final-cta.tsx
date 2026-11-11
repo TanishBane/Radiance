@@ -1,11 +1,14 @@
 "use client";
 
 import React from "react";
-import { motion } from "motion/react";
+import { motion, useReducedMotion } from "motion/react";
 import { ArrowUpRight, Sparkles } from "lucide-react";
+import { motionEasing } from "@/lib/motion/presets";
 import "./landing-atmosphere.css";
 
 export function ImmersiveFinalCta() {
+  const shouldReduceMotion = useReducedMotion();
+
   return (
     <section 
       id="start"
@@ -16,10 +19,10 @@ export function ImmersiveFinalCta() {
         {/* Luminous Logo Badge */}
         <motion.div
           className="mb-8"
-          initial={{ opacity: 0, scale: 0.8 }}
+          initial={shouldReduceMotion ? false : { opacity: 0, scale: 0.8 }}
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
+          transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.5, ease: motionEasing.entrance }}
         >
           <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-cyan-500/20 to-violet-500/20 border border-cyan-400/40 shadow-[0_0_32px_rgba(6,182,212,0.3)] flex items-center justify-center">
             <span className="font-sans font-extrabold text-2xl bg-gradient-to-br from-cyan-300 via-white to-violet-400 bg-clip-text text-transparent">
@@ -31,29 +34,29 @@ export function ImmersiveFinalCta() {
         <motion.h2 
           id="final-cta-heading" 
           className="font-sans text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight text-white mb-6"
-          initial={{ opacity: 0, y: 20 }}
+          initial={shouldReduceMotion ? false : { opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
+          transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.6, ease: motionEasing.entrance }}
         >
           Your next conversation can feel different.
         </motion.h2>
 
         <motion.p 
           className="text-lg sm:text-xl text-slate-300 max-w-2xl mb-10 leading-relaxed"
-          initial={{ opacity: 0, y: 20 }}
+          initial={shouldReduceMotion ? false : { opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.1 }}
+          transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.6, delay: 0.1, ease: motionEasing.entrance }}
         >
           Bring your context. Shape your experience. Meet Radiance.
         </motion.p>
 
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={shouldReduceMotion ? false : { opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.2 }}
+          transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.6, delay: 0.2, ease: motionEasing.entrance }}
         >
           <a
             href="/chat"

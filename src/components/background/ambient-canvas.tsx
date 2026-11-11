@@ -34,14 +34,8 @@ export function AmbientCanvas({ accentColor = "#7c5cff" }: AmbientCanvasProps) {
       return; // Graceful fallback if WebGL is unavailable
     }
 
-    const reduceMotion =
-      typeof window !== "undefined" &&
-      typeof window.matchMedia === "function" &&
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const motionScale = reduceMotion ? 0.15 : 1;
-
-    const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, isMobile ? 1.5 : 2));
+    const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+    let motionScale = motionQuery.matches ? 0.15 : 1;
     renderer.setClearColor(0x000000, 0);
 
     const scene = new THREE.Scene();
@@ -53,6 +47,8 @@ export function AmbientCanvas({ accentColor = "#7c5cff" }: AmbientCanvasProps) {
     function resize() {
       const w = window.innerWidth;
       const h = window.innerHeight;
+      const isMobile = w < 768;
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, isMobile ? 1.5 : 2));
       renderer.setSize(w, h, false);
       camera.aspect = w / h;
       camera.updateProjectionMatrix();
@@ -176,6 +172,7 @@ export function AmbientCanvas({ accentColor = "#7c5cff" }: AmbientCanvasProps) {
     }
 
     const spriteTexture = makeSprite();
+    const isMobile = window.innerWidth < 768;
     const PARTICLE_COUNT = isMobile ? 650 : 2200;
     const positions = new Float32Array(PARTICLE_COUNT * 3);
     for (let i = 0; i < PARTICLE_COUNT; i++) {
@@ -206,29 +203,22 @@ export function AmbientCanvas({ accentColor = "#7c5cff" }: AmbientCanvasProps) {
     const pointer = { x: 0, y: 0 };
     const smooth = { x: 0, y: 0 };
 
-    const handlePointerMove = (e: MouseEvent) => {
+    const handlePointerMove = (e: PointerEvent) => {
       pointer.x = (e.clientX / window.innerWidth) * 2 - 1;
       pointer.y = (e.clientY / window.innerHeight) * 2 - 1;
     };
 
-    const handleTouchMove = (e: TouchEvent) => {
-      if (e.touches.length > 0) {
-        pointer.x = (e.touches[0].clientX / window.innerWidth) * 2 - 1;
-        pointer.y = (e.touches[0].clientY / window.innerHeight) * 2 - 1;
-      }
-    };
-
-    window.addEventListener("mousemove", handlePointerMove, { passive: true });
-    window.addEventListener("touchmove", handleTouchMove, { passive: true });
+    window.addEventListener("pointermove", handlePointerMove, { passive: true });
 
     // ── Animation Loop ──
-    let running = true;
+    let running = false;
+    let contextLost = false;
     let lastTime = performance.now();
-    let animId: number;
+    let animId: number | null = null;
 
     function animate() {
-      if (!running) return;
-      animId = requestAnimationFrame(animate);
+      animId = null;
+      if (!running || contextLost) return;
       const now = performance.now();
       const dt = Math.min((now - lastTime) / 1000, 0.05);
       lastTime = now;
@@ -255,35 +245,59 @@ export function AmbientCanvas({ accentColor = "#7c5cff" }: AmbientCanvasProps) {
       particles.rotation.x += dt * 0.003 * motionScale;
 
       renderer.render(scene, camera);
+      animId = requestAnimationFrame(animate);
     }
 
-    animate();
+    function start() {
+      if (running || contextLost || document.hidden) return;
+      running = true;
+      lastTime = performance.now();
+      animId = requestAnimationFrame(animate);
+    }
+
+    function stop() {
+      running = false;
+      if (animId !== null) {
+        cancelAnimationFrame(animId);
+        animId = null;
+      }
+    }
+
+    start();
 
     const handleVisibility = () => {
-      running = document.visibilityState === "visible";
-      if (running) {
-        lastTime = performance.now();
-        animate();
-      }
+      if (document.hidden) stop();
+      else start();
     };
 
     const handleContextLost = (e: Event) => {
       e.preventDefault();
-      running = false;
-      cancelAnimationFrame(animId);
+      contextLost = true;
+      stop();
+    };
+
+    const handleContextRestored = () => {
+      contextLost = false;
+      start();
+    };
+
+    const handleMotionPreference = (event: MediaQueryListEvent) => {
+      motionScale = event.matches ? 0.15 : 1;
     };
 
     canvas.addEventListener("webglcontextlost", handleContextLost, false);
+    canvas.addEventListener("webglcontextrestored", handleContextRestored, false);
     document.addEventListener("visibilitychange", handleVisibility);
+    motionQuery.addEventListener("change", handleMotionPreference);
 
     return () => {
-      running = false;
-      cancelAnimationFrame(animId);
+      stop();
       canvas.removeEventListener("webglcontextlost", handleContextLost);
+      canvas.removeEventListener("webglcontextrestored", handleContextRestored);
       window.removeEventListener("resize", resize);
-      window.removeEventListener("mousemove", handlePointerMove);
-      window.removeEventListener("touchmove", handleTouchMove);
+      window.removeEventListener("pointermove", handlePointerMove);
       document.removeEventListener("visibilitychange", handleVisibility);
+      motionQuery.removeEventListener("change", handleMotionPreference);
       renderer.dispose();
       blobs.forEach((b) => {
         b.geometry.dispose();

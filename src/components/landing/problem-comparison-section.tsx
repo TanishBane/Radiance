@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { motion } from "motion/react";
+import { motion, useReducedMotion } from "motion/react";
 import { 
   XCircle, 
   CheckCircle2, 
@@ -11,9 +11,12 @@ import {
   ArrowRight,
   Database
 } from "lucide-react";
+import { motionEasing } from "@/lib/motion/presets";
 import "./problem-comparison.css";
 
 export function ProblemComparisonSection() {
+  const shouldReduceMotion = useReducedMotion();
+
   return (
     <section 
       id="problem"
@@ -23,10 +26,10 @@ export function ProblemComparisonSection() {
       <div className="problem-shell">
         <motion.div 
           className="problem-header"
-          initial={{ opacity: 0, y: 24 }}
+          initial={shouldReduceMotion ? false : { opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.2 }}
-          transition={{ duration: 0.6 }}
+          transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.6, ease: motionEasing.entrance }}
         >
           <h2 id="problem-heading" className="problem-title">
             Your context shouldn&apos;t disappear between conversations.
@@ -42,10 +45,10 @@ export function ProblemComparisonSection() {
           {/* Left: Without Saved Context */}
           <motion.div 
             className="problem-panel problem-panel-generic"
-            initial={{ opacity: 0, x: -24 }}
+            initial={shouldReduceMotion ? false : { opacity: 0, x: -24 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true, amount: 0.2 }}
-            transition={{ duration: 0.6 }}
+            transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.6, ease: motionEasing.entrance }}
           >
             <div className="problem-panel-header">
               <span className="font-semibold text-slate-200">Without Saved Context</span>
@@ -74,10 +77,10 @@ export function ProblemComparisonSection() {
           {/* Right: With Radiance Personal Intelligence */}
           <motion.div 
             className="problem-panel problem-panel-radiance"
-            initial={{ opacity: 0, x: 24 }}
+            initial={shouldReduceMotion ? false : { opacity: 0, x: 24 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true, amount: 0.2 }}
-            transition={{ duration: 0.6 }}
+            transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.6, ease: motionEasing.entrance }}
           >
             <div className="problem-panel-header">
               <span className="font-semibold text-white flex items-center gap-2">

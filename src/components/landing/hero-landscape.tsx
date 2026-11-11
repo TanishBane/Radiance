@@ -1,15 +1,16 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { motion } from "motion/react";
+import React, { useState, useEffect, memo } from "react";
+import { motion, useReducedMotion } from "motion/react";
 import { Sparkles, Globe, ArrowUpRight } from "lucide-react";
 import { FlutedGlassTorus } from "./fluted-glass-torus";
 import { HeroProductStage } from "./hero-product-stage";
 import { IntelligenceField } from "./intelligence-field";
 import { LandingCta } from "./landing-cta";
+import { motionDurations, motionEasing } from "@/lib/motion/presets";
 import "./hero-landscape.css";
 
-export function HeroLandscape() {
+const HeroLiveClock = memo(function HeroLiveClock() {
   const [currentTime, setCurrentTime] = useState("07:23:14 AM");
 
   useEffect(() => {
@@ -30,6 +31,16 @@ export function HeroLandscape() {
   }, []);
 
   return (
+    <span className="telemetry-clock-value" aria-label="Live timestamp">
+      {currentTime}
+    </span>
+  );
+});
+
+export function HeroLandscape() {
+  const shouldReduceMotion = useReducedMotion();
+
+  return (
     <section 
       id="hero"
       className="hero-landscape-section section-atmosphere-hero landing-hero"
@@ -41,9 +52,9 @@ export function HeroLandscape() {
           {/* Left Column: Editorial Typography & High-Craft CTAs */}
           <motion.div 
             className="hero-editorial-column"
-            initial={{ opacity: 0, y: 24 }}
+            initial={shouldReduceMotion ? false : { opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+            transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.6, ease: motionEasing.entrance }}
           >
             <h1 id="hero-display-heading" className="hero-narrative-title landing-display">
               AI that brings your{" "}
@@ -73,9 +84,9 @@ export function HeroLandscape() {
           {/* Right Column: Fluted Glass Slit-Scan Prism & Aurora Torus (Synasite Reference) */}
           <motion.div
             className="hero-visual-column"
-            initial={{ opacity: 0, scale: 0.96 }}
+            initial={shouldReduceMotion ? false : { opacity: 0, scale: 0.96 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.7, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+            transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.7, delay: 0.1, ease: motionEasing.entrance }}
           >
             <FlutedGlassTorus />
           </motion.div>
@@ -84,9 +95,9 @@ export function HeroLandscape() {
         {/* Live Telemetry Status Dock (Synasite Reference) */}
         <motion.div 
           className="hero-telemetry-dock"
-          initial={{ opacity: 0, y: 16 }}
+          initial={shouldReduceMotion ? false : { opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+          transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.6, delay: 0.2, ease: motionEasing.entrance }}
           aria-label="Live engine telemetry"
         >
           <div className="telemetry-node">
@@ -95,7 +106,7 @@ export function HeroLandscape() {
           </div>
 
           <div className="telemetry-node telemetry-clock-node">
-            <span className="telemetry-clock-value" aria-label="Live timestamp">{currentTime}</span>
+            <HeroLiveClock />
           </div>
 
           <div className="telemetry-node telemetry-ethos-node">
@@ -115,9 +126,9 @@ export function HeroLandscape() {
         <motion.div
           className="hero-stage-wrapper"
           style={{ width: "100%", maxWidth: "980px", marginTop: "3.5rem" }}
-          initial={{ opacity: 0, scale: 0.97, y: 32 }}
+          initial={shouldReduceMotion ? false : { opacity: 0, scale: 0.97, y: 32 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.25, ease: [0.16, 1, 0.3, 1] }}
+          transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.7, delay: 0.25, ease: motionEasing.entrance }}
         >
           <HeroProductStage />
         </motion.div>
@@ -126,9 +137,9 @@ export function HeroLandscape() {
         <motion.div
           className="hero-field-wrapper"
           style={{ width: "100%", maxWidth: "980px", marginTop: "3.5rem" }}
-          initial={{ opacity: 0, y: 24 }}
+          initial={shouldReduceMotion ? false : { opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.35, ease: [0.16, 1, 0.3, 1] }}
+          transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.6, delay: 0.35, ease: motionEasing.entrance }}
         >
           <IntelligenceField />
         </motion.div>

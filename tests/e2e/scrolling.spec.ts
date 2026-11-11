@@ -29,23 +29,18 @@ test.describe("Homepage Scrolling Architecture & Regression Tests", () => {
     expect(scrollDimensions.htmlOverflowY).not.toBe("hidden");
   });
 
-  test("mouse-wheel scrolling smoothly updates window.scrollY", async ({ page }) => {
+  test("mouse-wheel scrolling updates window.scrollY", async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 800 });
     expect(await page.evaluate(() => window.scrollY)).toBe(0);
 
     // Scroll down via mouse wheel
     await page.mouse.wheel(0, 800);
-    await page.waitForTimeout(400);
-
+    await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(150);
     const scrollYAfter = await page.evaluate(() => window.scrollY);
-    expect(scrollYAfter).toBeGreaterThan(150);
 
     // Scroll back up via mouse wheel
     await page.mouse.wheel(0, -800);
-    await page.waitForTimeout(400);
-
-    const scrollYTop = await page.evaluate(() => window.scrollY);
-    expect(scrollYTop).toBeLessThan(scrollYAfter);
+    await expect.poll(() => page.evaluate(() => window.scrollY)).toBeLessThan(scrollYAfter);
   });
 
   test("keyboard scrolling supports PageDown, PageUp, ArrowDown, End, and Home navigation", async ({ page }) => {
@@ -58,9 +53,7 @@ test.describe("Homepage Scrolling Architecture & Regression Tests", () => {
 
     // Press PageDown
     await page.keyboard.press("PageDown");
-    await page.waitForTimeout(400);
-    const scrollAfterPageDown = await page.evaluate(() => window.scrollY);
-    expect(scrollAfterPageDown).toBeGreaterThan(100);
+    await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(100);
 
     // Scroll back up to top using instant scroll to reset position
     await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
@@ -73,13 +66,10 @@ test.describe("Homepage Scrolling Architecture & Regression Tests", () => {
 
     // Click "Privacy" in desktop nav
     await nav.getByRole("link", { name: "Privacy" }).click();
-    await page.waitForTimeout(500);
 
     const privacySection = page.locator("#privacy");
     await expect(privacySection).toBeVisible();
-
-    const scrollY = await page.evaluate(() => window.scrollY);
-    expect(scrollY).toBeGreaterThan(300);
+    await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(300);
   });
 
   test("touch and mobile scrolling work naturally with zero horizontal overflow", async ({ page }) => {
@@ -112,7 +102,6 @@ test.describe("Homepage Scrolling Architecture & Regression Tests", () => {
     // Close menu via close button
     await page.getByRole("button", { name: "Close menu" }).click();
     await expect(menu).not.toBeVisible();
-    await page.waitForTimeout(300);
 
     // Verify scrolling is active immediately after close
     await page.evaluate(() => {

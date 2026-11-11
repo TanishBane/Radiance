@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { motion } from "motion/react";
+import { motion, useReducedMotion } from "motion/react";
 import { 
   ShieldCheck, 
   HardDrive, 
@@ -11,6 +11,7 @@ import {
   CheckCircle2,
   AlertCircle
 } from "lucide-react";
+import { motionEasing } from "@/lib/motion/presets";
 import "./privacy-and-vision.css";
 
 const PRIVACY_PILLARS = [
@@ -35,6 +36,8 @@ const PRIVACY_PILLARS = [
 ];
 
 export function PrivacyFortress() {
+  const shouldReduceMotion = useReducedMotion();
+
   return (
     <section 
       id="privacy"
@@ -44,10 +47,10 @@ export function PrivacyFortress() {
       <div className="privacy-shell">
         <motion.div 
           className="privacy-header"
-          initial={{ opacity: 0, y: 24 }}
+          initial={shouldReduceMotion ? false : { opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.2 }}
-          transition={{ duration: 0.6 }}
+          transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.6, ease: motionEasing.entrance }}
         >
           <h2 id="privacy-heading" className="privacy-title">
             Your context. Your choice.
@@ -73,10 +76,10 @@ export function PrivacyFortress() {
             <motion.div
               key={item.id}
               className="privacy-card"
-              initial={{ opacity: 0, y: 24 }}
+              initial={shouldReduceMotion ? false : { opacity: 0, y: 24 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.2 }}
-              transition={{ duration: 0.5, delay: idx * 0.12 }}
+              transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.5, delay: idx * 0.12, ease: motionEasing.entrance }}
             >
               <div className="privacy-card-icon">
                 {item.icon}

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { motion, AnimatePresence } from "motion/react";
+import { motion, AnimatePresence, useReducedMotion } from "motion/react";
 import { 
   Sliders, 
   AlignLeft, 
@@ -10,6 +10,7 @@ import {
   Sparkles,
   Info
 } from "lucide-react";
+import { motionEasing } from "@/lib/motion/presets";
 import "./personal-intelligence-story.css";
 
 type PreferenceMode = "concise" | "detailed" | "structured";
@@ -90,6 +91,7 @@ const MODES: Record<PreferenceMode, ModeDetail> = {
 export function PreferenceSandbox() {
   const [selectedMode, setSelectedMode] = useState<PreferenceMode>("concise");
   const current = MODES[selectedMode];
+  const shouldReduceMotion = useReducedMotion();
 
   return (
     <section 
@@ -100,10 +102,10 @@ export function PreferenceSandbox() {
       <div className="preference-sandbox-shell">
         <motion.div 
           className="preference-sandbox-header"
-          initial={{ opacity: 0, y: 24 }}
+          initial={shouldReduceMotion ? false : { opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.2 }}
-          transition={{ duration: 0.6 }}
+          transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.6, ease: motionEasing.entrance }}
         >
           <h2 id="preferences-heading" className="preference-title">
             An answer should feel right for you.
@@ -153,10 +155,10 @@ export function PreferenceSandbox() {
               <AnimatePresence mode="wait">
                 <motion.div
                   key={selectedMode}
-                  initial={{ opacity: 0, y: 8 }}
+                  initial={shouldReduceMotion ? false : { opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -8 }}
-                  transition={{ duration: 0.22 }}
+                  exit={shouldReduceMotion ? undefined : { opacity: 0, y: -8 }}
+                  transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.2, ease: motionEasing.entrance }}
                 >
                   {current.output}
                 </motion.div>

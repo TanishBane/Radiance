@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { motion } from "motion/react";
+import { motion, useReducedMotion } from "motion/react";
 import { 
   Database, 
   Search, 
@@ -10,6 +10,7 @@ import {
   Zap,
   CheckCircle2
 } from "lucide-react";
+import { motionEasing } from "@/lib/motion/presets";
 import "./context-pipeline.css";
 
 const STAGES = [
@@ -48,6 +49,8 @@ const STAGES = [
 ];
 
 export function ContextPipelineSection() {
+  const shouldReduceMotion = useReducedMotion();
+
   return (
     <section 
       id="pipeline"
@@ -57,10 +60,10 @@ export function ContextPipelineSection() {
       <div className="pipeline-shell">
         <motion.div 
           className="pipeline-header"
-          initial={{ opacity: 0, y: 24 }}
+          initial={shouldReduceMotion ? false : { opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.2 }}
-          transition={{ duration: 0.6 }}
+          transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.6, ease: motionEasing.entrance }}
         >
           <h2 id="pipeline-heading" className="pipeline-title">
             The right context. At the right moment.
@@ -77,10 +80,10 @@ export function ContextPipelineSection() {
             <motion.div
               key={stage.key}
               className="pipeline-node"
-              initial={{ opacity: 0, y: 24 }}
+              initial={shouldReduceMotion ? false : { opacity: 0, y: 24 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.2 }}
-              transition={{ duration: 0.5, delay: idx * 0.12 }}
+              transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.5, delay: idx * 0.12, ease: motionEasing.entrance }}
             >
               <div className="flex items-center justify-between">
                 <span className="pipeline-node-step">{stage.step}</span>
