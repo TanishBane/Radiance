@@ -56,38 +56,7 @@ export function LandingPage() {
       reveals.forEach((el) => observer.observe(el));
     }
 
-    // Lenis Smooth Scroll
-    if (!prefersReduced) {
-      let lenisInstance: any = null;
-      let frameId: number | null = null;
-      const loadLenis = async () => {
-        try {
-          const loadModule = (url: string) => {
-            const importer = new Function("u", "return import(u)");
-            return importer(url);
-          };
-          const { default: Lenis } = await loadModule("https://unpkg.com/lenis@1.3.23/dist/lenis.mjs");
-          lenisInstance = new Lenis({
-            duration: 1.15,
-            smoothWheel: true,
-            touchMultiplier: 1.5,
-          });
-          const raf = (time: number) => {
-            lenisInstance.raf(time);
-            frameId = requestAnimationFrame(raf);
-          };
-          frameId = requestAnimationFrame(raf);
-        } catch (e) {
-          console.warn("Lenis init skipped:", e);
-        }
-      };
-      loadLenis();
 
-      return () => {
-        if (frameId) cancelAnimationFrame(frameId);
-        if (lenisInstance) lenisInstance.destroy();
-      };
-    }
   }, []);
 
   return (

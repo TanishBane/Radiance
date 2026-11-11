@@ -50,9 +50,10 @@ test.describe("Homepage Scrolling Architecture & Regression Tests", () => {
 
   test("keyboard scrolling supports PageDown, PageUp, ArrowDown, End, and Home navigation", async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 800 });
+    await page.waitForLoadState("networkidle");
     
-    // Focus the document body
-    await page.locator("body").click();
+    // Click on the background to ensure page viewport has keyboard focus
+    await page.mouse.click(10, 10);
     expect(await page.evaluate(() => window.scrollY)).toBe(0);
 
     // Press PageDown

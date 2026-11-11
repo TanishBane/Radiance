@@ -22,7 +22,8 @@ test.describe("Visual Quality Inspection & Multi-Viewport Screenshot Capture", (
       await page.setViewportSize({ width: vp.width, height: vp.height });
       await page.goto("/");
       await page.waitForLoadState("networkidle");
-      await page.waitForTimeout(1200);
+      // Wait for starfield appear fade-in (300ms delay + 1400ms fade) and Three.js warm up
+      await page.waitForTimeout(2500);
 
       // Above the fold
       await page.screenshot({

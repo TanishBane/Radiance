@@ -1,6 +1,13 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
+import * as THREE from "three";
+import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer.js";
+import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass.js";
+import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPass.js";
+import { ShaderPass } from "three/examples/jsm/postprocessing/ShaderPass.js";
+import { GammaCorrectionShader } from "three/examples/jsm/shaders/GammaCorrectionShader.js";
+import { CopyShader } from "three/examples/jsm/shaders/CopyShader.js";
 
 export interface ChatbotThemePreset {
   id: string;
@@ -130,19 +137,6 @@ export function WebGLStarfield() {
 
     async function initStarfield() {
       try {
-        const loadModule = (url: string) => {
-          const importer = new Function("u", "return import(u)");
-          return importer(url);
-        };
-
-        const THREE = await loadModule("https://unpkg.com/three@0.143.0/build/three.module.js");
-        const { EffectComposer } = await loadModule("https://unpkg.com/three@0.143.0/examples/jsm/postprocessing/EffectComposer.js");
-        const { RenderPass } = await loadModule("https://unpkg.com/three@0.143.0/examples/jsm/postprocessing/RenderPass.js");
-        const { UnrealBloomPass } = await loadModule("https://unpkg.com/three@0.143.0/examples/jsm/postprocessing/UnrealBloomPass.js");
-        const { ShaderPass } = await loadModule("https://unpkg.com/three@0.143.0/examples/jsm/postprocessing/ShaderPass.js");
-        const { GammaCorrectionShader } = await loadModule("https://unpkg.com/three@0.143.0/examples/jsm/shaders/GammaCorrectionShader.js");
-        const { CopyShader } = await loadModule("https://unpkg.com/three@0.143.0/examples/jsm/shaders/CopyShader.js");
-
         if (isDisposed || !canvas) return;
 
         function hexToVec3(hex: string) {
@@ -182,7 +176,7 @@ export function WebGLStarfield() {
           colorCVec: hexToVec3(t.colorC),
         }));
 
-        const renderer = new THREE.WebGL1Renderer({ canvas, antialias: true, alpha: false });
+        const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false });
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.shadowMap.enabled = true;
@@ -385,6 +379,11 @@ export function WebGLStarfield() {
         group.add(points);
         scene.add(group);
 
+        // Crucial for Three.js frustum traversal: enable all layers on both group and points
+        group.layers.enable(LAYERS.TORUS_SCENE);
+        group.layers.enable(LAYERS.BLOOM_SCENE);
+        group.layers.enable(LAYERS.ENTIRE_SCENE);
+
         points.layers.enable(LAYERS.TORUS_SCENE);
         points.layers.enable(LAYERS.BLOOM_SCENE);
         points.layers.enable(LAYERS.ENTIRE_SCENE);
@@ -555,6 +554,11 @@ export function WebGLStarfield() {
           torusComposer.render();
           camera.layers.set(LAYERS.BLOOM_SCENE);
           bloomComposer.render();
+
+          // Connect output render buffer textures to final composite shader
+          finalPass.uniforms.bloomTexture.value = bloomComposer.readBuffer.texture;
+          finalPass.uniforms.torusTexture.value = torusComposer.readBuffer.texture;
+
           camera.layers.set(LAYERS.ENTIRE_SCENE);
           finalComposer.render();
         }
