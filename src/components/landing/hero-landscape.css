@@ -380,3 +380,303 @@
   margin: 0 auto !important;
   box-sizing: border-box;
 }
+
+/* ═══════════════════════════════════════════════════════════════════
+   HERO PRODUCT STAGE (Exact Radiance Ambient Chat Interface)
+   ═══════════════════════════════════════════════════════════════════ */
+.hero-stage-container {
+  width: 100%;
+  max-width: 860px;
+  margin: 0 auto;
+  padding: clamp(24px, 4vw, 40px);
+  background: radial-gradient(130% 120% at 50% 0%, rgba(14, 38, 56, 0.8) 0%, rgba(7, 16, 28, 0.9) 100%);
+  border: 1px solid rgba(56, 189, 248, 0.22);
+  border-radius: 28px;
+  box-shadow: 0 30px 80px -20px rgba(0, 0, 0, 0.8), 0 0 40px -10px rgba(14, 165, 233, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  position: relative;
+  z-index: 2;
+  box-sizing: border-box;
+  text-align: left;
+}
+
+.hero-stage-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 12px;
+}
+
+.hero-stage-icon-box {
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(6, 182, 212, 0.25), rgba(99, 102, 241, 0.25));
+  border: 1px solid rgba(56, 189, 248, 0.4);
+  box-shadow: 0 0 24px rgba(6, 182, 212, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hero-stage-r-logo {
+  font-size: 24px;
+  font-weight: 800;
+  background: linear-gradient(135deg, #38bdf8, #ffffff, #818cf8);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.hero-stage-title {
+  font-family: var(--font-newsreader), Georgia, serif;
+  font-size: clamp(28px, 4.5vw, 42px);
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  color: #f8fafc;
+  margin: 0;
+}
+
+.hero-stage-radiance-gradient {
+  background: linear-gradient(135deg, #38bdf8 0%, #818cf8 50%, #c084fc 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  font-style: italic;
+  font-weight: 500;
+}
+
+.hero-stage-tagline {
+  font-size: 14.5px;
+  color: #94a3b8;
+  max-width: 540px;
+  line-height: 1.55;
+  margin: 0;
+}
+
+.hero-stage-prompt-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13.5px;
+  color: #cbd5e1;
+  margin-top: 4px;
+}
+
+.hero-stage-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #38bdf8;
+  box-shadow: 0 0 10px #38bdf8;
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.85); }
+}
+
+/* Suggestion Cards Triad */
+.hero-stage-triad {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  width: 100%;
+}
+
+.hero-stage-card {
+  background: rgba(15, 23, 42, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  backdrop-filter: blur(12px);
+  transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.hero-stage-card:hover {
+  border-color: rgba(56, 189, 248, 0.3);
+  transform: translateY(-2px);
+}
+
+.hero-stage-card-title {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: 2px;
+}
+
+.hero-stage-pills {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.hero-stage-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  font-size: 13px;
+  color: #cbd5e1;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.18s ease;
+  width: 100%;
+}
+
+.hero-stage-pill:hover {
+  background: rgba(255, 255, 255, 0.09);
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.hero-stage-pill-active {
+  background: rgba(56, 189, 248, 0.15) !important;
+  border-color: rgba(56, 189, 248, 0.4) !important;
+  color: #38bdf8 !important;
+  box-shadow: 0 0 16px -4px rgba(56, 189, 248, 0.3);
+}
+
+/* Output Preview Display */
+.hero-stage-output-preview {
+  background: rgba(8, 20, 36, 0.7);
+  border: 1px solid rgba(56, 189, 248, 0.2);
+  border-radius: 16px;
+  padding: 16px 20px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.hero-stage-output-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #38bdf8;
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: rgba(56, 189, 248, 0.1);
+  border: 1px solid rgba(56, 189, 248, 0.2);
+}
+
+.hero-stage-output-text {
+  font-size: 14.5px;
+  color: #f1f5f9;
+  line-height: 1.6;
+  margin: 6px 0 0 0;
+}
+
+/* Floating Luminous Composer Dock */
+.hero-stage-composer {
+  background: rgba(4, 10, 20, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  padding: 14px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: 0 16px 36px -10px rgba(0, 0, 0, 0.7);
+}
+
+.hero-stage-input-row {
+  display: flex;
+  align-items: center;
+}
+
+.hero-stage-placeholder {
+  font-size: 14px;
+  color: #64748b;
+  font-style: italic;
+}
+
+.hero-stage-controls-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.hero-stage-controls-left,
+.hero-stage-controls-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.hero-stage-btn-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.hero-stage-btn-icon:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.hero-stage-model-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: 12px;
+  font-weight: 500;
+  color: #94a3b8;
+  cursor: pointer;
+}
+
+.hero-stage-model-badge-active {
+  background: rgba(99, 102, 241, 0.15);
+  border-color: rgba(99, 102, 241, 0.3);
+  color: #c7d2fe;
+}
+
+.hero-stage-send-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #0ea5e9, #6366f1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 14px rgba(14, 165, 233, 0.4);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  text-decoration: none;
+}
+
+.hero-stage-send-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(14, 165, 233, 0.6);
+}
+
+@media (max-width: 768px) {
+  .hero-stage-triad {
+    grid-template-columns: 1fr;
+  }
+  .hero-stage-container {
+    padding: 20px 16px;
+  }
+}

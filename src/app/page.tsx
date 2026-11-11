@@ -3,16 +3,16 @@ import type { Metadata } from "next";
 import { LandingPage } from "@/components/landing/landing-page";
 
 export const metadata: Metadata = {
-  title: "Radiance — Intelligence that understands you",
+  title: "Radiance — Scale Smarter, Not Harder",
   description:
-    "Radiance is personal intelligence AI. Save notes, set response preferences, and bring relevant context into later conversations under your control.",
+    "Drive your funnel forward with clever workflows, analytics, and seamless lead management — all in one immersive command center.",
   alternates: {
     canonical: "/",
   },
   openGraph: {
-    title: "Radiance — Intelligence that understands you",
+    title: "Radiance — Scale Smarter, Not Harder",
     description:
-      "Your context. Your preferences. Your AI. Save notes, set response preferences, and chat with the model you choose.",
+      "Drive your funnel forward with clever workflows, analytics, and seamless lead management — all in one immersive command center.",
     url: "/",
   },
 };

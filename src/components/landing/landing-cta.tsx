@@ -8,16 +8,19 @@ export function LandingCta({
   variant = "solid",
   size = "md",
   className,
+  style,
 }: {
   href?: string;
   children?: ReactNode;
   variant?: "solid" | "ghost";
   size?: "md" | "lg";
   className?: string;
+  style?: React.CSSProperties;
 }) {
   return (
     <Link
       href={href}
+      style={style}
       className={cn(
         "landing-cta",
         variant === "ghost" && "landing-cta-ghost",

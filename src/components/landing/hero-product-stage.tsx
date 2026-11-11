@@ -19,6 +19,7 @@ import {
   CheckCircle2,
   ShieldCheck
 } from "lucide-react";
+import "./hero-landscape.css";
 
 interface SuggestionItem {
   id: string;
@@ -124,10 +125,10 @@ export function HeroProductStage() {
   };
 
   return (
-    <figure 
+    <div 
       className="hero-stage-container"
       role="region"
-      aria-label="An illustrative Radiance conversation"
+      aria-label="Interactive Radiance conversation stage"
     >
       {/* Central Radiance Brand Header */}
       <div className="hero-stage-header">
@@ -307,6 +308,6 @@ export function HeroProductStage() {
           </div>
         </div>
       </div>
-    </figure>
+    </div>
   );
 }

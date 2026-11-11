@@ -47,6 +47,7 @@ export function FutureVisionStory() {
           viewport={{ once: true, amount: 0.2 }}
           transition={{ duration: 0.6 }}
         >
+          <span className="sr-only">Future Architectural Horizon</span>
           <h2 id="vision-heading" className="vision-title">
             Personal intelligence, with room to evolve.
           </h2>
