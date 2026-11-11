@@ -53,6 +53,13 @@ export function clamp(val: number, min: number = 0, max: number = 1): number {
 }
 
 /**
+ * Linear interpolation between a and b by factor t.
+ */
+export function lerp(a: number, b: number, t: number): number {
+  return a + (b - a) * t;
+}
+
+/**
  * Fast, deterministic pseudo-random number generator (Mulberry32).
  */
 export function rng(seed: number = 1): () => number {

@@ -31,6 +31,17 @@ test.describe("Visual Quality Inspection & Multi-Viewport Screenshot Capture", (
         fullPage: false,
       });
 
+      // Scroll to problem section (the point where balloon-valley-sunrise fades in)
+      const problemSection = page.locator("#problem");
+      if ((await problemSection.count()) > 0) {
+        await problemSection.scrollIntoViewIfNeeded();
+        await page.waitForTimeout(600);
+        await page.screenshot({
+          path: path.join(outDir, `${vp.name}-problem-section.png`),
+          fullPage: false,
+        });
+      }
+
       // Full page screenshot
       await page.screenshot({
         path: path.join(outDir, `${vp.name}-fullpage.png`),

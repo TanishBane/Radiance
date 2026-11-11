@@ -1,25 +1,67 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
-import createArcticIcebergs, { meta } from "@/lib/ascii-art/arctic-icebergs";
+import React, { useEffect, useRef, useState } from "react";
+import createArcticIcebergs, { meta as icebergsMeta } from "@/lib/ascii-art/arctic-icebergs";
+import createBalloonValley, { meta as valleyMeta, LEVELS, W as VALLEY_W, H as VALLEY_H } from "@/lib/ascii-art/balloon-valley-sunrise";
 
 export interface ArcticIcebergsBackgroundProps {
   className?: string;
 }
 
 /**
- * ArcticIcebergsBackground: Generative Textmode Polar Landscape
- *
- * Icebergs drifting on a dark polar sea under a faint emerald aurora,
- * with oceanic swell rolling past them. Replaces the former star chase.
+ * AtmosphericArtBackground:
+ * - Upper Page / Hero: Arctic Icebergs (dark polar night, emerald aurora curtain, drifting icebergs).
+ * - From Problem Comparison Section ("Your context shouldn't disappear..."):
+ *   Slowly & smoothly cross-fades into Balloon Valley Sunrise (morning sun, misty mountain valleys, hot air balloons).
  */
 export function ArcticIcebergsBackground({ className }: ArcticIcebergsBackgroundProps) {
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const canvasIcebergsRef = useRef<HTMLCanvasElement | null>(null);
+  const canvasValleyRef = useRef<HTMLCanvasElement | null>(null);
+  const [fadeProgress, setFadeProgress] = useState(0);
 
+  // Scroll listener tracking the Problem Comparison section
   useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
+    let ticking = false;
 
+    const onScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          const problemEl = document.getElementById("problem");
+          if (problemEl) {
+            const rect = problemEl.getBoundingClientRect();
+            const vh = window.innerHeight;
+
+            // Fade starts as the problem section enters the lower third of viewport,
+            // and reaches full sunrise as the heading centers on screen.
+            const startFade = vh * 0.92;
+            const endFade = vh * 0.22;
+
+            const raw = Math.max(0, Math.min(1, (startFade - rect.top) / (startFade - endFade)));
+            // Smoothstep S-curve for luxury deceleration
+            const smooth = raw * raw * (3 - 2 * raw);
+            setFadeProgress(smooth);
+          }
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll, { passive: true });
+
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+    };
+  }, []);
+
+  // 1. Arctic Icebergs Canvas Controller
+  useEffect(() => {
+    const canvas = canvasIcebergsRef.current;
+    if (!canvas) return;
     const ctx = canvas.getContext("2d", { alpha: false });
     if (!ctx) return;
 
@@ -27,19 +69,16 @@ export function ArcticIcebergsBackground({ className }: ArcticIcebergsBackground
     let isDisposed = false;
     let isVisible = true;
     let lastFrameTime = 0;
-    const targetFps = meta.fps || 20;
+    const targetFps = icebergsMeta.fps || 20;
     const frameInterval = 1000 / targetFps;
 
-    // Instantiate generator instance
-    const renderGenerator = createArcticIcebergs();
-    const { cols, rows, palette } = meta;
+    const renderIcebergs = createArcticIcebergs();
+    const { cols, rows, palette } = icebergsMeta;
 
-    // Check prefers-reduced-motion
     const prefersReducedMotion =
       typeof window !== "undefined" &&
       window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-    // Resize handler with high-DPI scaling
     let displayWidth = window.innerWidth;
     let displayHeight = window.innerHeight;
 
@@ -61,10 +100,9 @@ export function ArcticIcebergsBackground({ className }: ArcticIcebergsBackground
     handleResize();
     window.addEventListener("resize", handleResize, { passive: true });
 
-    // Visibility change handler to preserve battery/CPU when tab is inactive
     const handleVisibilityChange = () => {
       isVisible = document.visibilityState === "visible";
-      if (isVisible && !animId) {
+      if (isVisible && !animId && fadeProgress < 0.99) {
         lastFrameTime = performance.now();
         animId = requestAnimationFrame(renderLoop);
       }
@@ -76,27 +114,22 @@ export function ArcticIcebergsBackground({ className }: ArcticIcebergsBackground
     const renderLoop = (now: number) => {
       if (isDisposed) return;
 
-      if (!isVisible) {
+      if (!isVisible || fadeProgress >= 0.99) {
         animId = null;
         return;
       }
 
       const elapsed = now - lastFrameTime;
-
       if (elapsed >= frameInterval) {
         lastFrameTime = now - (elapsed % frameInterval);
 
-        // Time parameter `t` in seconds (slowed down if reduced motion)
         const t = prefersReducedMotion ? 1.0 : (now - startTime) * 0.001;
+        const frame = renderIcebergs(t);
 
-        // Generate the 100x36 frame
-        const frame = renderGenerator(t);
-
-        // Clear canvas with deep polar void background
+        // Dark polar void background
         ctx.fillStyle = "#02050c";
         ctx.fillRect(0, 0, displayWidth, displayHeight);
 
-        // Compute grid cell metrics
         const cellW = displayWidth / cols;
         const cellH = displayHeight / rows;
         const fontSize = Math.max(9, Math.floor(cellH * 0.92));
@@ -105,7 +138,6 @@ export function ArcticIcebergsBackground({ className }: ArcticIcebergsBackground
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
 
-        // Draw each grid character with its palette color
         const totalCells = cols * rows;
         for (let idx = 0; idx < totalCells; idx++) {
           const ch = frame.ch[idx];
@@ -117,14 +149,10 @@ export function ArcticIcebergsBackground({ className }: ArcticIcebergsBackground
           const x = idx % cols;
           const y = Math.floor(idx / cols);
 
-          const cx = (x + 0.5) * cellW;
-          const cy = (y + 0.5) * cellH;
-
           ctx.fillStyle = colorHex;
-          ctx.fillText(ch, cx, cy);
+          ctx.fillText(ch, (x + 0.5) * cellW, (y + 0.5) * cellH);
         }
 
-        // If reduced motion, one frame is enough
         if (prefersReducedMotion) {
           animId = null;
           return;
@@ -134,7 +162,9 @@ export function ArcticIcebergsBackground({ className }: ArcticIcebergsBackground
       animId = requestAnimationFrame(renderLoop);
     };
 
-    animId = requestAnimationFrame(renderLoop);
+    if (fadeProgress < 0.99) {
+      animId = requestAnimationFrame(renderLoop);
+    }
 
     return () => {
       isDisposed = true;
@@ -142,11 +172,126 @@ export function ArcticIcebergsBackground({ className }: ArcticIcebergsBackground
       window.removeEventListener("resize", handleResize);
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
-  }, []);
+  }, [fadeProgress]);
+
+  // 2. Balloon Valley Sunrise Canvas Controller
+  useEffect(() => {
+    const canvas = canvasValleyRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d", { alpha: false });
+    if (!ctx) return;
+
+    let animId: number | null = null;
+    let isDisposed = false;
+    let isVisible = true;
+    let lastFrameTime = 0;
+    const targetFps = valleyMeta.fps || 15;
+    const frameInterval = 1000 / targetFps;
+
+    const renderValley = createBalloonValley();
+    const cols = VALLEY_W;
+    const rows = VALLEY_H;
+
+    const prefersReducedMotion =
+      typeof window !== "undefined" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    let displayWidth = window.innerWidth;
+    let displayHeight = window.innerHeight;
+
+    const handleResize = () => {
+      if (!canvas || isDisposed) return;
+      displayWidth = window.innerWidth;
+      displayHeight = window.innerHeight;
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+      canvas.width = Math.floor(displayWidth * dpr);
+      canvas.height = Math.floor(displayHeight * dpr);
+      canvas.style.width = `${displayWidth}px`;
+      canvas.style.height = `${displayHeight}px`;
+
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.scale(dpr, dpr);
+    };
+
+    handleResize();
+    window.addEventListener("resize", handleResize, { passive: true });
+
+    const handleVisibilityChange = () => {
+      isVisible = document.visibilityState === "visible";
+      if (isVisible && !animId && fadeProgress > 0.01) {
+        lastFrameTime = performance.now();
+        animId = requestAnimationFrame(renderLoop);
+      }
+    };
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    const startTime = performance.now();
+
+    const renderLoop = (now: number) => {
+      if (isDisposed) return;
+
+      if (!isVisible || fadeProgress <= 0.01) {
+        animId = null;
+        return;
+      }
+
+      const elapsed = now - lastFrameTime;
+      if (elapsed >= frameInterval) {
+        lastFrameTime = now - (elapsed % frameInterval);
+
+        const t = prefersReducedMotion ? 1.0 : (now - startTime) * 0.001;
+        const frame = renderValley(t);
+
+        // Sunrise sky base wash
+        ctx.fillStyle = "#5a80b8";
+        ctx.fillRect(0, 0, displayWidth, displayHeight);
+
+        const cellW = displayWidth / cols;
+        const cellH = displayHeight / rows;
+        const fontSize = Math.max(8, Math.floor(cellH * 0.95));
+
+        ctx.font = `${fontSize}px "Cascadia Code", "Fira Code", "Courier New", monospace`;
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+
+        const totalCells = cols * rows;
+        for (let idx = 0; idx < totalCells; idx++) {
+          const lv = frame.levels[idx];
+          const ch = LEVELS[lv];
+          const colorHex = frame.palHex[frame.colorIndices[idx]] || "#fff6e8";
+
+          const x = idx % cols;
+          const y = Math.floor(idx / cols);
+
+          ctx.fillStyle = colorHex;
+          ctx.fillText(ch, (x + 0.5) * cellW, (y + 0.5) * cellH);
+        }
+
+        if (prefersReducedMotion) {
+          animId = null;
+          return;
+        }
+      }
+
+      animId = requestAnimationFrame(renderLoop);
+    };
+
+    if (fadeProgress > 0.01) {
+      animId = requestAnimationFrame(renderLoop);
+    }
+
+    return () => {
+      isDisposed = true;
+      if (animId) cancelAnimationFrame(animId);
+      window.removeEventListener("resize", handleResize);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, [fadeProgress]);
 
   return (
-    <canvas
-      ref={canvasRef}
+    <div
+      ref={containerRef}
       className={`fixed inset-0 pointer-events-none -z-10 w-full h-full select-none ${className || ""}`}
       style={{
         position: "fixed",
@@ -159,6 +304,36 @@ export function ArcticIcebergsBackground({ className }: ArcticIcebergsBackground
         backgroundColor: "#02050c",
       }}
       aria-hidden="true"
-    />
+    >
+      {/* 1. Arctic Icebergs Layer (Hero & Top Page) */}
+      <canvas
+        ref={canvasIcebergsRef}
+        style={{
+          position: "absolute",
+          inset: 0,
+          width: "100%",
+          height: "100%",
+          opacity: Math.max(0, 1 - fadeProgress),
+          transition: "opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1)",
+          willChange: "opacity",
+        }}
+        aria-hidden="true"
+      />
+
+      {/* 2. Balloon Valley Sunrise Layer (Cross-fades in from Problem Section onwards) */}
+      <canvas
+        ref={canvasValleyRef}
+        style={{
+          position: "absolute",
+          inset: 0,
+          width: "100%",
+          height: "100%",
+          opacity: fadeProgress,
+          transition: "opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1)",
+          willChange: "opacity",
+        }}
+        aria-hidden="true"
+      />
+    </div>
   );
 }
