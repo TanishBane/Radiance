@@ -32,8 +32,8 @@ import { FutureVisionStory } from "./future-vision-story";
 import { ImmersiveFinalCta } from "./immersive-final-cta";
 import { LandingFooter } from "./landing-footer";
 
-const WebGLStarfield = dynamic(
-  () => import("./webgl-starfield").then((module) => module.WebGLStarfield),
+const ArcticIcebergsBackground = dynamic(
+  () => import("@/components/background/arctic-icebergs-background").then((module) => module.ArcticIcebergsBackground),
   { ssr: false }
 );
 
@@ -67,8 +67,8 @@ export function LandingPage() {
         Skip to content
       </a>
 
-      {/* Fixed WebGL Starfield Canvas (Three.js r0.143 with 8s Dynamic Theme Fading in Background) */}
-      <WebGLStarfield />
+      {/* Fixed Arctic Icebergs Generative Textmode Background */}
+      <ArcticIcebergsBackground />
 
       {/* Global Navigation with Radix Dialog Menu */}
       <LandingNav />
