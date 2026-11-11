@@ -89,6 +89,7 @@ export const viewport: Viewport = {
   initialScale: 1,
   viewportFit: "cover",
   themeColor: "#06060a",
+  interactiveWidget: "resizes-content",
 };
 
 const jsonLd = {

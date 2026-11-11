@@ -253,6 +253,23 @@
 }
 .landing-annotation-note { margin: 0; color: var(--landing-quiet); font-size: .75rem; line-height: 1.55; }
 
+/* ══ CSS Containment & Compositor Performance (Below-the-fold sections) ══ */
+.landing-section-contained,
+.landing-section:not(.landing-hero),
+.problem-section,
+.story-introduction,
+.intelligence-story-section,
+.preference-sandbox-section,
+.pipeline-section,
+.privacy-section-container,
+.vision-section-container,
+.landing-faq,
+.landing-finale,
+.landing-footer {
+  content-visibility: auto;
+  contain-intrinsic-size: 1px 800px;
+}
+
 .landing-section { padding: var(--landing-section) 0; }
 .landing-section + .landing-section { border-top: 1px solid var(--landing-hairline); }
 .landing-section-title { max-width: 16ch; font-size: clamp(2.25rem, 4vw, 3.5rem); line-height: 1.04; letter-spacing: -.03em; }

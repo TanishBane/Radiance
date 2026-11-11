@@ -106,6 +106,18 @@ test.describe("Radiance AI Platform E2E Workflows", () => {
     expect(categoryWidth.content).toBeLessThanOrEqual(categoryWidth.client);
   });
 
+  test("320px workspace does not overflow horizontally", async ({ page }) => {
+    await page.setViewportSize({ width: 320, height: 568 });
+    await page.goto("/chat");
+    const widths = await page.evaluate(() => ({
+      viewport: document.documentElement.clientWidth,
+      content: document.documentElement.scrollWidth,
+    }));
+
+    expect(widths.content).toBeLessThanOrEqual(widths.viewport);
+    await expect(page.getByRole("button", { name: "Clear active conversation" })).toBeVisible();
+  });
+
   test("prompt suggestion columns remain inside their desktop row", async ({ page }) => {
     await page.setViewportSize({ width: 1366, height: 900 });
     await page.goto("/chat");

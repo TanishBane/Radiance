@@ -99,7 +99,7 @@ export function MobileBottomNav({
             whileHover={prefersReducedMotion ? undefined : { scale: 1.05 }}
             transition={{ type: "spring", stiffness: 450, damping: 22 }}
             onClick={onNewChat}
-            className="w-10 h-10 -mt-2 rounded-2xl bg-gradient-to-tr from-[var(--accent)] via-[var(--accent-b)] to-[var(--accent-c)] text-[var(--void)] shadow-[0_4px_16px_var(--accent-g)] flex items-center justify-center font-bold touch-target cursor-pointer border border-white/20 active:brightness-90"
+            className="w-11 h-11 min-w-[44px] min-h-[44px] -mt-2 rounded-2xl bg-gradient-to-tr from-[var(--accent)] via-[var(--accent-b)] to-[var(--accent-c)] text-[var(--void)] shadow-[0_4px_16px_var(--accent-g)] flex items-center justify-center font-bold touch-target cursor-pointer border border-white/20 active:brightness-90"
             aria-label="Start New Chat"
             data-testid="bottom-nav-new-chat"
           >

@@ -28,6 +28,7 @@
   inset: 0;
   width: 100vw;
   height: 100vh;
+  height: 100dvh;
   display: block;
   z-index: 0;
   pointer-events: none;
@@ -158,10 +159,11 @@
 /* SECTION 1: HERO */
 .planet-hero {
   min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   flex-direction: column;
   position: relative;
-  padding-top: clamp(84px, 11vh, 130px);
+  padding-top: clamp(84px, 11dvh, 130px);
   background: transparent;
 }
 

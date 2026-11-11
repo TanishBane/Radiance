@@ -47,7 +47,7 @@ export function HistoryDrawer({
       <Dialog.Portal>
       <Dialog.Overlay className="radiance-dialog-overlay fixed inset-0 z-40 bg-black/60 backdrop-blur-sm" />
 
-      <Dialog.Content className="radiance-dialog-panel radiance-dialog-right fixed right-0 top-0 bottom-0 h-[100dvh] w-80 max-w-[88vw] z-50 flex flex-col pt-[env(safe-area-inset-top,0px)] pb-[env(safe-area-inset-bottom,0px)] pr-[env(safe-area-inset-right,0px)] bg-[var(--deep)]/95 backdrop-blur-2xl border-l border-[var(--border)] shadow-[-20px_0_50px_rgba(0,0,0,0.6)] outline-none">
+      <Dialog.Content className="radiance-dialog-panel radiance-dialog-right fixed right-0 top-0 bottom-0 h-screen h-[100dvh] w-80 max-w-[88vw] z-50 flex flex-col pt-[env(safe-area-inset-top,0px)] pb-[env(safe-area-inset-bottom,0px)] pr-[env(safe-area-inset-right,0px)] bg-[var(--deep)]/95 backdrop-blur-2xl border-l border-[var(--border)] shadow-[-20px_0_50px_rgba(0,0,0,0.6)] outline-none">
         <Dialog.Description className="sr-only">Search, select, and manage saved conversations.</Dialog.Description>
         {/* Header */}
         <div className="flex items-center justify-between px-4 py-3.5 border-b border-[var(--border)]">
@@ -183,7 +183,7 @@ function ConversationItem({
             e.stopPropagation();
             onTogglePin();
           }}
-          className={`min-w-[36px] min-h-[36px] p-1.5 rounded-lg hover:bg-white/10 transition-colors flex items-center justify-center touch-target cursor-pointer ${
+          className={`min-w-[44px] min-h-[44px] p-2 rounded-lg hover:bg-white/10 transition-colors flex items-center justify-center touch-target cursor-pointer ${
             conv.pinned ? "text-[var(--accent)] opacity-100" : "text-[var(--txt-muted)]"
           }`}
           title={conv.pinned ? "Unpin chat" : "Pin chat"}
@@ -196,7 +196,7 @@ function ConversationItem({
             e.stopPropagation();
             onDelete();
           }}
-          className="min-w-[36px] min-h-[36px] p-1.5 rounded-lg text-[var(--txt-muted)] hover:text-[var(--danger)] hover:bg-white/10 transition-colors flex items-center justify-center touch-target cursor-pointer"
+          className="min-w-[44px] min-h-[44px] p-2 rounded-lg text-[var(--txt-muted)] hover:text-[var(--danger)] hover:bg-white/10 transition-colors flex items-center justify-center touch-target cursor-pointer"
           title="Delete chat"
           aria-label="Delete chat"
         >

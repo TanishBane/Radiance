@@ -8,6 +8,13 @@ import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPa
 import { ShaderPass } from "three/examples/jsm/postprocessing/ShaderPass.js";
 import { GammaCorrectionShader } from "three/examples/jsm/shaders/GammaCorrectionShader.js";
 import { CopyShader } from "three/examples/jsm/shaders/CopyShader.js";
+import {
+  detectClientCapabilities,
+  getVisualQualityTier,
+  getVisualTierConfig,
+  isWebGLSupported,
+  type VisualQualityTier,
+} from "@/lib/performance/adaptive-quality";
 
 export interface ChatbotThemePreset {
   id: string;
@@ -121,7 +128,11 @@ export const CHATBOT_STARFIELD_THEMES: ChatbotThemePreset[] = [
   }
 ];
 
-export function WebGLStarfield() {
+export interface WebGLStarfieldProps {
+  tier?: VisualQualityTier;
+}
+
+export function WebGLStarfield({ tier: propTier }: WebGLStarfieldProps = {}) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   useEffect(() => {
@@ -130,6 +141,7 @@ export function WebGLStarfield() {
 
     let isDisposed = false;
     let animId: number | null = null;
+    let isRenderActive = false;
     let resizeListener: (() => void) | null = null;
     let scrollListener: (() => void) | null = null;
     let mouseMoveListener: ((e: MouseEvent) => void) | null = null;
@@ -138,22 +150,75 @@ export function WebGLStarfield() {
     let themeToggleListener: (() => void) | null = null;
     let contextLostListener: ((e: Event) => void) | null = null;
     let contextRestoredListener: (() => void) | null = null;
+    let visibilityListener: (() => void) | null = null;
+    let intersectionObserver: IntersectionObserver | null = null;
+    let mediaQueryListener: ((e: MediaQueryListEvent) => void) | null = null;
+    let mediaQuery: MediaQueryList | null = null;
 
     let renderer: THREE.WebGLRenderer | null = null;
     let geometry: THREE.BufferGeometry | null = null;
     let starMaterial: THREE.ShaderMaterial | null = null;
     let dummyHalo: THREE.DataTexture | null = null;
 
+    let isTabVisible = typeof document !== "undefined" ? !document.hidden : true;
+    let isCanvasInView = true;
+    let resumeRenderLoop: (() => void) | null = null;
+
+    function updateRenderState() {
+      const shouldRun = isTabVisible && isCanvasInView && !isDisposed;
+      if (shouldRun) {
+        if (!isRenderActive && resumeRenderLoop) {
+          isRenderActive = true;
+          resumeRenderLoop();
+        }
+      } else {
+        if (isRenderActive) {
+          isRenderActive = false;
+          if (animId !== null) {
+            cancelAnimationFrame(animId);
+            animId = null;
+          }
+        }
+      }
+    }
+
+    // 1. Tab visibility listener (pauses rendering when browser tab is hidden or backgrounded)
+    visibilityListener = () => {
+      isTabVisible = !document.hidden;
+      updateRenderState();
+    };
+    document.addEventListener("visibilitychange", visibilityListener);
+
+    // 2. IntersectionObserver on #scene canvas (pauses rendering when canvas scrolls out of view)
+    if (typeof IntersectionObserver !== "undefined") {
+      intersectionObserver = new IntersectionObserver(
+        (entries) => {
+          const entry = entries[0];
+          if (entry) {
+            isCanvasInView = entry.isIntersecting;
+            updateRenderState();
+          }
+        },
+        { threshold: 0.01 }
+      );
+      intersectionObserver.observe(canvas);
+    }
+
     async function initStarfield() {
       try {
         if (isDisposed || !canvas) return;
+        if (!isWebGLSupported()) return;
 
         function hexToVec3(hex: string) {
           const n = parseInt(hex.slice(1), 16);
           return new THREE.Vector3(((n >> 16) & 255) / 255, ((n >> 8) & 255) / 255, (n & 255) / 255);
         }
 
-        const prefersReduced = typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        const capabilities = detectClientCapabilities();
+        const activeTier = propTier ?? getVisualQualityTier(capabilities);
+        const tierConfig = getVisualTierConfig(activeTier);
+        const prefersReduced = capabilities.prefersReducedMotion || activeTier === "lightweight";
+        const isMobileDevice = capabilities.isMobile || (typeof window !== "undefined" && window.innerWidth <= 768);
 
         const CONFIG = {
           bgColor: "#0a0a24",
@@ -166,15 +231,15 @@ export function WebGLStarfield() {
           opacity: 2.0,
           pointSize: 50,
           brightness: 1.85,
-          drift: prefersReduced ? 0.5 : 2.35,
-          twinkle: prefersReduced ? 0.3 : 1.0,
-          spin: prefersReduced ? 0.005 : 0.03,
+          drift: prefersReduced ? 0.2 : tierConfig.driftSpeed,
+          twinkle: prefersReduced ? 0.2 : tierConfig.twinkle,
+          spin: prefersReduced ? 0.0 : tierConfig.barrelRoll, // 0 barrel roll when requested
           repelRadius: 5.0,
-          repelStrength: prefersReduced ? 0.0 : 0.35,
+          repelStrength: prefersReduced ? 0.0 : tierConfig.repelStrength,
           scrollPush: prefersReduced ? 0.0 : 8.0,
           scrollDrift: prefersReduced ? 0.0 : 6.0,
-          scrollSpin: prefersReduced ? 0.0 : 0.1,
-          parallax: prefersReduced ? 0.0 : 0.6,
+          scrollSpin: prefersReduced ? 0.0 : (isMobileDevice ? 0.05 : 0.1),
+          parallax: prefersReduced ? 0.0 : (isMobileDevice ? 0.3 : 0.6),
         };
 
         const PREPARED_THEMES = CHATBOT_STARFIELD_THEMES.map((t) => ({
@@ -187,7 +252,11 @@ export function WebGLStarfield() {
           colorCVec: hexToVec3(t.colorC),
         }));
 
-        const dpr = Math.min(Math.max(window.devicePixelRatio || 1, 1), 2);
+        // Clamp devicePixelRatio to max 1.5 on mobile to protect mobile GPUs from thermal throttling
+        const rawDpr = window.devicePixelRatio || 1;
+        const maxDpr = isMobileDevice ? Math.min(tierConfig.maxDpr, 1.5) : tierConfig.maxDpr;
+        const dpr = Math.min(Math.max(rawDpr, 1), maxDpr);
+
         renderer = new THREE.WebGLRenderer({
           canvas,
           antialias: true,
@@ -303,8 +372,8 @@ export function WebGLStarfield() {
         const finalPass = new ShaderPass(FinalPassShader);
         finalComposer.addPass(finalPass);
 
-        // Build Starfield BufferGeometry (4200 stars, depth 30)
-        const count = 4200;
+        // Build Starfield BufferGeometry (Adaptive counts: 4,200 High, 1,800 Balanced, 600 Lightweight)
+        const count = tierConfig.starCount;
         const depth = 30;
 
         const positions = new Float32Array(count * 3);
@@ -518,8 +587,34 @@ export function WebGLStarfield() {
           );
         }
 
+        // Hook re-entry resumption callback for smooth animation lifecycle
+        resumeRenderLoop = () => {
+          t0 = performance.now() / 1000;
+          animId = requestAnimationFrame(renderFrame);
+        };
+
+        // 3. Dynamic listener for user OS prefers-reduced-motion updates
+        if (typeof window !== "undefined" && typeof window.matchMedia === "function") {
+          mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+          mediaQueryListener = (e: MediaQueryListEvent) => {
+            const reduced = e.matches;
+            CONFIG.drift = reduced ? 0.2 : tierConfig.driftSpeed;
+            CONFIG.spin = reduced ? 0.0 : tierConfig.barrelRoll;
+            CONFIG.scrollSpin = reduced ? 0.0 : (isMobileDevice ? 0.05 : 0.1);
+            CONFIG.scrollDrift = reduced ? 0.0 : 6.0;
+            CONFIG.scrollPush = reduced ? 0.0 : 8.0;
+            CONFIG.repelStrength = reduced ? 0.0 : tierConfig.repelStrength;
+            CONFIG.twinkle = reduced ? 0.2 : tierConfig.twinkle;
+            if (starMaterial) {
+              starMaterial.uniforms.uTwinkle.value = CONFIG.twinkle;
+              starMaterial.uniforms.uRepelStrength.value = CONFIG.repelStrength;
+            }
+          };
+          mediaQuery.addEventListener?.("change", mediaQueryListener);
+        }
+
         function renderFrame() {
-          if (isDisposed) return;
+          if (isDisposed || !isRenderActive) return;
           animId = requestAnimationFrame(renderFrame);
 
           const now = performance.now();
@@ -653,13 +748,16 @@ export function WebGLStarfield() {
           finalComposer.render();
         }
 
-        renderFrame();
+        // Initialize render loop via adaptive lifecycle controller
+        updateRenderState();
 
         resizeListener = () => {
           if (!renderer || isDisposed) return;
           const w = Math.max(window.innerWidth, 1);
           const h = Math.max(window.innerHeight, 1);
-          const currentDpr = Math.min(Math.max(window.devicePixelRatio || 1, 1), 2);
+          const currentIsMobile = w <= 768 || capabilities.isMobile;
+          const currentMaxDpr = currentIsMobile ? Math.min(tierConfig.maxDpr, 1.5) : tierConfig.maxDpr;
+          const currentDpr = Math.min(Math.max(window.devicePixelRatio || 1, 1), currentMaxDpr);
 
           renderer.setPixelRatio(currentDpr);
           renderer.setSize(w, h);
@@ -690,7 +788,11 @@ export function WebGLStarfield() {
 
     return () => {
       isDisposed = true;
+      isRenderActive = false;
       if (animId !== null) cancelAnimationFrame(animId);
+      if (visibilityListener) document.removeEventListener("visibilitychange", visibilityListener);
+      if (intersectionObserver) intersectionObserver.disconnect();
+      if (mediaQuery && mediaQueryListener) mediaQuery.removeEventListener("change", mediaQueryListener);
       if (resizeListener) window.removeEventListener("resize", resizeListener);
       if (scrollListener) window.removeEventListener("scroll", scrollListener);
       if (mouseMoveListener) window.removeEventListener("mousemove", mouseMoveListener);
@@ -705,7 +807,7 @@ export function WebGLStarfield() {
       if (dummyHalo) dummyHalo.dispose();
       if (renderer) renderer.dispose();
     };
-  }, []);
+  }, [propTier]);
 
   return (
     <canvas

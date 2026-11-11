@@ -28,6 +28,7 @@
   --landing-hero-teal: #0e7490;
   width: 100%;
   max-width: none;
+  min-height: min(740px, calc(100vh - 72px));
   min-height: min(740px, calc(100dvh - 72px));
   padding: clamp(54px, 7vw, 88px) max(28px, calc((100vw - 1224px) / 2)) clamp(58px, 7vw, 92px);
   overflow: hidden;

@@ -70,6 +70,12 @@
     --motion-entrance: 280ms;
     --motion-ease-standard: cubic-bezier(0.2, 0.8, 0.2, 1);
 
+    /* Dynamic Viewport Unit Tokens with vh fallbacks */
+    --viewport-height: 100vh;
+    --viewport-height: 100dvh;
+    --viewport-height-small: 100vh;
+    --viewport-height-small: 100svh;
+
     /* Safe area insets for notched and dynamic island mobile displays */
     --sat: env(safe-area-inset-top, 0px);
     --sar: env(safe-area-inset-right, 0px);
@@ -85,10 +91,12 @@
     scroll-behavior: smooth;
     -webkit-text-size-adjust: 100%;
     text-size-adjust: 100%;
+    overflow-x: hidden;
   }
 
   body {
     min-height: 100%;
+    min-height: 100vh;
     min-height: 100dvh;
     margin: 0;
     padding: 0;
@@ -168,6 +176,34 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
   height: 100vh;
   height: 100dvh;
 }
+.safe-min-h-screen {
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+.safe-h-svh {
+  height: 100vh;
+  height: 100svh;
+}
+.safe-min-h-svh {
+  min-height: 100vh;
+  min-height: 100svh;
+}
+.h-viewport {
+  height: 100vh;
+  height: 100dvh;
+}
+.min-h-viewport {
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+.h-viewport-small {
+  height: 100vh;
+  height: 100svh;
+}
+.min-h-viewport-small {
+  min-height: 100vh;
+  min-height: 100svh;
+}
 
 /* ══ HIGH-CRAFT GLASSMORPHISM SURFACES & RESTRAINED ELEVATION ══ */
 .glass-panel {
@@ -238,7 +274,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
   max-width: 100%;
   width: 100%;
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  transition: all 0.2s ease;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .code-block-header {
@@ -308,7 +344,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
   padding: 3px 9px;
   border-radius: 6px;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease;
   user-select: none;
 }
 .code-collapse-btn {
@@ -786,7 +822,7 @@ li {
   font-weight: 600;
   font-size: 0.88em;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
   text-decoration: none;
 }
 .citation-badge:hover {

@@ -201,7 +201,7 @@
   text-decoration: none;
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  transition: all 0.2s ease;
+  transition: transform 0.2s ease, background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
 }
 
 .hero-btn-secondary:hover,
@@ -306,7 +306,7 @@
   color: #ffffff;
   font-weight: 600;
   text-decoration: none;
-  transition: all 0.2s ease;
+  transition: transform 0.2s ease, color 0.2s ease;
 }
 
 .telemetry-action-link:hover {
@@ -341,7 +341,7 @@
   font-weight: 500;
   letter-spacing: 0.04em;
   color: rgba(240, 245, 255, 0.82) !important;
-  transition: all 0.2s ease;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .landing-root .landing-nav .landing-nav-links a:hover,
@@ -523,6 +523,7 @@
   align-items: center;
   gap: 8px;
   padding: 8px 12px;
+  min-height: 44px;
   border-radius: 10px;
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(255, 255, 255, 0.06);
@@ -530,8 +531,9 @@
   color: #cbd5e1;
   cursor: pointer;
   text-align: left;
-  transition: all 0.18s ease;
+  transition: background-color 0.18s ease, color 0.18s ease, border-color 0.18s ease;
   width: 100%;
+  touch-action: manipulation;
 }
 
 .hero-stage-pill:hover {
@@ -619,15 +621,18 @@
 }
 
 .hero-stage-btn-icon {
-  width: 32px;
-  height: 32px;
-  border-radius: 8px;
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  min-height: 44px;
+  border-radius: 12px;
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.08);
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  touch-action: manipulation;
   transition: background 0.15s ease;
 }
 
@@ -639,14 +644,16 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 5px 10px;
-  border-radius: 8px;
+  padding: 8px 12px;
+  min-height: 44px;
+  border-radius: 10px;
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(255, 255, 255, 0.08);
   font-size: 12px;
   font-weight: 500;
   color: #94a3b8;
   cursor: pointer;
+  touch-action: manipulation;
 }
 
 .hero-stage-model-badge-active {
@@ -656,9 +663,11 @@
 }
 
 .hero-stage-send-btn {
-  width: 34px;
-  height: 34px;
-  border-radius: 10px;
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  min-height: 44px;
+  border-radius: 12px;
   background: linear-gradient(135deg, #0ea5e9, #6366f1);
   display: flex;
   align-items: center;
@@ -666,6 +675,7 @@
   box-shadow: 0 4px 14px rgba(14, 165, 233, 0.4);
   transition: transform 0.15s ease, box-shadow 0.15s ease;
   text-decoration: none;
+  touch-action: manipulation;
 }
 
 .hero-stage-send-btn:hover {
@@ -679,5 +689,55 @@
   }
   .hero-stage-container {
     padding: 20px 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-landscape-shell {
+    padding: 0 1rem;
+  }
+  .hero-stage-container {
+    padding: 18px 12px;
+    border-radius: 20px;
+    gap: 20px;
+  }
+  .hero-stage-title {
+    font-size: clamp(22px, 6.5vw, 28px);
+  }
+  .hero-stage-composer {
+    padding: 12px 14px;
+  }
+  .hero-stage-controls-left,
+  .hero-stage-controls-right {
+    gap: 6px;
+  }
+  .hero-actions-row {
+    flex-direction: column;
+    width: 100%;
+  }
+  .hero-btn-primary,
+  .hero-btn-secondary,
+  .landing-hero a.landing-cta {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 360px) {
+  .hero-landscape-shell {
+    padding: 0 0.75rem;
+  }
+  .hero-stage-container {
+    padding: 14px 10px;
+    border-radius: 16px;
+  }
+  .hero-stage-title {
+    font-size: 20px;
+    line-height: 1.15;
+  }
+  .hero-narrative-title,
+  .hero-landscape-section .landing-display {
+    font-size: 1.85rem;
+    line-height: 1.12;
   }
 }

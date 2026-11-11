@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils/cn";
-import React, { useState, createContext, useContext } from "react";
+import React, { useState, createContext, useContext, useEffect, useRef } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { IconX } from "@tabler/icons-react";
 import { getMotionTransition } from "@/lib/motion/presets";
@@ -117,6 +117,55 @@ export const MobileSidebar = ({
 }: React.ComponentProps<"div">) => {
   const { open, setOpen } = useSidebar();
   const prefersReducedMotion = useReducedMotion() ?? false;
+  const drawerRef = useRef<HTMLElement>(null);
+  const closeBtnRef = useRef<HTMLButtonElement>(null);
+
+  // Keyboard Escape dismissal, Accessible Focus Trap & Body scroll lock/restore
+  useEffect(() => {
+    if (!open) return;
+
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    // Initial focus on close button
+    const focusTimer = setTimeout(() => {
+      closeBtnRef.current?.focus();
+    }, 50);
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        e.preventDefault();
+        setOpen(false);
+        return;
+      }
+
+      // Accessible Focus Trap: cycle Tab / Shift-Tab within drawer
+      if (e.key === "Tab" && drawerRef.current) {
+        const focusableElements = drawerRef.current.querySelectorAll<HTMLElement>(
+          'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+        );
+        if (focusableElements.length === 0) return;
+        const first = focusableElements[0];
+        const last = focusableElements[focusableElements.length - 1];
+
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      clearTimeout(focusTimer);
+      document.body.style.overflow = originalOverflow;
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [open, setOpen]);
+
   return (
     <div className="md:hidden" {...props}>
       <AnimatePresence>
@@ -132,13 +181,16 @@ export const MobileSidebar = ({
               aria-hidden="true"
             />
             <motion.aside
+              ref={drawerRef}
+              role="dialog"
+              aria-modal="true"
               aria-label="Mobile navigation drawer"
               initial={{ x: "-100%", opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
               exit={{ x: "-100%", opacity: 0 }}
               transition={getMotionTransition("drawer", prefersReducedMotion)}
               className={cn(
-                "fixed h-[100dvh] w-[280px] max-w-[85vw] inset-y-0 left-0 bg-gradient-to-b from-[var(--surface-raised)]/98 via-[var(--deep)]/95 to-[var(--void)]/98 backdrop-blur-3xl border-r border-white/[0.10] p-5 pt-[max(1.5rem,env(safe-area-inset-top,0px))] pb-[max(1.5rem,env(safe-area-inset-bottom,0px))] pl-[max(1.5rem,env(safe-area-inset-left,0px))] z-[100] flex flex-col justify-between shadow-[8px_0_36px_rgba(0,0,0,0.7),0_0_30px_-8px_var(--accent-g)] overflow-hidden",
+                "fixed safe-h-screen h-[100dvh] w-[280px] max-w-[85vw] inset-y-0 left-0 bg-gradient-to-b from-[var(--surface-raised)]/98 via-[var(--deep)]/95 to-[var(--void)]/98 backdrop-blur-3xl border-r border-white/[0.10] p-5 pt-[max(1.5rem,env(safe-area-inset-top,0px))] pb-[max(1.5rem,env(safe-area-inset-bottom,0px))] pl-[max(1.5rem,env(safe-area-inset-left,0px))] z-[100] flex flex-col justify-between shadow-[8px_0_36px_rgba(0,0,0,0.7),0_0_30px_-8px_var(--accent-g)] overflow-hidden",
                 className
               )}
             >
@@ -146,6 +198,7 @@ export const MobileSidebar = ({
               <div className="absolute inset-0 bg-gradient-to-b from-[var(--accent)]/[0.04] via-transparent to-[var(--accent-c)]/[0.05] pointer-events-none" />
               <div className="relative z-10 flex flex-col justify-between h-full w-full">
                 <motion.button
+                  ref={closeBtnRef}
                   type="button"
                   whileHover={prefersReducedMotion ? undefined : { scale: 1.1, rotate: 90 }}
                   whileTap={prefersReducedMotion ? undefined : { scale: 0.9 }}

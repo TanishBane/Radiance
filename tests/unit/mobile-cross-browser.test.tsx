@@ -5,21 +5,26 @@ vi.mock("next/font/google", () => ({
   Cormorant_Garamond: () => ({ variable: "--font-serif" }),
 }));
 
-import { render, screen } from "@testing-library/react";
+import fs from "fs";
+import path from "path";
+import { render, screen, fireEvent } from "@testing-library/react";
 import { Topbar } from "@/components/navigation/topbar";
 import { ChatComposer } from "@/components/chat/chat-composer";
 import { AtmosphereCanvasEngine } from "@/components/background/atmosphere-canvas-engine";
 import { COLOR_THEMES } from "@/lib/types/theme";
 import { FollowUpChips } from "@/components/chat/follow-up-chips";
 import { WelcomeCard } from "@/components/chat/welcome-card";
+import { MobileBottomNav } from "@/components/navigation/mobile-bottom-nav";
+import { HistoryDrawer } from "@/components/navigation/history-drawer";
 import { viewport } from "@/app/layout";
 
 describe("Mobile & Cross-Browser Ergonomics, Touch & Viewport Invariants", () => {
-  it("exports Next.js viewport configuration with viewportFit cover and device-width for notch and dynamic island displays", () => {
+  it("exports Next.js viewport configuration with viewportFit cover, device-width and resizes-content interactiveWidget for virtual keyboard", () => {
     expect(viewport.width).toBe("device-width");
     expect(viewport.initialScale).toBe(1);
     expect(viewport.viewportFit).toBe("cover");
     expect(viewport.themeColor).toBe("#06060a");
+    expect(viewport.interactiveWidget).toBe("resizes-content");
   });
 
   it("renders mobile navigation toggle button with >=44x44px touch target ergonomics", () => {
@@ -191,5 +196,78 @@ describe("Mobile & Cross-Browser Ergonomics, Touch & Viewport Invariants", () =>
       expect(btn.className).toContain("touch-target");
       expect(btn.className).toContain("min-h-[44px]");
     }
+  });
+
+  it("renders mobile bottom nav new chat action with >=44x44px touch target ergonomics", () => {
+    render(
+      <MobileBottomNav
+        onNewChat={vi.fn()}
+        onToggleHistory={vi.fn()}
+        onToggleSettings={vi.fn()}
+      />
+    );
+    const newChatBtn = screen.getByTestId("bottom-nav-new-chat");
+    expect(newChatBtn).toBeDefined();
+    expect(newChatBtn.className).toContain("touch-target");
+    expect(newChatBtn.className).toContain("min-w-[44px]");
+    expect(newChatBtn.className).toContain("min-h-[44px]");
+  });
+
+  it("triggers onFocusChange when composer textarea is focused and blurred", () => {
+    const handleFocusChange = vi.fn();
+    render(
+      <ChatComposer
+        onSend={vi.fn()}
+        onStop={vi.fn()}
+        isGenerating={false}
+        onFocusChange={handleFocusChange}
+      />
+    );
+    const textarea = screen.getByPlaceholderText(/Ask RADIANCE anything/i);
+    fireEvent.focus(textarea);
+    expect(handleFocusChange).toHaveBeenCalledWith(true);
+    fireEvent.blur(textarea);
+    expect(handleFocusChange).toHaveBeenCalledWith(false);
+  });
+
+  it("renders history drawer conversation action buttons with >=44x44px touch targets", () => {
+    render(
+      <HistoryDrawer
+        isOpen={true}
+        onClose={vi.fn()}
+        conversations={[
+          {
+            id: "conv-1",
+            title: "Test Chat",
+            pinned: false,
+            createdAt: 1000,
+            updatedAt: 2000,
+            messages: [],
+          },
+        ]}
+        onSelectConversation={vi.fn()}
+        onTogglePin={vi.fn()}
+        onDeleteConversation={vi.fn()}
+        onDeleteAll={vi.fn()}
+      />
+    );
+    const pinBtn = screen.getByRole("button", { name: /pin chat/i });
+    const deleteBtn = screen.getByRole("button", { name: /delete chat/i });
+    expect(pinBtn.className).toContain("min-w-[44px]");
+    expect(pinBtn.className).toContain("min-h-[44px]");
+    expect(deleteBtn.className).toContain("min-w-[44px]");
+    expect(deleteBtn.className).toContain("min-h-[44px]");
+  });
+
+  it("verifies global CSS contains dvh/svh and safe-area utility classes", () => {
+    const css = fs.readFileSync(path.resolve(__dirname, "../../src/app/globals.css"), "utf-8");
+    expect(css).toContain("--viewport-height: 100dvh");
+    expect(css).toContain("--viewport-height-small: 100svh");
+    expect(css).toContain(".safe-h-screen");
+    expect(css).toContain(".safe-min-h-screen");
+    expect(css).toContain(".safe-h-svh");
+    expect(css).toContain(".safe-min-h-svh");
+    expect(css).toContain(".pt-safe");
+    expect(css).toContain(".pb-safe");
   });
 });

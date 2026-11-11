@@ -41,6 +41,7 @@
   --landing-shadow: 0 24px 80px rgba(0, 0, 0, .6);
   --landing-fast: 160ms;
   --landing-smooth: 260ms;
+  min-height: 100vh;
   min-height: 100dvh;
   height: auto;
   overflow-x: clip;

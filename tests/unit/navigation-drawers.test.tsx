@@ -2,6 +2,7 @@ import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { describe, it, expect, vi } from "vitest";
 import { HistoryDrawer } from "@/components/navigation/history-drawer";
+import { SidebarProvider, MobileSidebar } from "@/components/ui/sidebar";
 import { Conversation } from "@/lib/types/chat";
 
 describe("Navigation Drawers Unit Specifications (Accessibility & Dialog Semantics)", () => {
@@ -82,6 +83,80 @@ describe("Navigation Drawers Unit Specifications (Accessibility & Dialog Semanti
       const item = screen.getByText("React Server Components");
       fireEvent.click(item);
       expect(onSelect).toHaveBeenCalledWith("conv_2");
+    });
+  });
+
+  describe("MobileSidebar Component (Focus Trap, Escape Dismissal, Scroll Lock & Dialog Semantics)", () => {
+    it("renders nothing when open is false", () => {
+      render(
+        <SidebarProvider open={false}>
+          <MobileSidebar>
+            <nav>Links</nav>
+          </MobileSidebar>
+        </SidebarProvider>
+      );
+      expect(screen.queryByRole("dialog")).toBeNull();
+    });
+
+    it("renders dialog with role='dialog' and aria-modal='true' when open", () => {
+      render(
+        <SidebarProvider open={true}>
+          <MobileSidebar>
+            <nav>Links</nav>
+          </MobileSidebar>
+        </SidebarProvider>
+      );
+      const dialog = screen.getByRole("dialog");
+      expect(dialog).toBeDefined();
+      expect(dialog.getAttribute("aria-modal")).toBe("true");
+      expect(dialog.getAttribute("aria-label")).toBe("Mobile navigation drawer");
+      expect(dialog.className).toContain("safe-h-screen");
+      expect(dialog.className).toContain("h-[100dvh]");
+    });
+
+    it("locks document.body overflow when open and restores it when unmounted", () => {
+      document.body.style.overflow = "auto";
+      const { unmount } = render(
+        <SidebarProvider open={true}>
+          <MobileSidebar>
+            <nav>Links</nav>
+          </MobileSidebar>
+        </SidebarProvider>
+      );
+      expect(document.body.style.overflow).toBe("hidden");
+      unmount();
+      expect(document.body.style.overflow).toBe("auto");
+    });
+
+    it("dismisses drawer upon pressing Escape key", () => {
+      const setOpen = vi.fn();
+      render(
+        <SidebarProvider open={true} setOpen={setOpen}>
+          <MobileSidebar>
+            <nav>Links</nav>
+          </MobileSidebar>
+        </SidebarProvider>
+      );
+      fireEvent.keyDown(window, { key: "Escape" });
+      expect(setOpen).toHaveBeenCalledWith(false);
+    });
+
+    it("renders close button with touch-target ergonomics >=44x44px and dismisses on click", () => {
+      const setOpen = vi.fn();
+      render(
+        <SidebarProvider open={true} setOpen={setOpen}>
+          <MobileSidebar>
+            <nav>Links</nav>
+          </MobileSidebar>
+        </SidebarProvider>
+      );
+      const closeBtn = screen.getByRole("button", { name: /close drawer/i });
+      expect(closeBtn).toBeDefined();
+      expect(closeBtn.className).toContain("touch-target");
+      expect(closeBtn.className).toContain("min-w-[44px]");
+      expect(closeBtn.className).toContain("min-h-[44px]");
+      fireEvent.click(closeBtn);
+      expect(setOpen).toHaveBeenCalledWith(false);
     });
   });
 });

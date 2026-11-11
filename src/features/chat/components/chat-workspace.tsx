@@ -33,6 +33,7 @@ export interface ChatWorkspaceProps {
   onFeedback?: (messageId: string, feedback: FeedbackRating) => void;
   onRememberMessage?: (messageId: string, content: string) => void;
   onOpenPersonalIntelligence?: () => void;
+  onFocusChange?: (focused: boolean) => void;
 }
 
 interface ChatErrorCardProps {
@@ -121,6 +122,7 @@ export function ChatWorkspace({
   onFeedback,
   onRememberMessage,
   onOpenPersonalIntelligence,
+  onFocusChange,
 }: ChatWorkspaceProps) {
   const chatScrollRef = useRef<HTMLDivElement | null>(null);
   const handleEdit = onEditUserMessage || onEditMessage;
@@ -250,6 +252,7 @@ export function ChatWorkspace({
         selectedModel={selectedModel}
         onSelectModel={onSelectModel}
         enterToSend={enterToSend}
+        onFocusChange={onFocusChange}
       />
     </div>
   );

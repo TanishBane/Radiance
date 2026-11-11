@@ -108,6 +108,7 @@ export interface ChatComposerProps {
   selectedModel?: ModelOption;
   onSelectModel?: (model: ModelOption) => void;
   enterToSend?: boolean;
+  onFocusChange?: (focused: boolean) => void;
 }
 
 export function ChatComposer({
@@ -118,6 +119,7 @@ export function ChatComposer({
   selectedModel,
   onSelectModel,
   enterToSend = true,
+  onFocusChange,
 }: ChatComposerProps) {
   const shouldReduceMotion = useReducedMotion();
   const [input, setInput] = useState("");
@@ -545,6 +547,7 @@ export function ChatComposer({
           onKeyDown={handleKeyDown}
           onFocus={() => {
             setIsFocused(true);
+            onFocusChange?.(true);
             setTimeout(() => {
               if (typeof textareaRef.current?.scrollIntoView === "function") {
                 textareaRef.current.scrollIntoView({ behavior: "smooth", block: "nearest" });
@@ -553,6 +556,7 @@ export function ChatComposer({
           }}
           onBlur={() => {
             setIsFocused(false);
+            onFocusChange?.(false);
           }}
           placeholder="Ask RADIANCE anything..."
           className="w-full bg-transparent border-0 outline-none resize-none text-base sm:text-sm text-[var(--txt)] placeholder:text-[var(--txt-muted)]/70 py-1 max-h-[140px] leading-relaxed font-sans mb-1.5 tracking-[-0.01em] selection:bg-[var(--accent-d)] selection:text-[var(--txt)] relative z-10"
@@ -571,7 +575,7 @@ export function ChatComposer({
         {/* Controls Bar with Professional Icons & Glassmorphic Pills */}
         <div className="flex items-center justify-between gap-1.5 sm:gap-2 pt-2 border-t border-white/[0.08] relative z-10">
           {/* Left Controls: Add Files, Mode Selector, Model Trigger */}
-          <div className="flex items-center gap-1.5 sm:gap-2 min-w-0 flex-1 overflow-x-visible">
+          <div className="flex items-center gap-1.5 sm:gap-2 min-w-0 flex-1 overflow-x-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden py-0.5">
             {/* 1. Add Files Expanding Glass Pill */}
             <motion.button
               type="button"

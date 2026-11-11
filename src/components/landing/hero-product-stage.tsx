@@ -229,7 +229,7 @@ export function HeroProductStage() {
           <button
             type="button"
             onClick={() => setSharingOn(!sharingOn)}
-            className="inline-flex items-center gap-1.5 text-xs text-slate-300 bg-white/5 hover:bg-white/10 px-2.5 py-1 rounded-md border border-white/10 transition-colors"
+            className="inline-flex items-center gap-1.5 min-h-[44px] text-xs text-slate-300 bg-white/5 hover:bg-white/10 px-3 py-1.5 rounded-md border border-white/10 transition-colors touch-target"
             title="Toggle provider sharing for this demo"
           >
             <ShieldCheck className={`w-3 h-3 ${sharingOn ? "text-emerald-400" : "text-slate-400"}`} />
@@ -281,9 +281,9 @@ export function HeroProductStage() {
             </div>
 
             <div className="hero-stage-model-badge hero-stage-model-badge-active">
-              <Sparkles className="w-3.5 h-3.5 text-violet-400" />
-              <span>Radiance OpenWeights</span>
-              <ChevronDown className="w-3 h-3 text-slate-400" />
+              <Sparkles className="w-3.5 h-3.5 text-violet-400 shrink-0" />
+              <span className="truncate max-w-[120px] xs:max-w-none">Radiance OpenWeights</span>
+              <ChevronDown className="w-3 h-3 text-slate-400 shrink-0" />
             </div>
           </div>
 

@@ -52,6 +52,7 @@ export default function RadianceApp() {
   const [historyOpen, setHistoryOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [settingsSection, setSettingsSection] = useState("general");
+  const [isComposerFocused, setIsComposerFocused] = useState(false);
 
   const handleSettingsChange = useCallback((nextSettings: RadianceSettings) => {
     const withThemeHistory = nextSettings.theme !== settings.theme
@@ -354,7 +355,7 @@ export default function RadianceApp() {
   }, [isGenerating, retryLast]);
 
   return (
-    <div className="relative flex flex-row h-[100dvh] w-full max-w-full overflow-hidden bg-[var(--void)] text-[var(--txt)] font-sans select-none">
+    <div className="relative flex flex-row h-screen h-[100dvh] w-full max-w-full overflow-hidden bg-[var(--void)] text-[var(--txt)] font-sans select-none">
       {/* Background Engines */}
       {gradientStyle === "cosmic" && (
         <AmbientCanvas accentColor={selectedTheme.accent} />
@@ -413,10 +414,12 @@ export default function RadianceApp() {
             onRememberMessage={handleRememberMessage}
             onOpenPersonalIntelligence={() => openSettings("personal-intelligence")}
             onRetry={handleRetry}
+            onFocusChange={setIsComposerFocused}
           />
         </div>
         {/* Mobile Thumb-Zone Bottom Navigation */}
         <MobileBottomNav
+          isComposerFocused={isComposerFocused}
           activeTab={
             historyOpen
               ? "history"
