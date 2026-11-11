@@ -75,6 +75,17 @@ test.describe("Visual Quality Inspection & Multi-Viewport Screenshot Capture", (
         });
       }
 
+      // Scroll to preferences sandbox section (the point where orbit-window-earth fades in)
+      const preferencesSection = page.locator("#preferences");
+      if ((await preferencesSection.count()) > 0) {
+        await preferencesSection.scrollIntoViewIfNeeded();
+        await page.waitForTimeout(600);
+        await page.screenshot({
+          path: path.join(outDir, `${vp.name}-preferences-section.png`),
+          fullPage: false,
+        });
+      }
+
       // Full page screenshot
       await page.screenshot({
         path: path.join(outDir, `${vp.name}-fullpage.png`),
