@@ -97,6 +97,17 @@ test.describe("Visual Quality Inspection & Multi-Viewport Screenshot Capture", (
         });
       }
 
+      // Scroll to privacy fortress section (the point where autumn-pagoda-maples fades in)
+      const privacySection = page.locator("#privacy");
+      if ((await privacySection.count()) > 0) {
+        await privacySection.scrollIntoViewIfNeeded();
+        await page.waitForTimeout(600);
+        await page.screenshot({
+          path: path.join(outDir, `${vp.name}-privacy-section.png`),
+          fullPage: false,
+        });
+      }
+
       // Full page screenshot
       await page.screenshot({
         path: path.join(outDir, `${vp.name}-fullpage.png`),
