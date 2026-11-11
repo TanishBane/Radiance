@@ -3,9 +3,7 @@
 import React, { useState, useEffect, memo } from "react";
 import { motion, useReducedMotion } from "motion/react";
 import { Sparkles, Globe, ArrowUpRight } from "lucide-react";
-import { FlutedGlassTorus } from "./fluted-glass-torus";
 import { HeroProductStage } from "./hero-product-stage";
-import { IntelligenceField } from "./intelligence-field";
 import { LandingCta } from "./landing-cta";
 import { motionDurations, motionEasing } from "@/lib/motion/presets";
 import "./hero-landscape.css";
@@ -47,11 +45,11 @@ export function HeroLandscape() {
       aria-labelledby="hero-display-heading"
     >
       <div className="hero-landscape-shell">
-        {/* Top Hero Split Showcase (Synasite & Retreats Editorial Grid) */}
-        <div className="hero-showcase-grid">
-          {/* Left Column: Editorial Typography & High-Craft CTAs */}
+        {/* Top Hero Centered Showcase */}
+        <div className="hero-center-showcase">
+          {/* Editorial Typography & High-Craft CTAs */}
           <motion.div 
-            className="hero-editorial-column"
+            className="hero-editorial-column hero-editorial-center"
             initial={shouldReduceMotion ? false : { opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
             transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.6, ease: motionEasing.entrance }}
@@ -79,16 +77,6 @@ export function HeroLandscape() {
               <span>Saved note · Keep citations inline</span>
               <span>More concise</span>
             </p>
-          </motion.div>
-
-          {/* Right Column: Fluted Glass Slit-Scan Prism & Aurora Torus (Synasite Reference) */}
-          <motion.div
-            className="hero-visual-column"
-            initial={shouldReduceMotion ? false : { opacity: 0, scale: 0.96 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.7, delay: 0.1, ease: motionEasing.entrance }}
-          >
-            <FlutedGlassTorus />
           </motion.div>
         </div>
 
@@ -131,17 +119,6 @@ export function HeroLandscape() {
           transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.7, delay: 0.25, ease: motionEasing.entrance }}
         >
           <HeroProductStage />
-        </motion.div>
-
-        {/* Live Interactive Context Proof (Centered below product stage) */}
-        <motion.div
-          className="hero-field-wrapper"
-          style={{ width: "100%", maxWidth: "980px", marginTop: "3.5rem" }}
-          initial={shouldReduceMotion ? false : { opacity: 0, y: 24 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.6, delay: 0.35, ease: motionEasing.entrance }}
-        >
-          <IntelligenceField />
         </motion.div>
       </div>
     </section>

@@ -31,9 +31,11 @@ export function LandingNav() {
   return (
     <header className={cn("landing-nav", scrolled && "is-scrolled", "landing-nav-redesign")}>
       <div className="landing-shell landing-nav-row">
-        <Link href="/" className="inline-flex items-center min-h-11" aria-label="Radiance home">
-          <RadianceLogo variant="lockup" size="sm" aria-hidden />
-        </Link>
+        <div className="landing-nav-brand-wrap">
+          <Link href="/" className="inline-flex items-center min-h-11" aria-label="Radiance home">
+            <RadianceLogo variant="lockup" size="sm" aria-hidden />
+          </Link>
+        </div>
 
         <nav className="landing-nav-links" aria-label="Primary">
           {NAV_LINKS.map((link) => (

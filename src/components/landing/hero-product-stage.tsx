@@ -128,7 +128,7 @@ export function HeroProductStage() {
     <div 
       className="hero-stage-container"
       role="region"
-      aria-label="Interactive Radiance conversation stage"
+      aria-label="An illustrative Radiance conversation"
     >
       {/* Central Radiance Brand Header */}
       <div className="hero-stage-header">
