@@ -59,8 +59,17 @@ describe("ASCII Art Starry Ridge & Image Piece Engine Specifications", () => {
     expect(frame1.rows).toBe(108);
     expect(frame1.ch).toHaveLength(192 * 108);
 
-    // Verify presence of glyphs from DOT_LEVELS
+    // Verify presence of glyphs from LEVELS
     const chars = new Set(frame0.ch);
-    expect(chars.has(" ") || chars.has("·") || chars.has(":") || chars.has("•") || chars.has("●") || chars.has("■")).toBe(true);
+    expect(
+      chars.has("▁") ||
+      chars.has("▂") ||
+      chars.has("▃") ||
+      chars.has("▄") ||
+      chars.has("▅") ||
+      chars.has("▆") ||
+      chars.has("▇") ||
+      chars.has("█")
+    ).toBe(true);
   });
 });

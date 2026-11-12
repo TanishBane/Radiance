@@ -11,6 +11,7 @@ import createAutumnRoadCyclist, { meta as cyclistMeta, LEVELS as CYCLIST_LEVELS,
 import createAutumnPagodaMaples, { meta as pagodaMeta, LEVELS as PAGODA_LEVELS, W as PAGODA_W, H as PAGODA_H } from "@/lib/ascii-art/autumn-pagoda-maples";
 import createFallingLeaves, { meta as leavesMeta } from "@/lib/ascii-art/falling-leaves";
 import createAuroraCurtains, { meta as auroraMeta } from "@/lib/ascii-art/aurora-curtains";
+import createStarryRidge, { meta as starryMeta, LEVELS as STARRY_LEVELS } from "@/lib/ascii-art/starry-ridge";
 
 export interface ArcticIcebergsBackgroundProps {
   className?: string;
@@ -38,6 +39,8 @@ export interface ArcticIcebergsBackgroundProps {
  *    Slowly & smoothly cross-fades into Falling Leaves (autumn leaves tumbling and drifting down from a golden tree in a warm haze onto a carpet of fallen leaves).
  * 10. Future Vision Section ("Personal intelligence, with room to evolve."):
  *     Slowly & smoothly cross-fades into Aurora Curtains (three folded ribbons of aurora sway across the night sky, drifting rays, starry expanse, silhouetted hills).
+ * 11. Final CTA Section ("Your next conversation can feel different."):
+ *     Slowly & smoothly cross-fades into Starry Ridge (violet sky full of stars, Milky Way, dark mountain ridge, shooting stars).
  */
 export function ArcticIcebergsBackground({ className }: ArcticIcebergsBackgroundProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -51,6 +54,7 @@ export function ArcticIcebergsBackground({ className }: ArcticIcebergsBackground
   const canvasPagodaRef = useRef<HTMLCanvasElement | null>(null);
   const canvasLeavesRef = useRef<HTMLCanvasElement | null>(null);
   const canvasAuroraRef = useRef<HTMLCanvasElement | null>(null);
+  const canvasStarryRef = useRef<HTMLCanvasElement | null>(null);
 
   const [fadeValley, setFadeValley] = useState(0);
   const [fadeMoonlit, setFadeMoonlit] = useState(0);
@@ -61,6 +65,7 @@ export function ArcticIcebergsBackground({ className }: ArcticIcebergsBackground
   const [fadePagoda, setFadePagoda] = useState(0);
   const [fadeLeaves, setFadeLeaves] = useState(0);
   const [fadeAurora, setFadeAurora] = useState(0);
+  const [fadeStarry, setFadeStarry] = useState(0);
 
   // Scroll listener tracking #problem, #product, and #preview sections
   useEffect(() => {
@@ -154,6 +159,15 @@ export function ArcticIcebergsBackground({ className }: ArcticIcebergsBackground
             setFadeAurora(smooth);
           }
 
+          // 10. Final CTA Section ("Your next conversation can feel different.") -> Transition to Starry Ridge
+          const startEl = document.getElementById("start");
+          if (startEl) {
+            const rect = startEl.getBoundingClientRect();
+            const raw = Math.max(0, Math.min(1, (startFade - rect.top) / (startFade - endFade)));
+            const smooth = raw * raw * (3 - 2 * raw);
+            setFadeStarry(smooth);
+          }
+
           ticking = false;
         });
         ticking = true;
@@ -221,7 +235,8 @@ export function ArcticIcebergsBackground({ className }: ArcticIcebergsBackground
       fadeCyclist < 0.99 &&
       fadePagoda < 0.99 &&
       fadeLeaves < 0.99 &&
-      fadeAurora < 0.99;
+      fadeAurora < 0.99 &&
+      fadeStarry < 0.99;
 
     const handleVisibilityChange = () => {
       isVisible = document.visibilityState === "visible";
@@ -295,7 +310,7 @@ export function ArcticIcebergsBackground({ className }: ArcticIcebergsBackground
       window.removeEventListener("resize", handleResize);
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
-  }, [fadeValley, fadeMoonlit, fadeMountain, fadeSkyline, fadeEarth, fadeCyclist, fadePagoda, fadeLeaves, fadeAurora]);
+  }, [fadeValley, fadeMoonlit, fadeMountain, fadeSkyline, fadeEarth, fadeCyclist, fadePagoda, fadeLeaves, fadeAurora, fadeStarry]);
 
   // 2. Balloon Valley Sunrise Canvas Controller
   useEffect(() => {
@@ -349,7 +364,8 @@ export function ArcticIcebergsBackground({ className }: ArcticIcebergsBackground
       fadeCyclist < 0.99 &&
       fadePagoda < 0.99 &&
       fadeLeaves < 0.99 &&
-      fadeAurora < 0.99;
+      fadeAurora < 0.99 &&
+      fadeStarry < 0.99;
 
     const handleVisibilityChange = () => {
       isVisible = document.visibilityState === "visible";
@@ -421,7 +437,7 @@ export function ArcticIcebergsBackground({ className }: ArcticIcebergsBackground
       window.removeEventListener("resize", handleResize);
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
-  }, [fadeValley, fadeMoonlit, fadeMountain, fadeSkyline, fadeEarth, fadeCyclist, fadePagoda, fadeLeaves, fadeAurora]);
+  }, [fadeValley, fadeMoonlit, fadeMountain, fadeSkyline, fadeEarth, fadeCyclist, fadePagoda, fadeLeaves, fadeAurora, fadeStarry]);
 
   // 3. Moonlit Sea Canvas Controller
   useEffect(() => {
@@ -473,7 +489,8 @@ export function ArcticIcebergsBackground({ className }: ArcticIcebergsBackground
       fadeCyclist < 0.99 &&
       fadePagoda < 0.99 &&
       fadeLeaves < 0.99 &&
-      fadeAurora < 0.99;
+      fadeAurora < 0.99 &&
+      fadeStarry < 0.99;
 
     const handleVisibilityChange = () => {
       isVisible = document.visibilityState === "visible";
@@ -547,7 +564,7 @@ export function ArcticIcebergsBackground({ className }: ArcticIcebergsBackground
       window.removeEventListener("resize", handleResize);
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
-  }, [fadeMoonlit, fadeMountain, fadeSkyline, fadeEarth, fadeCyclist, fadePagoda, fadeLeaves, fadeAurora]);
+  }, [fadeMoonlit, fadeMountain, fadeSkyline, fadeEarth, fadeCyclist, fadePagoda, fadeLeaves, fadeAurora, fadeStarry]);
 
   // 4. Mountain Sunrise Canvas Controller
   useEffect(() => {
@@ -598,7 +615,8 @@ export function ArcticIcebergsBackground({ className }: ArcticIcebergsBackground
       fadeCyclist < 0.99 &&
       fadePagoda < 0.99 &&
       fadeLeaves < 0.99 &&
-      fadeAurora < 0.99;
+      fadeAurora < 0.99 &&
+      fadeStarry < 0.99;
 
     const handleVisibilityChange = () => {
       isVisible = document.visibilityState === "visible";
@@ -672,7 +690,7 @@ export function ArcticIcebergsBackground({ className }: ArcticIcebergsBackground
       window.removeEventListener("resize", handleResize);
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
-  }, [fadeMountain, fadeSkyline, fadeEarth, fadeCyclist, fadePagoda, fadeLeaves, fadeAurora]);
+  }, [fadeMountain, fadeSkyline, fadeEarth, fadeCyclist, fadePagoda, fadeLeaves, fadeAurora, fadeStarry]);
 
   // 5. City Skyline Night Canvas Controller
   useEffect(() => {
@@ -722,7 +740,8 @@ export function ArcticIcebergsBackground({ className }: ArcticIcebergsBackground
       fadeCyclist < 0.99 &&
       fadePagoda < 0.99 &&
       fadeLeaves < 0.99 &&
-      fadeAurora < 0.99;
+      fadeAurora < 0.99 &&
+      fadeStarry < 0.99;
 
     const handleVisibilityChange = () => {
       isVisible = document.visibilityState === "visible";
@@ -796,7 +815,7 @@ export function ArcticIcebergsBackground({ className }: ArcticIcebergsBackground
       window.removeEventListener("resize", handleResize);
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
-  }, [fadeSkyline, fadeEarth, fadeCyclist, fadePagoda, fadeLeaves, fadeAurora]);
+  }, [fadeSkyline, fadeEarth, fadeCyclist, fadePagoda, fadeLeaves, fadeAurora, fadeStarry]);
 
   // 6. Orbit Window Earth Canvas Controller
   useEffect(() => {
@@ -846,7 +865,8 @@ export function ArcticIcebergsBackground({ className }: ArcticIcebergsBackground
       fadeCyclist < 0.99 &&
       fadePagoda < 0.99 &&
       fadeLeaves < 0.99 &&
-      fadeAurora < 0.99;
+      fadeAurora < 0.99 &&
+      fadeStarry < 0.99;
 
     const handleVisibilityChange = () => {
       isVisible = document.visibilityState === "visible";
@@ -918,7 +938,7 @@ export function ArcticIcebergsBackground({ className }: ArcticIcebergsBackground
       window.removeEventListener("resize", handleResize);
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
-  }, [fadeEarth, fadeCyclist, fadePagoda, fadeLeaves, fadeAurora]);
+  }, [fadeEarth, fadeCyclist, fadePagoda, fadeLeaves, fadeAurora, fadeStarry]);
 
   // 7. Autumn Road Cyclist Canvas Controller
   useEffect(() => {
@@ -967,7 +987,8 @@ export function ArcticIcebergsBackground({ className }: ArcticIcebergsBackground
       fadeCyclist > 0.01 &&
       fadePagoda < 0.99 &&
       fadeLeaves < 0.99 &&
-      fadeAurora < 0.99;
+      fadeAurora < 0.99 &&
+      fadeStarry < 0.99;
 
     const handleVisibilityChange = () => {
       isVisible = document.visibilityState === "visible";
@@ -1039,7 +1060,7 @@ export function ArcticIcebergsBackground({ className }: ArcticIcebergsBackground
       window.removeEventListener("resize", handleResize);
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
-  }, [fadeCyclist, fadePagoda, fadeLeaves, fadeAurora]);
+  }, [fadeCyclist, fadePagoda, fadeLeaves, fadeAurora, fadeStarry]);
 
   // 8. Autumn Pagoda Maples Canvas Controller
   useEffect(() => {
@@ -1084,7 +1105,11 @@ export function ArcticIcebergsBackground({ className }: ArcticIcebergsBackground
     handleResize();
     window.addEventListener("resize", handleResize, { passive: true });
 
-    const isLayerActive = fadePagoda > 0.01 && fadeLeaves < 0.99 && fadeAurora < 0.99;
+    const isLayerActive =
+      fadePagoda > 0.01 &&
+      fadeLeaves < 0.99 &&
+      fadeAurora < 0.99 &&
+      fadeStarry < 0.99;
 
     const handleVisibilityChange = () => {
       isVisible = document.visibilityState === "visible";
@@ -1156,7 +1181,7 @@ export function ArcticIcebergsBackground({ className }: ArcticIcebergsBackground
       window.removeEventListener("resize", handleResize);
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
-  }, [fadePagoda, fadeLeaves, fadeAurora]);
+  }, [fadePagoda, fadeLeaves, fadeAurora, fadeStarry]);
 
   // 9. Falling Leaves Canvas Controller
   useEffect(() => {
@@ -1200,7 +1225,10 @@ export function ArcticIcebergsBackground({ className }: ArcticIcebergsBackground
     handleResize();
     window.addEventListener("resize", handleResize, { passive: true });
 
-    const isLayerActive = fadeLeaves > 0.01 && fadeAurora < 0.99;
+    const isLayerActive =
+      fadeLeaves > 0.01 &&
+      fadeAurora < 0.99 &&
+      fadeStarry < 0.99;
 
     const handleVisibilityChange = () => {
       isVisible = document.visibilityState === "visible";
@@ -1274,7 +1302,7 @@ export function ArcticIcebergsBackground({ className }: ArcticIcebergsBackground
       window.removeEventListener("resize", handleResize);
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
-  }, [fadeLeaves, fadeAurora]);
+  }, [fadeLeaves, fadeAurora, fadeStarry]);
 
   // 10. Aurora Curtains Canvas Controller
   useEffect(() => {
@@ -1318,7 +1346,7 @@ export function ArcticIcebergsBackground({ className }: ArcticIcebergsBackground
     handleResize();
     window.addEventListener("resize", handleResize, { passive: true });
 
-    const isLayerActive = fadeAurora > 0.01;
+    const isLayerActive = fadeAurora > 0.01 && fadeStarry < 0.99;
 
     const handleVisibilityChange = () => {
       isVisible = document.visibilityState === "visible";
@@ -1392,7 +1420,125 @@ export function ArcticIcebergsBackground({ className }: ArcticIcebergsBackground
       window.removeEventListener("resize", handleResize);
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
-  }, [fadeAurora]);
+  }, [fadeAurora, fadeStarry]);
+
+  // 11. Starry Ridge Canvas Controller
+  useEffect(() => {
+    const canvas = canvasStarryRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d", { alpha: false });
+    if (!ctx) return;
+
+    let animId: number | null = null;
+    let isDisposed = false;
+    let isVisible = true;
+    let lastFrameTime = 0;
+    const targetFps = starryMeta.fps || 15;
+    const frameInterval = 1000 / targetFps;
+
+    const renderStarry = createStarryRidge();
+    const cols = starryMeta.cols || 192;
+    const rows = starryMeta.rows || 108;
+
+    const prefersReducedMotion =
+      typeof window !== "undefined" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    let displayWidth = window.innerWidth;
+    let displayHeight = window.innerHeight;
+
+    const handleResize = () => {
+      if (!canvas || isDisposed) return;
+      displayWidth = window.innerWidth;
+      displayHeight = window.innerHeight;
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+      canvas.width = Math.floor(displayWidth * dpr);
+      canvas.height = Math.floor(displayHeight * dpr);
+      canvas.style.width = `${displayWidth}px`;
+      canvas.style.height = `${displayHeight}px`;
+
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.scale(dpr, dpr);
+    };
+
+    handleResize();
+    window.addEventListener("resize", handleResize, { passive: true });
+
+    const isLayerActive = fadeStarry > 0.01;
+
+    const handleVisibilityChange = () => {
+      isVisible = document.visibilityState === "visible";
+      if (isVisible && !animId && isLayerActive) {
+        lastFrameTime = performance.now();
+        animId = requestAnimationFrame(renderLoop);
+      }
+    };
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    const startTime = performance.now();
+
+    const renderLoop = (now: number) => {
+      if (isDisposed) return;
+
+      if (!isVisible || !isLayerActive) {
+        animId = null;
+        return;
+      }
+
+      const elapsed = now - lastFrameTime;
+      if (elapsed >= frameInterval) {
+        lastFrameTime = now - (elapsed % frameInterval);
+
+        const t = prefersReducedMotion ? 1.0 : (now - startTime) * 0.001;
+        const frame = renderStarry(t);
+
+        // Cosmic deep night wash
+        ctx.fillStyle = "#020008";
+        ctx.fillRect(0, 0, displayWidth, displayHeight);
+
+        const cellW = displayWidth / cols;
+        const cellH = displayHeight / rows;
+        const fontSize = Math.max(8, Math.floor(cellH * 0.95));
+
+        ctx.font = `${fontSize}px "Cascadia Code", "Fira Code", "Courier New", monospace`;
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+
+        const totalCells = cols * rows;
+        for (let idx = 0; idx < totalCells; idx++) {
+          const ch = frame.ch[idx];
+          if (!ch || ch === " ") continue;
+
+          const colorHex = frame.co[idx] || "#ffedce";
+
+          const x = idx % cols;
+          const y = Math.floor(idx / cols);
+
+          ctx.fillStyle = colorHex;
+          ctx.fillText(ch, (x + 0.5) * cellW, (y + 0.5) * cellH);
+        }
+
+        if (prefersReducedMotion) {
+          animId = null;
+          return;
+        }
+      }
+
+      animId = requestAnimationFrame(renderLoop);
+    };
+
+    if (isLayerActive) {
+      animId = requestAnimationFrame(renderLoop);
+    }
+
+    return () => {
+      isDisposed = true;
+      if (animId) cancelAnimationFrame(animId);
+      window.removeEventListener("resize", handleResize);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, [fadeStarry]);
 
   return (
     <div
@@ -1419,7 +1565,7 @@ export function ArcticIcebergsBackground({ className }: ArcticIcebergsBackground
           inset: 0,
           width: "100%",
           height: "100%",
-          opacity: Math.max(0, (1 - fadeValley) * (1 - fadeMoonlit) * (1 - fadeMountain) * (1 - fadeSkyline) * (1 - fadeEarth) * (1 - fadeCyclist) * (1 - fadePagoda) * (1 - fadeLeaves) * (1 - fadeAurora)),
+          opacity: Math.max(0, (1 - fadeValley) * (1 - fadeMoonlit) * (1 - fadeMountain) * (1 - fadeSkyline) * (1 - fadeEarth) * (1 - fadeCyclist) * (1 - fadePagoda) * (1 - fadeLeaves) * (1 - fadeAurora) * (1 - fadeStarry)),
           transition: "opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1)",
           willChange: "opacity",
         }}
@@ -1435,7 +1581,7 @@ export function ArcticIcebergsBackground({ className }: ArcticIcebergsBackground
           inset: 0,
           width: "100%",
           height: "100%",
-          opacity: Math.max(0, fadeValley * (1 - fadeMoonlit) * (1 - fadeMountain) * (1 - fadeSkyline) * (1 - fadeEarth) * (1 - fadeCyclist) * (1 - fadePagoda) * (1 - fadeLeaves) * (1 - fadeAurora)),
+          opacity: Math.max(0, fadeValley * (1 - fadeMoonlit) * (1 - fadeMountain) * (1 - fadeSkyline) * (1 - fadeEarth) * (1 - fadeCyclist) * (1 - fadePagoda) * (1 - fadeLeaves) * (1 - fadeAurora) * (1 - fadeStarry)),
           transition: "opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1)",
           willChange: "opacity",
         }}
@@ -1451,7 +1597,7 @@ export function ArcticIcebergsBackground({ className }: ArcticIcebergsBackground
           inset: 0,
           width: "100%",
           height: "100%",
-          opacity: Math.max(0, fadeMoonlit * (1 - fadeMountain) * (1 - fadeSkyline) * (1 - fadeEarth) * (1 - fadeCyclist) * (1 - fadePagoda) * (1 - fadeLeaves) * (1 - fadeAurora)),
+          opacity: Math.max(0, fadeMoonlit * (1 - fadeMountain) * (1 - fadeSkyline) * (1 - fadeEarth) * (1 - fadeCyclist) * (1 - fadePagoda) * (1 - fadeLeaves) * (1 - fadeAurora) * (1 - fadeStarry)),
           transition: "opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1)",
           willChange: "opacity",
         }}
@@ -1467,7 +1613,7 @@ export function ArcticIcebergsBackground({ className }: ArcticIcebergsBackground
           inset: 0,
           width: "100%",
           height: "100%",
-          opacity: Math.max(0, fadeMountain * (1 - fadeSkyline) * (1 - fadeEarth) * (1 - fadeCyclist) * (1 - fadePagoda) * (1 - fadeLeaves) * (1 - fadeAurora)),
+          opacity: Math.max(0, fadeMountain * (1 - fadeSkyline) * (1 - fadeEarth) * (1 - fadeCyclist) * (1 - fadePagoda) * (1 - fadeLeaves) * (1 - fadeAurora) * (1 - fadeStarry)),
           transition: "opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1)",
           willChange: "opacity",
         }}
@@ -1483,7 +1629,7 @@ export function ArcticIcebergsBackground({ className }: ArcticIcebergsBackground
           inset: 0,
           width: "100%",
           height: "100%",
-          opacity: Math.max(0, fadeSkyline * (1 - fadeEarth) * (1 - fadeCyclist) * (1 - fadePagoda) * (1 - fadeLeaves) * (1 - fadeAurora)),
+          opacity: Math.max(0, fadeSkyline * (1 - fadeEarth) * (1 - fadeCyclist) * (1 - fadePagoda) * (1 - fadeLeaves) * (1 - fadeAurora) * (1 - fadeStarry)),
           transition: "opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1)",
           willChange: "opacity",
         }}
@@ -1499,7 +1645,7 @@ export function ArcticIcebergsBackground({ className }: ArcticIcebergsBackground
           inset: 0,
           width: "100%",
           height: "100%",
-          opacity: Math.max(0, fadeEarth * (1 - fadeCyclist) * (1 - fadePagoda) * (1 - fadeLeaves) * (1 - fadeAurora)),
+          opacity: Math.max(0, fadeEarth * (1 - fadeCyclist) * (1 - fadePagoda) * (1 - fadeLeaves) * (1 - fadeAurora) * (1 - fadeStarry)),
           transition: "opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1)",
           willChange: "opacity",
         }}
@@ -1515,7 +1661,7 @@ export function ArcticIcebergsBackground({ className }: ArcticIcebergsBackground
           inset: 0,
           width: "100%",
           height: "100%",
-          opacity: Math.max(0, fadeCyclist * (1 - fadePagoda) * (1 - fadeLeaves) * (1 - fadeAurora)),
+          opacity: Math.max(0, fadeCyclist * (1 - fadePagoda) * (1 - fadeLeaves) * (1 - fadeAurora) * (1 - fadeStarry)),
           transition: "opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1)",
           willChange: "opacity",
         }}
@@ -1531,7 +1677,7 @@ export function ArcticIcebergsBackground({ className }: ArcticIcebergsBackground
           inset: 0,
           width: "100%",
           height: "100%",
-          opacity: Math.max(0, fadePagoda * (1 - fadeLeaves) * (1 - fadeAurora)),
+          opacity: Math.max(0, fadePagoda * (1 - fadeLeaves) * (1 - fadeAurora) * (1 - fadeStarry)),
           transition: "opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1)",
           willChange: "opacity",
         }}
@@ -1547,7 +1693,7 @@ export function ArcticIcebergsBackground({ className }: ArcticIcebergsBackground
           inset: 0,
           width: "100%",
           height: "100%",
-          opacity: Math.max(0, fadeLeaves * (1 - fadeAurora)),
+          opacity: Math.max(0, fadeLeaves * (1 - fadeAurora) * (1 - fadeStarry)),
           transition: "opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1)",
           willChange: "opacity",
         }}
@@ -1563,7 +1709,23 @@ export function ArcticIcebergsBackground({ className }: ArcticIcebergsBackground
           inset: 0,
           width: "100%",
           height: "100%",
-          opacity: fadeAurora,
+          opacity: Math.max(0, fadeAurora * (1 - fadeStarry)),
+          transition: "opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1)",
+          willChange: "opacity",
+        }}
+        aria-hidden="true"
+      />
+
+      {/* 11. Starry Ridge Layer (Cross-fades in from Final CTA Section: "Your next conversation can feel different.") */}
+      <canvas
+        ref={canvasStarryRef}
+        data-testid="canvas-starry"
+        style={{
+          position: "absolute",
+          inset: 0,
+          width: "100%",
+          height: "100%",
+          opacity: fadeStarry,
           transition: "opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1)",
           willChange: "opacity",
         }}

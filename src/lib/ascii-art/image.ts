@@ -41,7 +41,8 @@ export interface StarryRidgeFrame {
   shootingStars?: { x: number; y: number; alpha: number }[];
 }
 
-export const DOT_LEVELS = " ·:•●■▓█";
+export const LEVELS = "▁▂▃▄▅▆▇█";
+export const DOT_LEVELS = LEVELS;
 
 interface ShootingStarTrack {
   x0: number;
@@ -77,8 +78,8 @@ export function imagePiece(
       const lv = Math.max(0, Math.min(7, parseInt(lChar, 10) || 0));
 
       baseLevels[idx] = lv;
-      baseCh[idx] = DOT_LEVELS[lv] || " ";
-      baseCo[idx] = palette[cKey] || "#000000";
+      baseCh[idx] = LEVELS[lv] || "▁";
+      baseCo[idx] = palette[cKey] || "#120d20";
     }
   }
 
@@ -97,6 +98,22 @@ export function imagePiece(
       const co = baseCo.slice();
       const levels = new Uint8Array(baseLevels);
       const activeStars: { x: number; y: number; alpha: number }[] = [];
+
+      // Twinkling stars effect
+      const flicker = Math.floor(t * 5);
+      for (let i = 0; i < totalCells; i++) {
+        if (baseLevels[i] >= 5) {
+          const x = i % cols;
+          const y = Math.floor(i / cols);
+          const h = Math.sin(x * 12.9898 + y * 78.233 + flicker * 37.719) * 43758.5453;
+          const rand = h - Math.floor(h);
+          if (rand > 0.92) {
+            ch[i] = "█";
+            co[i] = "#ffffff";
+            levels[i] = 7;
+          }
+        }
+      }
 
       if (options.shooting) {
         for (const tr of tracks) {
@@ -125,19 +142,19 @@ export function imagePiece(
                     co[idx] = "#ffffff";
                     levels[idx] = 7;
                   } else if (step < 3) {
-                    ch[idx] = "●";
+                    ch[idx] = "▇";
                     co[idx] = "#ffedce";
                     levels[idx] = 6;
                   } else if (step < 7) {
-                    ch[idx] = "•";
+                    ch[idx] = "▅";
                     co[idx] = "#ff9edc";
                     levels[idx] = 4;
                   } else if (step < 11) {
-                    ch[idx] = ":";
+                    ch[idx] = "▄";
                     co[idx] = "#d789d5";
                     levels[idx] = 2;
                   } else {
-                    ch[idx] = "·";
+                    ch[idx] = "▂";
                     co[idx] = "#8c309b";
                     levels[idx] = 1;
                   }

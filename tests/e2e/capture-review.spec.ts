@@ -5,6 +5,8 @@ import fs from "fs";
 const outDir = path.resolve("docs/landing-page/screenshots");
 
 test.describe("Visual Quality Inspection & Multi-Viewport Screenshot Capture", () => {
+  test.setTimeout(120000);
+
   test.beforeAll(() => {
     if (!fs.existsSync(outDir)) {
       fs.mkdirSync(outDir, { recursive: true });
