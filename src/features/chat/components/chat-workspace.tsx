@@ -22,6 +22,7 @@ export interface ChatWorkspaceProps {
   selectedModel?: ModelOption;
   onSelectModel?: (model: ModelOption) => void;
   enterToSend?: boolean;
+  useOrbInput?: boolean;
 
   // Milestone 3 Extensions: Inference, Errors & Actions
   streamError?: Error | null;
@@ -113,6 +114,7 @@ export function ChatWorkspace({
   selectedModel,
   onSelectModel,
   enterToSend = true,
+  useOrbInput = false,
   streamError,
   onRetry,
   onRegenerate,
@@ -252,6 +254,7 @@ export function ChatWorkspace({
         selectedModel={selectedModel}
         onSelectModel={onSelectModel}
         enterToSend={enterToSend}
+        useOrbInput={useOrbInput}
         onFocusChange={onFocusChange}
       />
     </div>

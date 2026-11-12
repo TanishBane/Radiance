@@ -22,6 +22,7 @@ import {
 import { Attachment, ModelOption } from "@/lib/types/chat";
 import { AVAILABLE_MODELS, DEFAULT_MODEL_ID, getModelById } from "@/lib/ai/models";
 import { createAttachmentFromFile } from "@/lib/documents/parser";
+import { OrbInput } from "@/components/ui/animated-input";
 
 export type ComposerMode = "Plan" | "Ask" | "Build";
 
@@ -109,6 +110,12 @@ export interface ChatComposerProps {
   onSelectModel?: (model: ModelOption) => void;
   enterToSend?: boolean;
   onFocusChange?: (focused: boolean) => void;
+  /**
+   * When true, render the animated OrbInput hero shell on the empty-state
+   * (no input text and no attachments). Falls back to the standard composer
+   * shell otherwise so existing behaviour is preserved.
+   */
+  useOrbInput?: boolean;
 }
 
 export function ChatComposer({
@@ -120,6 +127,7 @@ export function ChatComposer({
   onSelectModel,
   enterToSend = true,
   onFocusChange,
+  useOrbInput = false,
 }: ChatComposerProps) {
   const shouldReduceMotion = useReducedMotion();
   const [input, setInput] = useState("");
@@ -423,6 +431,19 @@ export function ChatComposer({
 
   return (
     <div className="w-full max-w-3xl mx-auto px-3 sm:px-4 pb-[max(1rem,env(safe-area-inset-bottom,0px))] z-20 select-none">
+      {/* Animated OrbInput Hero Shell (empty-state only) */}
+      {useOrbInput && !isGenerating && !input.trim() && attachments.length === 0 && (
+        <div className="mb-2">
+          <OrbInput
+            onSend={(text) => {
+              setInput(text);
+              handleSubmit();
+            }}
+            className="w-full"
+          />
+        </div>
+      )}
+
       {/* Attached Files Preview Bar */}
       {attachments.length > 0 && (
         <div className="flex flex-wrap gap-2 mb-2 p-2 rounded-xl bg-gradient-to-r from-[var(--surface-raised)]/90 via-[var(--surface-raised)]/70 to-[var(--accent-d)]/20 border border-white/[0.10] shadow-sm backdrop-blur-xl animate-in fade-in slide-in-from-bottom-2 duration-200">

@@ -415,6 +415,7 @@ export default function RadianceApp() {
             onOpenPersonalIntelligence={() => openSettings("personal-intelligence")}
             onRetry={handleRetry}
             onFocusChange={setIsComposerFocused}
+            useOrbInput
           />
         </div>
         {/* Mobile Thumb-Zone Bottom Navigation */}

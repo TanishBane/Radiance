@@ -311,6 +311,32 @@ describe("ChatWorkspace Component (Inference & Error States)", () => {
       expect(onSendMock).toHaveBeenCalledWith("New prompt message", []);
     });
 
+    it("renders OrbInput hero shell when useOrbInput is true and workspace is empty", () => {
+      const onSendMock = vi.fn();
+      render(<ChatWorkspace {...defaultProps} useOrbInput onSend={onSendMock} />);
+
+      // OrbInput hero shell should be present on the empty state
+      const orbInput = screen.getByTestId("orb-input");
+      expect(orbInput).toBeDefined();
+      expect(orbInput.getAttribute("aria-label")).toBe("Ask a question");
+    });
+
+    it("hides OrbInput hero shell when generation starts", () => {
+      const onSendMock = vi.fn();
+      const { rerender } = render(
+        <ChatWorkspace {...defaultProps} useOrbInput onSend={onSendMock} />
+      );
+
+      expect(screen.getByTestId("orb-input")).toBeDefined();
+
+      // Once generation starts, the OrbInput hero shell is hidden
+      rerender(
+        <ChatWorkspace {...defaultProps} useOrbInput isGenerating={true} onSend={onSendMock} />
+      );
+
+      expect(screen.queryByTestId("orb-input")).toBeNull();
+    });
+
     it("routes onStop to ChatComposer when isGenerating is true", () => {
       const onStopMock = vi.fn();
       render(
