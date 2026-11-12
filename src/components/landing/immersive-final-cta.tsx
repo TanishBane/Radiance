@@ -5,6 +5,7 @@ import { motion, useReducedMotion } from "motion/react";
 import { ArrowUpRight } from "lucide-react";
 import { motionEasing } from "@/lib/motion/presets";
 import VoxelWallScene from "@/components/ui/voxel-wall";
+import { ShinyButton } from "@/components/ui/shiny-button";
 import "./landing-atmosphere.css";
 
 export function ImmersiveFinalCta() {
@@ -69,13 +70,10 @@ export function ImmersiveFinalCta() {
           viewport={{ once: true }}
           transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.6, delay: 0.2, ease: motionEasing.entrance }}
         >
-          <a
-            href="/chat"
-            className="landing-cta landing-cta-lg landing-final-cta inline-flex items-center gap-2.5 px-8 py-4 rounded-full bg-gradient-to-r from-cyan-500 via-blue-600 to-violet-600 text-white font-semibold text-lg shadow-[0_4px_32px_rgba(6,182,212,0.4)] hover:shadow-[0_8px_40px_rgba(6,182,212,0.6)] hover:-translate-y-0.5 transition-all duration-200"
-          >
-            <span>Start a conversation with Radiance</span>
-            <ArrowUpRight className="w-5 h-5" />
-          </a>
+          <ShinyButton href="/chat" className="inline-flex items-center gap-2.5">
+              Start a conversation with Radiance
+              <ArrowUpRight className="w-5 h-5" />
+            </ShinyButton>
         </motion.div>
 
         <p className="mt-6 text-sm text-slate-400 drop-shadow-sm">

@@ -5,6 +5,7 @@ import { motion, useReducedMotion } from "motion/react";
 import { Sparkles, Globe, ArrowUpRight } from "lucide-react";
 import { HeroProductStage } from "./hero-product-stage";
 import { LandingCta } from "./landing-cta";
+import { ShinyButton } from "@/components/ui/shiny-button";
 import { motionDurations, motionEasing } from "@/lib/motion/presets";
 import "./hero-landscape.css";
 
@@ -64,9 +65,9 @@ export function HeroLandscape() {
             </p>
 
             <div className="hero-actions-row landing-hero-actions">
-              <LandingCta href="/chat" size="lg" className="hero-btn-primary">
-                Chat with Radiance <span aria-hidden="true">↗</span>
-              </LandingCta>
+              <ShinyButton href="/chat" className="hero-btn-primary">
+                Chat with Radiance <ArrowUpRight className="inline w-4 h-4 ml-1 -mt-0.5" />
+              </ShinyButton>
 
               <LandingCta href="#intelligence" variant="ghost" size="lg" className="hero-btn-secondary landing-cta-ghost">
                 Explore Personal Intelligence <span aria-hidden="true">↓</span>

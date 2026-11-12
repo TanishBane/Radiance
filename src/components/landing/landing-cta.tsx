@@ -3,6 +3,7 @@
 import React, { type ReactNode } from "react";
 import Link from "next/link";
 import { cn } from "@/lib/utils/cn";
+import { ShinyButton } from "@/components/ui/shiny-button";
 
 export function LandingCta({
   href = "/chat",
@@ -26,19 +27,31 @@ export function LandingCta({
     }
   };
 
+  if (variant === "ghost") {
+    return (
+      <Link
+        href={href}
+        style={style}
+        onClick={handleClick}
+        className={cn(
+          "landing-cta landing-cta-ghost",
+          size === "lg" && "landing-cta-lg",
+          className
+        )}
+      >
+        {children}
+      </Link>
+    );
+  }
+
   return (
-    <Link
+    <ShinyButton
       href={href}
-      style={style}
-      onClick={handleClick}
-      className={cn(
-        "landing-cta",
-        variant === "ghost" && "landing-cta-ghost",
-        size === "lg" && "landing-cta-lg",
-        className
-      )}
+      onClick={handleClick as unknown as () => void}
+      size={size === "lg" ? "lg" : "sm"}
+      className={cn("landing-cta", size === "lg" && "landing-cta-lg", className)}
     >
       {children}
-    </Link>
+    </ShinyButton>
   );
 }
