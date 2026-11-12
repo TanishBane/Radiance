@@ -4,7 +4,7 @@ export function ProductIntroduction() {
   return (
     <section id="product" className="landing-section story-introduction">
       <div className="landing-shell story-intro-grid">
-        <div>
+        <div className="story-intro-heading">
           <h2 className="landing-section-title">Saved by you. Ready when it matters.</h2>
         </div>
         <div className="story-intro-copy">

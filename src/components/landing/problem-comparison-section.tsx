@@ -89,7 +89,7 @@ export function ProblemComparisonSection() {
               </span>
               <span className="problem-badge-state problem-badge-cyan">
                 <CheckCircle2 className="w-3.5 h-3.5" />
-                <span>Context brought forward automatically</span>
+                <span>Context shared only when you choose</span>
               </span>
             </div>
 
