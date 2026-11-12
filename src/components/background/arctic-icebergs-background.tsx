@@ -1,1428 +1,640 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import createArcticIcebergs, { meta as icebergsMeta } from "@/lib/ascii-art/arctic-icebergs";
-import createBalloonValley, { meta as valleyMeta, LEVELS, W as VALLEY_W, H as VALLEY_H } from "@/lib/ascii-art/balloon-valley-sunrise";
+import createBalloonValley, {
+  meta as valleyMeta,
+  LEVELS as VALLEY_LEVELS,
+  W as VALLEY_W,
+  H as VALLEY_H,
+} from "@/lib/ascii-art/balloon-valley-sunrise";
 import createMoonlitSea, { meta as moonlitMeta } from "@/lib/ascii-art/moonlit-sea";
 import createMountainSunrise, { meta as mountainMeta } from "@/lib/ascii-art/mountain-sunrise";
 import createNycSkylineNight, { meta as skylineMeta } from "@/lib/ascii-art/nyc-skyline-night";
-import createOrbitWindowEarth, { meta as earthMeta, LEVELS as EARTH_LEVELS, W as EARTH_W, H as EARTH_H } from "@/lib/ascii-art/orbit-window-earth";
-import createAutumnRoadCyclist, { meta as cyclistMeta, LEVELS as CYCLIST_LEVELS, W as CYCLIST_W, H as CYCLIST_H } from "@/lib/ascii-art/autumn-road-cyclist";
-import createAutumnPagodaMaples, { meta as pagodaMeta, LEVELS as PAGODA_LEVELS, W as PAGODA_W, H as PAGODA_H } from "@/lib/ascii-art/autumn-pagoda-maples";
+import createOrbitWindowEarth, {
+  meta as earthMeta,
+  LEVELS as EARTH_LEVELS,
+  W as EARTH_W,
+  H as EARTH_H,
+} from "@/lib/ascii-art/orbit-window-earth";
+import createAutumnRoadCyclist, {
+  meta as cyclistMeta,
+  LEVELS as CYCLIST_LEVELS,
+  W as CYCLIST_W,
+  H as CYCLIST_H,
+} from "@/lib/ascii-art/autumn-road-cyclist";
+import createAutumnPagodaMaples, {
+  meta as pagodaMeta,
+  LEVELS as PAGODA_LEVELS,
+  W as PAGODA_W,
+  H as PAGODA_H,
+} from "@/lib/ascii-art/autumn-pagoda-maples";
 import createFallingLeaves, { meta as leavesMeta } from "@/lib/ascii-art/falling-leaves";
 import createAuroraCurtains, { meta as auroraMeta } from "@/lib/ascii-art/aurora-curtains";
+import {
+  computeLayerOpacities,
+  planBackingStores,
+  sectionProgress,
+  MAX_FULL_RESOLUTION_LAYERS,
+} from "@/lib/scroll/fade-pipeline";
 
 export interface ArcticIcebergsBackgroundProps {
   className?: string;
 }
 
+type DrawFrame = (
+  ctx: CanvasRenderingContext2D,
+  time: number,
+  width: number,
+  height: number
+) => void;
+
+interface SceneDefinition {
+  testId: string;
+  sectionId: string | null;
+  fps: number;
+  createDraw: () => DrawFrame;
+}
+
+interface Scene {
+  definition: SceneDefinition;
+  canvas: HTMLCanvasElement | null;
+  ctx: CanvasRenderingContext2D | null;
+  draw: DrawFrame | null;
+  frameInterval: number;
+  allocated: boolean;
+  active: boolean;
+  near: boolean;
+  hasFrame: boolean;
+  drawnStatic: boolean;
+  lastDraw: number;
+  lastOpacity: number;
+}
+
+const CANVAS_FONT = '"Cascadia Code", "Fira Code", "Courier New", monospace';
+
+interface CharacterFrame {
+  ch: string[];
+  co: number[];
+}
+
+interface LevelFrame {
+  levels: ArrayLike<number>;
+  colorIndices: ArrayLike<number>;
+  palHex: string[];
+}
+
+function drawCharacterFrame(
+  ctx: CanvasRenderingContext2D,
+  frame: CharacterFrame,
+  palette: string[],
+  cols: number,
+  rows: number,
+  baseColor: string,
+  fallbackColor: string,
+  fontScale: number,
+  width: number,
+  height: number
+) {
+  ctx.fillStyle = baseColor;
+  ctx.fillRect(0, 0, width, height);
+
+  const cellW = width / cols;
+  const cellH = height / rows;
+  const fontSize = Math.max(8, Math.floor(cellH * fontScale));
+  ctx.font = `${fontSize}px ${CANVAS_FONT}`;
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+
+  // Group glyphs by colour so the context changes fillStyle once per colour
+  // instead of once per character. Cells never overlap, so the painted result
+  // is identical.
+  const buckets = new Map<string, number[]>();
+  const totalCells = cols * rows;
+  for (let index = 0; index < totalCells; index += 1) {
+    const char = frame.ch[index];
+    if (!char || char === " ") continue;
+    const color = palette[frame.co[index]] || fallbackColor;
+    const bucket = buckets.get(color);
+    if (bucket) bucket.push(index);
+    else buckets.set(color, [index]);
+  }
+
+  for (const [color, indices] of buckets) {
+    ctx.fillStyle = color;
+    for (const index of indices) {
+      const x = index % cols;
+      const y = Math.floor(index / cols);
+      ctx.fillText(frame.ch[index], (x + 0.5) * cellW, (y + 0.5) * cellH);
+    }
+  }
+}
+
+function drawLevelFrame(
+  ctx: CanvasRenderingContext2D,
+  frame: LevelFrame,
+  levels: string,
+  cols: number,
+  rows: number,
+  baseColor: string,
+  fallbackColor: string,
+  fontScale: number,
+  width: number,
+  height: number
+) {
+  ctx.fillStyle = baseColor;
+  ctx.fillRect(0, 0, width, height);
+
+  const cellW = width / cols;
+  const cellH = height / rows;
+  const fontSize = Math.max(8, Math.floor(cellH * fontScale));
+  ctx.font = `${fontSize}px ${CANVAS_FONT}`;
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+
+  const buckets = new Map<string, number[]>();
+  const totalCells = cols * rows;
+  for (let index = 0; index < totalCells; index += 1) {
+    const color = frame.palHex[frame.colorIndices[index]] || fallbackColor;
+    const bucket = buckets.get(color);
+    if (bucket) bucket.push(index);
+    else buckets.set(color, [index]);
+  }
+
+  for (const [color, indices] of buckets) {
+    ctx.fillStyle = color;
+    for (const index of indices) {
+      const x = index % cols;
+      const y = Math.floor(index / cols);
+      ctx.fillText(levels[frame.levels[index]], (x + 0.5) * cellW, (y + 0.5) * cellH);
+    }
+  }
+}
+
+const SCENE_DEFINITIONS: SceneDefinition[] = [
+  {
+    testId: "canvas-icebergs",
+    sectionId: null,
+    fps: icebergsMeta.fps || 20,
+    createDraw: () => {
+      const render = createArcticIcebergs();
+      const { cols, rows, palette } = icebergsMeta;
+      return (ctx, time, width, height) =>
+        drawCharacterFrame(ctx, render(time), palette, cols, rows, "#02050c", "#ffffff", 0.92, width, height);
+    },
+  },
+  {
+    testId: "canvas-valley",
+    sectionId: "problem",
+    fps: valleyMeta.fps || 15,
+    createDraw: () => {
+      const render = createBalloonValley();
+      return (ctx, time, width, height) =>
+        drawLevelFrame(
+          ctx,
+          render(time),
+          VALLEY_LEVELS,
+          VALLEY_W,
+          VALLEY_H,
+          "#5a80b8",
+          "#fff6e8",
+          0.95,
+          width,
+          height
+        );
+    },
+  },
+  {
+    testId: "canvas-moonlit",
+    sectionId: "product",
+    fps: moonlitMeta.fps || 20,
+    createDraw: () => {
+      const render = createMoonlitSea();
+      const { cols, rows, palette } = moonlitMeta;
+      return (ctx, time, width, height) =>
+        drawCharacterFrame(ctx, render(time), palette, cols, rows, "#030612", "#dfe8ff", 0.92, width, height);
+    },
+  },
+  {
+    testId: "canvas-mountain",
+    sectionId: "preview",
+    fps: mountainMeta.fps || 20,
+    createDraw: () => {
+      const render = createMountainSunrise();
+      const { cols, rows, palette } = mountainMeta;
+      return (ctx, time, width, height) =>
+        drawCharacterFrame(ctx, render(time), palette, cols, rows, "#1b1f4d", "#ffd27f", 0.92, width, height);
+    },
+  },
+  {
+    testId: "canvas-skyline",
+    sectionId: "intelligence",
+    fps: skylineMeta.fps || 15,
+    createDraw: () => {
+      const render = createNycSkylineNight();
+      const { cols, rows, palette } = skylineMeta;
+      return (ctx, time, width, height) =>
+        drawCharacterFrame(ctx, render(time), palette, cols, rows, "#05071a", "#d9e2ff", 0.92, width, height);
+    },
+  },
+  {
+    testId: "canvas-earth",
+    sectionId: "preferences",
+    fps: earthMeta.fps || 15,
+    createDraw: () => {
+      const render = createOrbitWindowEarth();
+      return (ctx, time, width, height) =>
+        drawLevelFrame(
+          ctx,
+          render(time),
+          EARTH_LEVELS,
+          EARTH_W,
+          EARTH_H,
+          "#04060c",
+          "#fffaf0",
+          0.95,
+          width,
+          height
+        );
+    },
+  },
+  {
+    testId: "canvas-cyclist",
+    sectionId: "pipeline",
+    fps: cyclistMeta.fps || 15,
+    createDraw: () => {
+      const render = createAutumnRoadCyclist();
+      return (ctx, time, width, height) =>
+        drawLevelFrame(
+          ctx,
+          render(time),
+          CYCLIST_LEVELS,
+          CYCLIST_W,
+          CYCLIST_H,
+          "#1a0c08",
+          "#fff2cc",
+          0.95,
+          width,
+          height
+        );
+    },
+  },
+  {
+    testId: "canvas-pagoda",
+    sectionId: "privacy",
+    fps: pagodaMeta.fps || 15,
+    createDraw: () => {
+      const render = createAutumnPagodaMaples();
+      return (ctx, time, width, height) =>
+        drawLevelFrame(
+          ctx,
+          render(time),
+          PAGODA_LEVELS,
+          PAGODA_W,
+          PAGODA_H,
+          "#1e0e12",
+          "#fffaea",
+          0.95,
+          width,
+          height
+        );
+    },
+  },
+  {
+    testId: "canvas-leaves",
+    sectionId: "faq",
+    fps: leavesMeta.fps || 24,
+    createDraw: () => {
+      const render = createFallingLeaves();
+      const { cols, rows, palette } = leavesMeta;
+      return (ctx, time, width, height) =>
+        drawCharacterFrame(ctx, render(time), palette, cols, rows, "#1e120a", "#f0c48a", 0.92, width, height);
+    },
+  },
+  {
+    testId: "canvas-aurora",
+    sectionId: "vision",
+    fps: auroraMeta.fps || 20,
+    createDraw: () => {
+      const render = createAuroraCurtains();
+      const { cols, rows, palette } = auroraMeta;
+      return (ctx, time, width, height) =>
+        drawCharacterFrame(ctx, render(time), palette, cols, rows, "#02040c", "#a8ffc8", 0.92, width, height);
+    },
+  },
+];
+
 /**
- * AtmosphericArtBackground:
- * Multi-Stage Generative ASCII Textmode Canvas System:
- * 1. Upper Page / Hero: Arctic Icebergs (dark polar night, emerald aurora curtain, drifting icebergs).
- * 2. Problem Comparison Section ("Your context shouldn't disappear..."):
- *    Slowly & smoothly cross-fades into Balloon Valley Sunrise (morning sun, misty mountain valleys, hot air balloons).
- * 3. Product Introduction Section ("Saved by you. Ready when it matters."):
- *    Slowly & smoothly cross-fades into Moonlit Sea (full moon, calm night ocean, breaking swell reflection, twinkling stars).
- * 4. Product Preview Section ("A walk through the current path"):
- *    Slowly & smoothly cross-fades into Mountain Sunrise (sun rising behind five layered mountain ranges, valley mist, drifting birds).
- * 5. Personal Intelligence Section ("An AI experience shaped around your context."):
- *    Slowly & smoothly cross-fades into City Skyline Night (dense skyscraper skyline, glowing windows, river reflection).
- * 6. Response Preferences Section ("An answer should feel right for you."):
- *    Slowly & smoothly cross-fades into Orbit Window Earth (space station window looking out at rotating Earth, cloud bands, rising limb sun).
- * 7. Context Pipeline Section ("The right context. At the right moment."):
- *    Slowly & smoothly cross-fades into Autumn Road Cyclist (sunlit forest road, canopy of gold/orange, drifting leaves, lone cyclist).
- * 8. Privacy Fortress Section ("Your context. Your choice."):
- *    Slowly & smoothly cross-fades into Autumn Pagoda Maples (five tier pagoda, evening sky, far hills, maples, arched bridge over mirrored pond, glowing lanterns, swaying branch, falling leaves).
- * 9. FAQ Section ("Questions, answered."):
- *    Slowly & smoothly cross-fades into Falling Leaves (autumn leaves tumbling and drifting down from a golden tree in a warm haze onto a carpet of fallen leaves).
- * 10. Future Vision Section ("Personal intelligence, with room to evolve."):
- *     Slowly & smoothly cross-fades into Aurora Curtains (three folded ribbons of aurora sway across the night sky, drifting rays, starry expanse, silhouetted hills).
- * 11. Final CTA Section ("Your next conversation can feel different."):
- *     Smoothly cross-fades into the 3D Voxel Wall scene (volumetric light rays and tunnel geometry).
+ * Fixed, ten-layer atmospheric canvas background.
+ *
+ * All ten canvases remain in the document because the public test ids and the
+ * fixed container are part of the page contract. Only the layers that can
+ * actually be seen keep a full-resolution backing store: the measured scroll
+ * geometry never shows more than two layers at once. Inactive layers are
+ * reduced to a 1x1 buffer, so the memory ceiling is two full canvases instead
+ * of ten.
+ *
+ * A single animation pipeline owns every layer:
+ * - one passive scroll listener marks the frame dirty,
+ * - section offsets are measured once and refreshed by ResizeObserver,
+ * - IntersectionObserver marks nearby sections for cheap pre-warming,
+ * - visibilitychange pauses all work in background tabs,
+ * - one requestAnimationFrame loop stops when no layer needs to move.
  */
 export function ArcticIcebergsBackground({ className }: ArcticIcebergsBackgroundProps) {
-  const containerRef = useRef<HTMLDivElement | null>(null);
-  const canvasIcebergsRef = useRef<HTMLCanvasElement | null>(null);
-  const canvasValleyRef = useRef<HTMLCanvasElement | null>(null);
-  const canvasMoonlitRef = useRef<HTMLCanvasElement | null>(null);
-  const canvasMountainRef = useRef<HTMLCanvasElement | null>(null);
-  const canvasSkylineRef = useRef<HTMLCanvasElement | null>(null);
-  const canvasEarthRef = useRef<HTMLCanvasElement | null>(null);
-  const canvasCyclistRef = useRef<HTMLCanvasElement | null>(null);
-  const canvasPagodaRef = useRef<HTMLCanvasElement | null>(null);
-  const canvasLeavesRef = useRef<HTMLCanvasElement | null>(null);
-  const canvasAuroraRef = useRef<HTMLCanvasElement | null>(null);
+  const canvasRefs = useRef<Array<HTMLCanvasElement | null>>([]);
 
-  const [fadeValley, setFadeValley] = useState(0);
-  const [fadeMoonlit, setFadeMoonlit] = useState(0);
-  const [fadeMountain, setFadeMountain] = useState(0);
-  const [fadeSkyline, setFadeSkyline] = useState(0);
-  const [fadeEarth, setFadeEarth] = useState(0);
-  const [fadeCyclist, setFadeCyclist] = useState(0);
-  const [fadePagoda, setFadePagoda] = useState(0);
-  const [fadeLeaves, setFadeLeaves] = useState(0);
-  const [fadeAurora, setFadeAurora] = useState(0);
-  const [fadeStart, setFadeStart] = useState(0);
-
-  // Scroll listener tracking #problem, #product, and #preview sections
   useEffect(() => {
-    let ticking = false;
+    if (typeof window === "undefined") return;
 
-    const onScroll = () => {
-      if (!ticking) {
-        window.requestAnimationFrame(() => {
-          const vh = window.innerHeight;
-          const startFade = vh * 0.92;
-          const endFade = vh * 0.22;
-
-          // 1. Problem Comparison Section -> Transition to Balloon Valley
-          const problemEl = document.getElementById("problem");
-          if (problemEl) {
-            const rect = problemEl.getBoundingClientRect();
-            const raw = Math.max(0, Math.min(1, (startFade - rect.top) / (startFade - endFade)));
-            const smooth = raw * raw * (3 - 2 * raw);
-            setFadeValley(smooth);
-          }
-
-          // 2. Product Introduction Section ("Saved by you...") -> Transition to Moonlit Sea
-          const productEl = document.getElementById("product");
-          if (productEl) {
-            const rect = productEl.getBoundingClientRect();
-            const raw = Math.max(0, Math.min(1, (startFade - rect.top) / (startFade - endFade)));
-            const smooth = raw * raw * (3 - 2 * raw);
-            setFadeMoonlit(smooth);
-          }
-
-          // 3. Product Preview Section ("A walk through the current path") -> Transition to Mountain Sunrise
-          const previewEl = document.getElementById("preview");
-          if (previewEl) {
-            const rect = previewEl.getBoundingClientRect();
-            const raw = Math.max(0, Math.min(1, (startFade - rect.top) / (startFade - endFade)));
-            const smooth = raw * raw * (3 - 2 * raw);
-            setFadeMountain(smooth);
-          }
-
-          // 4. Personal Intelligence Section ("An AI experience shaped around your context.") -> Transition to City Skyline Night
-          const intelligenceEl = document.getElementById("intelligence");
-          if (intelligenceEl) {
-            const rect = intelligenceEl.getBoundingClientRect();
-            const raw = Math.max(0, Math.min(1, (startFade - rect.top) / (startFade - endFade)));
-            const smooth = raw * raw * (3 - 2 * raw);
-            setFadeSkyline(smooth);
-          }
-
-          // 5. Response Preferences Section ("An answer should feel right for you.") -> Transition to Orbit Window Earth
-          const preferencesEl = document.getElementById("preferences");
-          if (preferencesEl) {
-            const rect = preferencesEl.getBoundingClientRect();
-            const raw = Math.max(0, Math.min(1, (startFade - rect.top) / (startFade - endFade)));
-            const smooth = raw * raw * (3 - 2 * raw);
-            setFadeEarth(smooth);
-          }
-
-          // 6. Context Pipeline Section ("The right context. At the right moment.") -> Transition to Autumn Road Cyclist
-          const pipelineEl = document.getElementById("pipeline");
-          if (pipelineEl) {
-            const rect = pipelineEl.getBoundingClientRect();
-            const raw = Math.max(0, Math.min(1, (startFade - rect.top) / (startFade - endFade)));
-            const smooth = raw * raw * (3 - 2 * raw);
-            setFadeCyclist(smooth);
-          }
-
-          // 7. Privacy Fortress Section ("Your context. Your choice.") -> Transition to Autumn Pagoda Maples
-          const privacyEl = document.getElementById("privacy");
-          if (privacyEl) {
-            const rect = privacyEl.getBoundingClientRect();
-            const raw = Math.max(0, Math.min(1, (startFade - rect.top) / (startFade - endFade)));
-            const smooth = raw * raw * (3 - 2 * raw);
-            setFadePagoda(smooth);
-          }
-
-          // 8. FAQ Section ("Questions, answered.") -> Transition to Falling Leaves
-          const faqEl = document.getElementById("faq");
-          if (faqEl) {
-            const rect = faqEl.getBoundingClientRect();
-            const raw = Math.max(0, Math.min(1, (startFade - rect.top) / (startFade - endFade)));
-            const smooth = raw * raw * (3 - 2 * raw);
-            setFadeLeaves(smooth);
-          }
-
-          // 9. Future Vision Section ("Personal intelligence, with room to evolve.") -> Transition to Aurora Curtains
-          const visionEl = document.getElementById("vision");
-          if (visionEl) {
-            const rect = visionEl.getBoundingClientRect();
-            const raw = Math.max(0, Math.min(1, (startFade - rect.top) / (startFade - endFade)));
-            const smooth = raw * raw * (3 - 2 * raw);
-            setFadeAurora(smooth);
-          }
-
-          // 10. Final CTA Section ("Your next conversation can feel different.") -> Transition into 3D Voxel Wall
-          const startEl = document.getElementById("start");
-          if (startEl) {
-            const rect = startEl.getBoundingClientRect();
-            const raw = Math.max(0, Math.min(1, (startFade - rect.top) / (startFade - endFade)));
-            const smooth = raw * raw * (3 - 2 * raw);
-            setFadeStart(smooth);
-          }
-
-          ticking = false;
-        });
-        ticking = true;
+    const scenes: Scene[] = SCENE_DEFINITIONS.map((definition, index) => {
+      const canvas = canvasRefs.current[index] ?? null;
+      let ctx: CanvasRenderingContext2D | null = null;
+      try {
+        ctx = canvas?.getContext("2d", { alpha: false }) ?? null;
+      } catch {
+        ctx = null;
       }
-    };
+      return {
+        definition,
+        canvas,
+        ctx,
+        draw: null,
+        frameInterval: 1000 / Math.max(1, definition.fps),
+        allocated: false,
+        active: false,
+        near: true,
+        hasFrame: false,
+        drawnStatic: false,
+        lastDraw: 0,
+        lastOpacity: index === 0 ? 1 : 0,
+      };
+    });
 
-    onScroll();
+    if (scenes.every((scene) => !scene.canvas)) return;
+
+    const motionQuery =
+      typeof window.matchMedia === "function"
+        ? window.matchMedia("(prefers-reduced-motion: reduce)")
+        : null;
+    let prefersReducedMotion = motionQuery?.matches ?? false;
+
+    let disposed = false;
+    let paused = typeof document !== "undefined" && document.visibilityState !== "visible";
+    let rafId: number | null = null;
+    let dirty = true;
+
+    let viewportWidth = window.innerWidth;
+    let viewportHeight = window.innerHeight;
+    let dpr = Math.min(window.devicePixelRatio || 1, 2);
+    let sectionTops: Array<number | null> = [];
+    let exitTop: number | null = null;
+
+    const startedAt = performance.now();
+
+    const sceneBySection = new Map<Element, Scene>();
+    for (const scene of scenes) {
+      if (!scene.definition.sectionId) continue;
+      const element = document.getElementById(scene.definition.sectionId);
+      if (element) sceneBySection.set(element, scene);
+    }
+
+    function allocate(scene: Scene) {
+      const canvas = scene.canvas;
+      const ctx = scene.ctx;
+      if (!canvas || !ctx) {
+        scene.allocated = true;
+        return;
+      }
+      const width = Math.max(1, Math.floor(viewportWidth * dpr));
+      const height = Math.max(1, Math.floor(viewportHeight * dpr));
+      if (canvas.width !== width || canvas.height !== height) {
+        canvas.width = width;
+        canvas.height = height;
+      }
+      canvas.style.width = `${viewportWidth}px`;
+      canvas.style.height = `${viewportHeight}px`;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      scene.allocated = true;
+      scene.hasFrame = false;
+      scene.drawnStatic = false;
+      scene.lastDraw = 0;
+    }
+
+    function release(scene: Scene) {
+      const canvas = scene.canvas;
+      if (!canvas) return;
+      if (canvas.width !== 1 || canvas.height !== 1) {
+        canvas.width = 1;
+        canvas.height = 1;
+      }
+      scene.allocated = false;
+      scene.active = false;
+      scene.hasFrame = false;
+      scene.drawnStatic = false;
+      scene.lastDraw = 0;
+    }
+
+    function drawScene(scene: Scene, now: number, staticFrame: boolean) {
+      const canvas = scene.canvas;
+      const ctx = scene.ctx;
+      if (!canvas || !ctx || !scene.allocated) return;
+      if (!scene.draw) scene.draw = scene.definition.createDraw();
+      const time = staticFrame || prefersReducedMotion ? 1 : (now - startedAt) * 0.001;
+      scene.draw(ctx, time, viewportWidth, viewportHeight);
+      scene.hasFrame = true;
+      scene.lastDraw = now;
+    }
+
+    function measure() {
+      viewportWidth = window.innerWidth;
+      viewportHeight = window.innerHeight;
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+      sectionTops = scenes.map((scene) => {
+        const id = scene.definition.sectionId;
+        if (!id) return null;
+        const element = document.getElementById(id);
+        if (!element) return null;
+        return element.getBoundingClientRect().top + window.scrollY;
+      });
+      const exitElement = document.getElementById("start");
+      exitTop = exitElement ? exitElement.getBoundingClientRect().top + window.scrollY : null;
+
+      for (const scene of scenes) {
+        if (scene.allocated) allocate(scene);
+      }
+      dirty = true;
+      ensureLoop();
+    }
+
+    function writeOpacity(scene: Scene, opacity: number) {
+      const next = Math.round(opacity * 10000) / 10000;
+      if (Math.abs(next - scene.lastOpacity) < 0.0001) return;
+      if (scene.canvas) scene.canvas.style.opacity = String(next);
+      scene.lastOpacity = next;
+    }
+
+    function update(now: number) {
+      const scrollY = window.scrollY;
+
+      const fades: number[] = [];
+      for (let i = 1; i < scenes.length; i += 1) {
+        const top = sectionTops[i];
+        fades.push(top == null ? 0 : sectionProgress(top, scrollY, viewportHeight));
+      }
+      const exitFade = exitTop == null ? 0 : sectionProgress(exitTop, scrollY, viewportHeight);
+      const opacities = computeLayerOpacities(fades, exitFade);
+
+      const allocationSet = planBackingStores(opacities, MAX_FULL_RESOLUTION_LAYERS);
+      if (allocationSet.size < MAX_FULL_RESOLUTION_LAYERS) {
+        // Pre-warm the next scene while its section approaches the viewport.
+        let frontIndex = 0;
+        for (let i = 0; i < opacities.length; i += 1) {
+          if (opacities[i] > 0.001) frontIndex = i;
+        }
+        const nextIndex = frontIndex + 1;
+        if (nextIndex < scenes.length && scenes[nextIndex].near) {
+          allocationSet.add(nextIndex);
+        }
+      }
+
+      const activeSet = new Set<number>();
+      for (let i = 0; i < opacities.length; i += 1) {
+        if (opacities[i] > 0.001 && allocationSet.has(i)) activeSet.add(i);
+      }
+
+      // Allocate and paint incoming layers before raising their opacity so the
+      // first visible frame already contains the artwork.
+      for (const index of allocationSet) {
+        const scene = scenes[index];
+        if (!scene.allocated) {
+          allocate(scene);
+          if (!prefersReducedMotion && scene.ctx) drawScene(scene, now, false);
+        }
+      }
+
+      for (let i = 0; i < scenes.length; i += 1) {
+        const scene = scenes[i];
+        writeOpacity(scene, opacities[i]);
+        scene.active = activeSet.has(i);
+        if (!scene.active && allocationSet.has(i) && !scene.hasFrame && scene.ctx) {
+          // Pre-warmed layer: render one frame without keeping the loop alive.
+          drawScene(scene, now, false);
+        }
+      }
+
+      for (let i = 0; i < scenes.length; i += 1) {
+        if (!allocationSet.has(i) && scenes[i].allocated) release(scenes[i]);
+      }
+    }
+
+    function frame(now: number) {
+      rafId = null;
+      if (disposed || paused) return;
+      if (dirty) {
+        dirty = false;
+        update(now);
+      }
+
+      let keepRunning = false;
+
+      if (prefersReducedMotion) {
+        for (const scene of scenes) {
+          if (scene.active && !scene.drawnStatic) {
+            drawScene(scene, now, true);
+            scene.drawnStatic = true;
+          }
+        }
+      } else {
+        for (const scene of scenes) {
+          if (!scene.active) continue;
+          keepRunning = true;
+          if (now - scene.lastDraw >= scene.frameInterval) drawScene(scene, now, false);
+        }
+      }
+
+      if (keepRunning) rafId = window.requestAnimationFrame(frame);
+    }
+
+    function ensureLoop() {
+      if (disposed || paused || rafId !== null) return;
+      rafId = window.requestAnimationFrame(frame);
+    }
+
+    function onScroll() {
+      dirty = true;
+      ensureLoop();
+    }
+
+    function onVisibilityChange() {
+      if (document.visibilityState === "visible") {
+        paused = false;
+        dirty = true;
+        ensureLoop();
+      } else {
+        paused = true;
+        if (rafId !== null) {
+          window.cancelAnimationFrame(rafId);
+          rafId = null;
+        }
+      }
+    }
+
+    function onMotionPreferenceChange(event: MediaQueryListEvent) {
+      prefersReducedMotion = event.matches;
+      for (const scene of scenes) {
+        scene.drawnStatic = false;
+        scene.hasFrame = false;
+      }
+      dirty = true;
+      ensureLoop();
+    }
+
+    const resizeObserver =
+      typeof ResizeObserver !== "undefined" ? new ResizeObserver(measure) : null;
+    resizeObserver?.observe(document.documentElement);
+    for (const element of sceneBySection.keys()) resizeObserver?.observe(element);
+
+    const intersectionObserver =
+      typeof IntersectionObserver !== "undefined"
+        ? new IntersectionObserver(
+            (entries) => {
+              for (const entry of entries) {
+                const scene = sceneBySection.get(entry.target);
+                if (scene) scene.near = entry.isIntersecting;
+              }
+              dirty = true;
+              ensureLoop();
+            },
+            { rootMargin: "50% 0px 50% 0px" }
+          )
+        : null;
+    for (const element of sceneBySection.keys()) intersectionObserver?.observe(element);
+
     window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll, { passive: true });
+    window.addEventListener("resize", measure, { passive: true });
+    document.addEventListener("visibilitychange", onVisibilityChange);
+    motionQuery?.addEventListener("change", onMotionPreferenceChange);
+
+    measure();
 
     return () => {
+      disposed = true;
+      if (rafId !== null) window.cancelAnimationFrame(rafId);
+      rafId = null;
       window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onScroll);
+      window.removeEventListener("resize", measure);
+      document.removeEventListener("visibilitychange", onVisibilityChange);
+      motionQuery?.removeEventListener("change", onMotionPreferenceChange);
+      resizeObserver?.disconnect();
+      intersectionObserver?.disconnect();
+      for (const scene of scenes) release(scene);
     };
   }, []);
 
-  // 1. Arctic Icebergs Canvas Controller
-  useEffect(() => {
-    const canvas = canvasIcebergsRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d", { alpha: false });
-    if (!ctx) return;
-
-    let animId: number | null = null;
-    let isDisposed = false;
-    let isVisible = true;
-    let lastFrameTime = 0;
-    const targetFps = icebergsMeta.fps || 20;
-    const frameInterval = 1000 / targetFps;
-
-    const renderIcebergs = createArcticIcebergs();
-    const { cols, rows, palette } = icebergsMeta;
-
-    const prefersReducedMotion =
-      typeof window !== "undefined" &&
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-    let displayWidth = window.innerWidth;
-    let displayHeight = window.innerHeight;
-
-    const handleResize = () => {
-      if (!canvas || isDisposed) return;
-      displayWidth = window.innerWidth;
-      displayHeight = window.innerHeight;
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
-
-      canvas.width = Math.floor(displayWidth * dpr);
-      canvas.height = Math.floor(displayHeight * dpr);
-      canvas.style.width = `${displayWidth}px`;
-      canvas.style.height = `${displayHeight}px`;
-
-      ctx.setTransform(1, 0, 0, 1, 0, 0);
-      ctx.scale(dpr, dpr);
-    };
-
-    handleResize();
-    window.addEventListener("resize", handleResize, { passive: true });
-
-    const isLayerActive =
-      fadeValley < 0.99 &&
-      fadeMoonlit < 0.99 &&
-      fadeMountain < 0.99 &&
-      fadeSkyline < 0.99 &&
-      fadeEarth < 0.99 &&
-      fadeCyclist < 0.99 &&
-      fadePagoda < 0.99 &&
-      fadeLeaves < 0.99 &&
-      fadeAurora < 0.99 &&
-      fadeStart < 0.99;
-
-    const handleVisibilityChange = () => {
-      isVisible = document.visibilityState === "visible";
-      if (isVisible && !animId && isLayerActive) {
-        lastFrameTime = performance.now();
-        animId = requestAnimationFrame(renderLoop);
-      }
-    };
-    document.addEventListener("visibilitychange", handleVisibilityChange);
-
-    const startTime = performance.now();
-
-    const renderLoop = (now: number) => {
-      if (isDisposed) return;
-
-      if (!isVisible || !isLayerActive) {
-        animId = null;
-        return;
-      }
-
-      const elapsed = now - lastFrameTime;
-      if (elapsed >= frameInterval) {
-        lastFrameTime = now - (elapsed % frameInterval);
-
-        const t = prefersReducedMotion ? 1.0 : (now - startTime) * 0.001;
-        const frame = renderIcebergs(t);
-
-        // Dark polar void background
-        ctx.fillStyle = "#02050c";
-        ctx.fillRect(0, 0, displayWidth, displayHeight);
-
-        const cellW = displayWidth / cols;
-        const cellH = displayHeight / rows;
-        const fontSize = Math.max(9, Math.floor(cellH * 0.92));
-
-        ctx.font = `${fontSize}px "Cascadia Code", "Fira Code", "Courier New", monospace`;
-        ctx.textAlign = "center";
-        ctx.textBaseline = "middle";
-
-        const totalCells = cols * rows;
-        for (let idx = 0; idx < totalCells; idx++) {
-          const ch = frame.ch[idx];
-          if (!ch || ch === " ") continue;
-
-          const colorKey = frame.co[idx];
-          const colorHex = palette[colorKey] || "#ffffff";
-
-          const x = idx % cols;
-          const y = Math.floor(idx / cols);
-
-          ctx.fillStyle = colorHex;
-          ctx.fillText(ch, (x + 0.5) * cellW, (y + 0.5) * cellH);
-        }
-
-        if (prefersReducedMotion) {
-          animId = null;
-          return;
-        }
-      }
-
-      animId = requestAnimationFrame(renderLoop);
-    };
-
-    if (isLayerActive) {
-      animId = requestAnimationFrame(renderLoop);
-    }
-
-    return () => {
-      isDisposed = true;
-      if (animId) cancelAnimationFrame(animId);
-      window.removeEventListener("resize", handleResize);
-      document.removeEventListener("visibilitychange", handleVisibilityChange);
-    };
-  }, [fadeValley, fadeMoonlit, fadeMountain, fadeSkyline, fadeEarth, fadeCyclist, fadePagoda, fadeLeaves, fadeAurora, fadeStart]);
-
-  // 2. Balloon Valley Sunrise Canvas Controller
-  useEffect(() => {
-    const canvas = canvasValleyRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d", { alpha: false });
-    if (!ctx) return;
-
-    let animId: number | null = null;
-    let isDisposed = false;
-    let isVisible = true;
-    let lastFrameTime = 0;
-    const targetFps = valleyMeta.fps || 15;
-    const frameInterval = 1000 / targetFps;
-
-    const renderValley = createBalloonValley();
-    const cols = VALLEY_W;
-    const rows = VALLEY_H;
-
-    const prefersReducedMotion =
-      typeof window !== "undefined" &&
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-    let displayWidth = window.innerWidth;
-    let displayHeight = window.innerHeight;
-
-    const handleResize = () => {
-      if (!canvas || isDisposed) return;
-      displayWidth = window.innerWidth;
-      displayHeight = window.innerHeight;
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
-
-      canvas.width = Math.floor(displayWidth * dpr);
-      canvas.height = Math.floor(displayHeight * dpr);
-      canvas.style.width = `${displayWidth}px`;
-      canvas.style.height = `${displayHeight}px`;
-
-      ctx.setTransform(1, 0, 0, 1, 0, 0);
-      ctx.scale(dpr, dpr);
-    };
-
-    handleResize();
-    window.addEventListener("resize", handleResize, { passive: true });
-
-    const isLayerActive =
-      fadeValley > 0.01 &&
-      fadeMoonlit < 0.99 &&
-      fadeMountain < 0.99 &&
-      fadeSkyline < 0.99 &&
-      fadeEarth < 0.99 &&
-      fadeCyclist < 0.99 &&
-      fadePagoda < 0.99 &&
-      fadeLeaves < 0.99 &&
-      fadeAurora < 0.99 &&
-      fadeStart < 0.99;
-
-    const handleVisibilityChange = () => {
-      isVisible = document.visibilityState === "visible";
-      if (isVisible && !animId && isLayerActive) {
-        lastFrameTime = performance.now();
-        animId = requestAnimationFrame(renderLoop);
-      }
-    };
-    document.addEventListener("visibilitychange", handleVisibilityChange);
-
-    const startTime = performance.now();
-
-    const renderLoop = (now: number) => {
-      if (isDisposed) return;
-
-      if (!isVisible || !isLayerActive) {
-        animId = null;
-        return;
-      }
-
-      const elapsed = now - lastFrameTime;
-      if (elapsed >= frameInterval) {
-        lastFrameTime = now - (elapsed % frameInterval);
-
-        const t = prefersReducedMotion ? 1.0 : (now - startTime) * 0.001;
-        const frame = renderValley(t);
-
-        // Sunrise sky base wash
-        ctx.fillStyle = "#5a80b8";
-        ctx.fillRect(0, 0, displayWidth, displayHeight);
-
-        const cellW = displayWidth / cols;
-        const cellH = displayHeight / rows;
-        const fontSize = Math.max(8, Math.floor(cellH * 0.95));
-
-        ctx.font = `${fontSize}px "Cascadia Code", "Fira Code", "Courier New", monospace`;
-        ctx.textAlign = "center";
-        ctx.textBaseline = "middle";
-
-        const totalCells = cols * rows;
-        for (let idx = 0; idx < totalCells; idx++) {
-          const lv = frame.levels[idx];
-          const ch = LEVELS[lv];
-          const colorHex = frame.palHex[frame.colorIndices[idx]] || "#fff6e8";
-
-          const x = idx % cols;
-          const y = Math.floor(idx / cols);
-
-          ctx.fillStyle = colorHex;
-          ctx.fillText(ch, (x + 0.5) * cellW, (y + 0.5) * cellH);
-        }
-
-        if (prefersReducedMotion) {
-          animId = null;
-          return;
-        }
-      }
-
-      animId = requestAnimationFrame(renderLoop);
-    };
-
-    if (isLayerActive) {
-      animId = requestAnimationFrame(renderLoop);
-    }
-
-    return () => {
-      isDisposed = true;
-      if (animId) cancelAnimationFrame(animId);
-      window.removeEventListener("resize", handleResize);
-      document.removeEventListener("visibilitychange", handleVisibilityChange);
-    };
-  }, [fadeValley, fadeMoonlit, fadeMountain, fadeSkyline, fadeEarth, fadeCyclist, fadePagoda, fadeLeaves, fadeAurora, fadeStart]);
-
-  // 3. Moonlit Sea Canvas Controller
-  useEffect(() => {
-    const canvas = canvasMoonlitRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d", { alpha: false });
-    if (!ctx) return;
-
-    let animId: number | null = null;
-    let isDisposed = false;
-    let isVisible = true;
-    let lastFrameTime = 0;
-    const targetFps = moonlitMeta.fps || 20;
-    const frameInterval = 1000 / targetFps;
-
-    const renderMoonlit = createMoonlitSea();
-    const { cols, rows, palette } = moonlitMeta;
-
-    const prefersReducedMotion =
-      typeof window !== "undefined" &&
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-    let displayWidth = window.innerWidth;
-    let displayHeight = window.innerHeight;
-
-    const handleResize = () => {
-      if (!canvas || isDisposed) return;
-      displayWidth = window.innerWidth;
-      displayHeight = window.innerHeight;
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
-
-      canvas.width = Math.floor(displayWidth * dpr);
-      canvas.height = Math.floor(displayHeight * dpr);
-      canvas.style.width = `${displayWidth}px`;
-      canvas.style.height = `${displayHeight}px`;
-
-      ctx.setTransform(1, 0, 0, 1, 0, 0);
-      ctx.scale(dpr, dpr);
-    };
-
-    handleResize();
-    window.addEventListener("resize", handleResize, { passive: true });
-
-    const isLayerActive =
-      fadeMoonlit > 0.01 &&
-      fadeMountain < 0.99 &&
-      fadeSkyline < 0.99 &&
-      fadeEarth < 0.99 &&
-      fadeCyclist < 0.99 &&
-      fadePagoda < 0.99 &&
-      fadeLeaves < 0.99 &&
-      fadeAurora < 0.99 &&
-      fadeStart < 0.99;
-
-    const handleVisibilityChange = () => {
-      isVisible = document.visibilityState === "visible";
-      if (isVisible && !animId && isLayerActive) {
-        lastFrameTime = performance.now();
-        animId = requestAnimationFrame(renderLoop);
-      }
-    };
-    document.addEventListener("visibilitychange", handleVisibilityChange);
-
-    const startTime = performance.now();
-
-    const renderLoop = (now: number) => {
-      if (isDisposed) return;
-
-      if (!isVisible || !isLayerActive) {
-        animId = null;
-        return;
-      }
-
-      const elapsed = now - lastFrameTime;
-      if (elapsed >= frameInterval) {
-        lastFrameTime = now - (elapsed % frameInterval);
-
-        const t = prefersReducedMotion ? 1.0 : (now - startTime) * 0.001;
-        const frame = renderMoonlit(t);
-
-        // Dark moonlit sea base wash
-        ctx.fillStyle = "#030612";
-        ctx.fillRect(0, 0, displayWidth, displayHeight);
-
-        const cellW = displayWidth / cols;
-        const cellH = displayHeight / rows;
-        const fontSize = Math.max(9, Math.floor(cellH * 0.92));
-
-        ctx.font = `${fontSize}px "Cascadia Code", "Fira Code", "Courier New", monospace`;
-        ctx.textAlign = "center";
-        ctx.textBaseline = "middle";
-
-        const totalCells = cols * rows;
-        for (let idx = 0; idx < totalCells; idx++) {
-          const ch = frame.ch[idx];
-          if (!ch || ch === " ") continue;
-
-          const colorKey = frame.co[idx];
-          const colorHex = palette[colorKey] || "#dfe8ff";
-
-          const x = idx % cols;
-          const y = Math.floor(idx / cols);
-
-          ctx.fillStyle = colorHex;
-          ctx.fillText(ch, (x + 0.5) * cellW, (y + 0.5) * cellH);
-        }
-
-        if (prefersReducedMotion) {
-          animId = null;
-          return;
-        }
-      }
-
-      animId = requestAnimationFrame(renderLoop);
-    };
-
-    if (isLayerActive) {
-      animId = requestAnimationFrame(renderLoop);
-    }
-
-    return () => {
-      isDisposed = true;
-      if (animId) cancelAnimationFrame(animId);
-      window.removeEventListener("resize", handleResize);
-      document.removeEventListener("visibilitychange", handleVisibilityChange);
-    };
-  }, [fadeMoonlit, fadeMountain, fadeSkyline, fadeEarth, fadeCyclist, fadePagoda, fadeLeaves, fadeAurora, fadeStart]);
-
-  // 4. Mountain Sunrise Canvas Controller
-  useEffect(() => {
-    const canvas = canvasMountainRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d", { alpha: false });
-    if (!ctx) return;
-
-    let animId: number | null = null;
-    let isDisposed = false;
-    let isVisible = true;
-    let lastFrameTime = 0;
-    const targetFps = mountainMeta.fps || 20;
-    const frameInterval = 1000 / targetFps;
-
-    const renderMountain = createMountainSunrise();
-    const { cols, rows, palette } = mountainMeta;
-
-    const prefersReducedMotion =
-      typeof window !== "undefined" &&
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-    let displayWidth = window.innerWidth;
-    let displayHeight = window.innerHeight;
-
-    const handleResize = () => {
-      if (!canvas || isDisposed) return;
-      displayWidth = window.innerWidth;
-      displayHeight = window.innerHeight;
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
-
-      canvas.width = Math.floor(displayWidth * dpr);
-      canvas.height = Math.floor(displayHeight * dpr);
-      canvas.style.width = `${displayWidth}px`;
-      canvas.style.height = `${displayHeight}px`;
-
-      ctx.setTransform(1, 0, 0, 1, 0, 0);
-      ctx.scale(dpr, dpr);
-    };
-
-    handleResize();
-    window.addEventListener("resize", handleResize, { passive: true });
-
-    const isLayerActive =
-      fadeMountain > 0.01 &&
-      fadeSkyline < 0.99 &&
-      fadeEarth < 0.99 &&
-      fadeCyclist < 0.99 &&
-      fadePagoda < 0.99 &&
-      fadeLeaves < 0.99 &&
-      fadeAurora < 0.99 &&
-      fadeStart < 0.99;
-
-    const handleVisibilityChange = () => {
-      isVisible = document.visibilityState === "visible";
-      if (isVisible && !animId && isLayerActive) {
-        lastFrameTime = performance.now();
-        animId = requestAnimationFrame(renderLoop);
-      }
-    };
-    document.addEventListener("visibilitychange", handleVisibilityChange);
-
-    const startTime = performance.now();
-
-    const renderLoop = (now: number) => {
-      if (isDisposed) return;
-
-      if (!isVisible || !isLayerActive) {
-        animId = null;
-        return;
-      }
-
-      const elapsed = now - lastFrameTime;
-      if (elapsed >= frameInterval) {
-        lastFrameTime = now - (elapsed % frameInterval);
-
-        const t = prefersReducedMotion ? 1.0 : (now - startTime) * 0.001;
-        const frame = renderMountain(t);
-
-        // Mountain twilight sky wash
-        ctx.fillStyle = "#1b1f4d";
-        ctx.fillRect(0, 0, displayWidth, displayHeight);
-
-        const cellW = displayWidth / cols;
-        const cellH = displayHeight / rows;
-        const fontSize = Math.max(9, Math.floor(cellH * 0.92));
-
-        ctx.font = `${fontSize}px "Cascadia Code", "Fira Code", "Courier New", monospace`;
-        ctx.textAlign = "center";
-        ctx.textBaseline = "middle";
-
-        const totalCells = cols * rows;
-        for (let idx = 0; idx < totalCells; idx++) {
-          const ch = frame.ch[idx];
-          if (!ch || ch === " ") continue;
-
-          const colorKey = frame.co[idx];
-          const colorHex = palette[colorKey] || "#ffd27f";
-
-          const x = idx % cols;
-          const y = Math.floor(idx / cols);
-
-          ctx.fillStyle = colorHex;
-          ctx.fillText(ch, (x + 0.5) * cellW, (y + 0.5) * cellH);
-        }
-
-        if (prefersReducedMotion) {
-          animId = null;
-          return;
-        }
-      }
-
-      animId = requestAnimationFrame(renderLoop);
-    };
-
-    if (isLayerActive) {
-      animId = requestAnimationFrame(renderLoop);
-    }
-
-    return () => {
-      isDisposed = true;
-      if (animId) cancelAnimationFrame(animId);
-      window.removeEventListener("resize", handleResize);
-      document.removeEventListener("visibilitychange", handleVisibilityChange);
-    };
-  }, [fadeMountain, fadeSkyline, fadeEarth, fadeCyclist, fadePagoda, fadeLeaves, fadeAurora, fadeStart]);
-
-  // 5. City Skyline Night Canvas Controller
-  useEffect(() => {
-    const canvas = canvasSkylineRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d", { alpha: false });
-    if (!ctx) return;
-
-    let animId: number | null = null;
-    let isDisposed = false;
-    let isVisible = true;
-    let lastFrameTime = 0;
-    const targetFps = skylineMeta.fps || 15;
-    const frameInterval = 1000 / targetFps;
-
-    const renderSkyline = createNycSkylineNight();
-    const { cols, rows, palette } = skylineMeta;
-
-    const prefersReducedMotion =
-      typeof window !== "undefined" &&
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-    let displayWidth = window.innerWidth;
-    let displayHeight = window.innerHeight;
-
-    const handleResize = () => {
-      if (!canvas || isDisposed) return;
-      displayWidth = window.innerWidth;
-      displayHeight = window.innerHeight;
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
-
-      canvas.width = Math.floor(displayWidth * dpr);
-      canvas.height = Math.floor(displayHeight * dpr);
-      canvas.style.width = `${displayWidth}px`;
-      canvas.style.height = `${displayHeight}px`;
-
-      ctx.setTransform(1, 0, 0, 1, 0, 0);
-      ctx.scale(dpr, dpr);
-    };
-
-    handleResize();
-    window.addEventListener("resize", handleResize, { passive: true });
-
-    const isLayerActive =
-      fadeSkyline > 0.01 &&
-      fadeEarth < 0.99 &&
-      fadeCyclist < 0.99 &&
-      fadePagoda < 0.99 &&
-      fadeLeaves < 0.99 &&
-      fadeAurora < 0.99 &&
-      fadeStart < 0.99;
-
-    const handleVisibilityChange = () => {
-      isVisible = document.visibilityState === "visible";
-      if (isVisible && !animId && isLayerActive) {
-        lastFrameTime = performance.now();
-        animId = requestAnimationFrame(renderLoop);
-      }
-    };
-    document.addEventListener("visibilitychange", handleVisibilityChange);
-
-    const startTime = performance.now();
-
-    const renderLoop = (now: number) => {
-      if (isDisposed) return;
-
-      if (!isVisible || !isLayerActive) {
-        animId = null;
-        return;
-      }
-
-      const elapsed = now - lastFrameTime;
-      if (elapsed >= frameInterval) {
-        lastFrameTime = now - (elapsed % frameInterval);
-
-        const t = prefersReducedMotion ? 1.0 : (now - startTime) * 0.001;
-        const frame = renderSkyline(t);
-
-        // Night sky base wash
-        ctx.fillStyle = "#05071a";
-        ctx.fillRect(0, 0, displayWidth, displayHeight);
-
-        const cellW = displayWidth / cols;
-        const cellH = displayHeight / rows;
-        const fontSize = Math.max(9, Math.floor(cellH * 0.92));
-
-        ctx.font = `${fontSize}px "Cascadia Code", "Fira Code", "Courier New", monospace`;
-        ctx.textAlign = "center";
-        ctx.textBaseline = "middle";
-
-        const totalCells = cols * rows;
-        for (let idx = 0; idx < totalCells; idx++) {
-          const ch = frame.ch[idx];
-          if (!ch || ch === " ") continue;
-
-          const colorKey = frame.co[idx];
-          const colorHex = palette[colorKey] || "#d9e2ff";
-
-          const x = idx % cols;
-          const y = Math.floor(idx / cols);
-
-          ctx.fillStyle = colorHex;
-          ctx.fillText(ch, (x + 0.5) * cellW, (y + 0.5) * cellH);
-        }
-
-        if (prefersReducedMotion) {
-          animId = null;
-          return;
-        }
-      }
-
-      animId = requestAnimationFrame(renderLoop);
-    };
-
-    if (isLayerActive) {
-      animId = requestAnimationFrame(renderLoop);
-    }
-
-    return () => {
-      isDisposed = true;
-      if (animId) cancelAnimationFrame(animId);
-      window.removeEventListener("resize", handleResize);
-      document.removeEventListener("visibilitychange", handleVisibilityChange);
-    };
-  }, [fadeSkyline, fadeEarth, fadeCyclist, fadePagoda, fadeLeaves, fadeAurora, fadeStart]);
-
-  // 6. Orbit Window Earth Canvas Controller
-  useEffect(() => {
-    const canvas = canvasEarthRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d", { alpha: false });
-    if (!ctx) return;
-
-    let animId: number | null = null;
-    let isDisposed = false;
-    let isVisible = true;
-    let lastFrameTime = 0;
-    const targetFps = earthMeta.fps || 15;
-    const frameInterval = 1000 / targetFps;
-
-    const renderEarth = createOrbitWindowEarth();
-    const cols = EARTH_W;
-    const rows = EARTH_H;
-
-    const prefersReducedMotion =
-      typeof window !== "undefined" &&
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-    let displayWidth = window.innerWidth;
-    let displayHeight = window.innerHeight;
-
-    const handleResize = () => {
-      if (!canvas || isDisposed) return;
-      displayWidth = window.innerWidth;
-      displayHeight = window.innerHeight;
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
-
-      canvas.width = Math.floor(displayWidth * dpr);
-      canvas.height = Math.floor(displayHeight * dpr);
-      canvas.style.width = `${displayWidth}px`;
-      canvas.style.height = `${displayHeight}px`;
-
-      ctx.setTransform(1, 0, 0, 1, 0, 0);
-      ctx.scale(dpr, dpr);
-    };
-
-    handleResize();
-    window.addEventListener("resize", handleResize, { passive: true });
-
-    const isLayerActive =
-      fadeEarth > 0.01 &&
-      fadeCyclist < 0.99 &&
-      fadePagoda < 0.99 &&
-      fadeLeaves < 0.99 &&
-      fadeAurora < 0.99 &&
-      fadeStart < 0.99;
-
-    const handleVisibilityChange = () => {
-      isVisible = document.visibilityState === "visible";
-      if (isVisible && !animId && isLayerActive) {
-        lastFrameTime = performance.now();
-        animId = requestAnimationFrame(renderLoop);
-      }
-    };
-    document.addEventListener("visibilitychange", handleVisibilityChange);
-
-    const startTime = performance.now();
-
-    const renderLoop = (now: number) => {
-      if (isDisposed) return;
-
-      if (!isVisible || !isLayerActive) {
-        animId = null;
-        return;
-      }
-
-      const elapsed = now - lastFrameTime;
-      if (elapsed >= frameInterval) {
-        lastFrameTime = now - (elapsed % frameInterval);
-
-        const t = prefersReducedMotion ? 1.0 : (now - startTime) * 0.001;
-        const frame = renderEarth(t);
-
-        // Deep space void base wash
-        ctx.fillStyle = "#04060c";
-        ctx.fillRect(0, 0, displayWidth, displayHeight);
-
-        const cellW = displayWidth / cols;
-        const cellH = displayHeight / rows;
-        const fontSize = Math.max(8, Math.floor(cellH * 0.95));
-
-        ctx.font = `${fontSize}px "Cascadia Code", "Fira Code", "Courier New", monospace`;
-        ctx.textAlign = "center";
-        ctx.textBaseline = "middle";
-
-        const totalCells = cols * rows;
-        for (let idx = 0; idx < totalCells; idx++) {
-          const lv = frame.levels[idx];
-          const ch = EARTH_LEVELS[lv];
-          const colorHex = frame.palHex[frame.colorIndices[idx]] || "#fffaf0";
-
-          const x = idx % cols;
-          const y = Math.floor(idx / cols);
-
-          ctx.fillStyle = colorHex;
-          ctx.fillText(ch, (x + 0.5) * cellW, (y + 0.5) * cellH);
-        }
-
-        if (prefersReducedMotion) {
-          animId = null;
-          return;
-        }
-      }
-
-      animId = requestAnimationFrame(renderLoop);
-    };
-
-    if (isLayerActive) {
-      animId = requestAnimationFrame(renderLoop);
-    }
-
-    return () => {
-      isDisposed = true;
-      if (animId) cancelAnimationFrame(animId);
-      window.removeEventListener("resize", handleResize);
-      document.removeEventListener("visibilitychange", handleVisibilityChange);
-    };
-  }, [fadeEarth, fadeCyclist, fadePagoda, fadeLeaves, fadeAurora, fadeStart]);
-
-  // 7. Autumn Road Cyclist Canvas Controller
-  useEffect(() => {
-    const canvas = canvasCyclistRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d", { alpha: false });
-    if (!ctx) return;
-
-    let animId: number | null = null;
-    let isDisposed = false;
-    let isVisible = true;
-    let lastFrameTime = 0;
-    const targetFps = cyclistMeta.fps || 15;
-    const frameInterval = 1000 / targetFps;
-
-    const renderCyclist = createAutumnRoadCyclist();
-    const cols = CYCLIST_W;
-    const rows = CYCLIST_H;
-
-    const prefersReducedMotion =
-      typeof window !== "undefined" &&
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-    let displayWidth = window.innerWidth;
-    let displayHeight = window.innerHeight;
-
-    const handleResize = () => {
-      if (!canvas || isDisposed) return;
-      displayWidth = window.innerWidth;
-      displayHeight = window.innerHeight;
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
-
-      canvas.width = Math.floor(displayWidth * dpr);
-      canvas.height = Math.floor(displayHeight * dpr);
-      canvas.style.width = `${displayWidth}px`;
-      canvas.style.height = `${displayHeight}px`;
-
-      ctx.setTransform(1, 0, 0, 1, 0, 0);
-      ctx.scale(dpr, dpr);
-    };
-
-    handleResize();
-    window.addEventListener("resize", handleResize, { passive: true });
-
-    const isLayerActive =
-      fadeCyclist > 0.01 &&
-      fadePagoda < 0.99 &&
-      fadeLeaves < 0.99 &&
-      fadeAurora < 0.99 &&
-      fadeStart < 0.99;
-
-    const handleVisibilityChange = () => {
-      isVisible = document.visibilityState === "visible";
-      if (isVisible && !animId && isLayerActive) {
-        lastFrameTime = performance.now();
-        animId = requestAnimationFrame(renderLoop);
-      }
-    };
-    document.addEventListener("visibilitychange", handleVisibilityChange);
-
-    const startTime = performance.now();
-
-    const renderLoop = (now: number) => {
-      if (isDisposed) return;
-
-      if (!isVisible || !isLayerActive) {
-        animId = null;
-        return;
-      }
-
-      const elapsed = now - lastFrameTime;
-      if (elapsed >= frameInterval) {
-        lastFrameTime = now - (elapsed % frameInterval);
-
-        const t = prefersReducedMotion ? 1.0 : (now - startTime) * 0.001;
-        const frame = renderCyclist(t);
-
-        // Autumn woodland dark base wash
-        ctx.fillStyle = "#1a0c08";
-        ctx.fillRect(0, 0, displayWidth, displayHeight);
-
-        const cellW = displayWidth / cols;
-        const cellH = displayHeight / rows;
-        const fontSize = Math.max(8, Math.floor(cellH * 0.95));
-
-        ctx.font = `${fontSize}px "Cascadia Code", "Fira Code", "Courier New", monospace`;
-        ctx.textAlign = "center";
-        ctx.textBaseline = "middle";
-
-        const totalCells = cols * rows;
-        for (let idx = 0; idx < totalCells; idx++) {
-          const lv = frame.levels[idx];
-          const ch = CYCLIST_LEVELS[lv];
-          const colorHex = frame.palHex[frame.colorIndices[idx]] || "#fff2cc";
-
-          const x = idx % cols;
-          const y = Math.floor(idx / cols);
-
-          ctx.fillStyle = colorHex;
-          ctx.fillText(ch, (x + 0.5) * cellW, (y + 0.5) * cellH);
-        }
-
-        if (prefersReducedMotion) {
-          animId = null;
-          return;
-        }
-      }
-
-      animId = requestAnimationFrame(renderLoop);
-    };
-
-    if (isLayerActive) {
-      animId = requestAnimationFrame(renderLoop);
-    }
-
-    return () => {
-      isDisposed = true;
-      if (animId) cancelAnimationFrame(animId);
-      window.removeEventListener("resize", handleResize);
-      document.removeEventListener("visibilitychange", handleVisibilityChange);
-    };
-  }, [fadeCyclist, fadePagoda, fadeLeaves, fadeAurora, fadeStart]);
-
-  // 8. Autumn Pagoda Maples Canvas Controller
-  useEffect(() => {
-    const canvas = canvasPagodaRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d", { alpha: false });
-    if (!ctx) return;
-
-    let animId: number | null = null;
-    let isDisposed = false;
-    let isVisible = true;
-    let lastFrameTime = 0;
-    const targetFps = pagodaMeta.fps || 15;
-    const frameInterval = 1000 / targetFps;
-
-    const renderPagoda = createAutumnPagodaMaples();
-    const cols = PAGODA_W;
-    const rows = PAGODA_H;
-
-    const prefersReducedMotion =
-      typeof window !== "undefined" &&
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-    let displayWidth = window.innerWidth;
-    let displayHeight = window.innerHeight;
-
-    const handleResize = () => {
-      if (!canvas || isDisposed) return;
-      displayWidth = window.innerWidth;
-      displayHeight = window.innerHeight;
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
-
-      canvas.width = Math.floor(displayWidth * dpr);
-      canvas.height = Math.floor(displayHeight * dpr);
-      canvas.style.width = `${displayWidth}px`;
-      canvas.style.height = `${displayHeight}px`;
-
-      ctx.setTransform(1, 0, 0, 1, 0, 0);
-      ctx.scale(dpr, dpr);
-    };
-
-    handleResize();
-    window.addEventListener("resize", handleResize, { passive: true });
-
-    const isLayerActive =
-      fadePagoda > 0.01 &&
-      fadeLeaves < 0.99 &&
-      fadeAurora < 0.99 &&
-      fadeStart < 0.99;
-
-    const handleVisibilityChange = () => {
-      isVisible = document.visibilityState === "visible";
-      if (isVisible && !animId && isLayerActive) {
-        lastFrameTime = performance.now();
-        animId = requestAnimationFrame(renderLoop);
-      }
-    };
-    document.addEventListener("visibilitychange", handleVisibilityChange);
-
-    const startTime = performance.now();
-
-    const renderLoop = (now: number) => {
-      if (isDisposed) return;
-
-      if (!isVisible || !isLayerActive) {
-        animId = null;
-        return;
-      }
-
-      const elapsed = now - lastFrameTime;
-      if (elapsed >= frameInterval) {
-        lastFrameTime = now - (elapsed % frameInterval);
-
-        const t = prefersReducedMotion ? 1.0 : (now - startTime) * 0.001;
-        const frame = renderPagoda(t);
-
-        // Autumn dusk pagoda deep base wash
-        ctx.fillStyle = "#1e0e12";
-        ctx.fillRect(0, 0, displayWidth, displayHeight);
-
-        const cellW = displayWidth / cols;
-        const cellH = displayHeight / rows;
-        const fontSize = Math.max(8, Math.floor(cellH * 0.95));
-
-        ctx.font = `${fontSize}px "Cascadia Code", "Fira Code", "Courier New", monospace`;
-        ctx.textAlign = "center";
-        ctx.textBaseline = "middle";
-
-        const totalCells = cols * rows;
-        for (let idx = 0; idx < totalCells; idx++) {
-          const lv = frame.levels[idx];
-          const ch = PAGODA_LEVELS[lv];
-          const colorHex = frame.palHex[frame.colorIndices[idx]] || "#fffaea";
-
-          const x = idx % cols;
-          const y = Math.floor(idx / cols);
-
-          ctx.fillStyle = colorHex;
-          ctx.fillText(ch, (x + 0.5) * cellW, (y + 0.5) * cellH);
-        }
-
-        if (prefersReducedMotion) {
-          animId = null;
-          return;
-        }
-      }
-
-      animId = requestAnimationFrame(renderLoop);
-    };
-
-    if (isLayerActive) {
-      animId = requestAnimationFrame(renderLoop);
-    }
-
-    return () => {
-      isDisposed = true;
-      if (animId) cancelAnimationFrame(animId);
-      window.removeEventListener("resize", handleResize);
-      document.removeEventListener("visibilitychange", handleVisibilityChange);
-    };
-  }, [fadePagoda, fadeLeaves, fadeAurora, fadeStart]);
-
-  // 9. Falling Leaves Canvas Controller
-  useEffect(() => {
-    const canvas = canvasLeavesRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d", { alpha: false });
-    if (!ctx) return;
-
-    let animId: number | null = null;
-    let isDisposed = false;
-    let isVisible = true;
-    let lastFrameTime = 0;
-    const targetFps = leavesMeta.fps || 24;
-    const frameInterval = 1000 / targetFps;
-
-    const renderLeaves = createFallingLeaves();
-    const { cols, rows, palette } = leavesMeta;
-
-    const prefersReducedMotion =
-      typeof window !== "undefined" &&
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-    let displayWidth = window.innerWidth;
-    let displayHeight = window.innerHeight;
-
-    const handleResize = () => {
-      if (!canvas || isDisposed) return;
-      displayWidth = window.innerWidth;
-      displayHeight = window.innerHeight;
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
-
-      canvas.width = Math.floor(displayWidth * dpr);
-      canvas.height = Math.floor(displayHeight * dpr);
-      canvas.style.width = `${displayWidth}px`;
-      canvas.style.height = `${displayHeight}px`;
-
-      ctx.setTransform(1, 0, 0, 1, 0, 0);
-      ctx.scale(dpr, dpr);
-    };
-
-    handleResize();
-    window.addEventListener("resize", handleResize, { passive: true });
-
-    const isLayerActive =
-      fadeLeaves > 0.01 &&
-      fadeAurora < 0.99 &&
-      fadeStart < 0.99;
-
-    const handleVisibilityChange = () => {
-      isVisible = document.visibilityState === "visible";
-      if (isVisible && !animId && isLayerActive) {
-        lastFrameTime = performance.now();
-        animId = requestAnimationFrame(renderLoop);
-      }
-    };
-    document.addEventListener("visibilitychange", handleVisibilityChange);
-
-    const startTime = performance.now();
-
-    const renderLoop = (now: number) => {
-      if (isDisposed) return;
-
-      if (!isVisible || !isLayerActive) {
-        animId = null;
-        return;
-      }
-
-      const elapsed = now - lastFrameTime;
-      if (elapsed >= frameInterval) {
-        lastFrameTime = now - (elapsed % frameInterval);
-
-        const t = prefersReducedMotion ? 1.0 : (now - startTime) * 0.001;
-        const frame = renderLeaves(t);
-
-        // Warm golden autumn haze deep base wash
-        ctx.fillStyle = "#1e120a";
-        ctx.fillRect(0, 0, displayWidth, displayHeight);
-
-        const cellW = displayWidth / cols;
-        const cellH = displayHeight / rows;
-        const fontSize = Math.max(9, Math.floor(cellH * 0.92));
-
-        ctx.font = `${fontSize}px "Cascadia Code", "Fira Code", "Courier New", monospace`;
-        ctx.textAlign = "center";
-        ctx.textBaseline = "middle";
-
-        const totalCells = cols * rows;
-        for (let idx = 0; idx < totalCells; idx++) {
-          const ch = frame.ch[idx];
-          if (!ch || ch === " ") continue;
-
-          const colorKey = frame.co[idx];
-          const colorHex = palette[colorKey] || "#f0c48a";
-
-          const x = idx % cols;
-          const y = Math.floor(idx / cols);
-
-          ctx.fillStyle = colorHex;
-          ctx.fillText(ch, (x + 0.5) * cellW, (y + 0.5) * cellH);
-        }
-
-        if (prefersReducedMotion) {
-          animId = null;
-          return;
-        }
-      }
-
-      animId = requestAnimationFrame(renderLoop);
-    };
-
-    if (isLayerActive) {
-      animId = requestAnimationFrame(renderLoop);
-    }
-
-    return () => {
-      isDisposed = true;
-      if (animId) cancelAnimationFrame(animId);
-      window.removeEventListener("resize", handleResize);
-      document.removeEventListener("visibilitychange", handleVisibilityChange);
-    };
-  }, [fadeLeaves, fadeAurora, fadeStart]);
-
-  // 10. Aurora Curtains Canvas Controller
-  useEffect(() => {
-    const canvas = canvasAuroraRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d", { alpha: false });
-    if (!ctx) return;
-
-    let animId: number | null = null;
-    let isDisposed = false;
-    let isVisible = true;
-    let lastFrameTime = 0;
-    const targetFps = auroraMeta.fps || 20;
-    const frameInterval = 1000 / targetFps;
-
-    const renderAurora = createAuroraCurtains();
-    const { cols, rows, palette } = auroraMeta;
-
-    const prefersReducedMotion =
-      typeof window !== "undefined" &&
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-    let displayWidth = window.innerWidth;
-    let displayHeight = window.innerHeight;
-
-    const handleResize = () => {
-      if (!canvas || isDisposed) return;
-      displayWidth = window.innerWidth;
-      displayHeight = window.innerHeight;
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
-
-      canvas.width = Math.floor(displayWidth * dpr);
-      canvas.height = Math.floor(displayHeight * dpr);
-      canvas.style.width = `${displayWidth}px`;
-      canvas.style.height = `${displayHeight}px`;
-
-      ctx.setTransform(1, 0, 0, 1, 0, 0);
-      ctx.scale(dpr, dpr);
-    };
-
-    handleResize();
-    window.addEventListener("resize", handleResize, { passive: true });
-
-    const isLayerActive = fadeAurora > 0.01 && fadeStart < 0.99;
-
-    const handleVisibilityChange = () => {
-      isVisible = document.visibilityState === "visible";
-      if (isVisible && !animId && isLayerActive) {
-        lastFrameTime = performance.now();
-        animId = requestAnimationFrame(renderLoop);
-      }
-    };
-    document.addEventListener("visibilitychange", handleVisibilityChange);
-
-    const startTime = performance.now();
-
-    const renderLoop = (now: number) => {
-      if (isDisposed) return;
-
-      if (!isVisible || !isLayerActive) {
-        animId = null;
-        return;
-      }
-
-      const elapsed = now - lastFrameTime;
-      if (elapsed >= frameInterval) {
-        lastFrameTime = now - (elapsed % frameInterval);
-
-        const t = prefersReducedMotion ? 1.0 : (now - startTime) * 0.001;
-        const frame = renderAurora(t);
-
-        // Deep polar night wash
-        ctx.fillStyle = "#02040c";
-        ctx.fillRect(0, 0, displayWidth, displayHeight);
-
-        const cellW = displayWidth / cols;
-        const cellH = displayHeight / rows;
-        const fontSize = Math.max(9, Math.floor(cellH * 0.92));
-
-        ctx.font = `${fontSize}px "Cascadia Code", "Fira Code", "Courier New", monospace`;
-        ctx.textAlign = "center";
-        ctx.textBaseline = "middle";
-
-        const totalCells = cols * rows;
-        for (let idx = 0; idx < totalCells; idx++) {
-          const ch = frame.ch[idx];
-          if (!ch || ch === " ") continue;
-
-          const colorKey = frame.co[idx];
-          const colorHex = palette[colorKey] || "#a8ffc8";
-
-          const x = idx % cols;
-          const y = Math.floor(idx / cols);
-
-          ctx.fillStyle = colorHex;
-          ctx.fillText(ch, (x + 0.5) * cellW, (y + 0.5) * cellH);
-        }
-
-        if (prefersReducedMotion) {
-          animId = null;
-          return;
-        }
-      }
-
-      animId = requestAnimationFrame(renderLoop);
-    };
-
-    if (isLayerActive) {
-      animId = requestAnimationFrame(renderLoop);
-    }
-
-    return () => {
-      isDisposed = true;
-      if (animId) cancelAnimationFrame(animId);
-      window.removeEventListener("resize", handleResize);
-      document.removeEventListener("visibilitychange", handleVisibilityChange);
-    };
-  }, [fadeAurora, fadeStart]);
-
   return (
     <div
-      ref={containerRef}
       className={`fixed inset-0 pointer-events-none -z-10 w-full h-full select-none ${className || ""}`}
       style={{
         position: "fixed",
@@ -1436,165 +648,25 @@ export function ArcticIcebergsBackground({ className }: ArcticIcebergsBackground
       }}
       aria-hidden="true"
     >
-      {/* 1. Arctic Icebergs Layer (Hero & Top Page) */}
-      <canvas
-        ref={canvasIcebergsRef}
-        data-testid="canvas-icebergs"
-        style={{
-          position: "absolute",
-          inset: 0,
-          width: "100%",
-          height: "100%",
-          opacity: Math.max(0, (1 - fadeValley) * (1 - fadeMoonlit) * (1 - fadeMountain) * (1 - fadeSkyline) * (1 - fadeEarth) * (1 - fadeCyclist) * (1 - fadePagoda) * (1 - fadeLeaves) * (1 - fadeAurora) * (1 - fadeStart)),
-          transition: "opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1)",
-          willChange: "opacity",
-        }}
-        aria-hidden="true"
-      />
-
-      {/* 2. Balloon Valley Sunrise Layer (Cross-fades in from Problem Section onwards) */}
-      <canvas
-        ref={canvasValleyRef}
-        data-testid="canvas-valley"
-        style={{
-          position: "absolute",
-          inset: 0,
-          width: "100%",
-          height: "100%",
-          opacity: Math.max(0, fadeValley * (1 - fadeMoonlit) * (1 - fadeMountain) * (1 - fadeSkyline) * (1 - fadeEarth) * (1 - fadeCyclist) * (1 - fadePagoda) * (1 - fadeLeaves) * (1 - fadeAurora) * (1 - fadeStart)),
-          transition: "opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1)",
-          willChange: "opacity",
-        }}
-        aria-hidden="true"
-      />
-
-      {/* 3. Moonlit Sea Layer (Cross-fades in from Product Section: "Saved by you. Ready when it matters.") */}
-      <canvas
-        ref={canvasMoonlitRef}
-        data-testid="canvas-moonlit"
-        style={{
-          position: "absolute",
-          inset: 0,
-          width: "100%",
-          height: "100%",
-          opacity: Math.max(0, fadeMoonlit * (1 - fadeMountain) * (1 - fadeSkyline) * (1 - fadeEarth) * (1 - fadeCyclist) * (1 - fadePagoda) * (1 - fadeLeaves) * (1 - fadeAurora) * (1 - fadeStart)),
-          transition: "opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1)",
-          willChange: "opacity",
-        }}
-        aria-hidden="true"
-      />
-
-      {/* 4. Mountain Sunrise Layer (Cross-fades in from Product Preview Section: "A walk through the current path") */}
-      <canvas
-        ref={canvasMountainRef}
-        data-testid="canvas-mountain"
-        style={{
-          position: "absolute",
-          inset: 0,
-          width: "100%",
-          height: "100%",
-          opacity: Math.max(0, fadeMountain * (1 - fadeSkyline) * (1 - fadeEarth) * (1 - fadeCyclist) * (1 - fadePagoda) * (1 - fadeLeaves) * (1 - fadeAurora) * (1 - fadeStart)),
-          transition: "opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1)",
-          willChange: "opacity",
-        }}
-        aria-hidden="true"
-      />
-
-      {/* 5. City Skyline Night Layer (Cross-fades in from Personal Intelligence Section: "An AI experience shaped around your context.") */}
-      <canvas
-        ref={canvasSkylineRef}
-        data-testid="canvas-skyline"
-        style={{
-          position: "absolute",
-          inset: 0,
-          width: "100%",
-          height: "100%",
-          opacity: Math.max(0, fadeSkyline * (1 - fadeEarth) * (1 - fadeCyclist) * (1 - fadePagoda) * (1 - fadeLeaves) * (1 - fadeAurora) * (1 - fadeStart)),
-          transition: "opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1)",
-          willChange: "opacity",
-        }}
-        aria-hidden="true"
-      />
-
-      {/* 6. Orbit Window Earth Layer (Cross-fades in from Response Preferences Section: "An answer should feel right for you.") */}
-      <canvas
-        ref={canvasEarthRef}
-        data-testid="canvas-earth"
-        style={{
-          position: "absolute",
-          inset: 0,
-          width: "100%",
-          height: "100%",
-          opacity: Math.max(0, fadeEarth * (1 - fadeCyclist) * (1 - fadePagoda) * (1 - fadeLeaves) * (1 - fadeAurora) * (1 - fadeStart)),
-          transition: "opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1)",
-          willChange: "opacity",
-        }}
-        aria-hidden="true"
-      />
-
-      {/* 7. Autumn Road Cyclist Layer (Cross-fades in from Context Pipeline Section: "The right context. At the right moment.") */}
-      <canvas
-        ref={canvasCyclistRef}
-        data-testid="canvas-cyclist"
-        style={{
-          position: "absolute",
-          inset: 0,
-          width: "100%",
-          height: "100%",
-          opacity: Math.max(0, fadeCyclist * (1 - fadePagoda) * (1 - fadeLeaves) * (1 - fadeAurora) * (1 - fadeStart)),
-          transition: "opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1)",
-          willChange: "opacity",
-        }}
-        aria-hidden="true"
-      />
-
-      {/* 8. Autumn Pagoda Maples Layer (Cross-fades in from Privacy Fortress Section: "Your context. Your choice.") */}
-      <canvas
-        ref={canvasPagodaRef}
-        data-testid="canvas-pagoda"
-        style={{
-          position: "absolute",
-          inset: 0,
-          width: "100%",
-          height: "100%",
-          opacity: Math.max(0, fadePagoda * (1 - fadeLeaves) * (1 - fadeAurora) * (1 - fadeStart)),
-          transition: "opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1)",
-          willChange: "opacity",
-        }}
-        aria-hidden="true"
-      />
-
-      {/* 9. Falling Leaves Layer (Cross-fades in from FAQ Section: "Questions, answered.") */}
-      <canvas
-        ref={canvasLeavesRef}
-        data-testid="canvas-leaves"
-        style={{
-          position: "absolute",
-          inset: 0,
-          width: "100%",
-          height: "100%",
-          opacity: Math.max(0, fadeLeaves * (1 - fadeAurora) * (1 - fadeStart)),
-          transition: "opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1)",
-          willChange: "opacity",
-        }}
-        aria-hidden="true"
-      />
-
-      {/* 10. Aurora Curtains Layer (Cross-fades in from Future Vision Section: "Personal intelligence, with room to evolve.") */}
-      <canvas
-        ref={canvasAuroraRef}
-        data-testid="canvas-aurora"
-        style={{
-          position: "absolute",
-          inset: 0,
-          width: "100%",
-          height: "100%",
-          opacity: Math.max(0, fadeAurora * (1 - fadeStart)),
-          transition: "opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1)",
-          willChange: "opacity",
-        }}
-        aria-hidden="true"
-      />
+      {SCENE_DEFINITIONS.map((definition, index) => (
+        <canvas
+          key={definition.testId}
+          ref={(element) => {
+            canvasRefs.current[index] = element;
+          }}
+          data-testid={definition.testId}
+          width={1}
+          height={1}
+          aria-hidden="true"
+          style={{
+            position: "absolute",
+            inset: 0,
+            width: "100%",
+            height: "100%",
+            opacity: index === 0 ? 1 : 0,
+          }}
+        />
+      ))}
     </div>
   );
 }

@@ -19,7 +19,7 @@
   --planet-radius-lg: 26px;
   --planet-maxw: 1180px;
   --planet-shadow: 0 30px 80px -30px rgba(0, 0, 0, .75);
-  --planet-font: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --planet-font: var(--font-sans);
 }
 
 /* Fixed WebGL planet behind everything, never grabs pointer/scroll */

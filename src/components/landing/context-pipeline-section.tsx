@@ -18,7 +18,7 @@ const STAGES = [
     key: "store",
     step: "Local Store",
     title: "Local Note Store",
-    desc: "Saved notes and preferences remain encrypted in browser localStorage until an active prompt triggers context assembly.",
+    desc: "Saved notes and preferences remain in this browser's localStorage as plaintext until an active prompt triggers context assembly.",
     icon: <Database className="w-5 h-5 text-cyan-400" />,
     iconBg: "rgba(6, 182, 212, 0.15)"
   },

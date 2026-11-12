@@ -14,7 +14,7 @@ describe("Problem Comparison Section (Section 02)", () => {
   it("accurately demonstrates repeated manual prompts versus automatic context assembly", () => {
     const markup = renderToStaticMarkup(<ProblemComparisonSection />);
     expect(markup).toContain("Starts from zero every session");
-    expect(markup).toContain("Context brought forward automatically");
+    expect(markup).toContain("Context shared only when you choose");
     expect(markup).toContain("Saved notes and preferences active");
   });
 });
