@@ -1,10 +1,14 @@
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
 @import "tailwindcss";
+
+@theme {
+  /* Extra-small breakpoint used by the chat composer and topbar labels. */
+  --breakpoint-xs: 26rem;
+}
 
 @layer base {
   :root {
-    --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-    --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+    --font-sans: var(--font-plus-jakarta), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --font-mono: var(--font-jetbrains), ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
     --void: #06050a;
     --deep: #0c0b14;
     --surface: rgba(255, 255, 255, 0.035);
@@ -147,6 +151,17 @@
 button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
+}
+
+/* The chat composer shell carries the focus ring; the inner textarea must not
+   draw a second rectangular outline inside the rounded glass surface. */
+.composer-field:focus-visible {
+  outline: none;
+}
+
+.composer-shell:has(.composer-field:focus-visible) {
+  outline: 2px solid var(--accent-b);
+  outline-offset: 3px;
 }
 
 /* ══ TOUCH TARGET ERGONOMICS (WCAG 2.5.5 / 2.5.8 >= 44x44px target) ══ */
