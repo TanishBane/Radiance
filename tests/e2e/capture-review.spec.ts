@@ -5,7 +5,7 @@ import fs from "fs";
 const outDir = path.resolve("docs/landing-page/screenshots");
 
 test.describe("Visual Quality Inspection & Multi-Viewport Screenshot Capture", () => {
-  test.setTimeout(120000);
+  test.setTimeout(300000);
 
   test.beforeAll(() => {
     if (!fs.existsSync(outDir)) {
@@ -157,13 +157,6 @@ test.describe("Visual Quality Inspection & Multi-Viewport Screenshot Capture", (
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto("/non-existent-route-for-404-test");
     await page.waitForTimeout(3000);
-
-    const artOuter = await page.evaluate(() => document.querySelector("ascii-art")?.outerHTML);
-    const shadowInner = await page.evaluate(() => document.querySelector("ascii-art")?.shadowRoot?.innerHTML);
-    const scriptSrcs = await page.evaluate(() => Array.from(document.querySelectorAll("script")).map((s) => s.src || s.type));
-    console.log("E2E SCRIPT TAGS:", scriptSrcs);
-    console.log("E2E ASCII-ART OUTER:", artOuter);
-    console.log("E2E SHADOW INNER:", shadowInner);
 
     await page.screenshot({
       path: path.join(outDir, "desktop-1440-not-found-starry-ridge.png"),

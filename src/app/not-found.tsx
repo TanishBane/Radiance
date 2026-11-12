@@ -1,6 +1,6 @@
 import React from "react";
 import Link from "next/link";
-import { Compass, MessageSquare, ArrowLeft, Sparkles } from "lucide-react";
+import { MessageSquare, ArrowLeft, Sparkles } from "lucide-react";
 import { AsciiArt } from "@/components/ui/ascii-art";
 
 export default function NotFound() {
