@@ -157,11 +157,11 @@
 /* Master Display Headline */
 .hero-narrative-title,
 .hero-landscape-section .landing-display {
-  font-family: var(--font-sans);
-  font-size: clamp(2.4rem, 5vw, 4.25rem);
-  font-weight: 700;
-  letter-spacing: -0.035em;
-  line-height: 1.08;
+  font-family: var(--font-serif), "Cormorant Garamond", Georgia, serif;
+  font-size: clamp(3.05rem, 6.2vw, 5.4rem);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 1.02;
   color: #ffffff !important;
   margin: 0 0 1.25rem;
   text-wrap: balance;
@@ -180,7 +180,7 @@
 .hero-landscape-section .landing-display em {
   font-family: var(--font-serif), Cormorant Garamond, Newsreader, Georgia, serif !important;
   font-style: italic !important;
-  font-weight: 400 !important;
+  font-weight: 500 !important;
   letter-spacing: -0.01em;
   background: linear-gradient(135deg, #fef08a 0%, #fb923c 45%, #38bdf8 100%) !important;
   -webkit-background-clip: text !important;
@@ -338,6 +338,12 @@
   font-family: var(--font-sans);
   font-size: 0.8125rem;
   color: rgba(240, 245, 255, 0.85);
+}
+
+.telemetry-label,
+.telemetry-clock-value,
+.telemetry-sub {
+  font-family: var(--font-mono), ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
 }
 
 .telemetry-clock-value {
@@ -784,8 +790,11 @@
 .hero-stage-controls-left,
 .hero-stage-controls-right {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 8px;
+  max-width: 100%;
+  min-width: 0;
 }
 
 .hero-stage-btn-icon {
@@ -814,6 +823,8 @@
   gap: 6px;
   padding: 8px 12px;
   min-height: 44px;
+  max-width: 100%;
+  min-width: 0;
   border-radius: 10px;
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(255, 255, 255, 0.08);

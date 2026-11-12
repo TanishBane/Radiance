@@ -44,11 +44,11 @@
 }
 
 .intelligence-story-title {
-  font-family: var(--font-sans);
-  font-size: clamp(2.25rem, 4.5vw, 3.5rem);
-  font-weight: 700;
-  letter-spacing: -0.03em;
-  line-height: 1.12;
+  font-family: var(--font-serif), "Cormorant Garamond", Georgia, serif;
+  font-size: clamp(2.35rem, 4.5vw, 3.85rem);
+  font-weight: 500;
+  letter-spacing: -0.018em;
+  line-height: 1.05;
   color: #ffffff;
   margin: 0 0 1.25rem;
 }
@@ -152,11 +152,11 @@
 }
 
 .preference-title {
-  font-family: var(--font-sans);
-  font-size: clamp(2.25rem, 4.5vw, 3.5rem);
-  font-weight: 700;
-  letter-spacing: -0.03em;
-  line-height: 1.12;
+  font-family: var(--font-serif), "Cormorant Garamond", Georgia, serif;
+  font-size: clamp(2.35rem, 4.5vw, 3.85rem);
+  font-weight: 500;
+  letter-spacing: -0.018em;
+  line-height: 1.05;
   color: #ffffff;
   margin: 0 0 1.25rem;
 }
@@ -183,21 +183,25 @@
 
 .preference-toggle-bar {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: center;
-  gap: 0.75rem;
+  gap: 0.5rem;
   background: rgba(0, 0, 0, 0.35);
   padding: 0.4rem;
   border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.08);
+  width: 100%;
   max-width: 440px;
   margin: 0 auto 2rem;
   position: relative;
+  box-sizing: border-box;
 }
 
 .preference-toggle-btn {
-  flex: 1;
-  padding: 0.65rem 1.15rem;
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 0.65rem 0.9rem;
   border-radius: 9px;
   font-size: 0.9rem;
   font-weight: 600;
