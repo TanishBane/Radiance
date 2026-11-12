@@ -50,7 +50,7 @@ export function ProductPreview() {
   return (
     <section id="preview" className="landing-section">
       <div className="landing-shell">
-        <div className="landing-preview-heading" style={{ maxWidth: "640px", textShadow: "0 2px 14px rgba(6, 9, 24, 0.85)" }}>
+        <div style={{ maxWidth: "640px", textShadow: "0 2px 14px rgba(6, 9, 24, 0.85)" }}>
           <h2 className="landing-section-title" style={{ color: "#ffffff", textShadow: "0 2px 16px rgba(6, 9, 24, 0.9)" }}>
             A walk through the current path
           </h2>

@@ -5,10 +5,6 @@ vi.mock("next/font/google", () => ({
   Cormorant_Garamond: () => ({ variable: "--font-serif" }),
 }));
 
-vi.mock("next/font/local", () => ({
-  default: () => ({ variable: "--font-local" }),
-}));
-
 import fs from "fs";
 import path from "path";
 import { render, screen, fireEvent } from "@testing-library/react";
@@ -116,8 +112,8 @@ describe("Mobile & Cross-Browser Ergonomics, Touch & Viewport Invariants", () =>
     const modelTextSpan = trigger.querySelector("span");
     expect(modelTextSpan).toBeDefined();
     expect(modelTextSpan?.className).toContain("truncate");
-    // Verifies small mobile screen responsive max-widths (92px on narrow devices so "Radiance Fast" fits)
-    expect(modelTextSpan?.className).toContain("max-w-[92px]");
+    // Verifies small mobile screen responsive max-widths (70px on narrow devices)
+    expect(modelTextSpan?.className).toContain("max-w-[70px]");
   });
 
   it("binds both mousemove and touchmove event listeners in AtmosphereCanvasEngine for mobile touch support", () => {

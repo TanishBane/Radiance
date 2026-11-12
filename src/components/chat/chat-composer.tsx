@@ -478,7 +478,7 @@ export function ChatComposer({
 
       {/* Main Composer Box with Complete Theme Gradient Glassmorphism */}
       <motion.div
-        className="composer-shell relative rounded-2xl bg-gradient-to-br from-[var(--surface-raised)]/90 via-[var(--deep)]/85 to-[var(--accent-d)]/30 border border-white/[0.12] focus-within:border-[var(--border-accent)] focus-within:shadow-[0_0_36px_-4px_var(--accent-g),0_16px_48px_-12px_rgba(0,0,0,0.7)] transition-all duration-300 backdrop-blur-3xl shadow-[0_8px_32px_0_rgba(0,0,0,0.4),0_0_20px_-6px_var(--accent-g)] p-3 sm:p-3.5 group/composer overflow-visible z-20"
+        className="relative rounded-2xl bg-gradient-to-br from-[var(--surface-raised)]/90 via-[var(--deep)]/85 to-[var(--accent-d)]/30 border border-white/[0.12] focus-within:border-[var(--border-accent)] focus-within:shadow-[0_0_36px_-4px_var(--accent-g),0_16px_48px_-12px_rgba(0,0,0,0.7)] transition-all duration-300 backdrop-blur-3xl shadow-[0_8px_32px_0_rgba(0,0,0,0.4),0_0_20px_-6px_var(--accent-g)] p-3 sm:p-3.5 group/composer overflow-visible z-20"
         animate={
           shouldReduceMotion
             ? undefined
@@ -559,7 +559,7 @@ export function ChatComposer({
             onFocusChange?.(false);
           }}
           placeholder="Ask RADIANCE anything..."
-          className="composer-field w-full bg-transparent border-0 outline-none resize-none text-base sm:text-sm text-[var(--txt)] placeholder:text-[var(--txt-muted)]/70 py-1 max-h-[140px] leading-relaxed font-sans mb-1.5 tracking-[-0.01em] selection:bg-[var(--accent-d)] selection:text-[var(--txt)] relative z-10"
+          className="w-full bg-transparent border-0 outline-none resize-none text-base sm:text-sm text-[var(--txt)] placeholder:text-[var(--txt-muted)]/70 py-1 max-h-[140px] leading-relaxed font-sans mb-1.5 tracking-[-0.01em] selection:bg-[var(--accent-d)] selection:text-[var(--txt)] relative z-10"
         />
 
         {/* Hidden File Input */}
@@ -676,7 +676,7 @@ export function ChatComposer({
                 aria-label={`Select AI model. Current model: ${activeModel.name}`}
               >
                 <Atom className="w-3.5 h-3.5 text-[#c084fc] shrink-0" aria-hidden="true" />
-                <span className="font-sans text-xs sm:text-[13px] font-medium text-[var(--txt)] truncate max-w-[92px] xs:max-w-[110px] sm:max-w-none">
+                <span className="font-sans text-xs sm:text-[13px] font-medium text-[var(--txt)] truncate max-w-[70px] xs:max-w-[110px] sm:max-w-none">
                   {activeModel.name}
                 </span>
                 <motion.span

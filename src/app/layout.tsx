@@ -1,9 +1,9 @@
 import type { Metadata, Viewport } from "next";
 import Script from "next/script";
-import localFont from "next/font/local";
 import { Cormorant_Garamond } from "next/font/google";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import "katex/dist/katex.min.css";
 import "./globals.css";
 
 const cormorant = Cormorant_Garamond({
@@ -11,28 +11,6 @@ const cormorant = Cormorant_Garamond({
   weight: ["300", "400", "500", "600", "700"],
   variable: "--font-serif",
   display: "swap",
-});
-
-const plusJakarta = localFont({
-  src: "../fonts/plus-jakarta-sans-latin-variable.woff2",
-  weight: "200 800",
-  style: "normal",
-  variable: "--font-plus-jakarta",
-  display: "swap",
-  preload: true,
-  adjustFontFallback: "Arial",
-  fallback: ["Segoe UI", "Helvetica Neue", "Arial", "sans-serif"],
-});
-
-const jetbrainsMono = localFont({
-  src: "../fonts/jetbrains-mono-latin-variable.woff2",
-  weight: "100 800",
-  style: "normal",
-  variable: "--font-jetbrains",
-  display: "swap",
-  preload: false,
-  adjustFontFallback: false,
-  fallback: ["Consolas", "SFMono-Regular", "ui-monospace", "monospace"],
 });
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://radiance.ai";
@@ -44,7 +22,7 @@ export const metadata: Metadata = {
     template: "%s | RADIANCE",
   },
   description:
-    "Bring saved notes and response preferences into a multi-provider AI chat. Browser-local plaintext storage, opt-in sharing, and a model you choose.",
+    "Illuminate what is possible. High-precision reasoning, multi-provider inference, and ambient spatial computing.",
   keywords: [
     "AI",
     "Radiance",
@@ -72,7 +50,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "RADIANCE — Intelligent AI Platform",
     description:
-      "Bring saved notes and response preferences into a multi-provider AI chat. Browser-local plaintext storage, opt-in sharing, and a model you choose.",
+      "Illuminate what is possible. High-precision reasoning, multi-provider inference, and ambient spatial computing.",
     url: "/",
     siteName: "RADIANCE",
     locale: "en_US",
@@ -90,7 +68,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "RADIANCE — Intelligent AI Platform",
     description:
-      "Bring saved notes and response preferences into a multi-provider AI chat. Browser-local plaintext storage, opt-in sharing, and a model you choose.",
+      "Illuminate what is possible. High-precision reasoning, multi-provider inference, and ambient spatial computing.",
     images: ["/opengraph-image.png"],
     creator: "@radiance_ai",
   },
@@ -123,7 +101,7 @@ const jsonLd = {
       "@id": `${APP_URL}/#website`,
       "url": APP_URL,
       "name": "RADIANCE",
-      "description": "AI chat workspace with browser-local notes, explicit saves, opt-in context sharing, and multi-provider models.",
+      "description": "High-precision AI productivity platform with multi-provider inference and real-time reasoning streams.",
       "publisher": {
         "@type": "Organization",
         "name": "RADIANCE Team",
@@ -138,14 +116,14 @@ const jsonLd = {
       "@type": "SoftwareApplication",
       "@id": `${APP_URL}/#software`,
       "name": "RADIANCE",
-      "operatingSystem": "Web",
+      "operatingSystem": "Web, iOS, Android, macOS, Windows",
       "applicationCategory": "ProductivityApplication",
       "offers": {
         "@type": "Offer",
         "price": "0",
         "priceCurrency": "USD",
       },
-      "description": "Multi-provider AI chat with browser-local notes, explicit saves, and opt-in context sharing.",
+      "description": "High-precision AI platform with multi-provider inference, streaming reasoning, and spatial atmosphere.",
       "softwareVersion": "1.0.0",
       "author": {
         "@type": "Organization",
@@ -161,7 +139,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`dark ${cormorant.variable} ${plusJakarta.variable} ${jetbrainsMono.variable}`}>
+    <html lang="en" className={`dark ${cormorant.variable}`}>
       <head>
         <script
           type="application/ld+json"

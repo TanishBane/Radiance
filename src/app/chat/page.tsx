@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import RadianceApp from "@/features/chat/components/radiance-app";
-import "katex/dist/katex.min.css";
 
 export const metadata: Metadata = {
   title: "Radiance — Chat",

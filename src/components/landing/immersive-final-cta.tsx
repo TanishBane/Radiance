@@ -27,7 +27,7 @@ export function ImmersiveFinalCta() {
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/60 pointer-events-none" />
       </div>
 
-      <div className="final-cta-content max-w-4xl mx-auto flex flex-col items-center relative z-10">
+      <div className="max-w-4xl mx-auto flex flex-col items-center relative z-10">
         {/* Luminous Logo Badge */}
         <motion.div
           className="mb-8"

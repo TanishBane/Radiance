@@ -30,7 +30,7 @@ const PRIVACY_PILLARS = [
   {
     id: "p-3",
     title: "One-Click Context Reset",
-    desc: "Export your notes to portable JSON or clear the saved profile from this browser in a single click from the Settings Center.",
+    desc: "Export your notes to portable JSON or permanently wipe your local memory profile in a single click from the Settings Center with zero residual trace.",
     icon: <Trash2 className="w-5 h-5 text-mint-400" />
   }
 ];
