@@ -53,7 +53,7 @@
     "@tailwindcss/postcss": "^4.0.12",
     "@testing-library/react": "^16.2.0",
     "@types/katex": "^0.16.8",
-    "@types/node": "^22.13.10",
+    "@types/node": "^26.6.6",
     "@types/react": "^19.0.10",
     "@types/react-dom": "^19.0.4",
     "@types/three": "^0.174.0",
