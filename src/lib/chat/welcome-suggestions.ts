@@ -16,15 +16,15 @@ export interface SuggestionColumn {
 export const WELCOME_SUGGESTIONS_STORAGE_KEY = "radiance_welcome_suggestion_ids";
 
 const INTERESTS = [
-  { id: "technology", label: "software and technology", terms: ["react", "typescript", "javascript", "python", "coding", "programming", "software", "website", "app", "api", "database"] },
-  { id: "travel", label: "travel and destinations", terms: ["travel", "trip", "vacation", "itinerary", "getaway", "hotel", "destination"] },
-  { id: "cooking", label: "cooking and food", terms: ["cooking", "cook", "recipe", "recipes", "meal", "food", "baking", "cuisine"] },
-  { id: "books", label: "books and reading", terms: ["book", "books", "novel", "reading", "literature", "character"] },
-  { id: "gardening", label: "gardening and plants", terms: ["plant", "plants", "gardening", "garden", "houseplant", "flowers"] },
-  { id: "writing", label: "writing and storytelling", terms: ["writing", "write", "story", "email", "essay", "copywriting"] },
-  { id: "games", label: "games and play", terms: ["gaming", "game", "games", "boardgame", "videogame"] },
-  { id: "career", label: "work and career growth", terms: ["career", "job", "interview", "resume", "workplace", "negotiation"] },
-  { id: "design", label: "design and visual ideas", terms: ["design", "visual", "typography", "graphic", "illustration", "interface"] },
+  { id: "technology", label: "tech", terms: ["react", "typescript", "javascript", "python", "coding", "programming", "software", "website", "app", "api", "database"] },
+  { id: "travel", label: "travel", terms: ["travel", "trip", "vacation", "itinerary", "getaway", "hotel", "destination"] },
+  { id: "cooking", label: "cooking", terms: ["cooking", "cook", "recipe", "recipes", "meal", "food", "baking", "cuisine"] },
+  { id: "books", label: "books", terms: ["book", "books", "novel", "reading", "literature", "character"] },
+  { id: "gardening", label: "plants", terms: ["plant", "plants", "gardening", "garden", "houseplant", "flowers"] },
+  { id: "writing", label: "writing", terms: ["writing", "write", "story", "email", "essay", "copywriting"] },
+  { id: "games", label: "games", terms: ["gaming", "game", "games", "boardgame", "videogame"] },
+  { id: "career", label: "career", terms: ["career", "job", "interview", "resume", "workplace", "negotiation"] },
+  { id: "design", label: "design", terms: ["design", "visual", "typography", "graphic", "illustration", "interface"] },
 ] as const;
 
 type Interest = (typeof INTERESTS)[number] | { id: "general"; label: "something new"; terms: readonly string[] };
@@ -33,28 +33,28 @@ const GENERAL_INTEREST: Interest = { id: "general", label: "something new", term
 
 const PROMPT_TEMPLATES = {
   understand: [
-    { id: "foundations", label: "the foundations of {topic}", prompt: "Explain the foundations of {topic} with one clear, practical example." },
-    { id: "misconceptions", label: "common misconceptions about {topic}", prompt: "What are common misconceptions about {topic}, and what is more accurate?" },
-    { id: "deep-dive", label: "a deeper look at {topic}", prompt: "Give me a thoughtful introduction to {topic}, from the basics to the key details." },
-    { id: "compare", label: "how parts of {topic} compare", prompt: "Compare the main approaches to {topic} and explain when each is useful." },
-    { id: "questions", label: "questions worth asking about {topic}", prompt: "What are three useful questions to ask when learning about {topic}?" },
-    { id: "real-world", label: "{topic} in everyday use", prompt: "Show how {topic} works in a realistic everyday situation." },
+    { id: "foundations", label: "{topic} basics", prompt: "Explain {topic} basics with a practical example." },
+    { id: "misconceptions", label: "{topic} myths", prompt: "What are common {topic} myths, and what is true?" },
+    { id: "deep-dive", label: "A closer look at {topic}", prompt: "Give me a quick introduction to {topic} and its key ideas." },
+    { id: "compare", label: "Compare {topic} approaches", prompt: "Compare useful approaches to {topic}." },
+    { id: "questions", label: "Questions about {topic}", prompt: "What should I ask when learning about {topic}?" },
+    { id: "real-world", label: "{topic} in practice", prompt: "Show {topic} in a practical everyday example." },
   ],
   create: [
-    { id: "starter-plan", label: "a practical {topic} plan", prompt: "Make me a simple, step-by-step plan to get started with {topic}." },
-    { id: "project", label: "a small {topic} project", prompt: "Suggest a small project involving {topic} that I can finish in a weekend." },
-    { id: "checklist", label: "a {topic} checklist", prompt: "Create a concise checklist to help me make progress with {topic}." },
-    { id: "routine", label: "a routine for {topic}", prompt: "Design a realistic weekly routine for practicing or exploring {topic}." },
-    { id: "personal-guide", label: "a guide tailored to my {topic} goals", prompt: "Help me turn an interest in {topic} into a clear personal learning guide." },
-    { id: "challenge", label: "a hands-on {topic} challenge", prompt: "Give me a hands-on challenge involving {topic}, with hints and a way to review my result." },
+    { id: "starter-plan", label: "{topic} starter plan", prompt: "Make a simple step-by-step plan for {topic}." },
+    { id: "project", label: "A {topic} mini project", prompt: "Suggest a small {topic} project I can finish this weekend." },
+    { id: "checklist", label: "{topic} checklist", prompt: "Create a short checklist for making progress with {topic}." },
+    { id: "routine", label: "{topic} weekly routine", prompt: "Suggest a realistic weekly routine for {topic}." },
+    { id: "personal-guide", label: "{topic} learning guide", prompt: "Create a learning guide for my {topic} goals." },
+    { id: "challenge", label: "{topic} challenge", prompt: "Give me a hands-on {topic} challenge." },
   ],
   explore: [
-    { id: "new-directions", label: "new directions in {topic}", prompt: "What are some interesting directions to explore next in {topic}?" },
-    { id: "connections", label: "unexpected connections to {topic}", prompt: "Connect {topic} to another field in a surprising but useful way." },
-    { id: "real-world-uses", label: "real-world uses for {topic}", prompt: "Share a few lesser-known real-world uses of {topic}." },
-    { id: "recent-ideas", label: "ideas changing {topic}", prompt: "What new ideas or approaches are changing how people think about {topic}?" },
-    { id: "perspectives", label: "different perspectives on {topic}", prompt: "Show me three different perspectives on {topic} and what each helps explain." },
-    { id: "next-steps", label: "where to go next with {topic}", prompt: "Recommend a few worthwhile next steps for someone curious about {topic}." },
+    { id: "new-directions", label: "New {topic} ideas", prompt: "What interesting directions could I explore in {topic}?" },
+    { id: "connections", label: "{topic} connections", prompt: "Connect {topic} with another useful field." },
+    { id: "real-world-uses", label: "{topic} in the real world", prompt: "Share a few surprising real-world uses of {topic}." },
+    { id: "recent-ideas", label: "What’s new in {topic}", prompt: "What new ideas are changing how people think about {topic}?" },
+    { id: "perspectives", label: "{topic} perspectives", prompt: "Show me three perspectives on {topic}." },
+    { id: "next-steps", label: "{topic} next steps", prompt: "Recommend a few useful next steps for exploring {topic}." },
   ],
 } as const;
 

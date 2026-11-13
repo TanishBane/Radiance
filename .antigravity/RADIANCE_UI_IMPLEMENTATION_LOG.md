@@ -236,3 +236,17 @@
 - Playwright: passed on Desktop Chrome and Mobile Chrome (2 tests); reviewed both screenshots.
 - TypeScript, ESLint, and production build: passed.
 - This app has no wired login callback; rotation occurs on app reload/session entry using browser-local chat history.
+
+## 2026-11-14 — Compact suggestions with full prompt preview
+
+### Changed
+
+- Shortened suggestion titles and prompt copy so cards remain scannable.
+- Added accessible preview controls beside each suggestion. The dialog shows the full prompt and clearly labels the action that sends it.
+- Kept the preview centered and usable on desktop and mobile.
+
+### Verification
+
+- Focused unit tests: passed (32 tests, including preview and send behavior).
+- Playwright: passed on Desktop Chrome and Mobile Chrome (2 tests); reviewed suggestion and preview screenshots.
+- TypeScript, ESLint, and production build: passed.

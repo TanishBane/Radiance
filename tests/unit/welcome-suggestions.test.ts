@@ -48,6 +48,7 @@ describe("personalized welcome suggestions", () => {
     expect(items).toHaveLength(9);
     expect(new Set(items.map((item) => item.id)).size).toBe(9);
     expect(items.every((item) => item.label.trim() && item.prompt.trim())).toBe(true);
+    expect(items.every((item) => item.label.length <= 32)).toBe(true);
     expect(items.every((item) => !Object.hasOwn(item, "badge"))).toBe(true);
   });
 });

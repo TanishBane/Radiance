@@ -221,12 +221,25 @@ describe("Mobile & Cross-Browser Ergonomics, Touch & Viewport Invariants", () =>
     );
 
     const personalizedSuggestions = await screen.findAllByRole("button", {
-      name: /Ask suggestion: .*software and technology/i,
+      name: /Ask suggestion: .*tech/i,
     });
     const personalizedSuggestion = personalizedSuggestions[0];
     expect(personalizedSuggestion.querySelector("svg")).toBeNull();
     fireEvent.click(personalizedSuggestion);
-    await waitFor(() => expect(onSelectPrompt).toHaveBeenCalledWith(expect.stringContaining("software and technology")));
+    await waitFor(() => expect(onSelectPrompt).toHaveBeenCalledWith(expect.stringContaining("tech")));
+  });
+
+  it("previews the complete prompt before letting the user send it", async () => {
+    const onSelectPrompt = vi.fn();
+    render(<WelcomeCard onSelectPrompt={onSelectPrompt} />);
+
+    fireEvent.click(screen.getAllByRole("button", { name: /Preview suggestion:/i })[0]);
+    const dialog = await screen.findByRole("dialog");
+    const fullPrompt = dialog.querySelector('[data-testid="suggestion-preview-prompt"]')?.textContent;
+    expect(fullPrompt).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Send suggestion" }));
+
+    await waitFor(() => expect(onSelectPrompt).toHaveBeenCalledWith(fullPrompt));
   });
 
   it("renders mobile bottom nav new chat action with >=44x44px touch target ergonomics", () => {

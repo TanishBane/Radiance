@@ -21,7 +21,7 @@ test("welcome suggestions reflect local interests and rotate on a new app sessio
   await page.goto("/chat");
   await page.waitForTimeout(3_200);
   const suggestionButtons = page.getByRole("button", { name: /Ask suggestion:/i });
-  await expect(suggestionButtons.first()).toContainText("software and technology");
+  await expect(suggestionButtons.first()).toContainText("tech");
   const firstSessionLabels = await suggestionButtons.evaluateAll((buttons) =>
     buttons.map((button) => button.getAttribute("aria-label") || "")
   );
@@ -32,10 +32,18 @@ test("welcome suggestions reflect local interests and rotate on a new app sessio
   expect(JSON.stringify(storedIds)).not.toContain("React");
   await page.screenshot({ path: testInfo.outputPath("personalized-welcome.png") });
 
+  await page.getByRole("button", { name: /Preview suggestion:/i }).first().click();
+  const preview = page.getByRole("dialog");
+  await expect(preview).toBeVisible();
+  await expect(page.getByTestId("suggestion-preview-prompt")).not.toBeEmpty();
+  await page.screenshot({ path: testInfo.outputPath("suggestion-preview.png") });
+  await page.keyboard.press("Escape");
+  await expect(preview).toBeHidden();
+
   await page.reload();
   await page.waitForTimeout(3_200);
   const nextSessionButtons = page.getByRole("button", { name: /Ask suggestion:/i });
-  await expect(nextSessionButtons.first()).toContainText("software and technology");
+  await expect(nextSessionButtons.first()).toContainText("tech");
   const nextSessionLabels = await nextSessionButtons.evaluateAll((buttons) =>
     buttons.map((button) => button.getAttribute("aria-label") || "")
   );
