@@ -271,3 +271,9 @@
 
 - Removed suggestion eye buttons and the click-to-open preview dialog.
 - Kept the full localized prompt available on hover or keyboard focus of each suggestion button; tapping a suggestion still sends it directly.
+
+## 2026-11-14 — Move brand mark into welcome title
+
+### Changed
+
+- Removed the standalone Radiance mark above the greeting and placed it where the “Radiance” wordmark appeared in the title.

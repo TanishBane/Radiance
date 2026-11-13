@@ -113,7 +113,6 @@ export function WelcomeCard({
     );
   }, [conversations, historyLoaded]);
 
-  const titleName = "Radiance";
   const description =
     "Illuminate what is possible. Stream real-time reasoning, analyze documents, generate Flux visuals, and explore complex ideas.";
 
@@ -137,20 +136,12 @@ export function WelcomeCard({
       transition={getMotionTransition("entrance", prefersReducedMotion)}
       className="flex flex-col items-center justify-center w-full max-w-4xl mx-auto px-3 sm:px-4 py-4 sm:py-8 text-center gap-4 sm:gap-6"
     >
-      {/* Brand Icon Gem with Dynamic Ambient Glow */}
-      <div
-        className="w-12 h-12 sm:w-16 sm:h-16 rounded-2xl flex items-center justify-center border border-[var(--border)] shadow-card transition-all duration-300 hover:scale-105 select-none hover:border-[var(--accent)]/40 hover:shadow-[0_8px_24px_var(--accent-d)] p-2 sm:p-3 text-[var(--txt)]"
-        style={{
-          background: "linear-gradient(135deg, var(--surface-raised), rgba(255, 255, 255, 0.02))",
-        }}
-      >
-        <RadianceLogo variant="symbol" size="md" showWordmark={false} animated glow className="w-7 h-7 sm:w-10 sm:h-9" />
-      </div>
-
       {/* Hero Title (Signature TanixAI Cormorant Garamond + 3-Stop Chromatic Gradient) */}
       <div className="flex flex-col gap-1.5 sm:gap-2.5">
         <h1 className="font-serif text-2xl sm:text-5xl md:text-6xl font-light text-[var(--txt)] tracking-tight leading-tight select-none">
-          {uiText(language, "Hello, I Am")} <em className="not-italic font-bold gradient-text-brand drop-shadow-sm">{titleName}</em>
+          {uiText(language, "Hello, I Am")} <span className="inline-flex w-12 h-12 sm:w-16 sm:h-16 align-middle items-center justify-center rounded-2xl border border-[var(--border)] bg-[var(--surface-raised)]/80 p-2 sm:p-3 text-[var(--txt)] shadow-card" role="img" aria-label="Radiance">
+            <RadianceLogo variant="symbol" size="md" showWordmark={false} animated glow className="w-7 h-7 sm:w-10 sm:h-9" />
+          </span>
         </h1>
         <p className="text-xs sm:text-base text-[var(--txt-dim)] font-light max-w-lg leading-relaxed mx-auto font-sans line-clamp-2 sm:line-clamp-none">
           {uiText(language, description)}
