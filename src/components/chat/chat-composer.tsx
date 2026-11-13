@@ -163,7 +163,7 @@ export function ChatComposer({
   const [isFocused, setIsFocused] = useState(false);
 
   useEffect(() => {
-    if (input || isFocused || isGenerating || disabled) {
+    if (input || isGenerating || disabled) {
       setAnimatedPlaceholder("Ask RADIANCE anything...");
       return;
     }
@@ -201,7 +201,7 @@ export function ChatComposer({
       window.clearTimeout(delayTimer);
       window.clearTimeout(typingTimer);
     };
-  }, [disabled, input, isFocused, isGenerating]);
+  }, [disabled, input, isGenerating]);
 
   useEffect(() => {
     isSubmittingRef.current = false;
