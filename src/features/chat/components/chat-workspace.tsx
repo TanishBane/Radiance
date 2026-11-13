@@ -242,12 +242,12 @@ export function ChatWorkspace({
       </div>
 
       <div
-        className="mx-auto grid w-full max-w-[1440px] grid-cols-2 items-end gap-x-2 gap-y-2 px-3 sm:gap-x-4 md:grid-cols-[minmax(7rem,0.9fr)_minmax(0,3fr)_minmax(7rem,0.9fr)]"
+        className="mx-auto grid w-full max-w-[1440px] grid-cols-2 items-center gap-x-2 gap-y-2 px-3 sm:gap-x-4 md:grid-cols-[minmax(7rem,0.9fr)_minmax(0,3fr)_minmax(7rem,0.9fr)]"
         data-testid="composer-dock"
       >
         {showFollowUps && (
           <div
-            className="min-w-0 md:col-start-1 md:row-start-1 md:self-center"
+            className="min-w-0 md:col-start-1 md:row-start-1"
             data-testid="left-follow-up-lane"
           >
             <FollowUpChips
@@ -282,7 +282,7 @@ export function ChatWorkspace({
 
         {showFollowUps && (
           <div
-            className="min-w-0 col-start-2 row-start-1 md:col-start-3 md:row-start-1 md:self-center"
+            className="min-w-0 col-start-2 row-start-1 md:col-start-3 md:row-start-1"
             data-testid="right-follow-up-lane"
           >
             <FollowUpChips

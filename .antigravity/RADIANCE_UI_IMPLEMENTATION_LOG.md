@@ -207,3 +207,16 @@
 - Unit tests: passed (20 focused tests).
 - Playwright: passed on Desktop Chrome and Mobile Chrome (2 tests); desktop appearance reviewed.
 - TypeScript, ESLint, and production build: passed.
+
+## 2026-11-14 — Align suggestions with composer
+
+### Changed
+
+- Center-aligned the side suggestion cards with the composer in the shared dock grid, including the stacked mobile layout.
+- Updated browser geometry checks to measure the actual suggestion cards and require their desktop centers to match the composer within one pixel.
+
+### Verification
+
+- Playwright: passed on Desktop Chrome and Mobile Chrome (2 tests); measured desktop card centers matched the composer within one pixel.
+- Focused chat workspace and suggestion unit tests: passed (20 tests).
+- TypeScript, ESLint, and production build: passed.

@@ -69,8 +69,8 @@ test("the two highest-ranked contextual follow-ups render as fixed selectable ca
   expect(glassSurface.backgroundAlpha).toBeLessThan(0.18);
   expect(glassSurface.topEdgeBackgroundColor).toBe("rgba(0, 0, 0, 0)");
   const viewportWidth = page.viewportSize()?.width ?? 0;
-  const leftBounds = await page.getByTestId("left-follow-up-lane").boundingBox();
-  const rightBounds = await page.getByTestId("right-follow-up-lane").boundingBox();
+  const leftBounds = await leftCarousel.boundingBox();
+  const rightBounds = await rightCarousel.boundingBox();
   const composerBounds = await page.getByTestId("composer-lane").boundingBox();
   expect(leftBounds).not.toBeNull();
   expect(rightBounds).not.toBeNull();
@@ -82,8 +82,8 @@ test("the two highest-ranked contextual follow-ups render as fixed selectable ca
     const leftCenter = leftBounds!.y + leftBounds!.height / 2;
     const composerCenter = composerBounds!.y + composerBounds!.height / 2;
     const rightCenter = rightBounds!.y + rightBounds!.height / 2;
-    expect(Math.abs(leftCenter - composerCenter)).toBeLessThanOrEqual(32);
-    expect(Math.abs(rightCenter - composerCenter)).toBeLessThanOrEqual(32);
+    expect(Math.abs(leftCenter - composerCenter)).toBeLessThanOrEqual(1);
+    expect(Math.abs(rightCenter - composerCenter)).toBeLessThanOrEqual(1);
   } else {
     expect(leftBounds!.x).toBeLessThan(rightBounds!.x);
     expect(Math.abs(leftBounds!.y - rightBounds!.y)).toBeLessThanOrEqual(1);
