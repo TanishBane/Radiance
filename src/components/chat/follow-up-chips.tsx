@@ -50,7 +50,7 @@ export function FollowUpChips({
       onKeyDown={handleKeyDown}
       className={`relative mx-auto w-full outline-none ${
         compact
-          ? "max-w-none rounded-[18px] border border-white/30 p-2.5 follow-up-glass shadow-[0_12px_28px_-22px_rgba(0,0,0,0.8),inset_0_1px_0_rgba(255,255,255,0.26)]"
+          ? "max-w-none rounded-[18px] border border-white/75 p-2.5 follow-up-glass shadow-[0_16px_36px_-22px_rgba(0,0,0,0.48),inset_0_1px_0_rgba(255,255,255,0.9)]"
           : "mt-2 max-w-5xl"
       }`}
       style={
@@ -65,7 +65,7 @@ export function FollowUpChips({
       <div className={`mb-2 flex items-center justify-between px-1 ${compact ? "gap-1" : ""}`}>
         <p
           className={`min-w-0 truncate text-xs font-medium tracking-wide ${
-            compact ? "text-[10px] font-semibold uppercase tracking-[0.12em] text-cyan-100" : "text-[var(--txt-dim)]"
+            compact ? "text-[10px] font-semibold uppercase tracking-[0.12em] text-slate-700" : "text-[var(--txt-dim)]"
           }`}
         >
           {compact ? "Next" : label || "Continue the conversation"}
@@ -75,7 +75,7 @@ export function FollowUpChips({
             <p
               aria-live="polite"
               aria-label={`Suggestion ${currentIndex + 1} of ${total}`}
-              className={`tabular-nums ${compact ? "mr-1 text-xs font-semibold text-white/90" : "mr-1 text-xs text-[var(--txt-muted)]"}`}
+              className={`tabular-nums ${compact ? "mr-1 text-xs font-semibold text-slate-700" : "mr-1 text-xs text-[var(--txt-muted)]"}`}
             >
               {compact ? `${currentIndex + 1}/${total}` : `Suggestion ${currentIndex + 1} of ${total}`}
             </p>
@@ -89,7 +89,7 @@ export function FollowUpChips({
               }}
               className={`touch-target h-8 w-8 rounded-full border transition-colors focus-visible:ring-2 motion-reduce:transition-none ${
                 compact
-                  ? "border-white/30 bg-slate-950/35 text-white hover:border-cyan-100 hover:bg-cyan-300/20 hover:text-white focus-visible:ring-cyan-100"
+                  ? "border-white/45 bg-slate-950/75 text-white hover:border-[var(--accent)] hover:bg-slate-950 focus-visible:ring-[var(--accent)]"
                   : "border-[var(--border)] bg-[var(--surface-raised)] text-[var(--txt-dim)] hover:border-[var(--accent)] hover:text-[var(--txt)] focus-visible:ring-[var(--accent)]"
               }`}
             >
@@ -105,7 +105,7 @@ export function FollowUpChips({
               }}
               className={`touch-target h-8 w-8 rounded-full border transition-colors focus-visible:ring-2 motion-reduce:transition-none ${
                 compact
-                  ? "border-white/30 bg-slate-950/35 text-white hover:border-cyan-100 hover:bg-cyan-300/20 hover:text-white focus-visible:ring-cyan-100"
+                  ? "border-white/45 bg-slate-950/75 text-white hover:border-[var(--accent)] hover:bg-slate-950 focus-visible:ring-[var(--accent)]"
                   : "border-[var(--border)] bg-[var(--surface-raised)] text-[var(--txt-dim)] hover:border-[var(--accent)] hover:text-[var(--txt)] focus-visible:ring-[var(--accent)]"
               }`}
             >
@@ -138,10 +138,10 @@ export function FollowUpChips({
               aria-current={isActive ? "true" : undefined}
               onClick={() => onSelect(question)}
               tabIndex={isVisible ? 0 : -1}
-              className={`touch-target flex min-h-[44px] items-center gap-2 text-left font-medium leading-relaxed text-white transition-[transform,opacity,border-color,background-color,box-shadow] duration-250 ease-out motion-reduce:transition-none ${
+              className={`touch-target flex min-h-[44px] items-center gap-2 text-left font-medium leading-relaxed transition-[transform,opacity,border-color,background-color,box-shadow] duration-250 ease-out motion-reduce:transition-none ${
                 compact
-                  ? "relative w-full px-2 py-2 text-sm focus-visible:z-10 focus-visible:ring-2 focus-visible:ring-cyan-100 focus-visible:ring-offset-2 focus-visible:ring-offset-blue-950"
-                  : "absolute left-1/2 top-1/2 rounded-xl border px-3 py-2.5 text-xs shadow-[0_12px_28px_-20px_var(--accent-g)] hover:border-[var(--accent)] hover:bg-[var(--accent-d)] focus-visible:z-10 focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--deep)] sm:px-4"
+                  ? "relative w-full px-2 py-2 text-sm text-slate-950 focus-visible:z-10 focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-white"
+                  : "absolute left-1/2 top-1/2 rounded-xl border px-3 py-2.5 text-xs text-white shadow-[0_12px_28px_-20px_var(--accent-g)] hover:border-[var(--accent)] hover:bg-[var(--accent-d)] focus-visible:z-10 focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--deep)] sm:px-4"
               }`}
               style={{
                 width: compact ? "100%" : "min(78%, 46rem)",
@@ -167,14 +167,14 @@ export function FollowUpChips({
               <CornerDownRight
                 aria-hidden="true"
                 className={`h-3.5 w-3.5 shrink-0 ${
-                  compact ? "text-cyan-100" : isActive ? "text-[var(--accent-b)]" : "text-[var(--txt-muted)]"
+                  compact ? "text-[var(--accent)]" : isActive ? "text-[var(--accent-b)]" : "text-[var(--txt-muted)]"
                 }`}
               />
               <span className="line-clamp-2 min-w-0 flex-1 break-words">{question}</span>
               {isActive && (
                 <ArrowRight
                   aria-hidden="true"
-                  className={`h-4 w-4 shrink-0 ${compact ? "text-cyan-100" : "text-[var(--accent)]"}`}
+                  className="h-4 w-4 shrink-0 text-[var(--accent)]"
                 />
               )}
             </button>

@@ -55,6 +55,9 @@ test("contextual follow-ups render as a theme-aware carousel and rotate by contr
   expect(glassSurface.borderColor).not.toBe("rgba(0, 0, 0, 0)");
   expect(glassSurface.backgroundImage).toBe("none");
   expect(glassSurface.backgroundColor).not.toBe("rgba(0, 0, 0, 0)");
+  const frostChannels = glassSurface.backgroundColor.match(/\d+(?:\.\d+)?/g)?.slice(0, 3).map(Number) ?? [];
+  const frostBrightness = Math.min(...frostChannels) * (Math.max(...frostChannels) <= 1 ? 255 : 1);
+  expect(frostBrightness).toBeGreaterThan(200);
   expect(glassSurface.specularContent).not.toBe("none");
   expect(glassSurface.specularHeight).toBe("1px");
   expect(glassSurface.specularBackgroundImage).toBe("none");
@@ -86,6 +89,9 @@ test("contextual follow-ups render as a theme-aware carousel and rotate by contr
     getComputedStyle(element).borderColor
   );
   expect(accent).not.toBe("");
+  const suggestionInk = await activeSuggestion.evaluate((element) => getComputedStyle(element).color);
+  const inkLightness = Number(suggestionInk.match(/oklch\(([\d.]+)/)?.[1]);
+  expect(inkLightness).toBeLessThan(0.3);
 
   const themeVariables = ["--accent", "--accent-b", "--accent-c"];
   const originalTheme = await page.evaluate((names) => {

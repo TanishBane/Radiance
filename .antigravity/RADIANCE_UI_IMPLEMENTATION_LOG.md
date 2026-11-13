@@ -132,3 +132,20 @@
 - TypeScript: passed.
 - Full unit (364), browser E2E (18, including reduced motion), lint, typecheck, and production build outcomes are recorded in `RADIANCE_UI_VERIFICATION.md`.
 - Desktop (1366 × 900) and mobile (390 × 844) screenshots are in `.antigravity/screenshots/`; the requested full viewport matrix and provider-backed streaming are not yet verified.
+
+# 2026-11-14 — Premium milk-glass follow-up cards
+
+### Changed
+
+- Shifted the compact side suggestion cards to a translucent, pale frost with stronger backdrop blur and a restrained tint from the active theme.
+- Switched labels and suggestion text to dark ink for legibility on the lighter surface; kept navigation controls dark and theme-accented.
+- Kept the glass surface flat, with no gradient fill, and retained a fine specular edge.
+- Added browser assertions for the pale glass surface and readable dark text.
+
+### Verification
+
+- Focused follow-up and chat workspace unit tests: passed (20 tests).
+- Playwright: passed on Desktop Chrome and Mobile Chrome (2 tests); desktop and mobile captures were visually reviewed.
+- TypeScript: passed.
+- ESLint: passed with no warnings or errors.
+- Production build: passed.
