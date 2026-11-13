@@ -1,5 +1,18 @@
 # Radiance UI implementation log
 
+## 2026-11-13 — Theme-specialized follow-up cards
+
+### Changed
+
+- Connected the bright follow-up card gradient to Radiance’s live theme accent, highlight, and tertiary color tokens. The navy base stays consistent while the vivid card colors adapt to the selected background theme.
+- Added browser coverage for card recoloring across red, green, and gold palette changes.
+
+### Verification
+
+- Follow-up carousel and chat workspace unit tests: passed (20 tests).
+- TypeScript and lint: passed.
+- Playwright: passed on Desktop Chrome and Mobile Chrome (2 tests), including live palette changes; reviewed both captures.
+
 ## 2026-11-13 — Reference-matched suggestion card colors
 
 ### Changed

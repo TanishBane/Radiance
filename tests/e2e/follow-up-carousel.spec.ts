@@ -65,6 +65,39 @@ test("contextual follow-ups render as a theme-aware carousel and rotate by contr
   );
   expect(accent).not.toBe("");
 
+  const themeVariables = ["--accent", "--accent-b", "--accent-c"];
+  const originalTheme = await page.evaluate((names) => {
+    const style = document.documentElement.style;
+    return names.map((name) => [name, style.getPropertyValue(name)] as const);
+  }, themeVariables);
+  let previousCardBackground = await leftCarousel.evaluate((element) =>
+    getComputedStyle(element).backgroundImage
+  );
+  for (const palette of [
+    ["#e85555", "#f57e7e", "#d4883a"],
+    ["#49e87a", "#7ef5a8", "#38bdf8"],
+    ["#e8d449", "#f5ea7e", "#f97316"],
+  ]) {
+    await page.evaluate(([accentColor, accentB, accentC]) => {
+      const root = document.documentElement.style;
+      root.setProperty("--accent", accentColor);
+      root.setProperty("--accent-b", accentB);
+      root.setProperty("--accent-c", accentC);
+    }, palette);
+    const themedCardBackground = await leftCarousel.evaluate((element) =>
+      getComputedStyle(element).backgroundImage
+    );
+    expect(themedCardBackground).not.toBe(previousCardBackground);
+    previousCardBackground = themedCardBackground;
+  }
+  await page.evaluate((entries) => {
+    const root = document.documentElement.style;
+    for (const [name, value] of entries) {
+      if (value) root.setProperty(name, value);
+      else root.removeProperty(name);
+    }
+  }, originalTheme);
+
   await page.screenshot({ path: testInfo.outputPath("follow-up-carousel.png") });
   await page.waitForTimeout(250);
   const nextButton = page.getByRole("button", { name: "Next Left" });
