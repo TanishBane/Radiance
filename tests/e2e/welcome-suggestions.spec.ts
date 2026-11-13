@@ -34,19 +34,11 @@ test("welcome suggestions reflect local interests and rotate on a new app sessio
   await page.screenshot({ path: testInfo.outputPath("personalized-welcome.png") });
 
   if (testInfo.project.name === "chromium") {
-    const previewButtons = page.getByRole("button", { name: /Vista previa:/i });
-    await previewButtons.first().hover();
+    await suggestionButtons.first().hover();
     await expect(page.getByRole("tooltip")).toContainText("tecnología");
     await page.mouse.move(0, 0);
   }
-
-  await page.getByRole("button", { name: /Vista previa:/i }).first().click();
-  const preview = page.getByRole("dialog");
-  await expect(preview).toBeVisible();
-  await expect(page.getByTestId("suggestion-preview-prompt")).not.toBeEmpty();
-  await page.screenshot({ path: testInfo.outputPath("suggestion-preview.png") });
-  await page.keyboard.press("Escape");
-  await expect(preview).toBeHidden();
+  await expect(page.getByRole("button", { name: /Vista previa:/i })).toHaveCount(0);
 
   await page.reload();
   await page.waitForTimeout(3_200);

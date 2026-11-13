@@ -264,3 +264,10 @@
 - Focused suggestion localization and preview unit tests: passed.
 - Playwright: desktop and mobile passed before moving the hover trigger to the eye control; the exact-target rerun could not launch because this environment lacks the Playwright Chromium executable.
 - TypeScript, ESLint, and production build: passed.
+
+## 2026-11-14 — Remove suggestion eye preview
+
+### Changed
+
+- Removed suggestion eye buttons and the click-to-open preview dialog.
+- Kept the full localized prompt available on hover or keyboard focus of each suggestion button; tapping a suggestion still sends it directly.

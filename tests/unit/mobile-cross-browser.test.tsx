@@ -229,26 +229,12 @@ describe("Mobile & Cross-Browser Ergonomics, Touch & Viewport Invariants", () =>
     await waitFor(() => expect(onSelectPrompt).toHaveBeenCalledWith(expect.stringContaining("tech")));
   });
 
-  it("previews the complete prompt before letting the user send it", async () => {
-    const onSelectPrompt = vi.fn();
-    render(<WelcomeCard onSelectPrompt={onSelectPrompt} />);
-
-    fireEvent.click(screen.getAllByRole("button", { name: /Preview suggestion:/i })[0]);
-    const dialog = await screen.findByRole("dialog");
-    const fullPrompt = dialog.querySelector('[data-testid="suggestion-preview-prompt"]')?.textContent;
-    expect(fullPrompt).toBeTruthy();
-    fireEvent.click(screen.getByRole("button", { name: "Send suggestion" }));
-
-    await waitFor(() => expect(onSelectPrompt).toHaveBeenCalledWith(fullPrompt));
-  });
-
-  it("updates suggestion cards and preview text when the UI language changes", () => {
+  it("updates suggestion cards when the UI language changes", () => {
     const { rerender } = render(<WelcomeCard onSelectPrompt={vi.fn()} />);
 
     rerender(<WelcomeCard language="es" onSelectPrompt={vi.fn()} />);
 
     expect(screen.getAllByRole("button", { name: /Preguntar esto:/i }).length).toBeGreaterThan(0);
-    expect(screen.getAllByRole("button", { name: /Vista previa:/i }).length).toBeGreaterThan(0);
     expect(screen.getByRole("button", { name: "Comprender" })).toBeDefined();
     expect(screen.getAllByRole("button", { name: /algo nuevo/i }).length).toBeGreaterThan(0);
   });

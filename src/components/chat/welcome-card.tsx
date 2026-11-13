@@ -1,9 +1,8 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import * as Dialog from "@radix-ui/react-dialog";
 import * as Tooltip from "@radix-ui/react-tooltip";
-import { Sparkles, Compass, Lightbulb, Eye, X } from "lucide-react";
+import { Sparkles, Compass, Lightbulb } from "lucide-react";
 import { motion, useReducedMotion } from "motion/react";
 import { getMotionTransition } from "@/lib/motion/presets";
 import { RadianceLogo } from "@/components/branding/radiance-logo";
@@ -15,7 +14,6 @@ import {
   createWelcomeSuggestions,
   SUGGESTION_COLUMNS,
   WELCOME_SUGGESTIONS_STORAGE_KEY,
-  type SuggestionItem,
 } from "@/lib/chat/welcome-suggestions";
 
 export { SUGGESTION_COLUMNS } from "@/lib/chat/welcome-suggestions";
@@ -35,80 +33,57 @@ function SuggestionAction({
   language,
   layout,
   onSelectPrompt,
-  onPreview,
 }: {
   item: { id: string; label: string; prompt: string };
   language: UiLanguage;
   layout: "mobile" | "desktop";
   onSelectPrompt: (prompt: string) => void;
-  onPreview: () => void;
 }) {
   const translated = localizeWelcomeSuggestion(item, language);
   const mobile = layout === "mobile";
 
   return (
-    <div className={mobile ? "flex items-center gap-1.5" : "group/row flex max-w-full items-center gap-1"}>
-      <Tooltip.Root>
-        <Tooltip.Trigger asChild>
-          <button
-            type="button"
-            onClick={() => onSelectPrompt(translated.prompt)}
-            className={mobile
-              ? "min-w-0 flex-1 text-left flex items-center justify-between gap-2.5 px-3 py-2.5 min-h-[44px] rounded-xl border border-white/[0.08] bg-white/[0.04] hover:bg-[var(--accent-d)] hover:border-[var(--border-accent)] transition-all cursor-pointer touch-target shadow-xs"
-              : "group/btn w-fit max-w-[calc(100%-2.75rem)] inline-flex items-center gap-2 px-3.5 py-2 min-h-[44px] rounded-full border transition-all duration-200 cursor-pointer shadow-sm active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] touch-target"}
-            style={mobile ? undefined : {
-              backgroundColor: "rgba(255, 255, 255, 0.05)",
-              borderColor: "rgba(255, 255, 255, 0.08)",
-              backdropFilter: "blur(8px)",
-              WebkitBackdropFilter: "blur(8px)",
-            }}
-            onMouseEnter={mobile ? undefined : (event) => {
-              event.currentTarget.style.backgroundColor = "var(--accent-d)";
-              event.currentTarget.style.borderColor = "var(--border-accent)";
-              event.currentTarget.style.boxShadow = "0 4px 16px var(--accent-d)";
-            }}
-            onMouseLeave={mobile ? undefined : (event) => {
-              event.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.05)";
-              event.currentTarget.style.borderColor = "rgba(255, 255, 255, 0.08)";
-              event.currentTarget.style.boxShadow = "none";
-            }}
-            aria-label={`${uiText(language, "Ask suggestion")}: ${translated.label}`}
+    <Tooltip.Root>
+      <Tooltip.Trigger asChild>
+        <button
+          type="button"
+          onClick={() => onSelectPrompt(translated.prompt)}
+          className={mobile
+            ? "min-w-0 w-full text-left flex items-center justify-between gap-2.5 px-3 py-2.5 min-h-[44px] rounded-xl border border-white/[0.08] bg-white/[0.04] hover:bg-[var(--accent-d)] hover:border-[var(--border-accent)] transition-all cursor-pointer touch-target shadow-xs"
+            : "group/btn w-fit max-w-full inline-flex items-center gap-2 px-3.5 py-2 min-h-[44px] rounded-full border transition-all duration-200 cursor-pointer shadow-sm active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] touch-target"}
+          style={mobile ? undefined : {
+            backgroundColor: "rgba(255, 255, 255, 0.05)",
+            borderColor: "rgba(255, 255, 255, 0.08)",
+            backdropFilter: "blur(8px)",
+            WebkitBackdropFilter: "blur(8px)",
+          }}
+          onMouseEnter={mobile ? undefined : (event) => {
+            event.currentTarget.style.backgroundColor = "var(--accent-d)";
+            event.currentTarget.style.borderColor = "var(--border-accent)";
+            event.currentTarget.style.boxShadow = "0 4px 16px var(--accent-d)";
+          }}
+          onMouseLeave={mobile ? undefined : (event) => {
+            event.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.05)";
+            event.currentTarget.style.borderColor = "rgba(255, 255, 255, 0.08)";
+            event.currentTarget.style.boxShadow = "none";
+          }}
+          aria-label={`${uiText(language, "Ask suggestion")}: ${translated.label}`}
+        >
+          <span className={mobile
+            ? "truncate text-xs text-[var(--txt)] font-normal"
+            : "truncate text-xs sm:text-[13px] text-[#ededed] group-hover/btn:text-[var(--txt)] font-normal transition-colors"}
           >
-            <span className={mobile
-              ? "truncate text-xs text-[var(--txt)] font-normal"
-              : "truncate text-xs sm:text-[13px] text-[#ededed] group-hover/btn:text-[var(--txt)] font-normal transition-colors"}
-            >
-              {translated.label}
-            </span>
-            {mobile && <span className="text-[11px] text-[var(--accent-b)] font-mono shrink-0" aria-hidden="true">→</span>}
-          </button>
-        </Tooltip.Trigger>
-        <Tooltip.Portal>
-          <Tooltip.Content side="top" sideOffset={8} className="z-[60] max-w-xs rounded-xl border border-white/15 bg-[var(--deep)]/95 px-3 py-2 text-left text-xs leading-relaxed text-[var(--txt)] shadow-modal backdrop-blur-xl">
-            {translated.prompt}
-          </Tooltip.Content>
-        </Tooltip.Portal>
-      </Tooltip.Root>
-      <Tooltip.Root>
-        <Tooltip.Trigger asChild>
-          <button
-            type="button"
-            onClick={onPreview}
-            className={`group/preview flex h-11 w-11 shrink-0 items-center justify-center text-[var(--txt-muted)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] touch-target ${mobile ? "rounded-xl" : "rounded-full"}`}
-            aria-label={`${uiText(language, "Preview suggestion")}: ${translated.label}`}
-          >
-            <span className={`flex h-8 w-8 items-center justify-center border border-white/[0.08] bg-white/[0.04] transition-colors group-hover/preview:bg-[var(--accent-d)] group-hover/preview:text-[var(--txt)] ${mobile ? "rounded-lg" : "rounded-full"}`}>
-              <Eye className="h-3.5 w-3.5" aria-hidden="true" />
-            </span>
-          </button>
-        </Tooltip.Trigger>
-        <Tooltip.Portal>
-          <Tooltip.Content side="top" sideOffset={8} className="z-[60] max-w-xs rounded-xl border border-white/15 bg-[var(--deep)]/95 px-3 py-2 text-left text-xs leading-relaxed text-[var(--txt)] shadow-modal backdrop-blur-xl">
-            {translated.prompt}
-          </Tooltip.Content>
-        </Tooltip.Portal>
-      </Tooltip.Root>
-    </div>
+            {translated.label}
+          </span>
+          {mobile && <span className="text-[11px] text-[var(--accent-b)] font-mono shrink-0" aria-hidden="true">→</span>}
+        </button>
+      </Tooltip.Trigger>
+      <Tooltip.Portal>
+        <Tooltip.Content side="top" sideOffset={8} className="z-[60] max-w-xs rounded-xl border border-white/15 bg-[var(--deep)]/95 px-3 py-2 text-left text-xs leading-relaxed text-[var(--txt)] shadow-modal backdrop-blur-xl">
+          {translated.prompt}
+        </Tooltip.Content>
+      </Tooltip.Portal>
+    </Tooltip.Root>
   );
 }
 
@@ -121,8 +96,6 @@ export function WelcomeCard({
   const prefersReducedMotion = useReducedMotion() ?? false;
   const [activeCategory, setActiveCategory] = useState<string>("understand");
   const [suggestionColumns, setSuggestionColumns] = useState(SUGGESTION_COLUMNS);
-  const [previewSuggestion, setPreviewSuggestion] = useState<SuggestionItem | null>(null);
-  const localizedPreview = previewSuggestion ? localizeWelcomeSuggestion(previewSuggestion, language) : null;
   const generatedForSession = useRef(false);
 
   useEffect(() => {
@@ -254,7 +227,6 @@ export function WelcomeCard({
                 language={language}
                 layout="mobile"
                 onSelectPrompt={onSelectPrompt}
-                onPreview={() => setPreviewSuggestion(item)}
               />
             ))}
           </div>
@@ -294,7 +266,6 @@ export function WelcomeCard({
                   language={language}
                   layout="desktop"
                   onSelectPrompt={onSelectPrompt}
-                  onPreview={() => setPreviewSuggestion(item)}
                 />
               ))}
             </div>
@@ -303,41 +274,6 @@ export function WelcomeCard({
       </div>
       </Tooltip.Provider>
 
-      <Dialog.Root open={Boolean(previewSuggestion)} onOpenChange={(open) => !open && setPreviewSuggestion(null)}>
-        <Dialog.Portal>
-          <Dialog.Overlay className="radiance-dialog-overlay fixed inset-0 z-50 bg-black/65 backdrop-blur-sm" />
-          <Dialog.Content className="fixed inset-0 z-50 flex items-center justify-center p-4 outline-none pointer-events-none">
-            <div className="pointer-events-auto w-full max-w-lg rounded-2xl border border-[var(--border)] bg-[var(--deep)] p-5 text-left text-[var(--txt)] shadow-modal sm:p-6">
-              <div className="mb-4 flex items-start justify-between gap-4">
-                <div className="min-w-0">
-                  <Dialog.Title className="font-serif text-lg font-semibold">{uiText(language, "Suggestion preview")}</Dialog.Title>
-                  <p className="mt-1 text-sm text-[var(--txt-muted)]">{localizedPreview?.label}</p>
-                </div>
-                <Dialog.Close asChild>
-                  <button type="button" className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-[var(--txt-muted)] transition-colors hover:bg-[var(--surface-hover)] hover:text-[var(--txt)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] touch-target" aria-label={uiText(language, "Close suggestion preview")}>
-                    <X className="h-4 w-4" aria-hidden="true" />
-                  </button>
-                </Dialog.Close>
-              </div>
-              <Dialog.Description data-testid="suggestion-preview-prompt" className="rounded-xl border border-[var(--border)] bg-white/[0.04] p-4 text-sm leading-relaxed text-[var(--txt)]">
-                {localizedPreview?.prompt}
-              </Dialog.Description>
-              <div className="mt-5 flex justify-end">
-                <button
-                  type="button"
-                  className="min-h-11 rounded-xl bg-[var(--accent-d)] px-4 py-2 text-sm font-medium text-[var(--txt)] transition-colors hover:bg-[var(--accent)]/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] touch-target"
-                  onClick={() => {
-                    if (previewSuggestion) onSelectPrompt(previewSuggestion.prompt);
-                    setPreviewSuggestion(null);
-                  }}
-                >
-                  {uiText(language, "Send suggestion")}
-                </button>
-              </div>
-            </div>
-          </Dialog.Content>
-        </Dialog.Portal>
-      </Dialog.Root>
     </motion.div>
   );
 }
