@@ -31,15 +31,35 @@ test("contextual follow-ups render as a theme-aware carousel and rotate by contr
   await page.getByPlaceholder("Ask RADIANCE anything...").fill("Build a small feature");
   await page.getByPlaceholder("Ask RADIANCE anything...").press("Enter");
 
-  const carousel = page.getByRole("region", { name: "Suggested follow-up questions" });
-  await expect(carousel).toBeVisible();
-  await expect(page.getByText("Suggestion 1 of 3")).toBeVisible();
+  const leftCarousel = page.getByRole("region", { name: "Left follow-up suggestions" });
+  const rightCarousel = page.getByRole("region", { name: "Right follow-up suggestions" });
+  await expect(leftCarousel).toBeVisible();
+  await expect(rightCarousel).toBeVisible();
+  await expect(leftCarousel.getByText("1/3")).toBeVisible();
+  await expect(rightCarousel.getByText("2/3")).toBeVisible();
   const viewportWidth = page.viewportSize()?.width ?? 0;
-  const carouselBounds = await carousel.boundingBox();
-  expect(carouselBounds).not.toBeNull();
-  expect(carouselBounds!.x + carouselBounds!.width).toBeLessThanOrEqual(viewportWidth);
+  const leftBounds = await page.getByTestId("left-follow-up-lane").boundingBox();
+  const rightBounds = await page.getByTestId("right-follow-up-lane").boundingBox();
+  const composerBounds = await page.getByTestId("composer-lane").boundingBox();
+  expect(leftBounds).not.toBeNull();
+  expect(rightBounds).not.toBeNull();
+  expect(composerBounds).not.toBeNull();
+  expect(rightBounds!.x + rightBounds!.width).toBeLessThanOrEqual(viewportWidth);
+  if (viewportWidth >= 768) {
+    expect(leftBounds!.x + leftBounds!.width).toBeLessThanOrEqual(composerBounds!.x);
+    expect(composerBounds!.x + composerBounds!.width).toBeLessThanOrEqual(rightBounds!.x);
+    const leftCenter = leftBounds!.y + leftBounds!.height / 2;
+    const composerCenter = composerBounds!.y + composerBounds!.height / 2;
+    const rightCenter = rightBounds!.y + rightBounds!.height / 2;
+    expect(Math.abs(leftCenter - composerCenter)).toBeLessThanOrEqual(32);
+    expect(Math.abs(rightCenter - composerCenter)).toBeLessThanOrEqual(32);
+  } else {
+    expect(leftBounds!.x).toBeLessThan(rightBounds!.x);
+    expect(Math.abs(leftBounds!.y - rightBounds!.y)).toBeLessThanOrEqual(1);
+    expect(leftBounds!.y + leftBounds!.height).toBeLessThanOrEqual(composerBounds!.y);
+  }
 
-  const activeSuggestion = page.getByRole("button", { name: "Use suggestion: How should this implementation be tested?" });
+  const activeSuggestion = leftCarousel.getByRole("button", { name: "Use suggestion: How should this implementation be tested?" });
   const accent = await activeSuggestion.evaluate((element) =>
     getComputedStyle(element).borderColor
   );
@@ -47,16 +67,17 @@ test("contextual follow-ups render as a theme-aware carousel and rotate by contr
 
   await page.screenshot({ path: testInfo.outputPath("follow-up-carousel.png") });
   await page.waitForTimeout(250);
-  const nextButton = page.getByRole("button", { name: "Next suggestion" });
+  const nextButton = page.getByRole("button", { name: "Next Left" });
   if ((page.viewportSize()?.width ?? 0) < 768) await nextButton.tap();
   else await nextButton.click();
-  await expect(page.getByText("Suggestion 2 of 3")).toBeVisible();
-  await carousel.focus();
+  await expect(leftCarousel.getByText("2/3")).toBeVisible();
+  await expect(rightCarousel.getByText("2/3")).toBeVisible();
+  await leftCarousel.focus();
   await page.keyboard.press("ArrowRight");
-  await expect(page.getByText("Suggestion 3 of 3")).toBeVisible();
+  await expect(leftCarousel.getByText("3/3")).toBeVisible();
   await page.keyboard.press("ArrowLeft");
-  await expect(page.getByText("Suggestion 2 of 3")).toBeVisible();
+  await expect(leftCarousel.getByText("2/3")).toBeVisible();
 
-  await page.getByRole("button", { name: "Use suggestion: What edge cases should I consider?" }).click();
+  await leftCarousel.getByRole("button", { name: "Use suggestion: What edge cases should I consider?" }).click();
   await expect.poll(() => lastSubmittedText).toBe("What edge cases should I consider?");
 });

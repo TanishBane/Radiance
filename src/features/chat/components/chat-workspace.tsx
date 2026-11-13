@@ -138,6 +138,7 @@ export function ChatWorkspace({
   }, [messages, streamingContent, isGenerating, streamError]);
 
   const hasContent = messages.length > 0 || isGenerating || Boolean(streamingContent) || Boolean(streamError);
+  const showFollowUps = activeFollowUps.length > 0 && !isGenerating && !streamError;
 
   return (
     <div className="flex-1 flex flex-col relative overflow-hidden z-10">
@@ -240,24 +241,60 @@ export function ChatWorkspace({
         )}
       </div>
 
-      {/* Follow-up Suggestion Chips */}
-      {activeFollowUps.length > 0 && !isGenerating && !streamError && (
-        <div className="mx-auto mb-1 w-full px-3 sm:px-4">
-          <FollowUpChips questions={activeFollowUps} onSelect={onSelectSuggestion} />
-        </div>
-      )}
+      <div
+        className="mx-auto grid w-full max-w-[1440px] grid-cols-2 items-end gap-x-2 gap-y-2 px-3 sm:gap-x-4 md:grid-cols-[minmax(7rem,0.9fr)_minmax(0,3fr)_minmax(7rem,0.9fr)]"
+        data-testid="composer-dock"
+      >
+        {showFollowUps && (
+          <div
+            className="min-w-0 md:col-start-1 md:row-start-1 md:self-center"
+            data-testid="left-follow-up-lane"
+          >
+            <FollowUpChips
+              questions={activeFollowUps}
+              onSelect={onSelectSuggestion}
+              label="Left"
+              compact
+            />
+          </div>
+        )}
 
-      {/* Bottom Composer */}
-      <ChatComposer
-        language={language}
-        onSend={onSend}
-        onStop={onStop}
-        isGenerating={isGenerating}
-        selectedModel={selectedModel}
-        onSelectModel={onSelectModel}
-        enterToSend={enterToSend}
-        onFocusChange={onFocusChange}
-      />
+        {/* Bottom Composer */}
+        <div
+          className={`min-w-0 ${
+            showFollowUps
+              ? "col-span-2 row-start-2 md:col-span-1 md:col-start-2 md:row-start-1"
+              : "col-span-2 row-start-1 md:col-span-3"
+          }`}
+          data-testid="composer-lane"
+        >
+          <ChatComposer
+            language={language}
+            onSend={onSend}
+            onStop={onStop}
+            isGenerating={isGenerating}
+            selectedModel={selectedModel}
+            onSelectModel={onSelectModel}
+            enterToSend={enterToSend}
+            onFocusChange={onFocusChange}
+          />
+        </div>
+
+        {showFollowUps && (
+          <div
+            className="min-w-0 col-start-2 row-start-1 md:col-start-3 md:row-start-1 md:self-center"
+            data-testid="right-follow-up-lane"
+          >
+            <FollowUpChips
+              questions={activeFollowUps}
+              onSelect={onSelectSuggestion}
+              label="Right"
+              startAt={Math.min(1, activeFollowUps.length - 1)}
+              compact
+            />
+          </div>
+        )}
+      </div>
     </div>
   );
 }

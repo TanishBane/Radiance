@@ -1,5 +1,20 @@
 # Radiance UI implementation log
 
+## 2026-11-13 — Composer-side follow-up carousels
+
+### Changed
+
+- Split the contextual follow-up carousel into independently navigable left and right lanes beside the primary composer on desktop.
+- Reflowed the two lanes into a paired row above the full-width composer on narrow screens. Both lanes retain the active theme styling and suggestion selection behavior.
+- Added layout and navigation coverage for desktop, mobile, keyboard, and suggestion selection.
+
+### Verification
+
+- Follow-up carousel and chat workspace unit tests: passed (19 tests).
+- TypeScript: passed.
+- Playwright: passed on Desktop Chrome and Mobile Chrome (2 tests); checked lane positions and composer centering on desktop and paired responsive layout on mobile.
+- Reviewed desktop and mobile Playwright screenshots.
+
 ## 2026-11-13 — Theme-aware follow-up carousel
 
 ### Changed

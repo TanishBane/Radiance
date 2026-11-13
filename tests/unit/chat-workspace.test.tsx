@@ -1,5 +1,5 @@
 import React from "react";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, within } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { ChatWorkspace } from "@/features/chat/components/chat-workspace";
 import { ChatMessage } from "@/lib/types/chat";
@@ -45,6 +45,28 @@ describe("ChatWorkspace Component (Inference & Error States)", () => {
 
       // Welcome card should be present
       expect(screen.getByText(/illuminate what is possible/i)).toBeDefined();
+    });
+
+    it("places independently navigable follow-up carousels on both sides of the composer", () => {
+      render(
+        <ChatWorkspace
+          {...defaultProps}
+          activeFollowUps={["First follow-up", "Second follow-up", "Third follow-up"]}
+        />
+      );
+
+      const leftCarousel = screen.getByRole("region", { name: "Left follow-up suggestions" });
+      const rightCarousel = screen.getByRole("region", { name: "Right follow-up suggestions" });
+
+      expect(screen.getByTestId("composer-lane").querySelector("textarea")).not.toBeNull();
+      expect(within(leftCarousel).getByText("1/3")).toBeDefined();
+      expect(within(rightCarousel).getByText("2/3")).toBeDefined();
+
+      fireEvent.click(within(leftCarousel).getByRole("button", { name: "Next Left" }));
+      fireEvent.click(within(leftCarousel).getByRole("button", { name: "Next Left" }));
+
+      expect(within(leftCarousel).getByText("3/3")).toBeDefined();
+      expect(within(rightCarousel).getByText("2/3")).toBeDefined();
     });
 
     it("hides WelcomeCard when messages exist", () => {
