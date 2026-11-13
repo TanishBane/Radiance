@@ -278,4 +278,4 @@
 
 - Removed the standalone Radiance mark above the greeting and placed it where the “Radiance” wordmark appeared in the title.
 - Kept “adiance” beside the mark in the brand gradient so the title reads as the logo-backed “Radiance.”
-- Removed the mark’s rounded square and adjusted its inline size and baseline to align with the gradient wordmark.
+- Removed the mark’s rounded square and sized the SVG to the title-relative container so its visible artwork aligns with the gradient wordmark baseline at each breakpoint.

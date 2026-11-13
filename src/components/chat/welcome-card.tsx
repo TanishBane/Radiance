@@ -141,7 +141,7 @@ export function WelcomeCard({
         <h1 className="font-serif text-2xl sm:text-5xl md:text-6xl font-light text-[var(--txt)] tracking-tight leading-tight select-none">
           {uiText(language, "Hello, I Am")} <span role="img" aria-label="Radiance">
             <span className="relative inline-block h-[0.9em] w-[1.03em] align-[-0.05em]">
-              <RadianceLogo variant="symbol" size="md" showWordmark={false} animated glow className="absolute inset-0 h-full w-full" aria-hidden />
+              <RadianceLogo variant="symbol" size="xl" showWordmark={false} animated glow className="absolute inset-0 h-full w-full [&>svg]:!h-full [&>svg]:!w-full" aria-hidden />
             </span>
             <em aria-hidden="true" className="not-italic font-bold gradient-text-brand drop-shadow-sm">adiance</em>
           </span>
