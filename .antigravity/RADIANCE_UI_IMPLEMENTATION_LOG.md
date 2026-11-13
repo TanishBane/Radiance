@@ -1,5 +1,20 @@
 # Radiance UI implementation log
 
+## 2026-11-13 — Theme-aware follow-up carousel
+
+### Changed
+
+- Replaced the stacked follow-up links with a manually navigable perspective carousel above the primary chat composer. It keeps the existing contextual questions and selection behavior, draws colors from the active theme tokens, wraps through the question set, and supports arrow keys, visible focus, touch controls, and reduced motion.
+- Expanded the carousel lane beyond the composer width so the side suggestions can peek in from either side without adding content to the composer itself.
+- Added unit and browser coverage for navigation, selection, keyboard input, touch-sized mobile layout, and viewport containment.
+
+### Verification
+
+- Follow-up carousel and chat workspace unit tests: passed (18 tests); mobile touch-target case: passed (1 test).
+- TypeScript: passed.
+- Playwright: passed on Desktop Chrome and Mobile Chrome (2 tests), including sending a mocked chat turn, rotating suggestions, and selecting a follow-up.
+- Captured desktop and mobile screenshots through Playwright; the mobile screenshot was reviewed after waiting for the existing intro splash to exit.
+
 ## 2026-11-04 — Motion foundation and first application pass
 
 ### Changed

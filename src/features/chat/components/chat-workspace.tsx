@@ -242,7 +242,7 @@ export function ChatWorkspace({
 
       {/* Follow-up Suggestion Chips */}
       {activeFollowUps.length > 0 && !isGenerating && !streamError && (
-        <div className="max-w-3xl mx-auto w-full px-4 mb-2">
+        <div className="mx-auto mb-1 w-full px-3 sm:px-4">
           <FollowUpChips questions={activeFollowUps} onSelect={onSelectSuggestion} />
         </div>
       )}
