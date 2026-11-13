@@ -49,6 +49,67 @@
   box-sizing: border-box;
 }
 
+.landing-root .hero-landscape-section {
+  padding-top: clamp(5.25rem, 9vw, 8.5rem);
+  padding-bottom: 3.25rem;
+}
+
+.landing-root .hero-center-showcase {
+  max-width: 820px;
+  margin-bottom: 2.5rem;
+}
+
+.landing-root .hero-editorial-center {
+  max-width: 820px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+}
+
+.landing-root .hero-editorial-center .hero-narrative-title,
+.landing-root .hero-editorial-center .landing-display {
+  max-width: 12ch;
+  margin-bottom: 1.25rem;
+  font-size: clamp(3.2rem, 5.4vw, 5.15rem);
+  line-height: 1.04;
+  letter-spacing: -0.045em;
+}
+
+.landing-root .hero-editorial-center .hero-narrative-lede,
+.landing-root .hero-editorial-center .landing-lede {
+  max-width: 660px;
+  margin-bottom: 2.25rem;
+  font-size: clamp(1.1rem, 1.6vw, 1.35rem);
+  line-height: 1.52;
+}
+
+.landing-root .hero-editorial-center .hero-trust-row {
+  margin-top: 1.5rem;
+}
+
+.landing-root .hero-telemetry-dock {
+  margin-top: 4.5rem;
+}
+
+@media (max-width: 640px) {
+  .landing-root .hero-landscape-section {
+    padding-top: 4rem;
+  }
+
+  .landing-root .hero-editorial-center .hero-narrative-title,
+  .landing-root .hero-editorial-center .landing-display {
+    max-width: 13ch;
+    font-size: clamp(2.7rem, 11vw, 4rem);
+  }
+
+  .landing-root .hero-telemetry-dock {
+    margin-top: 3rem;
+  }
+}
+
 .hero-editorial-center {
   display: flex;
   flex-direction: column;
