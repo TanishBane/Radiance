@@ -13,6 +13,8 @@ import {
 import { conversationService } from "@/lib/db/conversations";
 import { generateFollowUpQuestions } from "@/lib/ai/followups";
 
+const MAX_DISPLAYED_FOLLOW_UPS = 2;
+
 export function useChatSession(): UseChatSessionReturn {
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [activeConvId, setActiveConvId] = useState<string | null>(null);
@@ -179,7 +181,7 @@ export function useChatSession(): UseChatSessionReturn {
           latestUserTurn
         );
         if (followUps && followUps.length > 0) {
-          setActiveFollowUps(followUps);
+          setActiveFollowUps(followUps.slice(0, MAX_DISPLAYED_FOLLOW_UPS));
         }
       } catch {
         // Non-critical background task failure

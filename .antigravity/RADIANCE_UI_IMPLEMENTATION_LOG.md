@@ -166,3 +166,17 @@
 - TypeScript: passed.
 - ESLint: passed with no warnings or errors.
 - Production build: passed.
+
+## 2026-11-14 — Show only the top two follow-ups
+
+### Changed
+
+- Updated follow-up generation guidance to rank three distinct questions strongest-first by relevance, usefulness, and actionability.
+- Limited the active suggestions used by both side carousels to the first two ranked results.
+
+### Verification
+
+- Regression test reproduced the three-item display before the change; it now asserts only the first two remain active.
+- Focused Playwright: passed on Desktop Chrome and Mobile Chrome (2 tests), including cycling and selecting the second suggestion.
+- Focused unit tests: passed (43 tests).
+- TypeScript, ESLint, and production build: passed.

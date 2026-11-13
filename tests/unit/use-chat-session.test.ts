@@ -135,6 +135,11 @@ describe("useChatSession Hook & Session State Specifications", () => {
   describe("4. appendAssistantMessage & Metadata Preservation", () => {
     it("generates follow-ups using the latest user message and selected language", async () => {
       const { result } = renderHook(() => useChatSession());
+      vi.mocked(generateFollowUpQuestions).mockResolvedValueOnce([
+        "Best follow-up?",
+        "Second-best follow-up?",
+        "Third follow-up?",
+      ]);
       act(() => result.current.appendUserMessage("Explain how solar panels store energy."));
 
       await act(async () => {
@@ -152,6 +157,10 @@ describe("useChatSession Hook & Session State Specifications", () => {
         "fr",
         "Explain how solar panels store energy."
       );
+      expect(result.current.activeFollowUps).toEqual([
+        "Best follow-up?",
+        "Second-best follow-up?",
+      ]);
     });
 
     it("creates new conversation and derives title from first user message", async () => {
