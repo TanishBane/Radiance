@@ -17,8 +17,10 @@ import { motion, useReducedMotion } from "motion/react";
 import { RadianceLogo } from "@/components/branding/radiance-logo";
 import { cn } from "@/lib/utils/cn";
 import { APP_VERSION } from "@/lib/app-info";
+import { uiText, type UiLanguage } from "@/lib/i18n/ui";
 
 interface SidebarDockProps {
+  language?: UiLanguage;
   onNewChat: () => void;
   onToggleHistory: () => void;
   onToggleSettings: (section?: string) => void;
@@ -29,6 +31,7 @@ interface SidebarDockProps {
 }
 
 export function SidebarDock({
+  language = "en",
   onNewChat,
   onToggleHistory,
   onToggleSettings,
@@ -51,7 +54,7 @@ export function SidebarDock({
 
   const mainLinks: SidebarLinkItem[] = [
     {
-      label: "New Chat",
+      label: uiText(language, "New Chat"),
       icon: (
         <div className="w-5 h-5 flex items-center justify-center text-[var(--accent-b)] group-hover/sidebar:rotate-90 transition-transform duration-300">
           <IconPlus className="w-4 h-4 stroke-[2.4]" />
@@ -61,7 +64,7 @@ export function SidebarDock({
       badge: "Ctrl+N",
     },
     {
-      label: "History",
+      label: uiText(language, "History"),
       icon: (
         <div className="w-5 h-5 flex items-center justify-center text-[var(--txt-muted)] group-hover/sidebar:text-[var(--accent-b)] transition-colors">
           <IconHistory className="w-4 h-4 stroke-[1.8]" />
@@ -71,7 +74,7 @@ export function SidebarDock({
       badge: "Ctrl+L",
     },
     {
-      label: "Personalization",
+      label: uiText(language, "Personalization"),
       icon: (
         <div className="w-5 h-5 flex items-center justify-center text-[var(--txt-muted)] group-hover/sidebar:text-[var(--accent-b)] transition-colors">
           <IconAdjustmentsHorizontal className="w-4 h-4 stroke-[1.8]" />
@@ -81,7 +84,7 @@ export function SidebarDock({
       active: settingsActive && activeSettingsSection === "personalization",
     },
     {
-      label: "Settings",
+      label: uiText(language, "Settings"),
       icon: (
         <div className="w-5 h-5 flex items-center justify-center text-[var(--txt-muted)] group-hover/sidebar:text-[var(--accent-b)] transition-colors">
           <IconSettings className="w-4 h-4 stroke-[1.8]" />

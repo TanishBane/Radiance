@@ -5,6 +5,7 @@ import { Plane, Play, Bed, Sparkles, Compass, Lightbulb } from "lucide-react";
 import { motion, useReducedMotion } from "motion/react";
 import { getMotionTransition } from "@/lib/motion/presets";
 import { RadianceLogo } from "@/components/branding/radiance-logo";
+import { uiText, type UiLanguage } from "@/lib/i18n/ui";
 
 export interface SuggestionItem {
   id: string;
@@ -101,10 +102,11 @@ export const SUGGESTION_COLUMNS: SuggestionColumn[] = [
 ];
 
 interface WelcomeCardProps {
+  language?: UiLanguage;
   onSelectPrompt: (prompt: string) => void;
 }
 
-export function WelcomeCard({ onSelectPrompt }: WelcomeCardProps) {
+export function WelcomeCard({ language = "en", onSelectPrompt }: WelcomeCardProps) {
   const prefersReducedMotion = useReducedMotion() ?? false;
   const [activeCategory, setActiveCategory] = useState<string>("understand");
 
@@ -163,10 +165,10 @@ export function WelcomeCard({ onSelectPrompt }: WelcomeCardProps) {
       {/* Hero Title (Signature TanixAI Cormorant Garamond + 3-Stop Chromatic Gradient) */}
       <div className="flex flex-col gap-1.5 sm:gap-2.5">
         <h1 className="font-serif text-2xl sm:text-5xl md:text-6xl font-light text-[var(--txt)] tracking-tight leading-tight select-none">
-          Hello, I Am <em className="not-italic font-bold gradient-text-brand drop-shadow-sm">{titleName}</em>
+          {uiText(language, "Hello, I Am")} <em className="not-italic font-bold gradient-text-brand drop-shadow-sm">{titleName}</em>
         </h1>
         <p className="text-xs sm:text-base text-[var(--txt-dim)] font-light max-w-lg leading-relaxed mx-auto font-sans line-clamp-2 sm:line-clamp-none">
-          {description}
+          {uiText(language, description)}
         </p>
       </div>
 
@@ -178,7 +180,7 @@ export function WelcomeCard({ onSelectPrompt }: WelcomeCardProps) {
             style={{ backgroundColor: "var(--accent)" }}
             aria-hidden="true"
           />
-          Tell me what’s on your mind, or pick a suggestion.
+          {uiText(language, "Tell me what’s on your mind, or pick a suggestion.")}
         </p>
       </div>
 
@@ -203,7 +205,7 @@ export function WelcomeCard({ onSelectPrompt }: WelcomeCardProps) {
                 {col.id === "understand" && <Lightbulb className="w-3.5 h-3.5" />}
                 {col.id === "create" && <Sparkles className="w-3.5 h-3.5" />}
                 {col.id === "explore" && <Compass className="w-3.5 h-3.5" />}
-                <span>{col.title}</span>
+                <span>{uiText(language, col.title)}</span>
               </button>
             );
           })}
@@ -226,9 +228,9 @@ export function WelcomeCard({ onSelectPrompt }: WelcomeCardProps) {
               className="text-xs font-semibold uppercase tracking-wider font-sans"
               style={getHeaderStyle(activeCol.headerThemeRole)}
             >
-              {activeCol.title} Prompts
+              {uiText(language, `${activeCol.title} Prompts`)}
             </span>
-            <span className="text-[10px] font-mono text-[var(--txt-muted)]">Tap to ask</span>
+            <span className="text-[10px] font-mono text-[var(--txt-muted)]">{uiText(language, "Tap to ask")}</span>
           </div>
 
           <div className="flex flex-col gap-2 w-full">
@@ -239,12 +241,12 @@ export function WelcomeCard({ onSelectPrompt }: WelcomeCardProps) {
                 whileTap={prefersReducedMotion ? undefined : { scale: 0.98 }}
                 onClick={() => onSelectPrompt(item.prompt)}
                 className="w-full text-left flex items-center justify-between gap-2.5 px-3 py-2.5 min-h-[44px] rounded-xl border border-white/[0.08] bg-white/[0.04] hover:bg-[var(--accent-d)] hover:border-[var(--border-accent)] transition-all cursor-pointer touch-target shadow-xs"
-                aria-label={`Ask suggestion: ${item.label}`}
+                aria-label={`${uiText(language, "Ask suggestion")}: ${uiText(language, item.label)}`}
               >
                 <div className="flex items-center gap-2 min-w-0">
                   {item.badge && renderBadge(item.badge.type)}
                   <span className="text-xs text-[var(--txt)] font-normal truncate">
-                    {item.label}
+                    {uiText(language, item.label)}
                   </span>
                 </div>
                 <span className="text-[11px] text-[var(--accent-b)] font-mono shrink-0">→</span>

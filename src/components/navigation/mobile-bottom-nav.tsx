@@ -9,8 +9,10 @@ import {
   Settings,
 } from "lucide-react";
 import { getMotionTransition } from "@/lib/motion/presets";
+import { uiText, type UiLanguage } from "@/lib/i18n/ui";
 
 export interface MobileBottomNavProps {
+  language?: UiLanguage;
   activeTab?: "chat" | "history" | "settings";
   onNewChat: () => void;
   onToggleHistory: () => void;
@@ -20,6 +22,7 @@ export interface MobileBottomNavProps {
 }
 
 export function MobileBottomNav({
+  language = "en",
   activeTab = "chat",
   onNewChat,
   onToggleHistory,
@@ -36,7 +39,7 @@ export function MobileBottomNav({
 
   return (
     <nav
-      aria-label="Mobile Navigation"
+      aria-label={uiText(language, "Mobile Navigation")}
       role="navigation"
       className="md:hidden shrink-0 z-30 w-full bg-[var(--void)]/90 backdrop-blur-2xl border-t border-[var(--border)] px-2 pb-[max(0.5rem,env(safe-area-inset-bottom,0px))] pt-1 select-none transition-all duration-200"
     >
@@ -50,7 +53,7 @@ export function MobileBottomNav({
               ? "text-[var(--accent-b)] font-semibold"
               : "text-[var(--txt-muted)] hover:text-[var(--txt)]"
           }`}
-          aria-label="Chat Workspace"
+          aria-label={uiText(language, "Chat Workspace")}
           data-testid="bottom-nav-chat"
         >
           <div className="relative">
@@ -63,7 +66,7 @@ export function MobileBottomNav({
               />
             )}
           </div>
-          <span className="text-[10px] mt-0.5 tracking-tight">Chat</span>
+          <span className="text-[10px] mt-0.5 tracking-tight">{uiText(language, "Chat")}</span>
         </button>
 
         {/* 2. History */}
@@ -75,7 +78,7 @@ export function MobileBottomNav({
               ? "text-[var(--accent-b)] font-semibold"
               : "text-[var(--txt-muted)] hover:text-[var(--txt)]"
           }`}
-          aria-label="Conversation History"
+          aria-label={uiText(language, "Conversation History")}
           data-testid="bottom-nav-history"
         >
           <div className="relative">
@@ -88,7 +91,7 @@ export function MobileBottomNav({
               />
             )}
           </div>
-          <span className="text-[10px] mt-0.5 tracking-tight">History</span>
+          <span className="text-[10px] mt-0.5 tracking-tight">{uiText(language, "History")}</span>
         </button>
 
         {/* 3. Center New Chat Primary Action Button (Thumb Hero) */}
@@ -100,7 +103,7 @@ export function MobileBottomNav({
             transition={{ type: "spring", stiffness: 450, damping: 22 }}
             onClick={onNewChat}
             className="w-11 h-11 min-w-[44px] min-h-[44px] -mt-2 rounded-2xl bg-gradient-to-tr from-[var(--accent)] via-[var(--accent-b)] to-[var(--accent-c)] text-[var(--void)] shadow-[0_4px_16px_var(--accent-g)] flex items-center justify-center font-bold touch-target cursor-pointer border border-white/20 active:brightness-90"
-            aria-label="Start New Chat"
+          aria-label={uiText(language, "Start New Chat")}
             data-testid="bottom-nav-new-chat"
           >
             <Plus className="w-5 h-5 stroke-[2.5]" />
@@ -116,7 +119,7 @@ export function MobileBottomNav({
               ? "text-[var(--accent-b)] font-semibold"
               : "text-[var(--txt-muted)] hover:text-[var(--txt)]"
           }`}
-            aria-label="Settings"
+            aria-label={uiText(language, "Settings")}
           data-testid="bottom-nav-settings"
         >
           <div className="relative">
@@ -129,7 +132,7 @@ export function MobileBottomNav({
               />
             )}
           </div>
-          <span className="text-[10px] mt-0.5 tracking-tight">Settings</span>
+          <span className="text-[10px] mt-0.5 tracking-tight">{uiText(language, "Settings")}</span>
         </button>
 
       </div>

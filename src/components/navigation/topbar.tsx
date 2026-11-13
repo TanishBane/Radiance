@@ -2,17 +2,16 @@
 
 import React from "react";
 import { RadianceLogo } from "@/components/branding/radiance-logo";
-import { Trash2 } from "lucide-react";
+import { Languages, Trash2 } from "lucide-react";
 import { IconMenu2 } from "@tabler/icons-react";
-import { APP_VERSION } from "@/lib/app-info";
+import { uiText, type UiLanguage } from "@/lib/i18n/ui";
 
 interface TopbarProps {
-  language: "en" | "hi";
-  onToggleLanguage: (lang: "en" | "hi") => void;
+  language: UiLanguage;
+  onToggleLanguage: (lang: UiLanguage) => void;
   onClearChat: () => void;
   onNewChat: () => void;
   onToggleMobileMenu?: () => void;
-  modelName?: string;
 }
 
 export function Topbar({
@@ -21,7 +20,6 @@ export function Topbar({
   onClearChat,
   onNewChat,
   onToggleMobileMenu,
-  modelName,
 }: TopbarProps) {
   return (
     <header className="sticky top-0 z-30 flex items-center justify-between gap-2 px-2.5 sm:px-4 py-2 sm:py-2.5 pt-[max(0.625rem,env(safe-area-inset-top,0px))] pl-[max(0.625rem,env(safe-area-inset-left,0px))] pr-[max(0.625rem,env(safe-area-inset-right,0px))] bg-[var(--void)]/85 backdrop-blur-xl border-b border-[var(--border)] select-none shrink-0 w-full min-h-[var(--mobile-topbar-h,52px)]">
@@ -33,8 +31,8 @@ export function Topbar({
             type="button"
             onClick={onToggleMobileMenu}
             className="min-w-[44px] min-h-[44px] p-2 rounded-xl border border-[var(--border)] text-[var(--txt-dim)] hover:text-[var(--txt)] hover:bg-[var(--surface-hover)] active:scale-95 transition-all flex items-center justify-center touch-target cursor-pointer"
-            title="Open navigation menu"
-            aria-label="Open navigation menu"
+            title={uiText(language, "Open navigation menu")}
+            aria-label={uiText(language, "Open navigation menu")}
           >
             <IconMenu2 className="w-5 h-5" />
           </button>
@@ -43,60 +41,32 @@ export function Topbar({
         {/* On Mobile: Compact brand logo */}
         <div className="md:hidden flex items-center gap-2">
           <RadianceLogo size="sm" onClick={onNewChat} showWordmark={false} />
-          {modelName && (
-            <span className="font-mono text-[10px] text-[var(--txt-muted)] px-2 py-0.5 rounded-full border border-[var(--border)] bg-[var(--surface)] max-w-[120px] truncate hidden xs:inline-block">
-              {modelName}
-            </span>
-          )}
-        </div>
-
-        {/* On Desktop: Clean Context Badge (Default Assistant) */}
-        <div className="hidden md:flex items-center gap-2 px-2.5 py-1 rounded-xl bg-[var(--surface)] border border-[var(--border)]">
-          <span className="w-2 h-2 rounded-full bg-[var(--accent)] animate-pulse" />
-          <span className="font-mono text-xs font-semibold text-[var(--txt)] tracking-wide">
-            {modelName || "Default Assistant"}
-          </span>
-          <span className="font-mono text-[9px] uppercase tracking-widest px-1.5 py-0.2 rounded-full border border-[var(--accent)]/30 text-[var(--accent)] bg-[var(--accent-d)]">
-            v{APP_VERSION}
-          </span>
         </div>
       </div>
 
-      {/* Right: Language Toggle & Clear Conversation */}
+      {/* Right: Interface and response language & clear conversation */}
       <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-        {/* Language Switcher */}
-        <div className="flex rounded-xl overflow-hidden border border-[var(--border)] bg-[var(--surface)] text-[10px] font-mono p-0.5">
-          <button
-            type="button"
-            onClick={() => onToggleLanguage("en")}
-            className={`min-w-[34px] sm:min-w-[28px] min-h-[34px] sm:min-h-[28px] px-2.5 py-1 rounded-lg flex items-center justify-center transition-colors touch-target ${
-              language === "en"
-                ? "bg-[var(--accent-d)] text-[var(--accent-b)] font-bold shadow-sm"
-                : "text-[var(--txt-muted)] hover:text-[var(--txt)]"
-            }`}
+        <label className="flex min-h-11 items-center gap-2 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-2.5 text-[var(--txt-muted)] focus-within:border-[var(--border-accent)]">
+          <Languages className="h-4 w-4 shrink-0" aria-hidden="true" />
+          <span className="sr-only">{uiText(language, "Translate")}</span>
+          <select
+            aria-label={uiText(language, "Translate")}
+            value={language}
+            onChange={(event) => onToggleLanguage(event.target.value as UiLanguage)}
+            className="min-h-10 max-w-28 cursor-pointer bg-transparent text-xs font-medium text-[var(--txt)] outline-none"
           >
-            EN
-          </button>
-          <button
-            type="button"
-            onClick={() => onToggleLanguage("hi")}
-            className={`min-w-[34px] sm:min-w-[28px] min-h-[34px] sm:min-h-[28px] px-2.5 py-1 rounded-lg flex items-center justify-center transition-colors touch-target ${
-              language === "hi"
-                ? "bg-[var(--accent-d)] text-[var(--accent-b)] font-bold shadow-sm"
-                : "text-[var(--txt-muted)] hover:text-[var(--txt)]"
-            }`}
-          >
-            HI
-          </button>
-        </div>
+            <option value="en">{uiText(language, "English")}</option>
+            <option value="hi">{uiText(language, "Hindi")}</option>
+          </select>
+        </label>
 
         {/* Clear Chat Button */}
         <button
           type="button"
           onClick={onClearChat}
           className="min-w-[44px] min-h-[44px] p-2 rounded-xl border border-[var(--border)] text-[var(--txt-muted)] hover:text-[var(--danger)] hover:bg-[var(--danger)]/10 hover:border-[var(--danger)]/30 transition-colors touch-target flex items-center justify-center cursor-pointer"
-          title="Clear active conversation"
-          aria-label="Clear active conversation"
+          title={uiText(language, "Clear active conversation")}
+          aria-label={uiText(language, "Clear active conversation")}
         >
           <Trash2 className="w-3.5 h-3.5" />
         </button>

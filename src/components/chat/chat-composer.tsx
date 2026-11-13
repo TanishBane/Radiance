@@ -22,6 +22,7 @@ import {
 import { Attachment, ModelOption } from "@/lib/types/chat";
 import { AVAILABLE_MODELS, DEFAULT_MODEL_ID, getModelById } from "@/lib/ai/models";
 import { createAttachmentFromFile } from "@/lib/documents/parser";
+import { uiText, type UiLanguage } from "@/lib/i18n/ui";
 
 export type ComposerMode = "Plan" | "Ask" | "Build";
 
@@ -101,6 +102,7 @@ function renderModeIcon(mode: ComposerMode) {
 }
 
 export interface ChatComposerProps {
+  language?: UiLanguage;
   onSend: (text: string, attachments: Attachment[], mode?: ComposerMode) => void;
   onStop: () => void;
   isGenerating: boolean;
@@ -112,6 +114,7 @@ export interface ChatComposerProps {
 }
 
 export function ChatComposer({
+  language = "en",
   onSend,
   onStop,
   isGenerating,
@@ -123,7 +126,7 @@ export function ChatComposer({
 }: ChatComposerProps) {
   const shouldReduceMotion = useReducedMotion();
   const [input, setInput] = useState("");
-  const [animatedPlaceholder, setAnimatedPlaceholder] = useState("Ask RADIANCE anything...");
+  const [animatedPlaceholder, setAnimatedPlaceholder] = useState(uiText(language, "Ask RADIANCE anything..."));
   const [attachments, setAttachments] = useState<Attachment[]>([]);
   const [mode, setMode] = useState<ComposerMode>("Build");
   const [modeMenuOpen, setModeMenuOpen] = useState(false);
@@ -164,14 +167,14 @@ export function ChatComposer({
 
   useEffect(() => {
     if (input || isGenerating || disabled) {
-      setAnimatedPlaceholder("Ask RADIANCE anything...");
+      setAnimatedPlaceholder(uiText(language, "Ask RADIANCE anything..."));
       return;
     }
 
     const suggestions = [
-      "What would you like to understand today?",
-      "Bring your context into the conversation...",
-      "Ask RADIANCE anything...",
+      uiText(language, "What would you like to understand today?"),
+      uiText(language, "Bring your context into the conversation..."),
+      uiText(language, "Ask RADIANCE anything..."),
     ];
     let suggestionIndex = 0;
     let characterIndex = 0;
@@ -201,7 +204,7 @@ export function ChatComposer({
       window.clearTimeout(delayTimer);
       window.clearTimeout(typingTimer);
     };
-  }, [disabled, input, isGenerating]);
+  }, [disabled, input, isGenerating, language]);
 
   useEffect(() => {
     isSubmittingRef.current = false;
@@ -654,7 +657,7 @@ export function ChatComposer({
                 aria-expanded={modeMenuOpen}
               >
                 {renderModeIcon(mode)}
-                <span>{mode}</span>
+                <span>{uiText(language, mode)}</span>
                 <motion.span
                   animate={shouldReduceMotion ? undefined : { rotate: modeMenuOpen ? 180 : 0 }}
                   transition={{ type: "spring", stiffness: 350, damping: 25 }}
@@ -688,7 +691,7 @@ export function ChatComposer({
                       >
                         <div className="flex items-center gap-2">
                           {renderModeIcon(m)}
-                          <span>{m}</span>
+                          <span>{uiText(language, m)}</span>
                         </div>
                         {isSelected && <CheckmarkIcon />}
                       </motion.button>

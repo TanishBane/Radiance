@@ -442,8 +442,8 @@ export function SettingsCenter({
                       />
                       <SelectRow
                         id="response-language-setting"
-                        label="Response language"
-                        description="Sets the language requested for AI responses. It does not translate the interface."
+                        label="Interface and response language"
+                        description="Changes the interface language and the language requested for AI responses."
                         value={settings.language}
                         options={[{ value: "en", label: "English" }, { value: "hi", label: "Hindi" }]}
                         onChange={(value) => changeSetting("language", value as "en" | "hi")}

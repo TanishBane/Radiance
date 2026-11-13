@@ -148,6 +148,10 @@ export default function RadianceApp() {
   }, []);
 
   useEffect(() => {
+    document.documentElement.lang = language;
+  }, [language]);
+
+  useEffect(() => {
     const handleStorage = (event: StorageEvent) => {
       if (event.key === SETTINGS_STORAGE_KEY) setSettings(loadSettings());
       if (event.key === INTELLIGENCE_STORAGE_KEY) setIntelligenceProfile(loadIntelligenceProfile());
@@ -371,6 +375,7 @@ export default function RadianceApp() {
 
       {/* Left: Full-Height Sidebar Dock */}
       <SidebarDock
+        language={language}
         open={mobileSidebarOpen}
         setOpen={setMobileSidebarOpen}
         settingsActive={settingsOpen}
@@ -396,6 +401,7 @@ export default function RadianceApp() {
         <div className="flex-1 flex flex-col min-w-0 overflow-hidden relative">
           <ChatWorkspace
             messages={messages}
+            language={language}
             streamingContent={streamingContent}
             isGenerating={isGenerating}
             streamError={streamError}
@@ -419,6 +425,7 @@ export default function RadianceApp() {
         </div>
         {/* Mobile Thumb-Zone Bottom Navigation */}
         <MobileBottomNav
+          language={language}
           isComposerFocused={isComposerFocused}
           activeTab={
             historyOpen

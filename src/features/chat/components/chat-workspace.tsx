@@ -9,8 +9,10 @@ import { ChatComposer } from "@/components/chat/chat-composer";
 import { formatMarkdown } from "@/lib/utils/format";
 import { RadianceLogo } from "@/components/branding/radiance-logo";
 import { AlertCircle, RotateCcw } from "lucide-react";
+import type { UiLanguage } from "@/lib/i18n/ui";
 
 export interface ChatWorkspaceProps {
+  language?: UiLanguage;
   messages: ChatMessage[];
   streamingContent: string;
   isGenerating: boolean;
@@ -102,6 +104,7 @@ export function ChatErrorCard({ error, errorDetails, onRetry }: ChatErrorCardPro
 }
 
 export function ChatWorkspace({
+  language = "en",
   messages,
   streamingContent,
   isGenerating,
@@ -141,7 +144,7 @@ export function ChatWorkspace({
       {/* Scrollable Message List */}
       <div ref={chatScrollRef} className="flex-1 overflow-y-auto px-3 sm:px-4 py-4 sm:py-6 scroll-smooth overscroll-contain [-webkit-overflow-scrolling:touch]">
         {!hasContent ? (
-          <WelcomeCard onSelectPrompt={onSelectSuggestion} />
+          <WelcomeCard language={language} onSelectPrompt={onSelectSuggestion} />
         ) : (
           <div className="max-w-3xl mx-auto space-y-6 pb-6">
             {messages.map((msg) =>
@@ -246,6 +249,7 @@ export function ChatWorkspace({
 
       {/* Bottom Composer */}
       <ChatComposer
+        language={language}
         onSend={onSend}
         onStop={onStop}
         isGenerating={isGenerating}
