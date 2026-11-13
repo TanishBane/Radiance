@@ -10,6 +10,7 @@ import {
 } from "@/lib/types/chat";
 import { safeLocalStorage } from "@/lib/utils/storage";
 import { conversationService } from "@/lib/db/conversations";
+import { generateFollowUpQuestions } from "@/lib/ai/followups";
 
 vi.mock("@/lib/ai/followups", () => ({
   generateFollowUpQuestions: vi.fn().mockResolvedValue([
@@ -132,6 +133,27 @@ describe("useChatSession Hook & Session State Specifications", () => {
   });
 
   describe("4. appendAssistantMessage & Metadata Preservation", () => {
+    it("generates follow-ups using the latest user message and selected language", async () => {
+      const { result } = renderHook(() => useChatSession());
+      act(() => result.current.appendUserMessage("Explain how solar panels store energy."));
+
+      await act(async () => {
+        await result.current.appendAssistantMessage(
+          { id: "msg_solar_reply", role: "assistant", content: "Solar panels produce electricity.", createdAt: Date.now() },
+          result.current.messages,
+          "default",
+          "fr"
+        );
+      });
+
+      expect(generateFollowUpQuestions).toHaveBeenCalledWith(
+        "Solar panels produce electricity.",
+        "default",
+        "fr",
+        "Explain how solar panels store energy."
+      );
+    });
+
     it("creates new conversation and derives title from first user message", async () => {
       const { result } = renderHook(() => useChatSession());
 

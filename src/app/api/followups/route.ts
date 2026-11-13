@@ -8,6 +8,7 @@ export const runtime = "nodejs";
 const FollowupRequestSchema = z.object({
   userTurn: z.string().max(2000).optional().default(""),
   assistantReply: z.string().min(1).max(10000),
+  language: z.enum(["en", "hi", "es", "fr", "de", "pt", "ja"]).optional().default("en"),
 });
 
 export async function POST(req: NextRequest) {
@@ -34,7 +35,8 @@ export async function POST(req: NextRequest) {
   try {
     const questions = await generateFollowupQuestions(
       parsed.data.userTurn,
-      parsed.data.assistantReply
+      parsed.data.assistantReply,
+      parsed.data.language
     );
     return NextResponse.json({ questions });
   } catch (err) {

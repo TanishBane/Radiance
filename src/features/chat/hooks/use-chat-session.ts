@@ -171,7 +171,13 @@ export function useChatSession(): UseChatSessionReturn {
 
       // Generate intelligent follow-up suggestions in background
       try {
-        const followUps = await generateFollowUpQuestions(assistantMessage.content, tone, language);
+        const latestUserTurn = [...currentMessages].reverse().find((message) => message.role === "user")?.content || "";
+        const followUps = await generateFollowUpQuestions(
+          assistantMessage.content,
+          tone,
+          language,
+          latestUserTurn
+        );
         if (followUps && followUps.length > 0) {
           setActiveFollowUps(followUps);
         }
