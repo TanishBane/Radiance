@@ -194,3 +194,16 @@
 - Focused Playwright: passed on Desktop Chrome and Mobile Chrome (2 tests).
 - Focused unit tests: passed (43 tests).
 - TypeScript, ESLint, and production build: passed.
+
+## 2026-11-14 — Remove compact-card label and top strip
+
+### Changed
+
+- Removed the “Next” label from compact follow-up cards.
+- Removed the top specular strip while retaining the translucent glass fill, border, and blur.
+
+### Verification
+
+- Unit tests: passed (20 focused tests).
+- Playwright: passed on Desktop Chrome and Mobile Chrome (2 tests); desktop appearance reviewed.
+- TypeScript, ESLint, and production build: passed.

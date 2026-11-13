@@ -35,8 +35,8 @@ test("the two highest-ranked contextual follow-ups render as fixed selectable ca
   const rightCarousel = page.getByRole("region", { name: "Right follow-up suggestions" });
   await expect(leftCarousel).toBeVisible();
   await expect(rightCarousel).toBeVisible();
-  await expect(leftCarousel.getByText("Next", { exact: true })).toBeVisible();
-  await expect(rightCarousel.getByText("Next", { exact: true })).toBeVisible();
+  await expect(leftCarousel.getByText("Next", { exact: true })).toHaveCount(0);
+  await expect(rightCarousel.getByText("Next", { exact: true })).toHaveCount(0);
   await expect(leftCarousel.getByRole("button", { name: "Previous Left" })).toHaveCount(0);
   await expect(leftCarousel.getByRole("button", { name: "Next Left" })).toHaveCount(0);
   await expect(rightCarousel.getByRole("button", { name: "Previous Right" })).toHaveCount(0);
@@ -44,7 +44,7 @@ test("the two highest-ranked contextual follow-ups render as fixed selectable ca
   await expect(leftCarousel.getByRole("button", { name: "Use suggestion: Can you explain the trade-offs?" })).toHaveCount(0);
   const glassSurface = await leftCarousel.evaluate((element) => {
     const style = getComputedStyle(element);
-    const specular = getComputedStyle(element, "::before");
+    const topEdge = getComputedStyle(element, "::before");
     return {
       backdropFilter: style.backdropFilter,
       borderColor: style.borderTopColor,
@@ -58,10 +58,7 @@ test("the two highest-ranked contextual follow-ups render as fixed selectable ca
         context.fillRect(0, 0, 1, 1);
         return context.getImageData(0, 0, 1, 1).data[3] / 255;
       })(),
-      specularContent: specular.content,
-      specularHeight: specular.height,
-      specularBackgroundImage: specular.backgroundImage,
-      specularBackgroundColor: specular.backgroundColor,
+      topEdgeBackgroundColor: topEdge.backgroundColor,
     };
   });
   expect(glassSurface.backdropFilter).toContain("blur");
@@ -70,10 +67,7 @@ test("the two highest-ranked contextual follow-ups render as fixed selectable ca
   expect(glassSurface.backgroundColor).not.toBe("rgba(0, 0, 0, 0)");
   expect(glassSurface.backgroundAlpha).toBeGreaterThan(0.04);
   expect(glassSurface.backgroundAlpha).toBeLessThan(0.18);
-  expect(glassSurface.specularContent).not.toBe("none");
-  expect(glassSurface.specularHeight).toBe("1px");
-  expect(glassSurface.specularBackgroundImage).toBe("none");
-  expect(glassSurface.specularBackgroundColor).not.toBe("rgba(0, 0, 0, 0)");
+  expect(glassSurface.topEdgeBackgroundColor).toBe("rgba(0, 0, 0, 0)");
   const viewportWidth = page.viewportSize()?.width ?? 0;
   const leftBounds = await page.getByTestId("left-follow-up-lane").boundingBox();
   const rightBounds = await page.getByTestId("right-follow-up-lane").boundingBox();

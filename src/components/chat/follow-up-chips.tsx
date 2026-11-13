@@ -62,50 +62,48 @@ export function FollowUpChips({
       }
       data-testid="follow-up-carousel"
     >
-      <div className={`mb-2 flex items-center justify-between px-1 ${compact ? "gap-1" : ""}`}>
-        <p
-          className={`min-w-0 truncate text-xs font-medium tracking-wide ${
-            compact ? "text-[10px] font-semibold uppercase tracking-[0.12em] text-[var(--txt-dim)]" : "text-[var(--txt-dim)]"
-          }`}
-        >
-          {compact ? "Next" : label || "Continue the conversation"}
-        </p>
-        {!compact && total > 1 && (
-          <div className="flex shrink-0 items-center gap-1.5">
-            <p
-              aria-live="polite"
-              aria-label={`Suggestion ${currentIndex + 1} of ${total}`}
-              className="mr-1 text-xs tabular-nums text-[var(--txt-muted)]"
-            >
-              {`Suggestion ${currentIndex + 1} of ${total}`}
-            </p>
-            <button
-              type="button"
-              aria-label={`Previous ${controlLabel}`}
-              onClick={() => move(-1)}
-              onTouchEnd={(event) => {
-                event.preventDefault();
-                move(-1);
-              }}
-              className="touch-target h-8 w-8 rounded-full border border-[var(--border)] bg-[var(--surface-raised)] text-[var(--txt-dim)] transition-colors hover:border-[var(--accent)] hover:text-[var(--txt)] focus-visible:ring-2 focus-visible:ring-[var(--accent)] motion-reduce:transition-none"
-            >
-              <ArrowLeft aria-hidden="true" className="h-3.5 w-3.5" />
-            </button>
-            <button
-              type="button"
-              aria-label={`Next ${controlLabel}`}
-              onClick={() => move(1)}
-              onTouchEnd={(event) => {
-                event.preventDefault();
-                move(1);
-              }}
-              className="touch-target h-8 w-8 rounded-full border border-[var(--border)] bg-[var(--surface-raised)] text-[var(--txt-dim)] transition-colors hover:border-[var(--accent)] hover:text-[var(--txt)] focus-visible:ring-2 focus-visible:ring-[var(--accent)] motion-reduce:transition-none"
-            >
-              <ArrowRight aria-hidden="true" className="h-3.5 w-3.5" />
-            </button>
-          </div>
-        )}
-      </div>
+      {!compact && (
+        <div className="mb-2 flex items-center justify-between px-1">
+          <p className="min-w-0 truncate text-xs font-medium tracking-wide text-[var(--txt-dim)]">
+            {label || "Continue the conversation"}
+          </p>
+          {total > 1 && (
+            <div className="flex shrink-0 items-center gap-1.5">
+              <p
+                aria-live="polite"
+                aria-label={`Suggestion ${currentIndex + 1} of ${total}`}
+                className="mr-1 text-xs tabular-nums text-[var(--txt-muted)]"
+              >
+                {`Suggestion ${currentIndex + 1} of ${total}`}
+              </p>
+              <button
+                type="button"
+                aria-label={`Previous ${controlLabel}`}
+                onClick={() => move(-1)}
+                onTouchEnd={(event) => {
+                  event.preventDefault();
+                  move(-1);
+                }}
+                className="touch-target h-8 w-8 rounded-full border border-[var(--border)] bg-[var(--surface-raised)] text-[var(--txt-dim)] transition-colors hover:border-[var(--accent)] hover:text-[var(--txt)] focus-visible:ring-2 focus-visible:ring-[var(--accent)] motion-reduce:transition-none"
+              >
+                <ArrowLeft aria-hidden="true" className="h-3.5 w-3.5" />
+              </button>
+              <button
+                type="button"
+                aria-label={`Next ${controlLabel}`}
+                onClick={() => move(1)}
+                onTouchEnd={(event) => {
+                  event.preventDefault();
+                  move(1);
+                }}
+                className="touch-target h-8 w-8 rounded-full border border-[var(--border)] bg-[var(--surface-raised)] text-[var(--txt-dim)] transition-colors hover:border-[var(--accent)] hover:text-[var(--txt)] focus-visible:ring-2 focus-visible:ring-[var(--accent)] motion-reduce:transition-none"
+              >
+                <ArrowRight aria-hidden="true" className="h-3.5 w-3.5" />
+              </button>
+            </div>
+          )}
+        </div>
+      )}
 
       <div
         className={`relative ${

@@ -116,30 +116,9 @@
 
 @layer components {
   .follow-up-glass {
-    position: relative;
-    isolation: isolate;
     overflow: hidden;
     -webkit-backdrop-filter: blur(28px) saturate(1.4);
     backdrop-filter: blur(28px) saturate(1.4);
-  }
-
-  .follow-up-glass::before {
-    position: absolute;
-    z-index: 0;
-    top: 1px;
-    right: 14px;
-    left: 14px;
-    height: 1px;
-    border-radius: 1px;
-    background-color: rgba(255, 255, 255, 0.52);
-    content: "";
-    opacity: 0.72;
-    pointer-events: none;
-  }
-
-  .follow-up-glass > * {
-    position: relative;
-    z-index: 1;
   }
 }
 
