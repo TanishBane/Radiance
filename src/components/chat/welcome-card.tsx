@@ -139,8 +139,11 @@ export function WelcomeCard({
       {/* Hero Title (Signature TanixAI Cormorant Garamond + 3-Stop Chromatic Gradient) */}
       <div className="flex flex-col gap-1.5 sm:gap-2.5">
         <h1 className="font-serif text-2xl sm:text-5xl md:text-6xl font-light text-[var(--txt)] tracking-tight leading-tight select-none">
-          {uiText(language, "Hello, I Am")} <span className="inline-flex w-12 h-12 sm:w-16 sm:h-16 align-middle items-center justify-center rounded-2xl border border-[var(--border)] bg-[var(--surface-raised)]/80 p-2 sm:p-3 text-[var(--txt)] shadow-card" role="img" aria-label="Radiance">
-            <RadianceLogo variant="symbol" size="md" showWordmark={false} animated glow className="w-7 h-7 sm:w-10 sm:h-9" />
+          {uiText(language, "Hello, I Am")} <span className="inline-flex align-middle items-center gap-1" role="img" aria-label="Radiance">
+            <span className="inline-flex w-12 h-12 sm:w-16 sm:h-16 items-center justify-center rounded-2xl border border-[var(--border)] bg-[var(--surface-raised)]/80 p-2 sm:p-3 text-[var(--txt)] shadow-card">
+              <RadianceLogo variant="symbol" size="md" showWordmark={false} animated glow className="w-7 h-7 sm:w-10 sm:h-9" aria-hidden />
+            </span>
+            <em aria-hidden="true" className="not-italic font-bold gradient-text-brand drop-shadow-sm">adiance</em>
           </span>
         </h1>
         <p className="text-xs sm:text-base text-[var(--txt-dim)] font-light max-w-lg leading-relaxed mx-auto font-sans line-clamp-2 sm:line-clamp-none">
