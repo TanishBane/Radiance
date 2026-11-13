@@ -22,6 +22,17 @@ describe("ChatComposer Component & Deduplication Controls", () => {
       expect(textarea).toBeDefined();
     });
 
+    it("types rotating suggestions into the placeholder while empty and unfocused", () => {
+      vi.useFakeTimers();
+      render(<ChatComposer onSend={onSend} onStop={onStop} isGenerating={false} />);
+
+      const textarea = screen.getByPlaceholderText("Ask RADIANCE anything...");
+      act(() => vi.advanceTimersByTime(3600));
+
+      expect(textarea.getAttribute("placeholder")).toContain("What would you like");
+      vi.useRealTimers();
+    });
+
     it("renders Send button with accessible name and data-testid when not generating", () => {
       render(<ChatComposer onSend={onSend} onStop={onStop} isGenerating={false} />);
 

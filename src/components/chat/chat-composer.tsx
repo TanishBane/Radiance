@@ -123,6 +123,7 @@ export function ChatComposer({
 }: ChatComposerProps) {
   const shouldReduceMotion = useReducedMotion();
   const [input, setInput] = useState("");
+  const [animatedPlaceholder, setAnimatedPlaceholder] = useState("Ask RADIANCE anything...");
   const [attachments, setAttachments] = useState<Attachment[]>([]);
   const [mode, setMode] = useState<ComposerMode>("Build");
   const [modeMenuOpen, setModeMenuOpen] = useState(false);
@@ -160,6 +161,47 @@ export function ChatComposer({
   const optionRefs = useRef<(HTMLButtonElement | null)[]>([]);
   const [focusedIndex, setFocusedIndex] = useState<number>(-1);
   const [isFocused, setIsFocused] = useState(false);
+
+  useEffect(() => {
+    if (input || isFocused || isGenerating || disabled) {
+      setAnimatedPlaceholder("Ask RADIANCE anything...");
+      return;
+    }
+
+    const suggestions = [
+      "What would you like to understand today?",
+      "Bring your context into the conversation...",
+      "Ask RADIANCE anything...",
+    ];
+    let suggestionIndex = 0;
+    let characterIndex = 0;
+    let delayTimer: number | undefined;
+    let typingTimer: number | undefined;
+
+    const typeNext = () => {
+      const suggestion = suggestions[suggestionIndex];
+      characterIndex += 1;
+      setAnimatedPlaceholder(suggestion.slice(0, characterIndex));
+
+      if (characterIndex < suggestion.length) {
+        typingTimer = window.setTimeout(typeNext, 48);
+        return;
+      }
+
+      delayTimer = window.setTimeout(() => {
+        suggestionIndex = (suggestionIndex + 1) % suggestions.length;
+        characterIndex = 0;
+        setAnimatedPlaceholder("");
+        typingTimer = window.setTimeout(typeNext, 350);
+      }, 1900);
+    };
+
+    delayTimer = window.setTimeout(typeNext, 900);
+    return () => {
+      window.clearTimeout(delayTimer);
+      window.clearTimeout(typingTimer);
+    };
+  }, [disabled, input, isFocused, isGenerating]);
 
   useEffect(() => {
     isSubmittingRef.current = false;
@@ -558,7 +600,7 @@ export function ChatComposer({
             setIsFocused(false);
             onFocusChange?.(false);
           }}
-          placeholder="Ask RADIANCE anything..."
+          placeholder={animatedPlaceholder}
           className="w-full bg-transparent border-0 outline-none resize-none text-base sm:text-sm text-[var(--txt)] placeholder:text-[var(--txt-muted)]/70 py-1 max-h-[140px] leading-relaxed font-sans mb-1.5 tracking-[-0.01em] selection:bg-[var(--accent-d)] selection:text-[var(--txt)] relative z-10"
         />
 
