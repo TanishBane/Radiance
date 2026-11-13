@@ -86,6 +86,24 @@ test.describe("Radiance AI Platform E2E Workflows", () => {
     await expect(page.getByTestId("composer-model-trigger")).toContainText("Radiance Instant");
   });
 
+  test("mode selector shows all modes above the composer and selects Plan", async ({ page }) => {
+    await page.getByRole("button", { name: "Build", exact: true }).click();
+
+    const planOption = page.getByRole("button", { name: "Plan", exact: true });
+    const askOption = page.getByRole("button", { name: "Ask", exact: true });
+    await expect(planOption).toBeVisible();
+    await expect(askOption).toBeVisible();
+
+    const menuBounds = await planOption.boundingBox();
+    const composerBounds = await page.getByTestId("composer-model-trigger").boundingBox();
+    expect(menuBounds).not.toBeNull();
+    expect(composerBounds).not.toBeNull();
+    expect(menuBounds!.y + menuBounds!.height).toBeLessThanOrEqual(composerBounds!.y + 2);
+
+    await planOption.click();
+    await expect(page.getByRole("button", { name: "Plan", exact: true })).toBeVisible();
+  });
+
   test("390px workspace does not overflow horizontally", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/chat");

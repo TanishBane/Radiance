@@ -617,7 +617,7 @@ export function ChatComposer({
         {/* Controls Bar with Professional Icons & Glassmorphic Pills */}
         <div className="flex items-center justify-between gap-1.5 sm:gap-2 pt-2 border-t border-white/[0.08] relative z-10">
           {/* Left Controls: Add Files, Mode Selector, Model Trigger */}
-          <div className="flex items-center gap-1.5 sm:gap-2 min-w-0 flex-1 overflow-x-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden py-0.5">
+          <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 min-w-0 flex-1 overflow-visible py-0.5">
             {/* 1. Add Files Expanding Glass Pill */}
             <motion.button
               type="button"
