@@ -45,6 +45,14 @@ test("contextual follow-ups render as a theme-aware carousel and rotate by contr
       borderColor: style.borderTopColor,
       backgroundImage: style.backgroundImage,
       backgroundColor: style.backgroundColor,
+      backgroundAlpha: (() => {
+        const canvas = document.createElement("canvas");
+        const context = canvas.getContext("2d");
+        if (!context) return 0;
+        context.fillStyle = style.backgroundColor;
+        context.fillRect(0, 0, 1, 1);
+        return context.getImageData(0, 0, 1, 1).data[3] / 255;
+      })(),
       specularContent: specular.content,
       specularHeight: specular.height,
       specularBackgroundImage: specular.backgroundImage,
@@ -55,9 +63,8 @@ test("contextual follow-ups render as a theme-aware carousel and rotate by contr
   expect(glassSurface.borderColor).not.toBe("rgba(0, 0, 0, 0)");
   expect(glassSurface.backgroundImage).toBe("none");
   expect(glassSurface.backgroundColor).not.toBe("rgba(0, 0, 0, 0)");
-  const frostChannels = glassSurface.backgroundColor.match(/\d+(?:\.\d+)?/g)?.slice(0, 3).map(Number) ?? [];
-  const frostBrightness = Math.min(...frostChannels) * (Math.max(...frostChannels) <= 1 ? 255 : 1);
-  expect(frostBrightness).toBeGreaterThan(200);
+  expect(glassSurface.backgroundAlpha).toBeGreaterThan(0.04);
+  expect(glassSurface.backgroundAlpha).toBeLessThan(0.18);
   expect(glassSurface.specularContent).not.toBe("none");
   expect(glassSurface.specularHeight).toBe("1px");
   expect(glassSurface.specularBackgroundImage).toBe("none");
@@ -89,9 +96,15 @@ test("contextual follow-ups render as a theme-aware carousel and rotate by contr
     getComputedStyle(element).borderColor
   );
   expect(accent).not.toBe("");
-  const suggestionInk = await activeSuggestion.evaluate((element) => getComputedStyle(element).color);
-  const inkLightness = Number(suggestionInk.match(/oklch\(([\d.]+)/)?.[1]);
-  expect(inkLightness).toBeLessThan(0.3);
+  const inkMatchesTheme = await activeSuggestion.evaluate((element) => {
+    const probe = document.createElement("span");
+    probe.style.color = "var(--txt)";
+    document.body.append(probe);
+    const themeInk = getComputedStyle(probe).color;
+    probe.remove();
+    return getComputedStyle(element).color === themeInk;
+  });
+  expect(inkMatchesTheme).toBe(true);
 
   const themeVariables = ["--accent", "--accent-b", "--accent-c"];
   const originalTheme = await page.evaluate((names) => {
@@ -100,6 +113,9 @@ test("contextual follow-ups render as a theme-aware carousel and rotate by contr
   }, themeVariables);
   let previousCardBackground = await leftCarousel.evaluate((element) =>
     getComputedStyle(element).backgroundColor
+  );
+  let previousAccentIcon = await activeSuggestion.locator("svg").last().evaluate((element) =>
+    getComputedStyle(element).color
   );
   for (const palette of [
     ["#e85555", "#f57e7e", "#d4883a"],
@@ -115,8 +131,13 @@ test("contextual follow-ups render as a theme-aware carousel and rotate by contr
     const themedCardBackground = await leftCarousel.evaluate((element) =>
       getComputedStyle(element).backgroundColor
     );
-    expect(themedCardBackground).not.toBe(previousCardBackground);
+    expect(themedCardBackground).toBe(previousCardBackground);
     previousCardBackground = themedCardBackground;
+    const themedAccentIcon = await activeSuggestion.locator("svg").last().evaluate((element) =>
+      getComputedStyle(element).color
+    );
+    expect(themedAccentIcon).not.toBe(previousAccentIcon);
+    previousAccentIcon = themedAccentIcon;
   }
   await page.evaluate((entries) => {
     const root = document.documentElement.style;

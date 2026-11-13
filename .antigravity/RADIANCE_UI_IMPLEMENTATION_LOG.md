@@ -149,3 +149,20 @@
 - TypeScript: passed.
 - ESLint: passed with no warnings or errors.
 - Production build: passed.
+
+## 2026-11-14 — Transparent glass follow-up cards
+
+### Changed
+
+- Replaced the pale theme-tinted card fill with a neutral 10% white translucent layer so the active background shows through.
+- Increased backdrop blur to 28px and softened the border, specular edge, and shadow for a glass surface that blends into the scene.
+- Returned suggestion copy to the Radiance foreground token; theme color remains on small icons and focus details.
+- Updated browser assertions to require low fill opacity, theme-readable copy, and a theme-independent glass body.
+
+### Verification
+
+- Focused Playwright: passed on Desktop Chrome and Mobile Chrome (2 tests); both screenshots were visually reviewed.
+- Focused follow-up and chat workspace unit tests: passed (20 tests).
+- TypeScript: passed.
+- ESLint: passed with no warnings or errors.
+- Production build: passed.
