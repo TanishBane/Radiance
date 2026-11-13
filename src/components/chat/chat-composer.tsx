@@ -464,7 +464,7 @@ export function ChatComposer({
   }, []);
 
   return (
-    <div className="w-full max-w-3xl mx-auto px-3 sm:px-4 pb-[max(1rem,env(safe-area-inset-bottom,0px))] z-20 select-none">
+    <div className="relative isolate z-30 w-full max-w-3xl mx-auto px-3 sm:px-4 pb-[max(1rem,env(safe-area-inset-bottom,0px))] select-none">
       {/* Attached Files Preview Bar */}
       {attachments.length > 0 && (
         <div className="flex flex-wrap gap-2 mb-2 p-2 rounded-xl bg-gradient-to-r from-[var(--surface-raised)]/90 via-[var(--surface-raised)]/70 to-[var(--accent-d)]/20 border border-white/[0.10] shadow-sm backdrop-blur-xl animate-in fade-in slide-in-from-bottom-2 duration-200">

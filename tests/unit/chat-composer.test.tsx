@@ -22,6 +22,17 @@ describe("ChatComposer Component & Deduplication Controls", () => {
       expect(textarea).toBeDefined();
     });
 
+    it("opens the mode menu and allows choosing Plan, Ask, or Build", () => {
+      render(<ChatComposer onSend={onSend} onStop={onStop} isGenerating={false} />);
+
+      fireEvent.click(screen.getByRole("button", { name: /Build/ }));
+      expect(screen.getByRole("button", { name: /Plan/ })).toBeDefined();
+      expect(screen.getByRole("button", { name: /Ask/ })).toBeDefined();
+
+      fireEvent.click(screen.getByRole("button", { name: /Plan/ }));
+      expect(screen.getByRole("button", { name: /Plan/ })).toBeDefined();
+    });
+
     it("types rotating suggestions into the placeholder while empty and unfocused", () => {
       vi.useFakeTimers();
       render(<ChatComposer onSend={onSend} onStop={onStop} isGenerating={false} />);
