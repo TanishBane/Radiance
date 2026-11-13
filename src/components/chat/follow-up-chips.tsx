@@ -56,8 +56,7 @@ export function FollowUpChips({
       style={
         compact
           ? {
-              background:
-                "linear-gradient(145deg, color-mix(in srgb, var(--void) 50%, var(--radiance-indigo)) 0%, color-mix(in srgb, var(--radiance-blue) 74%, var(--deep) 26%) 58%, color-mix(in srgb, var(--radiance-cyan) 56%, var(--deep) 44%) 100%)",
+              background: "var(--follow-up-card-background)",
             }
           : undefined
       }

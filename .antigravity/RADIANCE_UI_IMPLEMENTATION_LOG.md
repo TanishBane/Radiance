@@ -1,5 +1,18 @@
 # Radiance UI implementation log
 
+## 2026-11-13 — Reference-matched suggestion card colors
+
+### Changed
+
+- Added a shared follow-up card background token with a deep navy upper-left, royal-blue field, and pale cyan lower-right, matching the supplied reference palette.
+- Applied the token to both composer-side cards without changing their layout or behavior.
+
+### Verification
+
+- Follow-up carousel and chat workspace unit tests: passed (20 tests), including a check that compact cards use the shared palette token.
+- TypeScript and lint: passed.
+- Playwright: passed on Desktop Chrome and Mobile Chrome (2 tests); reviewed both captures.
+
 ## 2026-11-13 — Bright suggestion cards
 
 ### Changed
