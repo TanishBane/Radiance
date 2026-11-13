@@ -445,8 +445,16 @@ export function SettingsCenter({
                         label="Interface and response language"
                         description="Changes the interface language and the language requested for AI responses."
                         value={settings.language}
-                        options={[{ value: "en", label: "English" }, { value: "hi", label: "Hindi" }]}
-                        onChange={(value) => changeSetting("language", value as "en" | "hi")}
+                        options={[
+                          { value: "en", label: "English" },
+                          { value: "hi", label: "हिन्दी" },
+                          { value: "es", label: "Español" },
+                          { value: "fr", label: "Français" },
+                          { value: "de", label: "Deutsch" },
+                          { value: "pt", label: "Português" },
+                          { value: "ja", label: "日本語" },
+                        ]}
+                        onChange={(value) => changeSetting("language", value as RadianceSettings["language"])}
                       />
                       <section id="custom-instructions" className="border-t border-[var(--border)] pt-5">
                         <div className="mb-3">

@@ -43,8 +43,8 @@ test.describe("Radiance Settings Center", () => {
     await expect(page.getByText("Ctrl / ⌘ + K")).toBeVisible();
     const search = page.getByRole("searchbox", { name: "Search settings" });
     await search.fill("response language");
-    await page.getByRole("button", { name: /Response language.*Personalization/i }).click();
-    await page.getByLabel("Response language").selectOption("hi");
+    await page.getByRole("button", { name: /Interface and response language.*Personalization/i }).click();
+    await page.getByLabel("Interface and response language").selectOption("hi");
     const close = page.getByRole("button", { name: "Close settings" });
     if (await close.isVisible()) await close.click();
     else await page.getByRole("button", { name: "Back to chat" }).click();
@@ -53,7 +53,7 @@ test.describe("Radiance Settings Center", () => {
     await page.waitForLoadState("networkidle");
     await openSettings(page);
     await selectSection(page, "Personalization");
-    await expect(page.getByLabel("Response language")).toHaveValue("hi");
+    await expect(page.getByLabel("Interface and response language")).toHaveValue("hi");
   });
 
   test("manages explicit local intelligence notes with sharing off by default", async ({ page }) => {

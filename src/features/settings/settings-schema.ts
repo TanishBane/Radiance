@@ -7,7 +7,7 @@ export const settingsFieldSchemas = {
   gradientStyle: z.string().refine((value) => ATMOSPHERE_ENGINES.some((engine) => engine.id === value)),
   autoTheme: z.boolean(),
   tone: z.enum(["default", "formal", "casual", "concise", "academic", "executive", "mentor", "technical", "socratic", "devil"]),
-  language: z.enum(["en", "hi"]),
+  language: z.enum(["en", "hi", "es", "fr", "de", "pt", "ja"]),
   modelId: z.string().refine((value) => AVAILABLE_MODELS.some((model) => model.id === value && model.status === "active")),
   customInstructions: z.string().max(2000),
   enterToSend: z.boolean(),

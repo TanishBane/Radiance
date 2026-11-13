@@ -16,9 +16,7 @@ describe("Topbar language selector", () => {
 
     expect(screen.queryByText("Default Assistant")).toBeNull();
     expect(screen.queryByText(/V1\.0\.0/i)).toBeNull();
-    expect(screen.getByRole("combobox", { name: "Translate" })).toBeDefined();
-    expect(screen.getByRole("option", { name: "English" })).toBeDefined();
-    expect(screen.getByRole("option", { name: "Hindi" })).toBeDefined();
+    expect(screen.getByRole("button", { name: "Translate" })).toBeDefined();
   });
 
   it("updates the saved language choice when Hindi is selected", () => {
@@ -32,9 +30,10 @@ describe("Topbar language selector", () => {
       />
     );
 
-    fireEvent.change(screen.getByRole("combobox", { name: "Translate" }), {
-      target: { value: "hi" },
-    });
-    expect(onToggleLanguage).toHaveBeenCalledWith("hi");
+    fireEvent.click(screen.getByRole("button", { name: "Translate" }));
+    expect(screen.getByRole("option", { name: "हिन्दी" })).toBeDefined();
+    expect(screen.getByRole("option", { name: "日本語" })).toBeDefined();
+    fireEvent.click(screen.getByRole("option", { name: "日本語" }));
+    expect(onToggleLanguage).toHaveBeenCalledWith("ja");
   });
 });

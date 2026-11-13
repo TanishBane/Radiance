@@ -93,7 +93,7 @@ export const MODES: Record<string, string> = {
 
 export function composeSystemPrompt(
   toneKey: ToneKey = "default",
-  language: "en" | "hi" = "en",
+  language: "en" | "hi" | "es" | "fr" | "de" | "pt" | "ja" = "en",
   mode = "default",
   customInstructions = ""
 ): string {
@@ -109,8 +109,17 @@ export function composeSystemPrompt(
     prompt += `\n\n[Tone Instruction]: ${tone.prompt}`;
   }
 
-  if (language === "hi") {
-    prompt += "\n\nAlways respond in Hindi using Devanagari script.";
+  const responseLanguageInstructions: Record<typeof language, string> = {
+    en: "Always respond in English.",
+    hi: "Always respond in Hindi using Devanagari script.",
+    es: "Always respond in Spanish.",
+    fr: "Always respond in French.",
+    de: "Always respond in German.",
+    pt: "Always respond in Portuguese.",
+    ja: "Always respond in Japanese.",
+  };
+  if (language !== "en") {
+    prompt += `\n\n${responseLanguageInstructions[language]}`;
   }
 
   if (customInstructions.trim()) {

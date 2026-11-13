@@ -104,6 +104,19 @@ test.describe("Radiance AI Platform E2E Workflows", () => {
     await expect(page.getByRole("button", { name: "Plan", exact: true })).toBeVisible();
   });
 
+  test("language picker shows readable choices and changes interface language", async ({ page }) => {
+    await page.getByRole("button", { name: "Translate" }).click();
+
+    const languageList = page.getByRole("listbox", { name: "Interface and response language" });
+    await expect(languageList).toBeVisible();
+    await expect(languageList.getByRole("option", { name: "Español" })).toBeVisible();
+    await expect(languageList.getByRole("option", { name: "日本語" })).toBeVisible();
+
+    await languageList.getByRole("option", { name: "Español" }).click();
+    await expect(page.locator("html")).toHaveAttribute("lang", "es");
+    await expect(page.getByText("Hola, soy")).toBeVisible();
+  });
+
   test("390px workspace does not overflow horizontally", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/chat");

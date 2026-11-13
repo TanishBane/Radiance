@@ -1,4 +1,15 @@
-export type UiLanguage = "en" | "hi";
+export const UI_LANGUAGES = ["en", "hi", "es", "fr", "de", "pt", "ja"] as const;
+export type UiLanguage = (typeof UI_LANGUAGES)[number];
+
+export const UI_LANGUAGE_LABELS: Record<UiLanguage, string> = {
+  en: "English",
+  hi: "हिन्दी",
+  es: "Español",
+  fr: "Français",
+  de: "Deutsch",
+  pt: "Português",
+  ja: "日本語",
+};
 
 const hindi: Record<string, string> = {
   "Translate": "भाषा",
@@ -45,6 +56,85 @@ const hindi: Record<string, string> = {
   "Ask suggestion": "यह पूछें",
 };
 
+const translations: Partial<Record<UiLanguage, Record<string, string>>> = {
+  hi: hindi,
+  es: {
+    Translate: "Idioma", English: "Inglés", Hindi: "Hindi",
+    "Clear active conversation": "Borrar conversación actual",
+    "Open navigation menu": "Abrir menú de navegación",
+    "Hello, I Am": "Hola, soy",
+    "Tell me what’s on your mind, or pick a suggestion.": "Cuéntame qué tienes en mente o elige una sugerencia.",
+    Understand: "Comprender", Create: "Crear", Explore: "Explorar",
+    "Tap to ask": "Toca para preguntar",
+    "Ask RADIANCE anything...": "Pregúntale lo que quieras a RADIANCE...",
+    "What would you like to understand today?": "¿Qué te gustaría entender hoy?",
+    "Bring your context into the conversation...": "Añade tu contexto a la conversación...",
+    "New Chat": "Nuevo chat", History: "Historial", Personalization: "Personalización",
+    Settings: "Configuración", Chat: "Chat", "Start New Chat": "Iniciar nuevo chat",
+    Plan: "Planificar", Ask: "Preguntar", Build: "Crear",
+  },
+  fr: {
+    Translate: "Langue", English: "Anglais", Hindi: "Hindi",
+    "Clear active conversation": "Effacer la conversation actuelle",
+    "Open navigation menu": "Ouvrir le menu de navigation",
+    "Hello, I Am": "Bonjour, je suis",
+    "Tell me what’s on your mind, or pick a suggestion.": "Dites-nous ce que vous avez en tête ou choisissez une suggestion.",
+    Understand: "Comprendre", Create: "Créer", Explore: "Explorer",
+    "Tap to ask": "Touchez pour demander",
+    "Ask RADIANCE anything...": "Demandez ce que vous voulez à RADIANCE...",
+    "What would you like to understand today?": "Que souhaitez-vous comprendre aujourd’hui ?",
+    "Bring your context into the conversation...": "Ajoutez votre contexte à la conversation...",
+    "New Chat": "Nouvelle conversation", History: "Historique", Personalization: "Personnalisation",
+    Settings: "Paramètres", Chat: "Discussion", "Start New Chat": "Nouvelle conversation",
+    Plan: "Planifier", Ask: "Demander", Build: "Créer",
+  },
+  de: {
+    Translate: "Sprache", English: "Englisch", Hindi: "Hindi",
+    "Clear active conversation": "Aktuellen Chat löschen",
+    "Open navigation menu": "Navigationsmenü öffnen",
+    "Hello, I Am": "Hallo, ich bin",
+    "Tell me what’s on your mind, or pick a suggestion.": "Was möchtest du besprechen? Oder wähle einen Vorschlag.",
+    Understand: "Verstehen", Create: "Erstellen", Explore: "Entdecken",
+    "Tap to ask": "Zum Fragen antippen",
+    "Ask RADIANCE anything...": "Frag RADIANCE, was du möchtest...",
+    "What would you like to understand today?": "Was möchtest du heute verstehen?",
+    "Bring your context into the conversation...": "Bringe deinen Kontext ins Gespräch...",
+    "New Chat": "Neuer Chat", History: "Verlauf", Personalization: "Personalisierung",
+    Settings: "Einstellungen", Chat: "Chat", "Start New Chat": "Neuen Chat starten",
+    Plan: "Planen", Ask: "Fragen", Build: "Erstellen",
+  },
+  pt: {
+    Translate: "Idioma", English: "Inglês", Hindi: "Hindi",
+    "Clear active conversation": "Limpar conversa atual",
+    "Open navigation menu": "Abrir menu de navegação",
+    "Hello, I Am": "Olá, eu sou",
+    "Tell me what’s on your mind, or pick a suggestion.": "Conte o que está pensando ou escolha uma sugestão.",
+    Understand: "Entender", Create: "Criar", Explore: "Explorar",
+    "Tap to ask": "Toque para perguntar",
+    "Ask RADIANCE anything...": "Pergunte qualquer coisa ao RADIANCE...",
+    "What would you like to understand today?": "O que você gostaria de entender hoje?",
+    "Bring your context into the conversation...": "Traga seu contexto para a conversa...",
+    "New Chat": "Nova conversa", History: "Histórico", Personalization: "Personalização",
+    Settings: "Configurações", Chat: "Conversa", "Start New Chat": "Iniciar nova conversa",
+    Plan: "Planejar", Ask: "Perguntar", Build: "Criar",
+  },
+  ja: {
+    Translate: "言語", English: "英語", Hindi: "ヒンディー語",
+    "Clear active conversation": "現在の会話を消去",
+    "Open navigation menu": "ナビゲーションメニューを開く",
+    "Hello, I Am": "こんにちは、私は",
+    "Tell me what’s on your mind, or pick a suggestion.": "気になることを入力するか、候補を選んでください。",
+    Understand: "理解する", Create: "作成する", Explore: "探す",
+    "Tap to ask": "タップして質問",
+    "Ask RADIANCE anything...": "RADIANCEに何でも聞いてください...",
+    "What would you like to understand today?": "今日は何を知りたいですか？",
+    "Bring your context into the conversation...": "会話にあなたの情報を追加...",
+    "New Chat": "新しいチャット", History: "履歴", Personalization: "パーソナライズ",
+    Settings: "設定", Chat: "チャット", "Start New Chat": "新しいチャットを開始",
+    Plan: "計画", Ask: "質問", Build: "作成",
+  },
+};
+
 export function uiText(language: UiLanguage, text: string): string {
-  return language === "hi" ? (hindi[text] ?? text) : text;
+  return translations[language]?.[text] ?? text;
 }

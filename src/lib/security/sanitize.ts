@@ -64,7 +64,7 @@ export const ChatRequestSchema = z.object({
       "devil",
     ])
     .default("default"),
-  language: z.enum(["en", "hi"]).default("en"),
+  language: z.enum(["en", "hi", "es", "fr", "de", "pt", "ja"]).default("en"),
   customInstructions: z.string().max(2000, "Custom instructions exceed 2,000 characters").transform((value) => value.replace(/\u0000/g, "").trim()).default(""),
   personalization: ProviderPersonalizationSchema,
   temperature: z.number().min(0).max(2).optional(),
