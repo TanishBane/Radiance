@@ -250,3 +250,17 @@
 - Focused unit tests: passed (32 tests, including preview and send behavior).
 - Playwright: passed on Desktop Chrome and Mobile Chrome (2 tests); reviewed suggestion and preview screenshots.
 - TypeScript, ESLint, and production build: passed.
+
+## 2026-11-14 — Compact preview controls and localized suggestions
+
+### Changed
+
+- Reduced the preview eye’s visible size while preserving a 44px accessible click target.
+- Added a short-delay hover and keyboard-focus tooltip that reveals the complete localized prompt; the preview dialog remains available to touch users.
+- Localized suggestion categories, labels, prompts, and preview actions for the supported UI languages.
+
+### Verification
+
+- Focused suggestion localization and preview unit tests: passed.
+- Playwright: desktop and mobile passed before moving the hover trigger to the eye control; the exact-target rerun could not launch because this environment lacks the Playwright Chromium executable.
+- TypeScript, ESLint, and production build: passed.

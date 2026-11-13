@@ -242,6 +242,17 @@ describe("Mobile & Cross-Browser Ergonomics, Touch & Viewport Invariants", () =>
     await waitFor(() => expect(onSelectPrompt).toHaveBeenCalledWith(fullPrompt));
   });
 
+  it("updates suggestion cards and preview text when the UI language changes", () => {
+    const { rerender } = render(<WelcomeCard onSelectPrompt={vi.fn()} />);
+
+    rerender(<WelcomeCard language="es" onSelectPrompt={vi.fn()} />);
+
+    expect(screen.getAllByRole("button", { name: /Preguntar esto:/i }).length).toBeGreaterThan(0);
+    expect(screen.getAllByRole("button", { name: /Vista previa:/i }).length).toBeGreaterThan(0);
+    expect(screen.getByRole("button", { name: "Comprender" })).toBeDefined();
+    expect(screen.getAllByRole("button", { name: /algo nuevo/i }).length).toBeGreaterThan(0);
+  });
+
   it("renders mobile bottom nav new chat action with >=44x44px touch target ergonomics", () => {
     render(
       <MobileBottomNav
