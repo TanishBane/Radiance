@@ -1,5 +1,19 @@
 # Radiance UI implementation log
 
+## 2026-11-13 — Bright suggestion cards
+
+### Changed
+
+- Restyled compact composer-side follow-up carousels as vivid blue-to-cyan cards with a clear counter and 44px navigation controls inside each card.
+- Show only the active suggestion in compact mode so adjacent carousel items no longer bleed through or compete with the card.
+- Kept the wide carousel presentation and its theme-aware styling unchanged.
+
+### Verification
+
+- Follow-up carousel and chat workspace unit tests: passed (20 tests), including a regression check for a single contained compact card.
+- TypeScript and lint: passed.
+- Playwright: passed on Desktop Chrome and Mobile Chrome (2 tests); reviewed both captures.
+
 ## 2026-11-13 — Composer-side follow-up carousels
 
 ### Changed

@@ -36,4 +36,21 @@ describe("FollowUpChips", () => {
       "true"
     );
   });
+
+  it("shows compact suggestions as one contained card without neighboring slides", () => {
+    render(
+      <FollowUpChips
+        questions={["First question", "Second question"]}
+        onSelect={vi.fn()}
+        label="Left"
+        compact
+      />
+    );
+
+    expect(screen.getByText(/^next$/i)).toBeDefined();
+    const activeSuggestion = screen.getByRole("button", { name: "Use suggestion: First question" });
+    expect(activeSuggestion).toBeDefined();
+    expect(activeSuggestion.style.background).toBe("");
+    expect(screen.queryByRole("button", { name: "Use suggestion: Second question" })).toBeNull();
+  });
 });
