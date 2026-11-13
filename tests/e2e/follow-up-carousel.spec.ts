@@ -43,14 +43,22 @@ test("contextual follow-ups render as a theme-aware carousel and rotate by contr
     return {
       backdropFilter: style.backdropFilter,
       borderColor: style.borderTopColor,
+      backgroundImage: style.backgroundImage,
+      backgroundColor: style.backgroundColor,
       specularContent: specular.content,
-      specularBlend: specular.mixBlendMode,
+      specularHeight: specular.height,
+      specularBackgroundImage: specular.backgroundImage,
+      specularBackgroundColor: specular.backgroundColor,
     };
   });
   expect(glassSurface.backdropFilter).toContain("blur");
   expect(glassSurface.borderColor).not.toBe("rgba(0, 0, 0, 0)");
+  expect(glassSurface.backgroundImage).toBe("none");
+  expect(glassSurface.backgroundColor).not.toBe("rgba(0, 0, 0, 0)");
   expect(glassSurface.specularContent).not.toBe("none");
-  expect(glassSurface.specularBlend).toBe("screen");
+  expect(glassSurface.specularHeight).toBe("1px");
+  expect(glassSurface.specularBackgroundImage).toBe("none");
+  expect(glassSurface.specularBackgroundColor).not.toBe("rgba(0, 0, 0, 0)");
   const viewportWidth = page.viewportSize()?.width ?? 0;
   const leftBounds = await page.getByTestId("left-follow-up-lane").boundingBox();
   const rightBounds = await page.getByTestId("right-follow-up-lane").boundingBox();
@@ -85,7 +93,7 @@ test("contextual follow-ups render as a theme-aware carousel and rotate by contr
     return names.map((name) => [name, style.getPropertyValue(name)] as const);
   }, themeVariables);
   let previousCardBackground = await leftCarousel.evaluate((element) =>
-    getComputedStyle(element).backgroundImage
+    getComputedStyle(element).backgroundColor
   );
   for (const palette of [
     ["#e85555", "#f57e7e", "#d4883a"],
@@ -99,7 +107,7 @@ test("contextual follow-ups render as a theme-aware carousel and rotate by contr
       root.setProperty("--accent-c", accentC);
     }, palette);
     const themedCardBackground = await leftCarousel.evaluate((element) =>
-      getComputedStyle(element).backgroundImage
+      getComputedStyle(element).backgroundColor
     );
     expect(themedCardBackground).not.toBe(previousCardBackground);
     previousCardBackground = themedCardBackground;

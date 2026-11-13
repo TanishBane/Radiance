@@ -1,5 +1,18 @@
 # Radiance UI implementation log
 
+## 2026-11-14 — Solid frosted-glass suggestion cards
+
+### Changed
+
+- Replaced the theme-gradient card backgrounds with a solid translucent tint derived from the active theme accent.
+- Kept the 22px backdrop blur and saturation, and changed the specular layer to a single solid highlight line.
+
+### Verification
+
+- Follow-up carousel and chat workspace unit tests: passed (20 tests).
+- TypeScript and lint: passed.
+- Playwright: passed on Desktop Chrome and Mobile Chrome (2 tests), including flat-surface, glass-layer, and live theme tint assertions; reviewed both captures.
+
 ## 2026-11-13 — Prompt-matched glass treatment
 
 ### Changed

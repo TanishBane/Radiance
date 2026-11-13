@@ -56,7 +56,7 @@ export function FollowUpChips({
       style={
         compact
           ? {
-              background: "var(--follow-up-card-background)",
+              background: "var(--follow-up-card-surface)",
             }
           : undefined
       }

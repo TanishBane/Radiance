@@ -62,31 +62,7 @@
     --glow-rose: rgba(244, 63, 94, 0.20);
     --glow-amber: rgba(245, 158, 11, 0.20);
 
-    --follow-up-card-background:
-      radial-gradient(
-        ellipse at 100% 100%,
-        color-mix(in srgb, var(--accent-c) 24%, transparent) 0%,
-        color-mix(in srgb, var(--accent-c) 14%, transparent) 38%,
-        transparent 62%
-      ),
-      radial-gradient(
-        ellipse at 0% 100%,
-        color-mix(in srgb, var(--accent) 25%, transparent) 0%,
-        color-mix(in srgb, var(--accent) 14%, transparent) 36%,
-        transparent 66%
-      ),
-      radial-gradient(
-        ellipse at 100% 30%,
-        color-mix(in srgb, var(--accent-b) 22%, transparent) 0%,
-        color-mix(in srgb, var(--accent) 12%, transparent) 36%,
-        transparent 64%
-      ),
-      linear-gradient(
-        145deg,
-        rgba(5, 12, 27, 0.68) 0%,
-        rgba(8, 17, 36, 0.54) 52%,
-        rgba(8, 17, 36, 0.42) 100%
-      );
+    --follow-up-card-surface: color-mix(in srgb, var(--accent) 23%, rgba(8, 13, 25, 0.48));
 
     --sidebar-w: 64px;
     --sidebar-expanded: 260px;
@@ -150,13 +126,14 @@
   .follow-up-glass::before {
     position: absolute;
     z-index: 0;
-    inset: 0;
-    background:
-      radial-gradient(130% 110% at 82% 0%, rgba(255, 255, 255, 0.32), transparent 62%),
-      linear-gradient(180deg, rgba(255, 255, 255, 0.1), transparent 42%);
+    top: 1px;
+    right: 14px;
+    left: 14px;
+    height: 1px;
+    border-radius: 1px;
+    background-color: color-mix(in srgb, var(--accent-b) 50%, white 50%);
     content: "";
-    mix-blend-mode: screen;
-    opacity: 0.82;
+    opacity: 0.72;
     pointer-events: none;
   }
 

@@ -49,7 +49,7 @@ describe("FollowUpChips", () => {
 
     expect(screen.getByText(/^next$/i)).toBeDefined();
     expect(screen.getByTestId("follow-up-carousel").style.background).toBe(
-      "var(--follow-up-card-background)"
+      "var(--follow-up-card-surface)"
     );
     const activeSuggestion = screen.getByRole("button", { name: "Use suggestion: First question" });
     expect(activeSuggestion).toBeDefined();
