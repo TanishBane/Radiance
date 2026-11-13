@@ -20,6 +20,7 @@ export function useChatSession(): UseChatSessionReturn {
   const [activeConvId, setActiveConvId] = useState<string | null>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [activeFollowUps, setActiveFollowUps] = useState<string[]>([]);
+  const [isConversationHistoryLoaded, setIsConversationHistoryLoaded] = useState(false);
   const activeConvRef = useRef<string | null>(null);
   const messagesRef = useRef<ChatMessage[]>([]);
   const conversationsRef = useRef<Conversation[]>([]);
@@ -39,9 +40,18 @@ export function useChatSession(): UseChatSessionReturn {
 
   // Load conversations on mount
   useEffect(() => {
-    conversationService.list().then((loaded) => {
-      setConversations(loaded);
-    });
+    let isMounted = true;
+    conversationService.list()
+      .then((loaded) => {
+        if (isMounted) setConversations(loaded);
+      })
+      .catch(() => undefined)
+      .finally(() => {
+        if (isMounted) setIsConversationHistoryLoaded(true);
+      });
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   const selectConversation = useCallback((id: string) => {
@@ -296,6 +306,7 @@ export function useChatSession(): UseChatSessionReturn {
   return {
     conversations,
     activeConvId,
+    isConversationHistoryLoaded,
     messages,
     activeFollowUps,
     selectConversation,

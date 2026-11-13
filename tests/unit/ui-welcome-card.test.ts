@@ -36,41 +36,14 @@ describe("Welcome Card Default Assistant Structure", () => {
       expect(explore?.headerThemeRole).toBe("accentC");
     });
 
-    it("matches Understand column items and badges from Image 2", () => {
+    it("provides three distinct text-only suggestions in every category", () => {
       const understand = SUGGESTION_COLUMNS.find((c) => c.id === "understand");
       expect(understand).toBeDefined();
       expect(understand?.items).toHaveLength(3);
-
-      expect(understand?.items[0].label).toBe("character from a book");
-      expect(understand?.items[0].badge).toBeUndefined();
-
-      expect(understand?.items[1].label).toBe("pack accordingly");
-      expect(understand?.items[1].badge?.type).toBe("flight");
-
-      expect(understand?.items[2].label).toBe("research a topic");
-      expect(understand?.items[2].badge?.type).toBe("video");
-    });
-
-    it("matches Create column items from Image 2", () => {
-      const create = SUGGESTION_COLUMNS.find((c) => c.id === "create");
-      expect(create).toBeDefined();
-      expect(create?.items).toHaveLength(3);
-
-      expect(create?.items[0].label).toBe("job negotiation and accept...");
-      expect(create?.items[1].label).toBe("game night planning");
-      expect(create?.items[2].label).toBe("out-of-office message");
-    });
-
-    it("matches Explore column items and badges from Image 2", () => {
-      const explore = SUGGESTION_COLUMNS.find((c) => c.id === "explore");
-      expect(explore).toBeDefined();
-      expect(explore?.items).toHaveLength(3);
-
-      expect(explore?.items[0].label).toBe("spring getaway");
-      expect(explore?.items[0].badge?.type).toBe("getaway");
-
-      expect(explore?.items[1].label).toBe("plant care tips");
-      expect(explore?.items[2].label).toBe("cooking trends");
+      for (const column of SUGGESTION_COLUMNS) {
+        expect(new Set(column.items.map((item) => item.id)).size).toBe(3);
+        expect(column.items.every((item) => item.label.length > 0 && !Object.hasOwn(item, "badge"))).toBe(true);
+      }
     });
   });
 });

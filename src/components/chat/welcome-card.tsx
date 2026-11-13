@@ -1,114 +1,56 @@
 "use client";
 
-import React, { useState } from "react";
-import { Plane, Play, Bed, Sparkles, Compass, Lightbulb } from "lucide-react";
+import React, { useEffect, useRef, useState } from "react";
+import { Sparkles, Compass, Lightbulb } from "lucide-react";
 import { motion, useReducedMotion } from "motion/react";
 import { getMotionTransition } from "@/lib/motion/presets";
 import { RadianceLogo } from "@/components/branding/radiance-logo";
 import { uiText, type UiLanguage } from "@/lib/i18n/ui";
+import type { Conversation } from "@/lib/types/chat";
+import { safeLocalStorage } from "@/lib/utils/storage";
+import {
+  createWelcomeSuggestions,
+  SUGGESTION_COLUMNS,
+  WELCOME_SUGGESTIONS_STORAGE_KEY,
+} from "@/lib/chat/welcome-suggestions";
 
-export interface SuggestionItem {
-  id: string;
-  label: string;
-  prompt: string;
-  badge?: {
-    type: "flight" | "video" | "getaway";
-  };
-}
+export { SUGGESTION_COLUMNS } from "@/lib/chat/welcome-suggestions";
+export type { SuggestionColumn, SuggestionItem } from "@/lib/chat/welcome-suggestions";
 
-export interface SuggestionColumn {
-  id: string;
-  title: string;
-  headerThemeRole: "accentB" | "gradient" | "accentC";
-  items: SuggestionItem[];
-}
-
-export const SUGGESTION_COLUMNS: SuggestionColumn[] = [
-  {
-    id: "understand",
-    title: "Understand",
-    headerThemeRole: "accentB",
-    items: [
-      {
-        id: "char-book",
-        label: "character from a book",
-        prompt: "Describe a complex character from a book and analyze their psychological motivations.",
-      },
-      {
-        id: "pack",
-        label: "pack accordingly",
-        prompt: "Help me pack accordingly for an upcoming trip with a comprehensive weather-aware checklist.",
-        badge: {
-          type: "flight",
-        },
-      },
-      {
-        id: "research",
-        label: "research a topic",
-        prompt: "Help me research an in-depth topic, synthesizing key perspectives, findings, and nuances.",
-        badge: {
-          type: "video",
-        },
-      },
-    ],
-  },
-  {
-    id: "create",
-    title: "Create",
-    headerThemeRole: "gradient",
-    items: [
-      {
-        id: "job-negotiation",
-        label: "job negotiation and accept...",
-        prompt: "Draft a high-leverage job offer negotiation script and formal acceptance letter.",
-      },
-      {
-        id: "game-night",
-        label: "game night planning",
-        prompt: "Plan an engaging, memorable game night with friends including games, food, and timeline.",
-      },
-      {
-        id: "ooo-message",
-        label: "out-of-office message",
-        prompt: "Write a professional, clear, and friendly out-of-office email autoresponder.",
-      },
-    ],
-  },
-  {
-    id: "explore",
-    title: "Explore",
-    headerThemeRole: "accentC",
-    items: [
-      {
-        id: "getaway",
-        label: "spring getaway",
-        prompt: "Suggest curated spring getaway destinations with a 3-day itinerary and budget breakdown.",
-        badge: {
-          type: "getaway",
-        },
-      },
-      {
-        id: "plant-care",
-        label: "plant care tips",
-        prompt: "Share essential indoor houseplant care tips for watering, lighting, and repotting.",
-      },
-      {
-        id: "cooking",
-        label: "cooking trends",
-        prompt: "What are the most innovative cooking trends, culinary techniques, and viral recipes right now?",
-      },
-    ],
-  },
-];
+const EMPTY_CONVERSATIONS: Conversation[] = [];
 
 interface WelcomeCardProps {
   language?: UiLanguage;
+  conversations?: Conversation[];
+  historyLoaded?: boolean;
   onSelectPrompt: (prompt: string) => void;
 }
 
-export function WelcomeCard({ language = "en", onSelectPrompt }: WelcomeCardProps) {
+export function WelcomeCard({
+  language = "en",
+  conversations = EMPTY_CONVERSATIONS,
+  historyLoaded = false,
+  onSelectPrompt,
+}: WelcomeCardProps) {
   const prefersReducedMotion = useReducedMotion() ?? false;
   const [activeCategory, setActiveCategory] = useState<string>("understand");
+  const [suggestionColumns, setSuggestionColumns] = useState(SUGGESTION_COLUMNS);
+  const generatedForSession = useRef(false);
+
+  useEffect(() => {
+    if (!historyLoaded || generatedForSession.current) return;
+    generatedForSession.current = true;
+    const storedIds = safeLocalStorage.get<unknown>(WELCOME_SUGGESTIONS_STORAGE_KEY, []);
+    const previousIds = Array.isArray(storedIds)
+      ? storedIds.filter((id): id is string => typeof id === "string")
+      : [];
+    const nextSuggestions = createWelcomeSuggestions(conversations, previousIds);
+    setSuggestionColumns(nextSuggestions);
+    safeLocalStorage.set(
+      WELCOME_SUGGESTIONS_STORAGE_KEY,
+      nextSuggestions.flatMap((column) => column.items.map((item) => item.id))
+    );
+  }, [conversations, historyLoaded]);
 
   const titleName = "Radiance";
   const description =
@@ -125,25 +67,7 @@ export function WelcomeCard({ language = "en", onSelectPrompt }: WelcomeCardProp
     };
   }
 
-  const BADGE_MAP = {
-    flight: { bg: "bg-[#1e88e5] shadow-[0_0_8px_rgba(30,136,229,0.35)]", icon: <Plane className="w-2.5 h-2.5 text-white" /> },
-    video: { bg: "bg-[#e53935] shadow-[0_0_8px_rgba(229,57,53,0.35)]", icon: <Play className="w-2.5 h-2.5 text-white fill-white ml-0.5" /> },
-    getaway: { bg: "bg-[#2e7d32] shadow-[0_0_8px_rgba(46,125,50,0.35)]", icon: <Bed className="w-2.5 h-2.5 text-white" /> },
-  } as const;
-
-  function renderBadge(type: "flight" | "video" | "getaway") {
-    const badge = BADGE_MAP[type];
-    return (
-      <span
-        className={`w-4.5 h-4.5 rounded-full ${badge.bg} flex items-center justify-center shrink-0 border border-white/20`}
-        aria-hidden="true"
-      >
-        {badge.icon}
-      </span>
-    );
-  }
-
-  const activeCol = SUGGESTION_COLUMNS.find((c) => c.id === activeCategory) || SUGGESTION_COLUMNS[0];
+  const activeCol = suggestionColumns.find((column) => column.id === activeCategory) || suggestionColumns[0];
 
   return (
     <motion.div
@@ -188,7 +112,7 @@ export function WelcomeCard({ language = "en", onSelectPrompt }: WelcomeCardProp
       <div className="md:hidden w-full max-w-3xl flex flex-col gap-3">
         {/* Category Pill Tabs Row */}
         <div className="flex items-center gap-2 overflow-x-auto pb-1 pt-0.5 px-0.5 overscroll-contain [-webkit-overflow-scrolling:touch]">
-          {SUGGESTION_COLUMNS.map((col) => {
+          {suggestionColumns.map((col) => {
             const isSelected = col.id === activeCategory;
             return (
               <button
@@ -244,7 +168,6 @@ export function WelcomeCard({ language = "en", onSelectPrompt }: WelcomeCardProp
                 aria-label={`${uiText(language, "Ask suggestion")}: ${uiText(language, item.label)}`}
               >
                 <div className="flex items-center gap-2 min-w-0">
-                  {item.badge && renderBadge(item.badge.type)}
                   <span className="text-xs text-[var(--txt)] font-normal truncate">
                     {uiText(language, item.label)}
                   </span>
@@ -261,7 +184,7 @@ export function WelcomeCard({ language = "en", onSelectPrompt }: WelcomeCardProp
         data-testid="prompt-categories"
         className="hidden md:grid w-full max-w-3xl grid-cols-3 gap-4 text-left"
       >
-        {SUGGESTION_COLUMNS.map((column) => (
+        {suggestionColumns.map((column) => (
           <div
             key={column.id}
             className="group/card flex flex-col items-start p-4 sm:p-5 rounded-3xl border transition-all duration-300 hover:border-[var(--accent)]/40 hover:shadow-[0_16px_48px_-8px_var(--accent-d)]"
@@ -306,7 +229,6 @@ export function WelcomeCard({ language = "en", onSelectPrompt }: WelcomeCardProp
                   }}
                   aria-label={`Ask suggestion: ${item.label}`}
                 >
-                  {item.badge && renderBadge(item.badge.type)}
                   <span className="truncate text-xs sm:text-[13px] text-[#ededed] group-hover/btn:text-[var(--txt)] font-normal transition-colors">
                     {item.label}
                   </span>

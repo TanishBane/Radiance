@@ -7,7 +7,7 @@ vi.mock("next/font/google", () => ({
 
 import fs from "fs";
 import path from "path";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { Topbar } from "@/components/navigation/topbar";
 import { ChatComposer } from "@/components/chat/chat-composer";
 import { AtmosphereCanvasEngine } from "@/components/background/atmosphere-canvas-engine";
@@ -196,6 +196,37 @@ describe("Mobile & Cross-Browser Ergonomics, Touch & Viewport Invariants", () =>
       expect(btn.className).toContain("touch-target");
       expect(btn.className).toContain("min-h-[44px]");
     }
+  });
+
+  it("personalizes welcome prompts from loaded user history without emoji badges", async () => {
+    const onSelectPrompt = vi.fn();
+    render(
+      <WelcomeCard
+        conversations={[
+          {
+            id: "conv_history",
+            title: "Previous chat",
+            createdAt: 1,
+            updatedAt: 2,
+            pinned: false,
+            messages: [
+              { id: "user_1", role: "user", content: "I have been learning React and TypeScript.", createdAt: 1 },
+              { id: "assistant_1", role: "assistant", content: "Gardening is fun too.", createdAt: 2 },
+            ],
+          },
+        ]}
+        historyLoaded
+        onSelectPrompt={onSelectPrompt}
+      />
+    );
+
+    const personalizedSuggestions = await screen.findAllByRole("button", {
+      name: /Ask suggestion: .*software and technology/i,
+    });
+    const personalizedSuggestion = personalizedSuggestions[0];
+    expect(personalizedSuggestion.querySelector("svg")).toBeNull();
+    fireEvent.click(personalizedSuggestion);
+    await waitFor(() => expect(onSelectPrompt).toHaveBeenCalledWith(expect.stringContaining("software and technology")));
   });
 
   it("renders mobile bottom nav new chat action with >=44x44px touch target ergonomics", () => {

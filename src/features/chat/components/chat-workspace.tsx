@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useRef, useEffect } from "react";
-import { ChatMessage, Attachment, FeedbackRating, ModelOption } from "@/lib/types/chat";
+import { ChatMessage, Attachment, FeedbackRating, ModelOption, Conversation } from "@/lib/types/chat";
 import { MessageItem } from "@/components/chat/message-item";
 import { WelcomeCard } from "@/components/chat/welcome-card";
 import { FollowUpChips } from "@/components/chat/follow-up-chips";
@@ -14,6 +14,8 @@ import type { UiLanguage } from "@/lib/i18n/ui";
 export interface ChatWorkspaceProps {
   language?: UiLanguage;
   messages: ChatMessage[];
+  conversations?: Conversation[];
+  isConversationHistoryLoaded?: boolean;
   streamingContent: string;
   isGenerating: boolean;
   activeFollowUps: string[];
@@ -106,6 +108,8 @@ export function ChatErrorCard({ error, errorDetails, onRetry }: ChatErrorCardPro
 export function ChatWorkspace({
   language = "en",
   messages,
+  conversations = [],
+  isConversationHistoryLoaded = false,
   streamingContent,
   isGenerating,
   activeFollowUps,
@@ -145,7 +149,12 @@ export function ChatWorkspace({
       {/* Scrollable Message List */}
       <div ref={chatScrollRef} className="flex-1 overflow-y-auto px-3 sm:px-4 py-4 sm:py-6 scroll-smooth overscroll-contain [-webkit-overflow-scrolling:touch]">
         {!hasContent ? (
-          <WelcomeCard language={language} onSelectPrompt={onSelectSuggestion} />
+          <WelcomeCard
+            language={language}
+            conversations={conversations}
+            historyLoaded={isConversationHistoryLoaded}
+            onSelectPrompt={onSelectSuggestion}
+          />
         ) : (
           <div className="max-w-3xl mx-auto space-y-6 pb-6">
             {messages.map((msg) =>

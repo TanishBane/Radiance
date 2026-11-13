@@ -93,6 +93,7 @@ export default function RadianceApp() {
   const {
     conversations,
     activeConvId,
+    isConversationHistoryLoaded,
     messages,
     activeFollowUps,
     selectConversation,
@@ -401,6 +402,8 @@ export default function RadianceApp() {
         <div className="flex-1 flex flex-col min-w-0 overflow-hidden relative">
           <ChatWorkspace
             messages={messages}
+            conversations={conversations}
+            isConversationHistoryLoaded={isConversationHistoryLoaded}
             language={language}
             streamingContent={streamingContent}
             isGenerating={isGenerating}

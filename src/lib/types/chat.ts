@@ -106,6 +106,7 @@ export interface UseChatStreamReturn {
 export interface UseChatSessionReturn {
   conversations: Conversation[];
   activeConvId: string | null;
+  isConversationHistoryLoaded: boolean;
   messages: ChatMessage[];
   activeFollowUps: string[];
   selectConversation: (id: string) => void;

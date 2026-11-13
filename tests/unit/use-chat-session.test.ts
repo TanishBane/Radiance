@@ -58,6 +58,7 @@ describe("useChatSession Hook & Session State Specifications", () => {
       expect(result.current.activeConvId).toBeNull();
       expect(result.current.activeFollowUps).toEqual([]);
       expect(result.current.conversations).toEqual([]);
+      expect(result.current.isConversationHistoryLoaded).toBe(true);
     });
 
     it("loads saved conversations from persistence on mount", async () => {
@@ -87,6 +88,7 @@ describe("useChatSession Hook & Session State Specifications", () => {
 
       expect(result.current.conversations.length).toBe(1);
       expect(result.current.conversations[0].id).toBe("conv_saved_1");
+      expect(result.current.isConversationHistoryLoaded).toBe(true);
     });
   });
 

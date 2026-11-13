@@ -220,3 +220,19 @@
 - Playwright: passed on Desktop Chrome and Mobile Chrome (2 tests); measured desktop card centers matched the composer within one pixel.
 - Focused chat workspace and suggestion unit tests: passed (20 tests).
 - TypeScript, ESLint, and production build: passed.
+
+## 2026-11-14 — Personalize welcome suggestions
+
+### Changed
+
+- Replaced fixed welcome examples and category badges with rotating prompt templates based on broad interests found in recent user-authored local chat messages.
+- Generate a new set after local conversation history loads; keep only prompt IDs locally to avoid repeating the previous set. Raw chat text and inferred interests are not persisted or sent to a provider.
+- Added an effect guard so React development Strict Mode does not consume multiple suggestion sets in one app session.
+- Added unit and Playwright coverage for interest selection, no-history fallback, emoji-free cards, click-to-send, and set rotation after reload.
+
+### Verification
+
+- Focused unit tests: passed (31 tests).
+- Playwright: passed on Desktop Chrome and Mobile Chrome (2 tests); reviewed both screenshots.
+- TypeScript, ESLint, and production build: passed.
+- This app has no wired login callback; rotation occurs on app reload/session entry using browser-local chat history.
