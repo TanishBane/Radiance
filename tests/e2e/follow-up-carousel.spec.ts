@@ -37,6 +37,12 @@ test("contextual follow-ups render as a theme-aware carousel and rotate by contr
   await expect(rightCarousel).toBeVisible();
   await expect(leftCarousel.getByText("1/3")).toBeVisible();
   await expect(rightCarousel.getByText("2/3")).toBeVisible();
+  const glassSurface = await leftCarousel.evaluate((element) => {
+    const style = getComputedStyle(element);
+    return { backdropFilter: style.backdropFilter, borderColor: style.borderTopColor };
+  });
+  expect(glassSurface.backdropFilter).toContain("blur");
+  expect(glassSurface.borderColor).not.toBe("rgba(0, 0, 0, 0)");
   const viewportWidth = page.viewportSize()?.width ?? 0;
   const leftBounds = await page.getByTestId("left-follow-up-lane").boundingBox();
   const rightBounds = await page.getByTestId("right-follow-up-lane").boundingBox();

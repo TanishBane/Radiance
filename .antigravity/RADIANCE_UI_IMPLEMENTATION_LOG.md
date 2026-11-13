@@ -1,5 +1,18 @@
 # Radiance UI implementation log
 
+## 2026-11-13 — Glass follow-up suggestion cards
+
+### Changed
+
+- Added a frosted-glass treatment to the two composer-side suggestion cards: translucent theme-tinted surfaces, backdrop blur and saturation, fine borders, and a soft inset highlight.
+- Preserved the navy contrast layer and dynamic theme accents so suggestion text remains readable across the available background palettes.
+
+### Verification
+
+- Follow-up carousel and chat workspace unit tests: passed (20 tests).
+- TypeScript and lint: passed.
+- Playwright: passed on Desktop Chrome and Mobile Chrome (2 tests), including the glass surface and theme recoloring assertions; reviewed both captures.
+
 ## 2026-11-13 — Theme-specialized follow-up cards
 
 ### Changed

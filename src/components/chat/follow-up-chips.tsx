@@ -50,13 +50,15 @@ export function FollowUpChips({
       onKeyDown={handleKeyDown}
       className={`relative mx-auto w-full outline-none ${
         compact
-          ? "max-w-none rounded-[18px] border border-white/20 p-2.5"
+          ? "max-w-none rounded-[18px] border border-white/30 p-2.5 backdrop-blur-xl backdrop-saturate-150 shadow-[0_12px_28px_-22px_rgba(0,0,0,0.8),inset_0_1px_0_rgba(255,255,255,0.26)]"
           : "mt-2 max-w-5xl"
       }`}
       style={
         compact
           ? {
               background: "var(--follow-up-card-background)",
+              backdropFilter: "blur(18px) saturate(155%)",
+              WebkitBackdropFilter: "blur(18px) saturate(155%)",
             }
           : undefined
       }
