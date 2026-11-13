@@ -1,5 +1,18 @@
 # Radiance UI implementation log
 
+## 2026-11-13 — Prompt-matched glass treatment
+
+### Changed
+
+- Refined the suggestion cards to follow the supplied glass component's surface treatment: 22px saturated backdrop blur, translucent theme tint, screen-blended specular sheen, and a bright fine border with inset highlight.
+- Kept the active theme accent gradients and accessible carousel controls intact.
+
+### Verification
+
+- Follow-up carousel and chat workspace unit tests: passed (20 tests).
+- TypeScript and lint: passed.
+- Playwright: passed on Desktop Chrome and Mobile Chrome (2 tests), including backdrop blur, specular layer, and live theme recoloring assertions; reviewed both captures.
+
 ## 2026-11-13 — Glass follow-up suggestion cards
 
 ### Changed
