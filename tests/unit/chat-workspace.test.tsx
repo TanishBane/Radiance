@@ -47,7 +47,7 @@ describe("ChatWorkspace Component (Inference & Error States)", () => {
       expect(screen.getByText(/illuminate what is possible/i)).toBeDefined();
     });
 
-    it("places independently navigable follow-up carousels on both sides of the composer", () => {
+    it("places fixed first and second follow-up suggestions on both sides of the composer", () => {
       render(
         <ChatWorkspace
           {...defaultProps}
@@ -59,14 +59,11 @@ describe("ChatWorkspace Component (Inference & Error States)", () => {
       const rightCarousel = screen.getByRole("region", { name: "Right follow-up suggestions" });
 
       expect(screen.getByTestId("composer-lane").querySelector("textarea")).not.toBeNull();
-      expect(within(leftCarousel).getByText("1/3")).toBeDefined();
-      expect(within(rightCarousel).getByText("2/3")).toBeDefined();
-
-      fireEvent.click(within(leftCarousel).getByRole("button", { name: "Next Left" }));
-      fireEvent.click(within(leftCarousel).getByRole("button", { name: "Next Left" }));
-
-      expect(within(leftCarousel).getByText("3/3")).toBeDefined();
-      expect(within(rightCarousel).getByText("2/3")).toBeDefined();
+      expect(within(leftCarousel).getByRole("button", { name: "Use suggestion: First follow-up" })).toBeDefined();
+      expect(within(rightCarousel).getByRole("button", { name: "Use suggestion: Second follow-up" })).toBeDefined();
+      expect(within(leftCarousel).queryByRole("button", { name: "Next Left" })).toBeNull();
+      expect(within(rightCarousel).queryByRole("button", { name: "Previous Right" })).toBeNull();
+      expect(within(leftCarousel).queryByRole("button", { name: "Use suggestion: Third follow-up" })).toBeNull();
     });
 
     it("hides WelcomeCard when messages exist", () => {

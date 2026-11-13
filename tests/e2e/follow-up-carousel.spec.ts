@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-test("the two highest-ranked contextual follow-ups render and rotate by controls and keyboard", async ({ page }, testInfo) => {
+test("the two highest-ranked contextual follow-ups render as fixed selectable cards", async ({ page }, testInfo) => {
   test.setTimeout(60_000);
   let lastSubmittedText = "";
   await page.route("**/api/chat", (route) => {
@@ -35,8 +35,12 @@ test("the two highest-ranked contextual follow-ups render and rotate by controls
   const rightCarousel = page.getByRole("region", { name: "Right follow-up suggestions" });
   await expect(leftCarousel).toBeVisible();
   await expect(rightCarousel).toBeVisible();
-  await expect(leftCarousel.getByText("1/2")).toBeVisible();
-  await expect(rightCarousel.getByText("2/2")).toBeVisible();
+  await expect(leftCarousel.getByText("Next", { exact: true })).toBeVisible();
+  await expect(rightCarousel.getByText("Next", { exact: true })).toBeVisible();
+  await expect(leftCarousel.getByRole("button", { name: "Previous Left" })).toHaveCount(0);
+  await expect(leftCarousel.getByRole("button", { name: "Next Left" })).toHaveCount(0);
+  await expect(rightCarousel.getByRole("button", { name: "Previous Right" })).toHaveCount(0);
+  await expect(rightCarousel.getByRole("button", { name: "Next Right" })).toHaveCount(0);
   await expect(leftCarousel.getByRole("button", { name: "Use suggestion: Can you explain the trade-offs?" })).toHaveCount(0);
   const glassSurface = await leftCarousel.evaluate((element) => {
     const style = getComputedStyle(element);
@@ -149,18 +153,11 @@ test("the two highest-ranked contextual follow-ups render and rotate by controls
   }, originalTheme);
 
   await page.screenshot({ path: testInfo.outputPath("follow-up-carousel.png") });
-  await page.waitForTimeout(250);
-  const nextButton = page.getByRole("button", { name: "Next Left" });
-  if ((page.viewportSize()?.width ?? 0) < 768) await nextButton.tap();
-  else await nextButton.click();
-  await expect(leftCarousel.getByText("2/2")).toBeVisible();
-  await expect(rightCarousel.getByText("2/2")).toBeVisible();
-  await leftCarousel.focus();
+  await activeSuggestion.focus();
   await page.keyboard.press("ArrowRight");
-  await expect(leftCarousel.getByText("1/2")).toBeVisible();
-  await page.keyboard.press("ArrowLeft");
-  await expect(leftCarousel.getByText("2/2")).toBeVisible();
+  await expect(activeSuggestion).toBeVisible();
+  await expect(leftCarousel.getByRole("button", { name: "Use suggestion: What edge cases should I consider?" })).toHaveCount(0);
 
-  await leftCarousel.getByRole("button", { name: "Use suggestion: What edge cases should I consider?" }).click();
+  await rightCarousel.getByRole("button", { name: "Use suggestion: What edge cases should I consider?" }).click();
   await expect.poll(() => lastSubmittedText).toBe("What edge cases should I consider?");
 });

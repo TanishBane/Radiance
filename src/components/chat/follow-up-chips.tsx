@@ -44,10 +44,10 @@ export function FollowUpChips({
   return (
     <section
       role="region"
-      aria-roledescription="carousel"
+      aria-roledescription={compact ? undefined : "carousel"}
       aria-label={carouselLabel}
-      tabIndex={0}
-      onKeyDown={handleKeyDown}
+      tabIndex={compact ? undefined : 0}
+      onKeyDown={compact ? undefined : handleKeyDown}
       className={`relative mx-auto w-full outline-none ${
         compact
           ? "max-w-none rounded-[18px] border border-white/25 p-2.5 follow-up-glass shadow-[0_16px_40px_-22px_rgba(0,0,0,0.32),inset_0_1px_0_rgba(255,255,255,0.22)]"
@@ -70,14 +70,14 @@ export function FollowUpChips({
         >
           {compact ? "Next" : label || "Continue the conversation"}
         </p>
-        {total > 1 && (
-          <div className={`flex shrink-0 items-center ${compact ? "gap-0" : "gap-1.5"}`}>
+        {!compact && total > 1 && (
+          <div className="flex shrink-0 items-center gap-1.5">
             <p
               aria-live="polite"
               aria-label={`Suggestion ${currentIndex + 1} of ${total}`}
-              className={`tabular-nums ${compact ? "mr-1 text-xs font-semibold text-[var(--txt-dim)]" : "mr-1 text-xs text-[var(--txt-muted)]"}`}
+              className="mr-1 text-xs tabular-nums text-[var(--txt-muted)]"
             >
-              {compact ? `${currentIndex + 1}/${total}` : `Suggestion ${currentIndex + 1} of ${total}`}
+              {`Suggestion ${currentIndex + 1} of ${total}`}
             </p>
             <button
               type="button"
@@ -87,11 +87,7 @@ export function FollowUpChips({
                 event.preventDefault();
                 move(-1);
               }}
-              className={`touch-target h-8 w-8 rounded-full border transition-colors focus-visible:ring-2 motion-reduce:transition-none ${
-                compact
-                  ? "border-white/30 bg-slate-950/45 text-white hover:border-[var(--accent)] hover:bg-slate-950/65 focus-visible:ring-[var(--accent)]"
-                  : "border-[var(--border)] bg-[var(--surface-raised)] text-[var(--txt-dim)] hover:border-[var(--accent)] hover:text-[var(--txt)] focus-visible:ring-[var(--accent)]"
-              }`}
+              className="touch-target h-8 w-8 rounded-full border border-[var(--border)] bg-[var(--surface-raised)] text-[var(--txt-dim)] transition-colors hover:border-[var(--accent)] hover:text-[var(--txt)] focus-visible:ring-2 focus-visible:ring-[var(--accent)] motion-reduce:transition-none"
             >
               <ArrowLeft aria-hidden="true" className="h-3.5 w-3.5" />
             </button>
@@ -103,11 +99,7 @@ export function FollowUpChips({
                 event.preventDefault();
                 move(1);
               }}
-              className={`touch-target h-8 w-8 rounded-full border transition-colors focus-visible:ring-2 motion-reduce:transition-none ${
-                compact
-                  ? "border-white/30 bg-slate-950/45 text-white hover:border-[var(--accent)] hover:bg-slate-950/65 focus-visible:ring-[var(--accent)]"
-                  : "border-[var(--border)] bg-[var(--surface-raised)] text-[var(--txt-dim)] hover:border-[var(--accent)] hover:text-[var(--txt)] focus-visible:ring-[var(--accent)]"
-              }`}
+              className="touch-target h-8 w-8 rounded-full border border-[var(--border)] bg-[var(--surface-raised)] text-[var(--txt-dim)] transition-colors hover:border-[var(--accent)] hover:text-[var(--txt)] focus-visible:ring-2 focus-visible:ring-[var(--accent)] motion-reduce:transition-none"
             >
               <ArrowRight aria-hidden="true" className="h-3.5 w-3.5" />
             </button>

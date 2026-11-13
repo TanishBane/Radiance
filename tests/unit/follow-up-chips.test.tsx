@@ -38,10 +38,11 @@ describe("FollowUpChips", () => {
   });
 
   it("shows compact suggestions as one contained card without neighboring slides", () => {
+    const onSelect = vi.fn();
     render(
       <FollowUpChips
         questions={["First question", "Second question"]}
-        onSelect={vi.fn()}
+        onSelect={onSelect}
         label="Left"
         compact
       />
@@ -55,5 +56,12 @@ describe("FollowUpChips", () => {
     expect(activeSuggestion).toBeDefined();
     expect(activeSuggestion.style.background).toBe("");
     expect(screen.queryByRole("button", { name: "Use suggestion: Second question" })).toBeNull();
+    expect(screen.queryByRole("button", { name: "Previous Left" })).toBeNull();
+    expect(screen.queryByRole("button", { name: "Next Left" })).toBeNull();
+    expect(screen.queryByText("1/2")).toBeNull();
+
+    fireEvent.keyDown(activeSuggestion, { key: "ArrowRight" });
+    expect(screen.getByRole("button", { name: "Use suggestion: First question" })).toBeDefined();
+    expect(onSelect).not.toHaveBeenCalled();
   });
 });

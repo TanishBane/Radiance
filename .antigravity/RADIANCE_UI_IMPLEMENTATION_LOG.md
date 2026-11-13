@@ -180,3 +180,17 @@
 - Focused Playwright: passed on Desktop Chrome and Mobile Chrome (2 tests), including cycling and selecting the second suggestion.
 - Focused unit tests: passed (43 tests).
 - TypeScript, ESLint, and production build: passed.
+
+## 2026-11-14 — Make side suggestions fixed cards
+
+### Changed
+
+- Removed compact-card previous/next controls and suggestion counters so the two ranked suggestions remain fixed in place.
+- Disabled carousel arrow-key navigation for compact cards while preserving click-to-use behavior and the full carousel controls elsewhere.
+
+### Verification
+
+- Regression coverage confirms compact cards have no navigation controls and arrow keys do not swap suggestions.
+- Focused Playwright: passed on Desktop Chrome and Mobile Chrome (2 tests).
+- Focused unit tests: passed (43 tests).
+- TypeScript, ESLint, and production build: passed.
