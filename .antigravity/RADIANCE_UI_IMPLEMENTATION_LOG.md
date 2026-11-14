@@ -279,3 +279,16 @@
 - Removed the standalone Radiance mark above the greeting and placed it where the “Radiance” wordmark appeared in the title.
 - Kept “adiance” beside the mark in the brand gradient so the title reads as the logo-backed “Radiance.”
 - Removed the mark’s rounded square and sized the SVG to the title-relative container so its visible artwork aligns with the gradient wordmark baseline at each breakpoint.
+
+## 2026-11-14 — Simplify sidebar brand lockup
+
+### Changed
+
+- Removed the version badge and pulsing status dot from the expanded sidebar header.
+- Refined the Radiance wordmark and raised the AI PLATFORM label to the documented label type size.
+
+### Verification
+
+- TypeScript and ESLint: passed.
+- Impeccable detector initially flagged the 9px label; updated it to the documented 11px size.
+- The optional UI/UX Pro Max palette lookup could not run because Python is unavailable; existing Radiance tokens were used.

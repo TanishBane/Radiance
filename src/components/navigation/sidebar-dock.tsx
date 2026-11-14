@@ -16,7 +16,6 @@ import {
 import { motion, useReducedMotion } from "motion/react";
 import { RadianceLogo } from "@/components/branding/radiance-logo";
 import { cn } from "@/lib/utils/cn";
-import { APP_VERSION } from "@/lib/app-info";
 import { uiText, type UiLanguage } from "@/lib/i18n/ui";
 
 interface SidebarDockProps {
@@ -121,17 +120,13 @@ export function SidebarDock({
                 transition={{ duration: 0.15, ease: "easeOut" }}
                 className="flex flex-col min-w-0"
               >
-                <div className="flex items-center gap-2">
-                  <span className="font-serif font-bold text-sm text-[var(--txt)] tracking-[0.14em]">
+                <div className="flex items-center">
+                  <span className="font-serif font-semibold text-sm text-[var(--txt)] tracking-[0.16em] leading-none">
                     RADIANCE
                   </span>
-                  <span className="flex items-center gap-1 font-mono text-[9px] uppercase tracking-wider px-2 py-0.5 rounded-full border border-[var(--accent)]/30 text-[var(--accent-b)] bg-[var(--accent-d)]/60 shadow-xs">
-                    <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent)] animate-pulse" />
-                    v{APP_VERSION}
-                  </span>
                 </div>
-                <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-[var(--accent-b)]/80 mt-0.5">
-                  AI Platform
+                <span className="font-mono text-[11px] font-semibold uppercase tracking-[0.06em] text-[var(--accent-b)] mt-1">
+                  AI PLATFORM
                 </span>
               </motion.div>
             )}
