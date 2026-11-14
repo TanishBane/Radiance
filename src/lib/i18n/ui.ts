@@ -323,7 +323,17 @@ const atmospherePreviewTranslations: Record<UiLanguage, Record<string, string>> 
   },
 };
 
+const regenerationTranslations: Record<UiLanguage, string> = {
+  en: "Regenerated once",
+  hi: "एक बार फिर से बनाया गया",
+  es: "Regenerada una vez",
+  fr: "Régénérée une fois",
+  de: "Einmal neu erstellt",
+  pt: "Regenerada uma vez",
+  ja: "1回再生成",
+};
+
 export function uiText(language: UiLanguage, text: string, values: Record<string, string | number> = {}): string {
-  const translated = navigationTranslations[language]?.[text] ?? atmospherePreviewTranslations[language]?.[text] ?? surfaceTranslations[language]?.[text] ?? detailTranslations[language]?.[text] ?? sharedTranslations[language]?.[text] ?? translations[language]?.[text] ?? text;
+  const translated = text === "Regenerated once" ? regenerationTranslations[language] : navigationTranslations[language]?.[text] ?? atmospherePreviewTranslations[language]?.[text] ?? surfaceTranslations[language]?.[text] ?? detailTranslations[language]?.[text] ?? sharedTranslations[language]?.[text] ?? translations[language]?.[text] ?? text;
   return translated.replace(/\{([^}]+)\}/g, (_, key: string) => String(values[key] ?? `{${key}}`));
 }

@@ -466,3 +466,17 @@
 - Targeted unit tests: 139 passed across 8 files, including composer defaults, request mode normalization, API validation, and distinct system prompts.
 - `pnpm.cmd typecheck`, `pnpm.cmd lint`, and `pnpm.cmd build`: passed.
 - Full unit suite: 3 unrelated existing failures remain in dynamic-theme candidate count, stale mobile language-toggle expectations, and settings-center response-language lookup; other test files passed.
+
+## 2026-11-14 — Limit message actions and track regeneration
+
+### Changed
+
+- Removed per-message delete and Markdown download actions from desktop and mobile message controls. Code snippet downloads and conversation-level history controls remain separate.
+- Limited each assistant answer to one regeneration. A successful regeneration replaces the answer in place, keeps the message ID and response mode, and persists a regeneration count and timestamp with the conversation.
+- Added a localized “Regenerated once” status and kept the original answer visible if regeneration fails or is stopped.
+
+### Verification
+
+- Focused unit suites: 111 tests passed across 6 files. The lifecycle suite emits existing jsdom canvas warnings; assertions pass.
+- `pnpm.cmd typecheck`, `pnpm.cmd lint`, `pnpm.cmd build`, and `git diff --check`: passed.
+- Source search confirmed message delete/export controls and handlers are no longer present.

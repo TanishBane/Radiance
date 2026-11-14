@@ -10,6 +10,7 @@ import { formatMarkdown, formatRelativeTime, isSafeUrl } from "@/lib/utils/forma
 import { RadianceLogo } from "@/components/branding/radiance-logo";
 import { FollowUpChips } from "./follow-up-chips";
 import { uiText, type UiLanguage } from "@/lib/i18n/ui";
+import { canRegenerateResponse } from "@/lib/chat/regeneration-policy";
 import {
   Copy,
   Check,
@@ -19,7 +20,6 @@ import {
   Download,
   Volume2,
   VolumeX,
-  Trash2,
   ThumbsUp,
   ThumbsDown,
   MoreHorizontal,
@@ -51,7 +51,6 @@ export interface MessageItemProps {
   onSelectFollowUp?: (q: string) => void;
   onRegenerate?: () => void;
   onEdit?: (newContent: string) => void;
-  onDelete?: (messageId: string) => void;
   onFeedback?: (messageId: string, feedback: FeedbackRating) => void;
   onRemember?: (messageId: string, content: string) => void;
   onOpenPersonalIntelligence?: () => void;
@@ -66,7 +65,6 @@ export function MessageItem({
   onSelectFollowUp,
   onRegenerate,
   onEdit,
-  onDelete,
   onFeedback,
   onRemember,
   onOpenPersonalIntelligence,
@@ -111,35 +109,10 @@ export function MessageItem({
     }, 2000);
   };
 
-  // ── Safe Client-Side Export (Markdown Blob Download) ──
-  const handleExportMarkdown = () => {
-    try {
-      const filename = `radiance-message-${message.id || Date.now()}.md`;
-      const blob = new Blob([message.content], { type: "text/markdown;charset=utf-8" });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = filename;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
-    } catch {
-      // Fallback: clipboard copy if blob URL creation is restricted
-      if (typeof navigator !== "undefined" && navigator.clipboard) {
-        navigator.clipboard.writeText(message.content);
-      }
-    }
-  };
-
   const handleFeedback = (rating: FeedbackRating) => {
     if (!onFeedback) return;
     const nextRating = message.feedback === rating ? null : rating;
     onFeedback(message.id, nextRating);
-  };
-
-  const handleDelete = () => {
-    onDelete?.(message.id);
   };
 
   const handleSaveEdit = () => {
@@ -462,6 +435,15 @@ export function MessageItem({
           >
             {formatRelativeTime(message.createdAt)}
           </time>
+          {!isUser && message.regenerationCount ? (
+            <span
+              data-testid="regeneration-status"
+              title={message.lastRegeneratedAt ? new Date(message.lastRegeneratedAt).toISOString() : undefined}
+              className="text-[var(--txt-muted)] font-sans"
+            >
+              {t("Regenerated once")}
+            </span>
+          ) : null}
 
           {/* ══ Desktop Hover/Focus-Within Action Toolbar (Hierarchically Structured) ══ */}
           <div className="opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 focus-within:opacity-100 transition-opacity duration-200 hidden sm:flex items-center gap-0.5 px-1.5 py-0.5 rounded-xl bg-[var(--surface-raised)] border border-[var(--border)] shadow-sm backdrop-blur-md">
@@ -499,7 +481,7 @@ export function MessageItem({
             )}
 
             {/* Regenerate Assistant Response */}
-            {!isUser && !message.isError && onRegenerate && !isStreaming && (
+            {!isUser && canRegenerateResponse(message) && onRegenerate && !isStreaming && (
               <button
                 type="button"
                 onClick={onRegenerate}
@@ -583,34 +565,6 @@ export function MessageItem({
               </button>
             )}
 
-            {/* Utility & Destructive Cluster */}
-            <span className="w-[1px] h-3 bg-[var(--border)] mx-0.5" />
-
-            {/* Safe Client-Side Export (Markdown Download) */}
-            <button
-              type="button"
-              onClick={handleExportMarkdown}
-              className={ACTION_BTN_CLS}
-              title={t("Export message as Markdown")}
-              aria-label={t("Export message as Markdown")}
-              data-testid="export-message-button"
-            >
-              <Download className="w-3.5 h-3.5" />
-            </button>
-
-            {/* Delete Message */}
-            {onDelete && (
-              <button
-                type="button"
-                onClick={handleDelete}
-                className="p-1.5 rounded-lg hover:bg-red-500/15 hover:text-red-400 text-[var(--txt-muted)] transition-colors touch-target cursor-pointer"
-                title={t("Delete message")}
-                aria-label={t("Delete message")}
-                data-testid="delete-message-button"
-              >
-                <Trash2 className="w-3.5 h-3.5" />
-              </button>
-            )}
           </div>
 
           {/* ══ Mobile Accessible Action Menu (Radix Dropdown, >=44x44px touch targets) ══ */}
@@ -660,7 +614,7 @@ export function MessageItem({
                   )}
 
                   {/* Regenerate (Assistant only) */}
-                  {!isUser && !message.isError && onRegenerate && (
+                  {!isUser && canRegenerateResponse(message) && onRegenerate && (
                     <DropdownMenu.Item
                       onSelect={onRegenerate}
                       className={DROPDOWN_ITEM_CLS}
@@ -706,16 +660,6 @@ export function MessageItem({
                     </>
                   )}
 
-                  {/* Safe Client-Side Export */}
-                  <DropdownMenu.Item
-                    onSelect={handleExportMarkdown}
-                    className={DROPDOWN_ITEM_CLS}
-                    data-testid="mobile-action-export"
-                  >
-                    <Download className="w-4 h-4 text-[var(--txt-muted)] shrink-0" />
-                    <span>{t("Export Markdown (.md)")}</span>
-                  </DropdownMenu.Item>
-
                   <DropdownMenu.Separator className="h-px my-1 bg-[var(--border)]" />
 
                   {/* ISO Timestamp Info Item */}
@@ -724,20 +668,6 @@ export function MessageItem({
                     <span>{new Date(message.createdAt).toISOString()}</span>
                   </div>
 
-                  {/* Delete */}
-                  {onDelete && (
-                    <>
-                      <DropdownMenu.Separator className="h-px my-1 bg-[var(--border)]" />
-                      <DropdownMenu.Item
-                        onSelect={handleDelete}
-                        className="min-h-[44px] flex items-center gap-2.5 px-3 py-2 text-xs font-medium rounded-lg cursor-pointer outline-none hover:bg-red-500/15 focus:bg-red-500/15 text-red-400 transition-colors select-none"
-                        data-testid="mobile-action-delete"
-                      >
-                        <Trash2 className="w-4 h-4 text-red-400 shrink-0" />
-                    <span>{t("Delete message")}</span>
-                      </DropdownMenu.Item>
-                    </>
-                  )}
                 </DropdownMenu.Content>
               </DropdownMenu.Portal>
             </DropdownMenu.Root>

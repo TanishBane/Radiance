@@ -31,7 +31,6 @@ describe("ChatWorkspace Component (Inference & Error States)", () => {
     onRetry: vi.fn(),
     onRegenerate: vi.fn(),
     onEditMessage: vi.fn(),
-    onDeleteMessage: vi.fn(),
     onFeedback: vi.fn(),
   };
 
@@ -375,9 +374,8 @@ describe("ChatWorkspace Component (Inference & Error States)", () => {
       expect(onFeedbackMock).toHaveBeenCalledWith("asst_msg_1", "positive");
     });
 
-    it("routes onEditMessage and onDeleteMessage to user MessageItem", () => {
+    it("routes onEditMessage to user MessageItem without exposing deletion", () => {
       const onEditMock = vi.fn();
-      const onDeleteMock = vi.fn();
       const messages: ChatMessage[] = [
         {
           id: "user_msg_1",
@@ -392,7 +390,6 @@ describe("ChatWorkspace Component (Inference & Error States)", () => {
           {...defaultProps}
           messages={messages}
           onEditMessage={onEditMock}
-          onDeleteMessage={onDeleteMock}
         />
       );
 
@@ -406,10 +403,7 @@ describe("ChatWorkspace Component (Inference & Error States)", () => {
 
       expect(onEditMock).toHaveBeenCalledWith("user_msg_1", "Updated prompt");
 
-      // Delete
-      const deleteBtn = screen.getByTestId("delete-message-button");
-      fireEvent.click(deleteBtn);
-      expect(onDeleteMock).toHaveBeenCalledWith("user_msg_1");
+      expect(screen.queryByTestId("delete-message-button")).toBeNull();
     });
   });
 });

@@ -253,33 +253,6 @@ export function useChatSession(language: UiLanguage = "en"): UseChatSessionRetur
     [refreshFollowUps]
   );
 
-  const deleteMessage = useCallback(async (messageId: string): Promise<void> => {
-    const current = messagesRef.current;
-    const nextMessages = current.filter((m) => m.id !== messageId);
-    messagesRef.current = nextMessages;
-    setMessages(nextMessages);
-    setActiveFollowUps([]);
-    followUpContextRef.current = null;
-    followUpRequestIdRef.current += 1;
-
-    const convId = activeConvRef.current;
-    if (!convId) return;
-
-    const existingConv =
-      conversationsRef.current.find((c) => c.id === convId) ||
-      (await conversationService.get(convId));
-    if (!existingConv) return;
-
-    const updatedConv: Conversation = {
-      ...existingConv,
-      updatedAt: Date.now(),
-      messages: nextMessages,
-    };
-
-    setConversations((prev) => prev.map((c) => (c.id === convId ? updatedConv : c)));
-    await conversationService.save(updatedConv);
-  }, []);
-
   const editUserMessage = useCallback(
     async (messageId: string, newContent: string): Promise<ChatMessage[]> => {
       const current = messagesRef.current;
@@ -373,7 +346,6 @@ export function useChatSession(language: UiLanguage = "en"): UseChatSessionRetur
     deleteAllConversations,
     appendUserMessage,
     appendAssistantMessage,
-    deleteMessage,
     editUserMessage,
     setMessageFeedback,
     setConversations,

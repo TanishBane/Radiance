@@ -151,7 +151,6 @@ describe("Milestone 3 Challenger 2: Workspace Lifecycle, TTFT & Session Contamin
       onRetry: vi.fn(),
       onRegenerate: vi.fn(),
       onEditMessage: vi.fn(),
-      onDeleteMessage: vi.fn(),
       onFeedback: vi.fn(),
     };
 
@@ -1110,21 +1109,12 @@ describe("Milestone 3 Challenger 2: Workspace Lifecycle, TTFT & Session Contamin
         expect(screen.getByText("Delete this turn")).toBeDefined();
       });
 
-      // Delete the message
-      const deleteBtn = screen.getByTestId("delete-message-button");
-      await act(async () => {
-        fireEvent.click(deleteBtn);
-      });
+      expect(screen.queryByTestId("delete-message-button")).toBeNull();
 
-      // Message should be removed from view
-      await waitFor(() => {
-        expect(screen.queryByText("Delete this turn")).toBeNull();
-      });
-
-      // Storage should also be empty
+      // Individual message deletion is unavailable, so persisted history stays intact.
       const list = await conversationService.list();
       const updated = list.find((c) => c.id === "conv_delete_test");
-      expect(updated?.messages).toHaveLength(0);
+      expect(updated?.messages).toHaveLength(1);
     });
   });
 

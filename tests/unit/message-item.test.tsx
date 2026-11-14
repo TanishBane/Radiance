@@ -20,7 +20,6 @@ class MockSpeechSynthesisUtterance {
 describe("MessageItem Component & Action Menus Specifications", () => {
   const onRegenerate = vi.fn();
   const onEdit = vi.fn();
-  const onDelete = vi.fn();
   const onFeedback = vi.fn();
   const onRetry = vi.fn();
 
@@ -81,7 +80,7 @@ describe("MessageItem Component & Action Menus Specifications", () => {
   describe("1. Role Presentation & Container Geometry", () => {
     it("renders user message with YOU avatar, right alignment, and user styling", () => {
       const { container } = render(
-        <MessageItem message={baseUserMessage} onEdit={onEdit} onDelete={onDelete} />
+        <MessageItem message={baseUserMessage} onEdit={onEdit} />
       );
 
       expect(screen.getByText("YOU")).toBeDefined();
@@ -96,7 +95,6 @@ describe("MessageItem Component & Action Menus Specifications", () => {
         <MessageItem
           message={baseAssistantMessage}
           onRegenerate={onRegenerate}
-          onDelete={onDelete}
           onFeedback={onFeedback}
         />
       );
@@ -140,7 +138,6 @@ describe("MessageItem Component & Action Menus Specifications", () => {
         <MessageItem
           message={baseUserMessage}
           onEdit={onEdit}
-          onDelete={onDelete}
         />
       );
 
@@ -273,6 +270,20 @@ describe("MessageItem Component & Action Menus Specifications", () => {
       expect(screen.queryByTestId("regenerate-message-button")).toBeNull();
     });
 
+    it("allows only one regeneration and shows the saved regeneration update", () => {
+      render(
+        <MessageItem
+          message={{ ...baseAssistantMessage, regenerationCount: 1, lastRegeneratedAt: 1_700_000_000_000 }}
+          onRegenerate={onRegenerate}
+        />
+      );
+
+      expect(screen.queryByTestId("regenerate-message-button")).toBeNull();
+      fireEvent.click(screen.getByTestId("mobile-action-menu-trigger"));
+      expect(screen.queryByTestId("mobile-action-regenerate")).toBeNull();
+      expect(screen.getByTestId("regeneration-status").textContent).toBe("Regenerated once");
+    });
+
     it("renders structured error card with retry button when message.isError is true", () => {
       render(<MessageItem message={errorAssistantMessage} onRetry={onRetry} />);
 
@@ -341,30 +352,16 @@ describe("MessageItem Component & Action Menus Specifications", () => {
     });
   });
 
-  describe("7. Safe Client-Side Export & Deletion", () => {
-    it("executes client-side Markdown blob download without external network requests", () => {
-      const anchorClickSpy = vi.spyOn(HTMLAnchorElement.prototype, "click").mockImplementation(() => {});
+  describe("7. Message action policy", () => {
+    it("does not expose message download or deletion on desktop or mobile", () => {
       render(<MessageItem message={baseUserMessage} />);
 
-      const exportBtn = screen.getByTestId("export-message-button");
-      expect(exportBtn).toBeDefined();
+      expect(screen.queryByTestId("export-message-button")).toBeNull();
+      expect(screen.queryByTestId("delete-message-button")).toBeNull();
 
-      fireEvent.click(exportBtn);
-
-      expect(anchorClickSpy).toHaveBeenCalledTimes(1);
-      expect(window.URL.createObjectURL).toHaveBeenCalledTimes(1);
-      expect(window.URL.revokeObjectURL).toHaveBeenCalledTimes(1);
-      anchorClickSpy.mockRestore();
-    });
-
-    it("renders delete button and calls onDelete with message ID", () => {
-      render(<MessageItem message={baseUserMessage} onDelete={onDelete} />);
-
-      const deleteBtn = screen.getByTestId("delete-message-button");
-      expect(deleteBtn).toBeDefined();
-
-      fireEvent.click(deleteBtn);
-      expect(onDelete).toHaveBeenCalledWith(baseUserMessage.id);
+      fireEvent.click(screen.getByTestId("mobile-action-menu-trigger"));
+      expect(screen.queryByTestId("mobile-action-export")).toBeNull();
+      expect(screen.queryByTestId("mobile-action-delete")).toBeNull();
     });
   });
 

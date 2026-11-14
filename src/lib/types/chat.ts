@@ -26,6 +26,9 @@ export interface ChatMessage {
   isError?: boolean;
   errorDetails?: string;
   feedback?: FeedbackRating;
+  responseMode?: "ask" | "plan" | "build";
+  regenerationCount?: number;
+  lastRegeneratedAt?: number;
   personalization?: { memoryIds: string[]; preferenceIds: string[]; mode: "build" | "plan" | "ask" };
 }
 
@@ -122,7 +125,6 @@ export interface UseChatSessionReturn {
     tone: string,
     language?: UiLanguage
   ) => Promise<void>;
-  deleteMessage: (messageId: string) => Promise<void>;
   editUserMessage: (messageId: string, newContent: string) => Promise<ChatMessage[]>;
   setMessageFeedback: (messageId: string, feedback: FeedbackRating) => Promise<void>;
   setConversations: Dispatch<SetStateAction<Conversation[]>>;

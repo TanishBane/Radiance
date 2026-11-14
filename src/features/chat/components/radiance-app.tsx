@@ -20,6 +20,7 @@ import { matchesShortcut } from "@/features/settings/keyboard-shortcuts";
 import { addMemory, createDefaultIntelligenceProfile, INTELLIGENCE_STORAGE_KEY, loadIntelligenceProfile, saveIntelligenceProfile } from "@/features/intelligence/profile-store";
 import { buildPersonalizationContext, toProviderPersonalization } from "@/features/intelligence/retrieval";
 import type { PersonalIntelligenceProfile, PersonalizationScope } from "@/features/intelligence/profile-schema";
+import { canRegenerateResponse, markRegeneratedResponse } from "@/lib/chat/regeneration-policy";
 
 // Background & Branding
 import { AmbientCanvas } from "@/components/background/ambient-canvas";
@@ -114,27 +115,33 @@ export default function RadianceApp() {
     deleteAllConversations,
     appendUserMessage,
     appendAssistantMessage,
-    deleteMessage,
     editUserMessage,
     setMessageFeedback,
-    setMessages,
-    setConversations,
   } = useChatSession(language);
 
   // Defensive ref synchronization to eliminate stale closure bugs
   const messagesRef = useRef<ChatMessage[]>(messages);
+  const pendingRegenerationRef = useRef<{ message: ChatMessage; messages: ChatMessage[]; conversationId: string | null } | null>(null);
   useEffect(() => {
     messagesRef.current = messages;
   }, [messages]);
 
   const handleStreamComplete = useCallback(
     (assistantMsg: ChatMessage) => {
+      const pendingRegeneration = pendingRegenerationRef.current;
+      if (pendingRegeneration) {
+        pendingRegenerationRef.current = null;
+        if (pendingRegeneration.conversationId !== activeConvId) return;
+        const updatedMessage = markRegeneratedResponse(pendingRegeneration.message, assistantMsg);
+        appendAssistantMessage(updatedMessage, pendingRegeneration.messages, tone, language);
+        return;
+      }
       if (messagesRef.current.length === 0) {
         return;
       }
-      appendAssistantMessage(assistantMsg, messagesRef.current, tone);
+      appendAssistantMessage({ ...assistantMsg, responseMode: assistantMsg.responseMode ?? "ask" }, messagesRef.current, tone, language);
     },
-    [appendAssistantMessage, tone]
+    [activeConvId, appendAssistantMessage, tone, language]
   );
 
   const handleStreamError = useCallback((error: Error) => {
@@ -149,6 +156,9 @@ export default function RadianceApp() {
     onStreamComplete: handleStreamComplete,
     onError: handleStreamError,
   });
+  const workspaceMessages = isGenerating && pendingRegenerationRef.current
+    ? messages.filter((message) => message.id !== pendingRegenerationRef.current?.message.id)
+    : messages;
 
   const selectedTheme = THEMES[theme] || THEMES.violet;
   const selectedModel = getModelById(modelId);
@@ -273,6 +283,7 @@ export default function RadianceApp() {
 
   const handleSend = useCallback(
     (text: string, attachments: Attachment[] = [], mode?: string) => {
+      pendingRegenerationRef.current = null;
       const nextMessages = appendUserMessage(text, attachments);
       send(nextMessages, undefined, mode, makePersonalizationRequest(text, mode));
     },
@@ -292,13 +303,11 @@ export default function RadianceApp() {
 
   const handleRegenerate = useCallback(
     async (messageId: string) => {
-      if (isGenerating) {
-        stop(true);
-      }
+      if (isGenerating) return;
 
       const current = messagesRef.current;
       const targetIndex = current.findIndex((m) => m.id === messageId);
-      if (targetIndex === -1) return;
+      if (targetIndex === -1 || !canRegenerateResponse(current[targetIndex])) return;
 
       // Find nearest preceding user prompt
       let userIndex = targetIndex;
@@ -308,28 +317,14 @@ export default function RadianceApp() {
       if (userIndex < 0) return;
 
       const prunedMessages = current.slice(0, userIndex + 1);
-      messagesRef.current = prunedMessages;
-      setMessages(prunedMessages);
-
-      if (activeConvId) {
-        const list = await conversationService.list();
-        const existing = list.find((c) => c.id === activeConvId);
-        if (existing) {
-          const updatedConv = {
-            ...existing,
-            updatedAt: Date.now(),
-            messages: prunedMessages,
-          };
-          await conversationService.save(updatedConv);
-          const updatedList = await conversationService.list();
-          setConversations(updatedList);
-        }
-      }
+      const originalMessage = current[targetIndex];
+      const mode = originalMessage.responseMode ?? originalMessage.personalization?.mode ?? "ask";
+      pendingRegenerationRef.current = { message: originalMessage, messages: prunedMessages, conversationId: activeConvId };
 
       const latestUserText = prunedMessages.filter((message) => message.role === "user").at(-1)?.content ?? "";
-      await send(prunedMessages, undefined, "build", makePersonalizationRequest(latestUserText, "build"));
+      await send(prunedMessages, undefined, mode, makePersonalizationRequest(latestUserText, mode));
     },
-    [isGenerating, stop, activeConvId, setMessages, setConversations, send, makePersonalizationRequest]
+    [isGenerating, activeConvId, send, makePersonalizationRequest]
   );
 
   const handleEditUserMessage = useCallback(
@@ -346,16 +341,6 @@ export default function RadianceApp() {
       }
     },
     [isGenerating, stop, editUserMessage, send, makePersonalizationRequest]
-  );
-
-  const handleDeleteMessage = useCallback(
-    async (messageId: string) => {
-      if (isGenerating) {
-        stop(true);
-      }
-      await deleteMessage(messageId);
-    },
-    [isGenerating, stop, deleteMessage]
   );
 
   const handleFeedback = useCallback(
@@ -463,7 +448,7 @@ export default function RadianceApp() {
 
         <div className="flex-1 flex flex-col min-w-0 overflow-hidden relative">
           <ChatWorkspace
-            messages={messages}
+            messages={workspaceMessages}
             conversations={conversations}
             isConversationHistoryLoaded={isConversationHistoryLoaded}
             language={language}
@@ -480,7 +465,6 @@ export default function RadianceApp() {
             enterToSend={settings.enterToSend}
             onRegenerate={handleRegenerate}
             onEditUserMessage={handleEditUserMessage}
-            onDeleteMessage={handleDeleteMessage}
             onFeedback={handleFeedback}
             onRememberMessage={handleRememberMessage}
             onOpenPersonalIntelligence={() => openSettings("personal-intelligence")}

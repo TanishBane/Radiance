@@ -165,6 +165,36 @@ describe("useChatSession Hook & Session State Specifications", () => {
       ]);
     });
 
+    it("persists regeneration count, mode, and last-updated time on the replacement answer", async () => {
+      const { result } = renderHook(() => useChatSession());
+      act(() => result.current.appendUserMessage("Plan the migration"));
+
+      await act(async () => {
+        await result.current.appendAssistantMessage(
+          {
+            id: "msg_replaced_answer",
+            role: "assistant",
+            content: "Updated plan",
+            createdAt: 200,
+            responseMode: "plan",
+            regenerationCount: 1,
+            lastRegeneratedAt: 200,
+          },
+          result.current.messages,
+          "default",
+          "en"
+        );
+      });
+
+      const saved = (await conversationService.list()).find((conversation) => conversation.id === result.current.activeConvId);
+      expect(saved?.messages[1]).toMatchObject({
+        id: "msg_replaced_answer",
+        responseMode: "plan",
+        regenerationCount: 1,
+        lastRegeneratedAt: 200,
+      });
+    });
+
     it("creates new conversation and derives title from first user message", async () => {
       const { result } = renderHook(() => useChatSession());
 
@@ -257,87 +287,6 @@ describe("useChatSession Hook & Session State Specifications", () => {
       expect(updated?.createdAt).toBe(initialCreatedAt);
       expect(updated?.pinned).toBe(true);
       expect(updated?.messages).toHaveLength(4);
-    });
-  });
-
-  describe("5. deleteMessage", () => {
-    it("deletes specified message from messages state and updates persistence", async () => {
-      const { result } = renderHook(() => useChatSession());
-
-      act(() => {
-        result.current.appendUserMessage("Question 1");
-      });
-
-      const userMsgId = result.current.messages[0].id;
-
-      const assistantMsg: ChatMessage = {
-        id: "msg_asst_to_delete",
-        role: "assistant",
-        content: "Answer 1",
-        createdAt: Date.now(),
-      };
-
-      await act(async () => {
-        await result.current.appendAssistantMessage(
-          assistantMsg,
-          result.current.messages,
-          "default",
-          "en"
-        );
-      });
-
-      expect(result.current.messages).toHaveLength(2);
-
-      // Delete assistant message
-      await act(async () => {
-        await result.current.deleteMessage("msg_asst_to_delete");
-      });
-
-      expect(result.current.messages).toHaveLength(1);
-      expect(result.current.messages[0].id).toBe(userMsgId);
-
-      // Verify persistence
-      const list = await conversationService.list();
-      const saved = list.find((c) => c.id === result.current.activeConvId);
-      expect(saved?.messages).toHaveLength(1);
-      expect(saved?.messages[0].id).toBe(userMsgId);
-    });
-
-    it("gracefully ignores non-existent message ID", async () => {
-      const { result } = renderHook(() => useChatSession());
-
-      act(() => {
-        result.current.appendUserMessage("Test query");
-      });
-
-      await act(async () => {
-        await result.current.deleteMessage("non_existent_id");
-      });
-
-      expect(result.current.messages).toHaveLength(1);
-    });
-
-    it("clears active follow-up questions upon message deletion", async () => {
-      const { result } = renderHook(() => useChatSession());
-
-      act(() => {
-        result.current.appendUserMessage("Question");
-      });
-
-      await act(async () => {
-        await result.current.appendAssistantMessage(
-          { id: "msg_a", role: "assistant", content: "Reply", createdAt: Date.now() },
-          result.current.messages,
-          "default",
-          "en"
-        );
-      });
-
-      await act(async () => {
-        await result.current.deleteMessage("msg_a");
-      });
-
-      expect(result.current.activeFollowUps).toEqual([]);
     });
   });
 

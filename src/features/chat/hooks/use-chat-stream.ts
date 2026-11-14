@@ -170,6 +170,7 @@ export function useChatStream({
           role: "assistant",
           content: accumulated || "*(No response generated)*",
           createdAt: Date.now(),
+          responseMode: lastModeRef.current as "ask" | "plan" | "build",
           ...(personalization && (personalization.memoryIds.length || personalization.preferenceIds.length) ? {
             personalization: {
               memoryIds: personalization.memoryIds,
@@ -200,6 +201,7 @@ export function useChatStream({
               role: "assistant",
               content: accumulated,
               createdAt: Date.now(),
+              responseMode: lastModeRef.current as "ask" | "plan" | "build",
               ...(lastPersonalizationRef.current && (lastPersonalizationRef.current.memoryIds.length || lastPersonalizationRef.current.preferenceIds.length) ? {
                 personalization: {
                   memoryIds: lastPersonalizationRef.current.memoryIds,

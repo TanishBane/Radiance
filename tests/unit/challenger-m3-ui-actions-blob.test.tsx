@@ -20,7 +20,6 @@ class MockSpeechSynthesisUtterance {
 describe("Milestone 3 Challenger: UI Action Matrix, Blob Export & Accessibility Stress", () => {
   const onRegenerate = vi.fn();
   const onEdit = vi.fn();
-  const onDelete = vi.fn();
   const onFeedback = vi.fn();
   const onRetry = vi.fn();
 
@@ -228,170 +227,15 @@ describe("Milestone 3 Challenger: UI Action Matrix, Blob Export & Accessibility 
   // ══════════════════════════════════════════════════════════════════════════
   // 2. SAFE CLIENT-SIDE EXPORT (MARKDOWN BLOB DOWNLOAD) STRESS
   // ══════════════════════════════════════════════════════════════════════════
-  describe("2. Safe Client-Side Export (Markdown Blob Download) Stress", () => {
-    it("creates UTF-8 markdown blob with complex multi-byte emojis and surrogate pairs", () => {
-      const emojiContent = "✨ Radiance AI 🚀\nMulti-byte: 🦄 🤖 🧠 💥 🔣 🧙‍♂️ 👩‍👩‍👦‍👦 🌐";
-      const emojiMsg: ChatMessage = {
-        ...baseAssistantMessage,
-        id: "msg_emoji_test",
-        content: emojiContent,
-      };
-
-      let capturedBlob: Blob | null = null;
-      window.URL.createObjectURL = vi.fn().mockImplementation((blob: Blob) => {
-        capturedBlob = blob;
-        return "blob:http://localhost/emoji-blob";
-      });
-
-      render(<MessageItem message={emojiMsg} />);
-      fireEvent.click(screen.getByTestId("export-message-button"));
-
-      expect(window.URL.createObjectURL).toHaveBeenCalledTimes(1);
-      expect(capturedBlob).toBeDefined();
-      expect((capturedBlob as any)?.type).toBe("text/markdown;charset=utf-8");
-      expect(window.URL.revokeObjectURL).toHaveBeenCalledWith("blob:http://localhost/emoji-blob");
-    });
-
-    it("creates markdown blob preserving complex LaTeX expressions without corruption", () => {
-      const latexContent = [
-        "# Mathematical Foundations",
-        "Inline: $E = mc^2$ and $\\frac{a}{b} = c$",
-        "Block display:",
-        "$$\\int_{-\\infty}^{\\infty} e^{-x^2} dx = \\sqrt{\\pi}$$",
-        "$$\\sum_{k=1}^n k^2 = \\frac{n(n+1)(2n+1)}{6}$$",
-      ].join("\n\n");
-
-      const latexMsg: ChatMessage = {
-        ...baseAssistantMessage,
-        id: "msg_latex_test",
-        content: latexContent,
-      };
-
-      let capturedBlob: Blob | null = null;
-      window.URL.createObjectURL = vi.fn().mockImplementation((blob: Blob) => {
-        capturedBlob = blob;
-        return "blob:http://localhost/latex-blob";
-      });
-
-      render(<MessageItem message={latexMsg} />);
-      fireEvent.click(screen.getByTestId("export-message-button"));
-
-      expect(capturedBlob).toBeDefined();
-      expect(window.URL.revokeObjectURL).toHaveBeenCalledWith("blob:http://localhost/latex-blob");
-    });
-
-    it("creates markdown blob with multi-language code fences and unescaped HTML characters", () => {
-      const complexCodeContent = [
-        "## Code Demonstration",
-        "```tsx",
-        "export function Greeter({ name }: { name: string }) {",
-        "  return <div className=\"greeting\">Hello, {name} &amp; Welcome!</div>;",
-        "}",
-        "```",
-        "```python",
-        "def query_db(filter_expr: str):",
-        "    return [item for item in items if '<script>' not in item]",
-        "```",
-      ].join("\n\n");
-
-      const codeMsg: ChatMessage = {
-        ...baseAssistantMessage,
-        id: "msg_code_export",
-        content: complexCodeContent,
-      };
-
-      const anchorClickSpy = vi.spyOn(HTMLAnchorElement.prototype, "click").mockImplementation(() => {});
-      render(<MessageItem message={codeMsg} />);
-
-      let downloadedFileName = "";
-      const appendChildSpy = vi.spyOn(document.body, "appendChild").mockImplementation((node: Node) => {
-        if ((node as HTMLAnchorElement).download) {
-          downloadedFileName = (node as HTMLAnchorElement).download;
-        }
-        return node;
-      });
-
-      fireEvent.click(screen.getByTestId("export-message-button"));
-
-      expect(downloadedFileName).toBe("radiance-message-msg_code_export.md");
-      appendChildSpy.mockRestore();
-      anchorClickSpy.mockRestore();
-    });
-
-    it("handles large text payloads (100,000+ characters) without memory leaks or UI freeze", () => {
-      const largeContent = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. ".repeat(2000); // ~116KB
-      const largeMsg: ChatMessage = {
-        ...baseAssistantMessage,
-        id: "msg_large_export",
-        content: largeContent,
-      };
-
-      const anchorClickSpy = vi.spyOn(HTMLAnchorElement.prototype, "click").mockImplementation(() => {});
-      render(<MessageItem message={largeMsg} />);
-      const startTime = performance.now();
-      fireEvent.click(screen.getByTestId("export-message-button"));
-      const duration = performance.now() - startTime;
-
-      // Ensure blob export takes < 150ms even for 100KB+ strings
-      expect(duration).toBeLessThan(150);
-      expect(window.URL.createObjectURL).toHaveBeenCalledTimes(1);
-      expect(window.URL.revokeObjectURL).toHaveBeenCalledTimes(1);
-      anchorClickSpy.mockRestore();
-    });
-
-    it("guarantees ZERO external network requests during client-side export", () => {
-      const originalFetch = global.fetch;
-      const fetchSpy = vi.fn();
-      global.fetch = fetchSpy;
-      const anchorClickSpy = vi.spyOn(HTMLAnchorElement.prototype, "click").mockImplementation(() => {});
-
+  describe("2. Message action policy", () => {
+    it("does not expose message download or delete actions", () => {
       render(<MessageItem message={baseAssistantMessage} />);
-      fireEvent.click(screen.getByTestId("export-message-button"));
 
-      expect(fetchSpy).not.toHaveBeenCalled();
-      global.fetch = originalFetch;
-      anchorClickSpy.mockRestore();
-    });
-
-    it("cleans up the temporary anchor element from DOM immediately after download trigger", () => {
-      const anchorClickSpy = vi.spyOn(HTMLAnchorElement.prototype, "click").mockImplementation(() => {});
-      render(<MessageItem message={baseUserMessage} />);
-
-      const appendChildSpy = vi.spyOn(document.body, "appendChild");
-      const removeChildSpy = vi.spyOn(document.body, "removeChild");
-
-      fireEvent.click(screen.getByTestId("export-message-button"));
-
-      expect(appendChildSpy).toHaveBeenCalledTimes(1);
-      expect(removeChildSpy).toHaveBeenCalledTimes(1);
-
-      // Verify no remaining orphan anchor tags with download attributes in body
-      const lingeringAnchors = document.body.querySelectorAll("a[download]");
-      expect(lingeringAnchors.length).toBe(0);
-
-      appendChildSpy.mockRestore();
-      removeChildSpy.mockRestore();
-      anchorClickSpy.mockRestore();
-    });
-
-    it("falls back to clipboard copy if URL.createObjectURL throws an error (e.g. CSP restrictions)", () => {
-      window.URL.createObjectURL = vi.fn().mockImplementation(() => {
-        throw new Error("CSP directive 'blob:' blocked by security policy");
-      });
-
-      render(<MessageItem message={baseUserMessage} />);
-      expect(() => {
-        fireEvent.click(screen.getByTestId("export-message-button"));
-      }).not.toThrow();
-
-      // Verified fallback to clipboard
-      expect(navigator.clipboard.writeText).toHaveBeenCalledWith(baseUserMessage.content);
+      expect(screen.queryByTestId("export-message-button")).toBeNull();
+      expect(screen.queryByTestId("delete-message-button")).toBeNull();
     });
   });
 
-  // ══════════════════════════════════════════════════════════════════════════
-  // 3. INLINE PROMPT EDIT BOUNDARY & STATE STRESS
-  // ══════════════════════════════════════════════════════════════════════════
   describe("3. Inline Prompt Edit Boundary & State Stress", () => {
     it("submits modified prompt via Enter key without Shift", () => {
       render(<MessageItem message={baseUserMessage} onEdit={onEdit} />);
@@ -631,7 +475,6 @@ describe("Milestone 3 Challenger: UI Action Matrix, Blob Export & Accessibility 
           message={baseAssistantMessage}
           onRegenerate={onRegenerate}
           onFeedback={onFeedback}
-          onDelete={onDelete}
         />
       );
 
@@ -648,7 +491,6 @@ describe("Milestone 3 Challenger: UI Action Matrix, Blob Export & Accessibility 
           message={baseAssistantMessage}
           onRegenerate={onRegenerate}
           onFeedback={onFeedback}
-          onDelete={onDelete}
         />
       );
 
@@ -658,8 +500,6 @@ describe("Milestone 3 Challenger: UI Action Matrix, Blob Export & Accessibility 
         screen.getByTestId("regenerate-message-button"),
         screen.getByTestId("feedback-positive-button"),
         screen.getByTestId("feedback-negative-button"),
-        screen.getByTestId("export-message-button"),
-        screen.getByTestId("delete-message-button"),
       ];
 
       buttons.forEach((btn) => {
@@ -723,29 +563,6 @@ describe("Milestone 3 Challenger: UI Action Matrix, Blob Export & Accessibility 
   // 6. FILENAME FALLBACK & MOBILE MENU ACTION ERGONOMICS
   // ══════════════════════════════════════════════════════════════════════════
   describe("6. Filename Fallback & Mobile Menu Action Ergonomics", () => {
-    it("generates fallback timestamp filename when message.id is empty or missing", () => {
-      const noIdMsg: ChatMessage = {
-        id: "",
-        role: "user",
-        content: "Message without explicit id",
-        createdAt: 1730000000000,
-      };
-
-      render(<MessageItem message={noIdMsg} />);
-      let downloadedFileName = "";
-      const appendChildSpy = vi.spyOn(document.body, "appendChild").mockImplementation((node: Node) => {
-        if ((node as HTMLAnchorElement).download) {
-          downloadedFileName = (node as HTMLAnchorElement).download;
-        }
-        return node;
-      });
-
-      fireEvent.click(screen.getByTestId("export-message-button"));
-
-      expect(downloadedFileName).toMatch(/^radiance-message-\d+\.md$/);
-      appendChildSpy.mockRestore();
-    });
-
     it("opens mobile dropdown menu and triggers copy action from mobile item", () => {
       render(<MessageItem message={baseUserMessage} />);
 
@@ -760,19 +577,15 @@ describe("Milestone 3 Challenger: UI Action Matrix, Blob Export & Accessibility 
       expect(navigator.clipboard.writeText).toHaveBeenCalledWith(baseUserMessage.content);
     });
 
-    it("triggers mobile export action and invokes safe client blob download", () => {
+    it("does not expose message download or delete actions in the mobile menu", () => {
       render(<MessageItem message={baseUserMessage} />);
 
       const mobileTrigger = screen.getByTestId("mobile-action-menu-trigger");
       fireEvent.pointerDown(mobileTrigger, { button: 0, ctrlKey: false });
       fireEvent.keyDown(mobileTrigger, { key: "Enter" });
 
-      const mobileExport = screen.getByTestId("mobile-action-export");
-      expect(mobileExport).toBeDefined();
-
-      fireEvent.click(mobileExport);
-      expect(window.URL.createObjectURL).toHaveBeenCalledTimes(1);
-      expect(window.URL.revokeObjectURL).toHaveBeenCalledTimes(1);
+      expect(screen.queryByTestId("mobile-action-export")).toBeNull();
+      expect(screen.queryByTestId("mobile-action-delete")).toBeNull();
     });
 
     it("triggers mobile feedback positive and negative actions with proper toggling", () => {

@@ -33,7 +33,6 @@ export interface ChatWorkspaceProps {
   onRegenerate?: (messageId: string) => void;
   onEditUserMessage?: (messageId: string, newContent: string) => void;
   onEditMessage?: (messageId: string, newContent: string) => void;
-  onDeleteMessage?: (messageId: string) => void;
   onFeedback?: (messageId: string, feedback: FeedbackRating) => void;
   onRememberMessage?: (messageId: string, content: string) => void;
   onOpenPersonalIntelligence?: () => void;
@@ -126,7 +125,6 @@ export function ChatWorkspace({
   onRegenerate,
   onEditUserMessage,
   onEditMessage,
-  onDeleteMessage,
   onFeedback,
   onRememberMessage,
   onOpenPersonalIntelligence,
@@ -174,7 +172,6 @@ export function ChatWorkspace({
                   message={msg}
                   onRegenerate={onRegenerate ? () => onRegenerate(msg.id) : undefined}
                   onEdit={handleEdit ? (newText) => handleEdit(msg.id, newText) : undefined}
-                  onDelete={onDeleteMessage}
                   onFeedback={onFeedback}
                   onRemember={onRememberMessage}
                   onOpenPersonalIntelligence={onOpenPersonalIntelligence}
