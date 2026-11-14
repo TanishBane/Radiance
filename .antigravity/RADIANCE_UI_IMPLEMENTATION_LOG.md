@@ -390,3 +390,20 @@
 - Browser inspection confirmed the liquid bar at desktop and mobile sizes, its WebGL path active, and no horizontal overflow at 390px.
 - At 768px the bar compacts to icons and stays clear of top-bar controls; it hides while the desktop sidebar is expanded.
 - History and Settings navigation opened their existing views; keyboard selection worked; no browser errors were reported.
+
+
+## 2026-11-14 ? Move liquid navigation into the vertical sidebar
+
+### Changed
+
+- Removed the horizontal liquid nav from the top bar and mobile footer.
+- Moved New Chat, History, and Settings into a vertical liquid nav inside the expanded sidebar; kept Recents between History and Settings and retained the shortcut badges.
+- Added vertical indicator positioning and keyboard up/down navigation, while preserving the horizontal component mode for any other existing use.
+- Restored the existing non-liquid mobile footer controls; the mobile navigation drawer uses the vertical sidebar layout.
+
+### Verification
+
+- `pnpm.cmd typecheck`, `pnpm.cmd lint`, and `pnpm.cmd build`: passed. Type checking was rerun after the build regenerated `.next/types`.
+- Headless browser inspection at 1440?900 and 390?844 confirmed the vertical sidebar layout, Recent section order, visible mobile drawer, and no horizontal page overflow.
+- Clicking History opened the existing conversation-history dialog. No page errors were reported in the desktop browser session.
+- Automated test suites were not run.

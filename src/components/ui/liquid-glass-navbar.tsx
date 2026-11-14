@@ -18,6 +18,7 @@ export type LiquidNavItem = {
   label: string
   href?: string
   icon?: React.ReactNode
+  badge?: string
   /** the little scene the icon plays when tapped */
   fx?: NimbusFx
 }
@@ -34,6 +35,8 @@ export type LiquidNavbarProps = {
   /** soft synthesized "plip" on tap (no audio files) */
   sound?: boolean
   ariaLabel?: string
+  orientation?: "horizontal" | "vertical"
+  renderAfterItem?: (item: LiquidNavItem, index: number) => React.ReactNode
   className?: string
   style?: React.CSSProperties
 }
@@ -82,6 +85,11 @@ const NIMBUS_CSS = `
   font-family:inherit;font-weight:500;font-size:14px;line-height:1;letter-spacing:-.01em;text-decoration:none;cursor:pointer;transition:color .25s}
 .nimbus-item:hover,.nimbus-item[aria-current="page"]{color:var(--n-fg)}
 .nimbus-item:focus-visible{outline:2px solid #00A2FF;outline-offset:2px}
+.nimbus-nav[data-orientation="vertical"]{display:flex;width:100%;flex-direction:column;align-items:stretch;gap:4px;padding:5px;border-radius:16px}
+.nimbus-nav[data-orientation="vertical"] .nimbus-item{display:flex;width:100%;height:42px;justify-content:space-between;padding:0 12px;border-radius:11px;text-align:left}
+.nimbus-item-content{display:inline-flex;min-width:0;align-items:center;gap:9px}
+.nimbus-label{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.nimbus-badge{flex:none;border:1px solid rgba(255,255,255,.12);border-radius:999px;background:rgba(255,255,255,.06);padding:4px 8px;color:var(--n-fg-soft);font-size:11px;font-weight:500;line-height:1}
 .nv-ico{position:relative;display:inline-flex;flex:none}
 .nv-ico svg{transition:transform .45s cubic-bezier(.3,1.6,.5,1)}
 .nimbus-item[aria-current="page"] .nv-ico svg{transform:translateY(-1px) scale(1.08)}
@@ -110,6 +118,7 @@ const NIMBUS_CSS = `
 @keyframes nvWave{0%{transform:none}20%{transform:rotate(-15deg)}40%{transform:rotate(12deg)}60%{transform:rotate(-8deg)}80%{transform:rotate(4deg)}100%{transform:translateY(-1px) scale(1.08)}}
 .nimbus-nav[data-compact="true"] .nimbus-item{padding:0 13px}
 .nimbus-nav[data-compact="true"] .nimbus-label{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.nimbus-nav[data-orientation="vertical"][data-compact="true"] .nimbus-label{position:static;width:auto;height:auto;overflow:hidden;clip:auto;white-space:nowrap}
 @media (max-width:520px){.nimbus-nav:not([data-compact="false"]) .nimbus-item{padding:0 13px}.nimbus-nav:not([data-compact="false"]) .nimbus-label{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}}
 @media (min-width:768px) and (max-width:899px){.nimbus-nav--desktop .nimbus-item{padding:0 13px}.nimbus-nav--desktop .nimbus-label{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}}
 @media (prefers-reduced-motion:reduce){.nv-ico svg,.nv-ico::before,.nv-ico::after,.nv-door{animation:none!important;transition:none}}
@@ -118,13 +127,13 @@ const NIMBUS_CSS = `
 /* ---------- the water shader ---------- */
 const VERT = `attribute vec2 a;void main(){gl_Position=vec4(a,0.,1.);}`
 const FRAG = `precision highp float;
-uniform vec2 uRes;uniform float uDpr;uniform float uTime;uniform vec4 uPill;
+uniform vec2 uRes;uniform float uDpr;uniform float uTime;uniform vec4 uPill;uniform float uRadius;
 uniform vec4 uBlob[6];uniform float uSy[6];uniform vec4 uRip[6];uniform vec3 uMouse;uniform float uDark;uniform float uAmb;
 float sdRB(vec2 p,vec2 b,float r){vec2 q=abs(p)-b+r;return length(max(q,0.))+min(max(q.x,q.y),0.)-r;}
 float sdCap(vec2 p,vec4 B,float sy){p-=B.xy;p.y/=sy;p.x=max(abs(p.x)-B.z,0.);return(length(p)-B.w)*min(1.,sy);}
 float smin(float a,float b,float k){float h=clamp(.5+.5*(b-a)/k,0.,1.);return mix(b,a,h)-k*h*(1.-h);}
 float dropD(vec2 p){float d=1e4;for(int i=0;i<6;i++){if(uBlob[i].w>.5){d=smin(d,sdCap(p,uBlob[i],uSy[i]),13.);}}return d;}
-float pillD(vec2 p){vec2 h=uPill.zw*.5;return sdRB(p-uPill.xy-h,h,h.y);}
+float pillD(vec2 p){vec2 h=uPill.zw*.5;return sdRB(p-uPill.xy-h,h,uRadius);}
 float lens(float d,float w){float t=clamp(-d/w,0.,1.);return sqrt(1.-(1.-t)*(1.-t));}
 float waves(vec2 p){float w=0.;
  for(int i=0;i<6;i++){vec4 R=uRip[i];if(R.w>0.){float x=length(p-R.xy)-R.z*240.;w+=R.w*exp(-R.z*1.7)*sin(x*.3)*exp(-x*x/700.);}}
@@ -216,7 +225,7 @@ function initGL(canvas: HTMLCanvasElement) {
   gl.enableVertexAttribArray(loc)
   gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0)
   const u: Record<string, WebGLUniformLocation | null> = {}
-  for (const n of ["uRes", "uDpr", "uTime", "uPill", "uBlob", "uSy", "uRip", "uMouse", "uDark", "uAmb"]) u[n] = gl.getUniformLocation(p, n)
+  for (const n of ["uRes", "uDpr", "uTime", "uPill", "uRadius", "uBlob", "uSy", "uRip", "uMouse", "uDark", "uAmb"]) u[n] = gl.getUniformLocation(p, n)
   return { gl, u }
 }
 
@@ -235,6 +244,8 @@ export function LiquidNavbar({
   compact,
   sound = false,
   ariaLabel = "Main",
+  orientation = "horizontal",
+  renderAfterItem,
   className,
   style,
 }: LiquidNavbarProps) {
@@ -251,6 +262,7 @@ export function LiquidNavbar({
   const [refract, setRefract] = React.useState(false)
   const [fx, setFx] = React.useState({ i: -1, n: 0 })
   const dark = tone === "dark" ? 1 : 0
+  const vertical = orientation === "vertical"
   const darkRef = React.useRef(dark)
   darkRef.current = dark
 
@@ -269,12 +281,15 @@ export function LiquidNavbar({
       g.uniform1f(u.uDpr, dpr)
       g.uniform1f(u.uTime, s.time)
       g.uniform4f(u.uPill, PAD, PAD, s.w, s.h)
+      g.uniform1f(u.uRadius, vertical ? 11 : s.h / 2)
       const blobs = new Float32Array(24)
       const sy = new Float32Array(6).fill(1)
       const head = s.lead === 0 ? s.a : s.b, tail = s.lead === 0 ? s.b : s.a
-      blobs.set([head.x, T.cy, s.q * (1 - 0.25 * thin), T.r * (1 - 0.12 * thin), tail.x, T.cy, s.q * (1 - 0.8 * thin), T.r * (1 - 0.5 * thin)], 0)
+      blobs.set(vertical
+        ? [T.cy, head.x, s.q * (1 - 0.25 * thin), T.r * (1 - 0.12 * thin), T.cy, tail.x, s.q * (1 - 0.8 * thin), T.r * (1 - 0.5 * thin)]
+        : [head.x, T.cy, s.q * (1 - 0.25 * thin), T.r * (1 - 0.12 * thin), tail.x, T.cy, s.q * (1 - 0.8 * thin), T.r * (1 - 0.5 * thin)], 0)
       sy[0] = sy[1] = s.sy.s
-      s.sats.slice(0, 4).forEach((d, i) => blobs.set([d.x, d.y, 0, d.r], 8 + i * 4))
+      s.sats.slice(0, 4).forEach((d, i) => blobs.set(vertical ? [d.y, d.x, 0, d.r] : [d.x, d.y, 0, d.r], 8 + i * 4))
       g.uniform4fv(u.uBlob, blobs)
       g.uniform1fv(u.uSy, sy)
       const rips = new Float32Array(24)
@@ -287,12 +302,24 @@ export function LiquidNavbar({
       g.clear(g.COLOR_BUFFER_BIT)
       g.drawArrays(g.TRIANGLES, 0, 3)
     } else if (dropRef.current) {
-      const left = Math.min(s.a.x, s.b.x) - s.q - r - PAD
-      const width = sep + 2 * (s.q + r)
-      dropRef.current.style.width = `${width}px`
-      dropRef.current.style.transform = `translateX(${left}px) scaleY(${s.sy.s})`
+      if (vertical) {
+        const top = Math.min(s.a.x, s.b.x) - r - PAD
+        dropRef.current.style.width = `${s.w}px`
+        dropRef.current.style.height = `${sep + 2 * r}px`
+        dropRef.current.style.bottom = "auto"
+        dropRef.current.style.right = "auto"
+        dropRef.current.style.transform = `translateY(${top}px) scaleX(${s.sy.s})`
+      } else {
+        const left = Math.min(s.a.x, s.b.x) - s.q - r - PAD
+        const width = sep + 2 * (s.q + r)
+        dropRef.current.style.width = `${width}px`
+        dropRef.current.style.height = ""
+        dropRef.current.style.bottom = "6px"
+        dropRef.current.style.right = "auto"
+        dropRef.current.style.transform = `translateX(${left}px) scaleY(${s.sy.s})`
+      }
     }
-  }, [])
+  }, [vertical])
 
   /* ---- physics ---- */
   const step = React.useCallback((dt: number, now: number) => {
@@ -312,7 +339,8 @@ export function LiquidNavbar({
         const f = !lead && now < s.lagFrom ? 0.28 : 1
         B.v += (k * (T.x - B.x) - c * B.v) * dt * f
         B.x += B.v * dt
-        const lo = PAD + 6 + s.q + T.r - 3, hi = PAD + s.w - 6 - s.q - T.r + 3
+        const axisLength = vertical ? s.h : s.w
+        const lo = PAD + 6 + T.r - 3, hi = PAD + axisLength - 6 - T.r + 3
         if (B.x < lo || B.x > hi) {
           s.sy.v -= Math.min(Math.abs(B.v), 900) * 0.0012
           B.x = Math.max(lo, Math.min(hi, B.x))
@@ -347,8 +375,10 @@ export function LiquidNavbar({
         d.vy += (90 * (T.cy - d.y) - 7 * d.vy) * dt
         d.x += d.vx * dt
         d.y += d.vy * dt
-        d.x = Math.max(PAD + 8 + d.r, Math.min(PAD + s.w - 8 - d.r, d.x))
-        d.y = Math.max(T.cy - T.r + d.r, Math.min(T.cy + T.r - d.r, d.y))
+        const axisLength = vertical ? s.h : s.w
+        d.x = Math.max(PAD + 8 + d.r, Math.min(PAD + axisLength - 8 - d.r, d.x))
+        const crossLength = vertical ? s.w : s.h
+        d.y = Math.max(PAD + 8 + d.r, Math.min(PAD + crossLength - 8 - d.r, d.y))
         if (Math.abs(T.x - d.x) < T.q + T.r * 0.5) d.r -= dt * 26
         return d.r > 0.6
       })
@@ -356,13 +386,15 @@ export function LiquidNavbar({
     }
     if (s.moving && still) {
       s.moving = false
-      if (s.split || !s.reduce) s.rips.push({ x: T.x, y: T.cy, age: 0, amp: s.split ? 1.2 : 0.7 })
+      if (s.split || !s.reduce) s.rips.push(vertical
+        ? { x: T.cy, y: T.x, age: 0, amp: s.split ? 1.2 : 0.7 }
+        : { x: T.x, y: T.cy, age: 0, amp: s.split ? 1.2 : 0.7 })
     }
     s.rips.forEach((p) => (p.age += dt))
     s.rips = s.rips.filter((p) => p.age < 2.4)
     const target = s.mouse.on ? 1 : 0
     s.mouse.s += (target - s.mouse.s) * Math.min(1, dt * 7)
-  }, [])
+  }, [vertical])
 
   const loop = React.useCallback(() => {
     const s = st.current
@@ -394,8 +426,8 @@ export function LiquidNavbar({
     const T = s.t
     T.r = el.offsetHeight / 2
     T.q = Math.max(0, el.offsetWidth / 2 - T.r)
-    T.cy = PAD + el.offsetTop + el.offsetHeight / 2
-    const nx = PAD + el.offsetLeft + el.offsetWidth / 2
+    T.cy = PAD + (vertical ? el.offsetLeft + el.offsetWidth / 2 : el.offsetTop + el.offsetHeight / 2)
+    const nx = PAD + (vertical ? el.offsetTop + el.offsetHeight / 2 : el.offsetLeft + el.offsetWidth / 2)
     if (!s.ready) {
       s.a.x = s.b.x = nx
       s.q = T.q
@@ -420,7 +452,7 @@ export function LiquidNavbar({
     }
     draw()
     loop()
-  }, [current, draw, loop])
+  }, [current, draw, loop, vertical])
 
   React.useEffect(() => {
     setRefract(supportsRefraction())
@@ -473,9 +505,16 @@ export function LiquidNavbar({
   measureRef.current = measure
   React.useEffect(() => {
     let lastW = -1
+    let lastH = -1
     const ro = new ResizeObserver(() => {
       const w = navRef.current?.offsetWidth ?? 0
-      if (w !== lastW) { lastW = w; st.current.ready = false; measureRef.current() }
+      const h = navRef.current?.offsetHeight ?? 0
+      if (w !== lastW || h !== lastH) {
+        lastW = w
+        lastH = h
+        st.current.ready = false
+        measureRef.current()
+      }
     })
     if (navRef.current) ro.observe(navRef.current)
     return () => ro.disconnect()
@@ -531,9 +570,11 @@ export function LiquidNavbar({
   }
 
   const onKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return
+    const forwardKey = vertical ? "ArrowDown" : "ArrowRight"
+    const backwardKey = vertical ? "ArrowUp" : "ArrowLeft"
+    if (e.key !== forwardKey && e.key !== backwardKey) return
     e.preventDefault()
-    const n = (current + (e.key === "ArrowRight" ? 1 : -1) + items.length) % items.length
+    const n = (current + (e.key === forwardKey ? 1 : -1) + items.length) % items.length
     select(n)
     itemRefs.current[n]?.focus()
   }
@@ -553,6 +594,7 @@ export function LiquidNavbar({
       ref={navRef as any}
       className={["nimbus-nav", className].filter(Boolean).join(" ")}
       data-tone={tone}
+      data-orientation={orientation}
       data-gl={gl}
       data-compact={compact === undefined ? undefined : String(compact)}
       data-refract={refract ? "on" : "off"}
@@ -584,19 +626,29 @@ export function LiquidNavbar({
           onClick: () => select(i),
         }
         const content = (
-          <>
+          <span className="nimbus-item-content">
             {it.icon && (
               <span className="nv-ico" key={playing ? fx.n : 0} data-fx={playing ? kind : undefined} ref={(el) => { iconRefs.current[i] = el }}>
                 {it.icon}
               </span>
             )}
             <span className="nimbus-label">{it.label}</span>
-          </>
+          </span>
         )
-        return it.href ? (
-          <a key={it.label + i} {...(props as any)} href={it.href} aria-label={it.label} title={it.label}>{content}</a>
+        const item = it.href ? (
+          <a {...(props as any)} href={it.href} aria-label={it.label} title={it.label}>
+            {content}{it.badge && <span className="nimbus-badge">{it.badge}</span>}
+          </a>
         ) : (
-          <button key={it.label + i} {...(props as any)} type="button" aria-label={it.label} title={it.label}>{content}</button>
+          <button {...(props as any)} type="button" aria-label={it.label} title={it.label}>
+            {content}{it.badge && <span className="nimbus-badge">{it.badge}</span>}
+          </button>
+        )
+        return (
+          <React.Fragment key={it.label + i}>
+            {item}
+            {renderAfterItem?.(it, i)}
+          </React.Fragment>
         )
       })}
     </nav>
