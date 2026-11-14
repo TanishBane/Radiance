@@ -84,3 +84,11 @@ Radiance incorporates multiple architectural defense-in-depth protections:
 - **Prompt Injection Boundary ([src/lib/ai/personalization-context.ts](file:///c:/Tanixai-main/src/lib/ai/personalization-context.ts)):** Isolates user notes inside a `<RADIANCE_PERSONAL_CONTEXT_UNTRUSTED>` block with HTML-safe JSON escaping; system prompts explicitly instruct models to treat this data as untrusted reference material.
 - **Secret Filtering with Luhn Validation ([src/features/intelligence/profile-store.ts](file:///c:/Tanixai-main/src/features/intelligence/profile-store.ts)):** Automatically blocks private keys, API tokens, passwords, SSNs, and credit card numbers validated via the Luhn algorithm from being saved into personal intelligence notes.
 - **File Signature Verification ([src/lib/documents/parser.ts](file:///c:/Tanixai-main/src/lib/documents/parser.ts)):** Validates magic bytes for PDF (`%PDF`), DOCX (ZIP `PK..`), PNG (`\x89PNG`), and JPEG (`\xFF\xD8\xFF`) to prevent file extension spoofing.
+
+---
+
+## 6. Security Research & Source Inspection Authorization
+
+Under the Radiance Source-Available License, security researchers and practitioners are explicitly authorized and encouraged to inspect, compile, audit, and evaluate the Radiance source code for potential security vulnerabilities. 
+
+Responsible security research conducted in good faith according to this policy will not be considered a violation of the software license, nor will it be subject to legal action by the Radiance maintainers.

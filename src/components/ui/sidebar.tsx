@@ -1,5 +1,10 @@
 "use client";
 
+/**
+ * Portions of this file are based on Aceternity UI Sidebar by Manu Arora (@mannupaaji).
+ * Licensed under the MIT License. See THIRD_PARTY_NOTICES.md and LICENSES/MIT.txt.
+ */
+
 import { cn } from "@/lib/utils/cn";
 import React, { useState, createContext, useContext, useEffect, useRef } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";

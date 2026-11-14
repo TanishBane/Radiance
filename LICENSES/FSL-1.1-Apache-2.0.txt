@@ -1,0 +1,18 @@
+Functional Source License, Version 1.1, Apache 2.0 Change License
+(FSL-1.1-Apache-2.0)
+
+Copyright (C) 2023 Functional Software, Inc. d/b/a Sentry
+
+Canonical Terms and Information:
+https://fsl.software/
+SPDX Identifier: FSL-1.1-Apache-2.0
+
+Summary of Grant:
+Permits copying, modification, and redistribution for any purpose EXCEPT
+creating or operating a competing service or commercial solution.
+Converts automatically to Apache License 2.0 after a period of two (2) years
+from original publication.
+
+Applicable in Radiance to:
+- sentry (CLI tooling for sourcemap uploading during CI/build)
+Developer and build-time tooling only; not bundled into runtime user distribution.

@@ -180,6 +180,31 @@ Every pull request is automatically verified against these checks in GitHub Acti
 
 ---
 
+## Licensing & Contributor License Agreement (CLA)
+
+Radiance is maintained under a source-available proprietary license model. We welcome contributions from the community to improve the platform, fix defects, and expand capabilities.
+
+### 1. Contributor Copyright Retention
+When you contribute code, documentation, or design assets to Radiance, **you retain full copyright ownership of your contributions**. You do not assign your copyright to Radiance or its maintainers.
+
+### 2. Contributor License Grant
+By submitting a pull request or patch to Radiance, you agree to the terms of the [Radiance Contributor License Agreement (CLA)](CONTRIBUTOR_LICENSE_AGREEMENT.md). Under the CLA, you grant [COPYRIGHT HOLDER NAME OR LEGAL ENTITY] a perpetual, worldwide, royalty-free, non-exclusive license to use, modify, sublicense, and distribute your contribution as part of the Radiance platform under our source-available and commercial licenses.
+
+### 3. Developer Certificate of Origin (DCO)
+We encourage contributors to include a `Signed-off-by` line in their commit messages:
+```bash
+git commit -s -m "feat(chat): add streaming message retry logic"
+```
+By signing off on a commit, you certify that the contribution is your original creation and that you have the right to submit it under the project's CLA.
+
+### 4. Third-Party Code in Pull Requests
+If your pull request incorporates third-party open-source code (e.g., from MIT or Apache-2.0 licensed projects), you must:
+1. Conspicuously disclose the upstream origin and author in your pull request description.
+2. Include the original copyright and license notice header in any new or modified files.
+3. Ensure the upstream license is compatible with permissive commercial distribution (see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) and [LICENSES/](LICENSES/)).
+
+---
+
 ## Submitting a Pull Request
 
 1. **Rebase on Main:** Ensure your branch is rebased on the latest `main` branch:

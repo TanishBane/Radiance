@@ -1,21 +1,150 @@
-MIT License
+RADIANCE SOURCE-AVAILABLE COMMUNITY & COMMERCIAL LICENSE
+Version 1.0 (November 2026)
 
-Copyright (c) 2026 Tanish Bane and Radiance Contributors
+Copyright (c) 2026 [COPYRIGHT HOLDER NAME OR LEGAL ENTITY]. All Rights Reserved.
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+================================================================================
+1. PREAMBLE & PURPOSE
+================================================================================
+Radiance ("the Software") is made available under this Source-Available Community
+and Commercial License ("License") to foster public trust, enable security auditing,
+support individual personal use, and welcome community contributions, while
+protecting the original architecture, design, and commercial deployment rights
+of [COPYRIGHT HOLDER NAME OR LEGAL ENTITY] ("Licensor").
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+By viewing, accessing, downloading, copying, installing, modifying, or using the
+Software, you agree to be bound by the terms and conditions of this License. If you
+do not agree, do not access, copy, install, or use the Software.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+================================================================================
+2. DEFINITIONS
+================================================================================
+"Software" means the computer software, source code, object code, design files,
+documentation, interfaces, and algorithms developed as part of the Radiance platform,
+including any updates, bug fixes, or modifications provided by Licensor.
+
+"Original Code" means all source code, architecture, layouts, styles, and assets
+authored directly by Licensor, excluding any Third-Party Components.
+
+"Third-Party Components" means software libraries, frameworks, UI components,
+shaders, icons, fonts, templates, or media authored by third parties and
+incorporated into, bundled with, or utilized by the Software.
+
+"Commercial Use" means any use, deployment, hosting, operation, reproduction,
+or distribution of the Software, directly or indirectly, intended for or directed
+toward commercial advantage, monetary compensation, revenue generation, or
+business operations.
+
+"Personal & Non-Commercial Use" means use solely for personal, non-commercial,
+educational, research, or internal evaluation purposes, without any monetary
+charge, fee, or commercial advantage.
+
+================================================================================
+3. GRANT OF RIGHTS (PERMITTED USES)
+================================================================================
+Subject to your compliance with the terms of this License, Licensor grants you a
+non-exclusive, non-transferable, royalty-free, limited license to:
+
+(a) Public Inspection & Security Auditing: Inspect, compile, test, evaluate, and
+    audit the source code of the Software for educational, security, and verification
+    purposes;
+
+(b) Personal & Non-Commercial Self-Hosting: Install, execute, and run a single
+    private instance of the Software strictly for your own personal, non-commercial
+    use;
+
+(c) Community Contributions: Submit bug fixes, enhancements, or suggested modifications
+    to the Software via pull requests or patches, subject to the Radiance Contributor
+    License Agreement (CLA).
+
+================================================================================
+4. PROHIBITIONS & RESTRICTIONS (COMMERCIAL & REDISTRIBUTION RESTRICTIONS)
+================================================================================
+Except as expressly authorized in Section 3, you MAY NOT:
+
+(a) No Unauthorized Commercial SaaS or Managed Deployment: You may NOT host, run,
+    deploy, operate, or provide the Software (or any derivative work thereof) as a
+    managed service, hosted cloud platform, multi-tenant software-as-a-service (SaaS),
+    platform-as-a-service (PaaS), application service provider (ASP), or external API
+    service to third parties for commercial gain, revenue, or monetary compensation,
+    without an explicit, separate written commercial agreement executed with Licensor;
+
+(b) No Resale, Sublicensing, or White-Labeling: You may NOT sell, resell, lease,
+    rent, distribute, sublicense, package, or white-label the Software (or any
+    derivative work thereof) as a standalone commercial product or service;
+
+(c) No Removal of Proprietary Notices: You may NOT remove, alter, or obscure any
+    copyright, trademark, patent, or proprietary notice contained within the
+    Software, its source files, documentation, or user interfaces;
+
+(d) Notice Preservation: Any authorized copy, fork, or derivative of the Software
+    permitted under this License must retain this License and all associated
+    copyright notices in their entirety.
+
+================================================================================
+5. CARVE-OUT & EXCLUSION OF THIRD-PARTY INTELLECTUAL PROPERTY
+================================================================================
+The Software incorporates and depends upon various Third-Party Components licensed
+under permissive open-source licenses (such as MIT, Apache-2.0, BSD, ISC, and OFL-1.1).
+
+(a) Explicit Exclusion: THIS LICENSE APPLIES SOLELY TO THE ORIGINAL CODE AUTHORED
+    BY [COPYRIGHT HOLDER NAME OR LEGAL ENTITY]. IT DOES NOT APPLY TO, MODIFY,
+    SUPERSEDE, OR RESTRICT YOUR RIGHTS WITH RESPECT TO ANY THIRD-PARTY COMPONENTS.
+
+(b) Upstream License Preservation: All Third-Party Components remain governed
+    exclusively by their respective upstream licenses, as documented in
+    THIRD_PARTY_NOTICES.md and the LICENSES/ directory. Nothing in this License
+    shall be construed to limit, restrict, or condition any rights, permissions,
+    or immunities granted to you under the applicable upstream open-source licenses
+    governing those specific Third-Party Components.
+
+================================================================================
+6. TRADEMARKS & BRAND IDENTITY
+================================================================================
+This License does not grant any right, title, or interest in or to the trademarks,
+service marks, trade names, logos, or brand assets of Radiance or Licensor,
+including but not limited to the "Radiance" wordmark, the Speed-R emblem, and
+associated graphical marks. All goodwill associated with such marks shall inure
+exclusively to Licensor.
+
+================================================================================
+7. TERMINATION
+================================================================================
+This License and your rights hereunder will terminate automatically and immediately
+without notice from Licensor if you fail to comply with any provision of this License.
+Upon termination, you must immediately cease all use, reproduction, execution, and
+distribution of the Software and destroy all copies in your possession or control.
+
+================================================================================
+8. DISCLAIMER OF WARRANTIES
+================================================================================
+TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, THE SOFTWARE IS PROVIDED
+"AS IS" AND "AS AVAILABLE", WITH ALL FAULTS AND WITHOUT WARRANTY OF ANY KIND.
+LICENSOR EXPRESSLY DISCLAIMS ALL WARRANTIES, EXPRESS, IMPLIED, STATUTORY, OR
+OTHERWISE, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE, TITLE, ACCURACY, AND NON-INFRINGEMENT.
+
+LICENSOR DOES NOT WARRANT THAT THE SOFTWARE WILL BE UNINTERRUPTED, TIMELY, SECURE,
+ERROR-FREE, OR COMPATIBLE WITH ANY PARTICULAR HARDWARE, SOFTWARE, OR PLATFORM.
+YOU ASSUME SOLE RESPONSIBILITY FOR THE SELECTION, INSTALLATION, CONFIGURATION,
+AND USE OF THE SOFTWARE.
+
+================================================================================
+9. LIMITATION OF LIABILITY
+================================================================================
+IN NO EVENT AND UNDER NO LEGAL THEORY, WHETHER IN CONTRACT, TORT (INCLUDING
+NEGLIGENCE), STRICT LIABILITY, OR OTHERWISE, SHALL LICENSOR, ITS AFFILIATES,
+CONTRIBUTORS, OR LICENSORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+SPECIAL, EXEMPLARY, PUNITIVE, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA,
+OR PROFITS; BUSINESS INTERRUPTION; OR SYSTEM FAILURE) ARISING OUT OF OR IN
+CONNECTION WITH THIS LICENSE OR THE USE OR INABILITY TO USE THE SOFTWARE, EVEN
+IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
+
+================================================================================
+10. COMMERCIAL LICENSING & INQUIRIES
+================================================================================
+Organizations or entities desiring to deploy Radiance as a commercial cloud offering,
+managed SaaS service, enterprise platform, or white-labeled solution must obtain
+an enterprise commercial license. Inquiries regarding commercial licensing may be
+directed to [COPYRIGHT HOLDER NAME OR LEGAL ENTITY].

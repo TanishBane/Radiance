@@ -1,5 +1,10 @@
 "use client";
 
+/**
+ * Portions of this component are based on Voxel Wall by Mazyar Kawa (@mazyar-kawa on 21st.dev).
+ * Licensed under the MIT License. See THIRD_PARTY_NOTICES.md and LICENSES/MIT.txt.
+ */
+
 import React, { Suspense, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Canvas } from "@react-three/fiber";
 import * as THREE from "three";

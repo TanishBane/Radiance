@@ -1,5 +1,10 @@
 "use client";
 
+/**
+ * Portions of this component are based on Shiny Button by Hyperiux Vault (@hyperiux on 21st.dev).
+ * Licensed under the MIT License. See THIRD_PARTY_NOTICES.md and LICENSES/MIT.txt.
+ */
+
 import React from "react";
 import Link from "next/link";
 import { cn } from "@/lib/utils/cn";

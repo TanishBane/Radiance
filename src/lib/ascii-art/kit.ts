@@ -1,6 +1,9 @@
 /**
  * ASCII Art & Textmode Generative Canvas Toolkit
  * Core primitives for procedural grids, coherent noise, gradients, and palettes.
+ *
+ * Portions inspired by ASCII Magic (ascii-magic.com). Licensed under the MIT License.
+ * See THIRD_PARTY_NOTICES.md and LICENSES/MIT.txt.
  */
 
 function parseHex(hex: string): [number, number, number] {

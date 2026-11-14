@@ -1,0 +1,24 @@
+Blue Oak Model License
+Version 1.0.0
+https://blueoakcouncil.org/license/1.0.0
+
+Purpose
+This license gives everyone maximum permission to use these materials, free of charge.
+
+Agreement
+In order to receive this license, you have to agree to its rules. Those rules are conditions of this license. If you do not do what the rules say, you do not receive this license.
+
+Notices
+You must ensure that everyone who gets a copy of any part of these materials from you, with or without changes, also gets the text of this license or a link to https://blueoakcouncil.org/license/1.0.0.
+
+Copyleft
+The contributor licenses you to do everything with these materials that would otherwise infringe their copyright in these materials, without any requirement to share source code of your changes.
+
+Patent
+The contributor licenses you to do everything with these materials that would otherwise infringe any patent claims they can license or become able to license.
+
+Reliability
+The contributor promises they have tested these materials and reasonably believe they work, but they do not promise that the materials will meet your needs, or that they are completely free of defects.
+
+No Liability
+As far as the law allows, the contributor will not be liable for any damages related to these materials or this license, under any theory of law.

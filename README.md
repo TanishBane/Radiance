@@ -13,7 +13,7 @@
   [![Radiance CI](https://github.com/TanishBane/Radiance/actions/workflows/ci.yml/badge.svg)](https://github.com/TanishBane/Radiance/actions/workflows/ci.yml)
   [![CodeQL](https://github.com/TanishBane/Radiance/actions/workflows/codeql.yml/badge.svg)](https://github.com/TanishBane/Radiance/actions/workflows/codeql.yml)
   [![Docs](https://github.com/TanishBane/Radiance/actions/workflows/docs.yml/badge.svg)](https://github.com/TanishBane/Radiance/actions/workflows/docs.yml)
-  [![License: MIT](https://img.shields.io/badge/License-MIT-7c5cff.svg)](LICENSE)
+  [![License: Source-Available](https://img.shields.io/badge/License-Source--Available-7c5cff.svg)](LICENSE)
   [![Next.js](https://img.shields.io/badge/Next.js-15.2.1-black?logo=next.js)](https://nextjs.org/)
   [![React](https://img.shields.io/badge/React-19.0.0-20232a?logo=react)](https://react.dev/)
   [![TypeScript](https://img.shields.io/badge/TypeScript-5.8.2-3178c6?logo=typescript)](https://www.typescriptlang.org/)
@@ -372,13 +372,20 @@ Explore the in-depth documentation tree:
 We welcome contributions from the community! Please review our community standards before opening an issue or pull request:
 
 - [Contributing Guidelines](CONTRIBUTING.md)
+- [Contributor License Agreement](CONTRIBUTOR_LICENSE_AGREEMENT.md)
 - [Code of Conduct](CODE_OF_CONDUCT.md)
 - [Security Policy](SECURITY.md)
 - [Changelog](CHANGELOG.md)
 
 ---
 
-## License
+## License & Intellectual Property
 
-Radiance is open-source software licensed under the [MIT License](LICENSE).  
-Copyright &copy; 2026 Tanish Bane and Radiance Contributors.
+Radiance is source-available software licensed under the **Radiance Source-Available Community & Commercial License**.  
+Copyright &copy; 2026 [COPYRIGHT HOLDER NAME OR LEGAL ENTITY]. All Rights Reserved.
+
+- **Public Inspection & Auditing:** The source code is publicly accessible for security audits, personal learning, and community contributions.
+- **Personal & Non-Commercial Use:** Free for individual, non-commercial self-hosting and evaluation.
+- **Commercial Deployment:** Unauthorized resale, redistribution, sublicensing, white-labeling, or independent commercial SaaS deployment is strictly prohibited without an explicit commercial license.
+- **Third-Party Open Source:** All third-party libraries, UI components, fonts, and assets remain governed by their respective upstream permissive licenses. See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) and the [LICENSES/](LICENSES/) directory.
+- **Contributions:** All community contributions are subject to the [Contributor License Agreement](CONTRIBUTOR_LICENSE_AGREEMENT.md).
