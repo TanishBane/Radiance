@@ -410,6 +410,20 @@ export default function RadianceApp() {
           onClearChat={handleNewChat}
           onNewChat={handleNewChat}
           onToggleMobileMenu={() => setMobileSidebarOpen((prev) => !prev)}
+          activeNavigation={historyOpen ? "history" : settingsOpen ? "settings" : "chat"}
+          onFocusChat={() => {
+            setHistoryOpen(false);
+            setSettingsOpen(false);
+          }}
+          onToggleHistory={() => {
+            setSettingsOpen(false);
+            setHistoryOpen((previous) => !previous);
+          }}
+          onToggleSettings={() => {
+            setHistoryOpen(false);
+            openSettings("general");
+          }}
+          showDesktopNavigation={!mobileSidebarOpen}
         />
 
         {previewGradientStyle && !settingsOpen && (

@@ -374,3 +374,19 @@
 - Headless browser viewport check at 390×844: four nav items rendered, WebGL mode active, no horizontal overflow or page errors; nav stayed hidden at 1440px.
 - Keyboard ArrowRight selected History; Settings opened; New Chat action ran and the active workspace state stayed on Chat.
 - UI/UX Pro Max design-system search could not run because Python is not installed in this environment. Used the existing dark theme tokens; no dependencies were installed.
+
+## 2026-11-14 — Make liquid navigation visible and smoother on desktop
+
+### Changed
+
+- Added the same liquid navigation to the desktop top bar while preserving the recent-chat sidebar; it yields while the sidebar is expanded.
+- Smoothed the indicator with 120 Hz physics substeps, reduced spring overshoot, and a shorter, softer trailing delay.
+- Deferred WebGL setup until a navigation instance is visible, pause it when hidden, and release its context on cleanup.
+- Kept the tablet header compact so its navigation does not overlap the language or clear-chat controls.
+
+### Verification
+
+- `pnpm.cmd typecheck`, `pnpm.cmd lint`, and `pnpm.cmd build`: passed.
+- Browser inspection confirmed the liquid bar at desktop and mobile sizes, its WebGL path active, and no horizontal overflow at 390px.
+- At 768px the bar compacts to icons and stays clear of top-bar controls; it hides while the desktop sidebar is expanded.
+- History and Settings navigation opened their existing views; keyboard selection worked; no browser errors were reported.

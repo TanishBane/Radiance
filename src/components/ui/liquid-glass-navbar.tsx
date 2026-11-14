@@ -111,6 +111,7 @@ const NIMBUS_CSS = `
 .nimbus-nav[data-compact="true"] .nimbus-item{padding:0 13px}
 .nimbus-nav[data-compact="true"] .nimbus-label{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 @media (max-width:520px){.nimbus-nav:not([data-compact="false"]) .nimbus-item{padding:0 13px}.nimbus-nav:not([data-compact="false"]) .nimbus-label{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}}
+@media (min-width:768px) and (max-width:899px){.nimbus-nav--desktop .nimbus-item{padding:0 13px}.nimbus-nav--desktop .nimbus-label{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}}
 @media (prefers-reduced-motion:reduce){.nv-ico svg,.nv-ico::before,.nv-ico::after,.nv-door{animation:none!important;transition:none}}
 `
 
@@ -127,8 +128,8 @@ float pillD(vec2 p){vec2 h=uPill.zw*.5;return sdRB(p-uPill.xy-h,h,h.y);}
 float lens(float d,float w){float t=clamp(-d/w,0.,1.);return sqrt(1.-(1.-t)*(1.-t));}
 float waves(vec2 p){float w=0.;
  for(int i=0;i<6;i++){vec4 R=uRip[i];if(R.w>0.){float x=length(p-R.xy)-R.z*240.;w+=R.w*exp(-R.z*1.7)*sin(x*.3)*exp(-x*x/700.);}}
- vec2 m=p-uMouse.xy;w+=uMouse.z*3.6*exp(-dot(m,m)/1000.);
- w+=uAmb*(sin(p.x*.05+uTime*1.2)*.45+sin(p.x*.13-uTime*.85+p.y*.2)*.25);return w;}
+ vec2 m=p-uMouse.xy;w+=uMouse.z*4.4*exp(-dot(m,m)/1000.);
+ w+=uAmb*(sin(p.x*.05+uTime*1.2)*.68+sin(p.x*.13-uTime*.85+p.y*.2)*.4);return w;}
 float H(vec2 p){float dp=pillD(p);return lens(dp,uPill.w*.36)*2.4+lens(dropD(p),11.)*7.5+waves(p)*smoothstep(0.,7.,-dp);}
 float caus(vec2 p,float t){vec2 q=p;float c=0.;for(int i=0;i<3;i++){q+=vec2(sin(q.y*1.1+t),cos(q.x*1.3-t*.7))*.6;c+=1./(1.+16.*abs(sin(q.x)*sin(q.y)));}return c/3.;}
 void main(){
@@ -181,7 +182,7 @@ function makeState() {
     ready: false,
     w: 0,
     h: 0,
-    visible: true,
+    visible: false,
     reduce: false,
     raf: 0,
     last: 0,
@@ -246,7 +247,7 @@ export function LiquidNavbar({
   const iconRefs = React.useRef<(HTMLSpanElement | null)[]>([])
   const audio = React.useRef<AudioContext | null>(null)
   const st = React.useRef(makeState())
-  const [gl, setGl] = React.useState<"on" | "off">("on")
+  const [gl, setGl] = React.useState<"on" | "off">("off")
   const [refract, setRefract] = React.useState(false)
   const [fx, setFx] = React.useState({ i: -1, n: 0 })
   const dark = tone === "dark" ? 1 : 0
@@ -306,14 +307,14 @@ export function LiquidNavbar({
     } else {
       bodies.forEach((B, i) => {
         const lead = i === s.lead
-        const k = lead ? 210 : 72
-        const c = lead ? 25 : 13
-        const f = !lead && now < s.lagFrom ? 0.08 : 1
+        const k = lead ? 180 : 78
+        const c = lead ? 30 : 18
+        const f = !lead && now < s.lagFrom ? 0.28 : 1
         B.v += (k * (T.x - B.x) - c * B.v) * dt * f
         B.x += B.v * dt
         const lo = PAD + 6 + s.q + T.r - 3, hi = PAD + s.w - 6 - s.q - T.r + 3
         if (B.x < lo || B.x > hi) {
-          s.sy.v -= Math.min(Math.abs(B.v), 900) * 0.0016
+          s.sy.v -= Math.min(Math.abs(B.v), 900) * 0.0012
           B.x = Math.max(lo, Math.min(hi, B.x))
           B.v *= -0.25
         }
@@ -365,12 +366,14 @@ export function LiquidNavbar({
 
   const loop = React.useCallback(() => {
     const s = st.current
-    if (s.raf) return
+    if (!s.visible || s.raf) return
     s.last = performance.now()
     const tick = (now: number) => {
-      const dt = Math.min((now - s.last) / 1000, 1 / 30)
+      const elapsed = Math.min((now - s.last) / 1000, 1 / 30)
       s.last = now
-      step(dt, now)
+      const stepCount = Math.max(1, Math.ceil(elapsed / (1 / 120)))
+      const dt = elapsed / stepCount
+      for (let i = 0; i < stepCount; i += 1) step(dt, now)
       draw()
       const busy = s.moving || s.rips.length || s.sats.length || s.mouse.s > 0.01
       // ambient water keeps moving while visible; reduced-motion only animates on change
@@ -399,7 +402,7 @@ export function LiquidNavbar({
       s.ready = true
     } else if (Math.abs(nx - T.x) > 0.5) {
       s.lead = Math.abs(nx - s.a.x) <= Math.abs(nx - s.b.x) ? 0 : 1
-      s.lagFrom = performance.now() + 70
+      s.lagFrom = performance.now() + 34
       s.moving = true
       s.split = false
     }
@@ -415,21 +418,44 @@ export function LiquidNavbar({
         cv.style.height = `${Hh}px`
       }
     }
+    draw()
     loop()
-  }, [current, loop])
+  }, [current, draw, loop])
 
   React.useEffect(() => {
     setRefract(supportsRefraction())
     const s = st.current
     s.reduce = !!window.matchMedia?.("(prefers-reduced-motion: reduce)").matches
     const cv = canvasRef.current
-    s.glc = cv ? initGL(cv) : null
-    if (!s.glc) setGl("off")
+    const initializeGL = () => {
+      if (!cv || s.glc) return
+      s.glc = initGL(cv)
+      setGl(s.glc ? "on" : "off")
+      draw()
+    }
     const lost = (e: Event) => { e.preventDefault(); s.glc = null; setGl("off") }
     cv?.addEventListener("webglcontextlost", lost)
-    const io = new IntersectionObserver(([e]) => { s.visible = e.isIntersecting; if (s.visible) loop() })
+    const io = new IntersectionObserver(([e]) => {
+      s.visible = e.isIntersecting && document.visibilityState === "visible"
+      if (s.visible) {
+        initializeGL()
+        loop()
+      } else if (s.raf) {
+        cancelAnimationFrame(s.raf)
+        s.raf = 0
+      }
+    })
     if (navRef.current) io.observe(navRef.current)
-    const vis = () => { s.visible = document.visibilityState === "visible"; if (s.visible) loop() }
+    const vis = () => {
+      s.visible = document.visibilityState === "visible" && !!navRef.current?.getClientRects().length
+      if (s.visible) {
+        initializeGL()
+        loop()
+      } else if (s.raf) {
+        cancelAnimationFrame(s.raf)
+        s.raf = 0
+      }
+    }
     document.addEventListener("visibilitychange", vis)
     return () => {
       cv?.removeEventListener("webglcontextlost", lost)
@@ -437,8 +463,10 @@ export function LiquidNavbar({
       document.removeEventListener("visibilitychange", vis)
       cancelAnimationFrame(s.raf)
       s.raf = 0
+      s.glc?.gl.getExtension("WEBGL_lose_context")?.loseContext()
+      s.glc = null
     }
-  }, [loop])
+  }, [draw, loop])
 
   React.useLayoutEffect(() => { measure() }, [measure, items.length, compact])
   const measureRef = React.useRef(measure)
@@ -566,9 +594,9 @@ export function LiquidNavbar({
           </>
         )
         return it.href ? (
-          <a key={it.label + i} {...(props as any)} href={it.href} aria-label={it.label}>{content}</a>
+          <a key={it.label + i} {...(props as any)} href={it.href} aria-label={it.label} title={it.label}>{content}</a>
         ) : (
-          <button key={it.label + i} {...(props as any)} type="button" aria-label={it.label}>{content}</button>
+          <button key={it.label + i} {...(props as any)} type="button" aria-label={it.label} title={it.label}>{content}</button>
         )
       })}
     </nav>

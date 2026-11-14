@@ -1,10 +1,11 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { RadianceLogo } from "@/components/branding/radiance-logo";
-import { Check, ChevronDown, Languages, Trash2 } from "lucide-react";
+import { Check, ChevronDown, History, Languages, MessageSquare, Plus, Settings, Trash2 } from "lucide-react";
 import { IconMenu2 } from "@tabler/icons-react";
 import { UI_LANGUAGES, UI_LANGUAGE_LABELS, uiText, type UiLanguage } from "@/lib/i18n/ui";
+import { LiquidNavbar, type LiquidNavItem } from "@/components/ui/liquid-glass-navbar";
 
 interface TopbarProps {
   language: UiLanguage;
@@ -12,6 +13,11 @@ interface TopbarProps {
   onClearChat: () => void;
   onNewChat: () => void;
   onToggleMobileMenu?: () => void;
+  activeNavigation?: "chat" | "history" | "settings";
+  onFocusChat?: () => void;
+  onToggleHistory?: () => void;
+  onToggleSettings?: () => void;
+  showDesktopNavigation?: boolean;
 }
 
 export function Topbar({
@@ -20,10 +26,22 @@ export function Topbar({
   onClearChat,
   onNewChat,
   onToggleMobileMenu,
+  activeNavigation = "chat",
+  onFocusChat = () => {},
+  onToggleHistory = () => {},
+  onToggleSettings = () => {},
+  showDesktopNavigation = false,
 }: TopbarProps) {
   const [languageMenuOpen, setLanguageMenuOpen] = useState(false);
   const languageMenuRef = useRef<HTMLDivElement>(null);
   const languageTriggerRef = useRef<HTMLButtonElement>(null);
+  const navigationItems = useMemo<LiquidNavItem[]>(() => [
+    { label: uiText(language, "Chat"), icon: <MessageSquare aria-hidden="true" />, fx: "glow" },
+    { label: uiText(language, "History"), icon: <History aria-hidden="true" />, fx: "wave" },
+    { label: uiText(language, "Start New Chat"), icon: <Plus aria-hidden="true" />, fx: "pop" },
+    { label: uiText(language, "Settings"), icon: <Settings aria-hidden="true" />, fx: "spin" },
+  ], [language]);
+  const activeNavigationIndex = activeNavigation === "history" ? 1 : activeNavigation === "settings" ? 3 : 0;
 
   useEffect(() => {
     if (!languageMenuOpen) return;
@@ -45,7 +63,7 @@ export function Topbar({
   }, [languageMenuOpen]);
 
   return (
-    <header className="sticky top-0 z-30 flex items-center justify-between gap-2 px-2.5 sm:px-4 py-2 sm:py-2.5 pt-[max(0.625rem,env(safe-area-inset-top,0px))] pl-[max(0.625rem,env(safe-area-inset-left,0px))] pr-[max(0.625rem,env(safe-area-inset-right,0px))] bg-[var(--void)]/85 backdrop-blur-xl border-b border-[var(--border)] select-none shrink-0 w-full min-h-[var(--mobile-topbar-h,52px)]">
+    <header className="sticky top-0 z-30 flex items-center justify-between gap-2 px-2.5 sm:px-4 py-2 sm:py-2.5 pt-[max(0.625rem,env(safe-area-inset-top,0px))] pl-[max(0.625rem,env(safe-area-inset-left,0px))] pr-[max(0.625rem,env(safe-area-inset-right,0px))] bg-[var(--void)]/85 backdrop-blur-xl border-b border-[var(--border)] select-none shrink-0 w-full min-h-[var(--mobile-topbar-h,52px)] md:min-h-[68px]">
       {/* Left: Mobile Menu Toggle & Desktop Context Indicator */}
       <div className="flex items-center gap-2 sm:gap-3 min-w-0">
         {/* On Mobile: Hamburger button to open sidebar drawer */}
@@ -67,6 +85,28 @@ export function Topbar({
           <RadianceLogo size="sm" onClick={onNewChat} showWordmark={false} />
         </div>
       </div>
+
+      {showDesktopNavigation && (
+        <div className="hidden md:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 items-center justify-center">
+          <LiquidNavbar
+            items={navigationItems}
+            active={activeNavigationIndex}
+            tone="dark"
+            sound={false}
+            ariaLabel={uiText(language, "Chat Navigation")}
+            className="nimbus-nav--desktop"
+            onChange={(index) => {
+              if (index === 0) onFocusChat();
+              else if (index === 1) onToggleHistory();
+              else if (index === 2) {
+                onFocusChat();
+                onNewChat();
+              }
+              else if (index === 3) onToggleSettings();
+            }}
+          />
+        </div>
+      )}
 
       {/* Right: Interface and response language & clear conversation */}
       <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
