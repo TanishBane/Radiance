@@ -83,7 +83,8 @@ export default function RadianceApp() {
   }, []);
 
   const makePersonalizationRequest = useCallback((query: string, mode?: string) => {
-    const scope: PersonalizationScope = mode === "plan" || mode === "ask" ? mode : "build";
+    const normalizedMode = mode?.toLowerCase();
+    const scope: PersonalizationScope = normalizedMode === "plan" || normalizedMode === "build" ? normalizedMode : "ask";
     const context = buildPersonalizationContext(intelligenceProfile, query, scope);
     return {
       provider: toProviderPersonalization(context),

@@ -22,12 +22,22 @@ describe("ChatComposer Component & Deduplication Controls", () => {
       expect(textarea).toBeDefined();
     });
 
+    it("defaults the composer to Ask and sends the selected mode", () => {
+      render(<ChatComposer onSend={onSend} onStop={onStop} isGenerating={false} />);
+      expect(screen.getByRole("button", { name: /Ask/ })).toBeDefined();
+
+      fireEvent.change(screen.getByPlaceholderText("Ask RADIANCE anything..."), { target: { value: "Explain this" } });
+      fireEvent.click(screen.getByTestId("send-button"));
+
+      expect(onSend).toHaveBeenCalledWith("Explain this", [], "Ask");
+    });
+
     it("opens the mode menu and allows choosing Plan, Ask, or Build", () => {
       render(<ChatComposer onSend={onSend} onStop={onStop} isGenerating={false} />);
 
-      fireEvent.click(screen.getByRole("button", { name: /Build/ }));
+      fireEvent.click(screen.getByRole("button", { name: /Ask/ }));
       expect(screen.getByRole("button", { name: /Plan/ })).toBeDefined();
-      expect(screen.getByRole("button", { name: /Ask/ })).toBeDefined();
+      expect(screen.getAllByRole("button", { name: /Ask/ }).length).toBeGreaterThan(1);
 
       fireEvent.click(screen.getByRole("button", { name: /Plan/ }));
       expect(screen.getByRole("button", { name: /Plan/ })).toBeDefined();
@@ -84,7 +94,7 @@ describe("ChatComposer Component & Deduplication Controls", () => {
       fireEvent.click(sendButton);
 
       expect(onSend).toHaveBeenCalledTimes(1);
-      expect(onSend).toHaveBeenCalledWith("Prompt to send", []);
+      expect(onSend).toHaveBeenCalledWith("Prompt to send", [], "Ask");
       expect((textarea as HTMLTextAreaElement).value).toBe("");
     });
 
@@ -99,7 +109,7 @@ describe("ChatComposer Component & Deduplication Controls", () => {
       fireEvent.keyDown(textarea, { key: "Enter", shiftKey: false });
 
       expect(onSend).toHaveBeenCalledTimes(1);
-      expect(onSend).toHaveBeenCalledWith("Enter message", []);
+      expect(onSend).toHaveBeenCalledWith("Enter message", [], "Ask");
       expect((textarea as HTMLTextAreaElement).value).toBe("");
     });
 
@@ -126,7 +136,7 @@ describe("ChatComposer Component & Deduplication Controls", () => {
       expect((textarea as HTMLTextAreaElement).value).toBe("Multi-line prompt");
 
       fireEvent.keyDown(textarea, { key: "Enter", ctrlKey: true, shiftKey: false });
-      expect(onSend).toHaveBeenCalledWith("Multi-line prompt", []);
+      expect(onSend).toHaveBeenCalledWith("Multi-line prompt", [], "Ask");
     });
   });
 
@@ -188,7 +198,7 @@ describe("ChatComposer Component & Deduplication Controls", () => {
       });
 
       expect(onSend).toHaveBeenCalledTimes(1);
-      expect(onSend).toHaveBeenCalledWith("Confirmed text", []);
+      expect(onSend).toHaveBeenCalledWith("Confirmed text", [], "Ask");
     });
   });
 
@@ -245,7 +255,7 @@ describe("ChatComposer Component & Deduplication Controls", () => {
       });
 
       expect(onSend).toHaveBeenCalledTimes(1);
-      expect(onSend).toHaveBeenCalledWith("Double click test", []);
+      expect(onSend).toHaveBeenCalledWith("Double click test", [], "Ask");
     });
 
     it("drops rapid double Enter keypresses, calling onSend exactly once", () => {
@@ -263,7 +273,7 @@ describe("ChatComposer Component & Deduplication Controls", () => {
       });
 
       expect(onSend).toHaveBeenCalledTimes(1);
-      expect(onSend).toHaveBeenCalledWith("Double enter test", []);
+      expect(onSend).toHaveBeenCalledWith("Double enter test", [], "Ask");
     });
   });
 

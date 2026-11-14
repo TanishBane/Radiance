@@ -343,7 +343,7 @@ describe("Milestone 2 Challenger: Concurrency, Truncation & Session State", () =
       });
 
       expect(onSend).toHaveBeenCalledTimes(1);
-      expect(onSend).toHaveBeenCalledWith("Rapid double click message", []);
+      expect(onSend).toHaveBeenCalledWith("Rapid double click message", [], "Ask");
     });
 
     it("drops 10 rapid spam clicks in the same execution frame, invoking onSend once", () => {
@@ -363,7 +363,7 @@ describe("Milestone 2 Challenger: Concurrency, Truncation & Session State", () =
       });
 
       expect(onSend).toHaveBeenCalledTimes(1);
-      expect(onSend).toHaveBeenCalledWith("Spam click message", []);
+      expect(onSend).toHaveBeenCalledWith("Spam click message", [], "Ask");
     });
 
     it("drops rapid simultaneous Enter keydown and Send button click in same tick", () => {
@@ -382,7 +382,7 @@ describe("Milestone 2 Challenger: Concurrency, Truncation & Session State", () =
       });
 
       expect(onSend).toHaveBeenCalledTimes(1);
-      expect(onSend).toHaveBeenCalledWith("Enter and click simultaneously", []);
+      expect(onSend).toHaveBeenCalledWith("Enter and click simultaneously", [], "Ask");
     });
 
     it("drops rapid triple Enter keydown events in same tick", () => {
@@ -401,7 +401,7 @@ describe("Milestone 2 Challenger: Concurrency, Truncation & Session State", () =
       });
 
       expect(onSend).toHaveBeenCalledTimes(1);
-      expect(onSend).toHaveBeenCalledWith("Triple Enter spam", []);
+      expect(onSend).toHaveBeenCalledWith("Triple Enter spam", [], "Ask");
     });
 
     it("recovers submission lock after 300ms safety fallback timeout", () => {
@@ -457,7 +457,7 @@ describe("Milestone 2 Challenger: Concurrency, Truncation & Session State", () =
         fireEvent.click(sendButton);
       });
       expect(onSend).toHaveBeenCalledTimes(1);
-      expect(onSend).toHaveBeenLastCalledWith("First message", []);
+      expect(onSend).toHaveBeenLastCalledWith("First message", [], "Ask");
 
       // Second message
       fireEvent.change(textarea, { target: { value: "Second message" } });
@@ -465,7 +465,7 @@ describe("Milestone 2 Challenger: Concurrency, Truncation & Session State", () =
         fireEvent.click(sendButton);
       });
       expect(onSend).toHaveBeenCalledTimes(2);
-      expect(onSend).toHaveBeenLastCalledWith("Second message", []);
+      expect(onSend).toHaveBeenLastCalledWith("Second message", [], "Ask");
     });
 
     it("drops submissions when isGenerating is true (even on rapid Enter keydowns)", () => {
@@ -642,7 +642,7 @@ describe("Milestone 2 Challenger: Concurrency, Truncation & Session State", () =
       });
 
       expect(onSend).toHaveBeenCalledTimes(1);
-      expect(onSend).toHaveBeenCalledWith("東京", []);
+      expect(onSend).toHaveBeenCalledWith("東京", [], "Ask");
     });
 
     it("ensures Shift+Enter during or after IME composition never submits", () => {

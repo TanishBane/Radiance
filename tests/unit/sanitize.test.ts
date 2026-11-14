@@ -16,7 +16,7 @@ describe("Input Validation & Payload Sanitization", () => {
         },
       ],
       modelId: "groq-fast",
-      mode: "default",
+      mode: "ask",
       tone: "concise",
       language: "en",
     };

@@ -72,6 +72,28 @@ describe("useChatStream — Streaming Lifecycle, Buffer & Error State Specificat
     createdAt: Date.now(),
   };
 
+  it.each([
+    [undefined, "ask"],
+    ["Plan", "plan"],
+    ["Build", "build"],
+  ])("sends the normalized response mode %s as %s", async (selectedMode, expectedMode) => {
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      status: 200,
+      body: createMockStream(['0:"Mode checked"\\n']),
+    });
+    global.fetch = fetchMock;
+    const { result } = renderHook(() => useChatStream({
+      modelId: "groq-fast", tone: "default", language: "en", onStreamComplete: vi.fn(),
+    }));
+
+    await act(async () => {
+      await result.current.send([sampleUserMessage], undefined, selectedMode);
+    });
+
+    expect(JSON.parse(fetchMock.mock.calls[0][1].body).mode).toBe(expectedMode);
+  });
+
   describe("1. Persistent Line Buffering across Chunk Boundaries", () => {
     it("reassembles standard complete single-chunk SSE tokens", async () => {
       const onStreamComplete = vi.fn();

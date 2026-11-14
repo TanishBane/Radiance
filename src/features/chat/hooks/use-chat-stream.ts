@@ -52,7 +52,9 @@ export function useChatStream({
 
       lastMessagesRef.current = messagesToSend;
       lastModelIdRef.current = overrideModelId;
-      lastModeRef.current = overrideMode;
+      const requestedMode = overrideMode?.toLowerCase();
+      const mode = requestedMode === "plan" || requestedMode === "build" ? requestedMode : "ask";
+      lastModeRef.current = mode;
       lastPersonalizationRef.current = personalization;
 
       discardPartialRef.current = false;
@@ -79,7 +81,7 @@ export function useChatStream({
               attachments: m.attachments,
             })),
             modelId: overrideModelId || modelId,
-            mode: overrideMode || "build",
+            mode,
             tone,
             language,
             customInstructions,
@@ -172,7 +174,7 @@ export function useChatStream({
             personalization: {
               memoryIds: personalization.memoryIds,
               preferenceIds: personalization.preferenceIds,
-              mode: overrideMode === "plan" || overrideMode === "ask" ? overrideMode : "build",
+              mode: mode as "ask" | "plan" | "build",
             },
           } : {}),
         };
@@ -202,7 +204,7 @@ export function useChatStream({
                 personalization: {
                   memoryIds: lastPersonalizationRef.current.memoryIds,
                   preferenceIds: lastPersonalizationRef.current.preferenceIds,
-                  mode: lastModeRef.current === "plan" || lastModeRef.current === "ask" ? lastModeRef.current : "build",
+                  mode: (lastModeRef.current || "ask") as "ask" | "plan" | "build",
                 },
               } : {}),
             };

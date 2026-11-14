@@ -128,7 +128,7 @@ export function ChatComposer({
   const [input, setInput] = useState("");
   const [animatedPlaceholder, setAnimatedPlaceholder] = useState(uiText(language, "Ask RADIANCE anything..."));
   const [attachments, setAttachments] = useState<Attachment[]>([]);
-  const [mode, setMode] = useState<ComposerMode>("Build");
+  const [mode, setMode] = useState<ComposerMode>("Ask");
   const [modeMenuOpen, setModeMenuOpen] = useState(false);
 
   const [modelMenuOpen, setModelMenuOpen] = useState(false);

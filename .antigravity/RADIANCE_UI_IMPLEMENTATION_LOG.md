@@ -452,3 +452,17 @@
 
 - A focused Playwright browser check submitted a Japanese message, confirmed a Japanese follow-up, switched the same chat to English, and confirmed the refreshed English follow-up. The intercepted API requests carried `ja` then `en`.
 - `pnpm.cmd typecheck`, `pnpm.cmd lint`, and `pnpm.cmd build` were run for the implementation.
+
+## 2026-11-14 — Make Ask the default and enforce response modes
+
+### Changed
+
+- Set the composer and chat API defaults to Ask. The API now accepts only `ask`, `plan`, and `build`, normalizing the composer labels before sending them.
+- Replaced the short mode hints with distinct response contracts: Ask gives a direct explanation; Plan returns prioritized phases, dependencies, trade-offs, risks, and success criteria; Build completes the requested deliverable and reports relevant verification honestly.
+- Aligned personalization scope and message metadata with the selected mode, including the capitalized labels sent by the composer.
+
+### Verification
+
+- Targeted unit tests: 139 passed across 8 files, including composer defaults, request mode normalization, API validation, and distinct system prompts.
+- `pnpm.cmd typecheck`, `pnpm.cmd lint`, and `pnpm.cmd build`: passed.
+- Full unit suite: 3 unrelated existing failures remain in dynamic-theme candidate count, stale mobile language-toggle expectations, and settings-center response-language lookup; other test files passed.

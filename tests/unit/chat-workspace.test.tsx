@@ -327,7 +327,7 @@ describe("ChatWorkspace Component (Inference & Error States)", () => {
       fireEvent.change(textarea, { target: { value: "New prompt message" } });
       fireEvent.click(sendBtn);
 
-      expect(onSendMock).toHaveBeenCalledWith("New prompt message", []);
+      expect(onSendMock).toHaveBeenCalledWith("New prompt message", [], "Ask");
     });
 
     it("routes onStop to ChatComposer when isGenerating is true", () => {

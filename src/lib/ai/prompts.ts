@@ -85,24 +85,23 @@ export const TONES: Record<ToneKey, ToneDefinition> = {
   },
 };
 
-export const MODES: Record<string, string> = {
-  build: "Focus on complete, production-ready, robust implementations with high craft and precision. Provide complete working code, avoid placeholders, and ensure proper typings.",
-  plan: "Focus on step-by-step strategic planning, architecture breakdown, and trade-off analysis before execution. Highlight potential bottlenecks, edge cases, and milestones.",
-  ask: "Provide clear, direct, and insightful explanations answering the user's questions with maximum conceptual clarity.",
+export const MODES: Record<"ask" | "plan" | "build", string> = {
+  ask: "Answer the user's request directly and clearly. Explain the key reasoning needed to understand the answer, calibrate detail to the question, and ask a focused clarifying question only when essential information is missing. Do not turn a straightforward question into an unsolicited plan or implementation.",
+  plan: "Act as a planning partner. Define the intended outcome, then give a prioritized sequence of practical phases or steps, prerequisites and dependencies, important choices with trade-offs, risks with mitigations, and observable success criteria. Adapt the structure to the task; keep steps actionable and scoped. Do not claim work has been performed, and do not substitute a plan for execution when the user explicitly asked you to carry out the work.",
+  build: "Act as an execution partner and complete the requested deliverable rather than only describing how to do it. For code, provide an integrated, complete solution with appropriate types, edge cases, and relevant verification; for writing or analysis, produce the requested finished artifact. State assumptions only when they affect the result, report material limitations honestly, and distinguish completed work from suggested next steps.",
 };
 
 export function composeSystemPrompt(
   toneKey: ToneKey = "default",
   language: "en" | "hi" | "es" | "fr" | "de" | "pt" | "ja" = "en",
-  mode = "default",
+  mode = "ask",
   customInstructions = ""
 ): string {
   let prompt = SYSTEM_BASE;
 
-  const modeLower = (mode || "").toLowerCase();
-  if (MODES[modeLower]) {
-    prompt += `\n\n[Mode Instruction - ${mode.toUpperCase()}]: ${MODES[modeLower]}`;
-  }
+  const modeLower = mode.toLowerCase();
+  const selectedMode = modeLower === "plan" || modeLower === "build" ? modeLower : "ask";
+  prompt += `\n\n[Mode Instruction - ${selectedMode.toUpperCase()}]: ${MODES[selectedMode]}`;
 
   const tone = TONES[toneKey];
   if (tone && tone.prompt) {

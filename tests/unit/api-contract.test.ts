@@ -2,6 +2,12 @@ import { describe, it, expect } from "vitest";
 import { ChatRequestSchema } from "@/lib/security/sanitize";
 
 describe("API Contract & Request Validation (RFC 7807 and Zod Schemas)", () => {
+  it("defaults omitted chat mode to Ask and rejects unsupported modes", () => {
+    const base = { messages: [{ role: "user", content: "Explain this." }] };
+    expect(ChatRequestSchema.safeParse(base)).toMatchObject({ success: true, data: { mode: "ask" } });
+    expect(ChatRequestSchema.safeParse({ ...base, mode: "unknown" }).success).toBe(false);
+  });
+
   it("validates valid chat payload successfully", () => {
     const payload = {
       messages: [
@@ -13,7 +19,7 @@ describe("API Contract & Request Validation (RFC 7807 and Zod Schemas)", () => {
         },
       ],
       modelId: "groq-llama-3.3-70b",
-      mode: "default",
+      mode: "ask",
       tone: "default",
       language: "en",
     };

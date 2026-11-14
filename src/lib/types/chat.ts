@@ -1,4 +1,5 @@
 import type { Dispatch, SetStateAction } from "react";
+import type { UiLanguage } from "@/lib/i18n/ui";
 
 export type Role = "user" | "assistant" | "system";
 
@@ -119,7 +120,7 @@ export interface UseChatSessionReturn {
     assistantMessage: ChatMessage,
     currentMessages: ChatMessage[],
     tone: string,
-    language?: string
+    language?: UiLanguage
   ) => Promise<void>;
   deleteMessage: (messageId: string) => Promise<void>;
   editUserMessage: (messageId: string, newContent: string) => Promise<ChatMessage[]>;

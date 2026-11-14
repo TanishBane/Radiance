@@ -189,7 +189,7 @@ export function useChatSession(language: UiLanguage = "en"): UseChatSessionRetur
       assistantMessage: ChatMessage,
       currentMessages: ChatMessage[],
       tone: string,
-      _language?: string
+      requestedLanguage?: UiLanguage
     ) => {
       const finalMessages = [...currentMessages, assistantMessage];
       messagesRef.current = finalMessages;
@@ -242,7 +242,7 @@ export function useChatSession(language: UiLanguage = "en"): UseChatSessionRetur
           userTurn: latestUserTurn,
           assistantReply: assistantMessage.content,
           tone,
-          language: currentLanguageRef.current,
+          language: requestedLanguage ?? currentLanguageRef.current,
         };
         followUpContextRef.current = context;
         await refreshFollowUps(context);

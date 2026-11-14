@@ -49,7 +49,7 @@ export const ChatRequestSchema = z.object({
     )
     .min(1, "At least one message is required"),
   modelId: z.string().default("groq-fast"),
-  mode: z.string().optional().default("default"),
+  mode: z.enum(["ask", "plan", "build"]).default("ask"),
   tone: z
     .enum([
       "default",
