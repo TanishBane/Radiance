@@ -2,13 +2,14 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { generateFollowupQuestions } from "@/lib/ai/followups";
 import { checkRateLimit, getTrustedClientIp } from "@/lib/security/rate-limiter";
+import { UI_LANGUAGES } from "@/lib/i18n/ui";
 
 export const runtime = "nodejs";
 
 const FollowupRequestSchema = z.object({
   userTurn: z.string().max(2000).optional().default(""),
   assistantReply: z.string().min(1).max(10000),
-  language: z.enum(["en", "hi", "es", "fr", "de", "pt", "ja"]).optional().default("en"),
+  language: z.enum(UI_LANGUAGES).optional().default("en"),
 });
 
 export async function POST(req: NextRequest) {

@@ -439,3 +439,16 @@
 - `pnpm.cmd typecheck`, `pnpm.cmd lint`, and `pnpm.cmd build`: passed.
 - Browser inspection at desktop and mobile widths confirmed no liquid-navigation markup, the expected sidebar and mobile drawer controls, and no horizontal overflow.
 - Automated test suites were not run.
+
+## 2026-11-14 — Keep follow-up suggestions in the selected language
+
+### Changed
+
+- Added language-specific contextual fallbacks for all seven supported interface languages so failed, rate-limited, or incomplete follow-up generation does not fall back to English.
+- Carried the active conversation turn and selected language as the follow-up context. Switching languages now refreshes the suggestions for that turn; a request ID and conversation/context checks prevent late responses from showing suggestions in a previous language or chat.
+- Shared the supported UI locale list with the follow-up API schema to keep client and server locale support aligned.
+
+### Verification
+
+- A focused Playwright browser check submitted a Japanese message, confirmed a Japanese follow-up, switched the same chat to English, and confirmed the refreshed English follow-up. The intercepted API requests carried `ja` then `en`.
+- `pnpm.cmd typecheck`, `pnpm.cmd lint`, and `pnpm.cmd build` were run for the implementation.

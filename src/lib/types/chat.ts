@@ -119,7 +119,7 @@ export interface UseChatSessionReturn {
     assistantMessage: ChatMessage,
     currentMessages: ChatMessage[],
     tone: string,
-    language: string
+    language?: string
   ) => Promise<void>;
   deleteMessage: (messageId: string) => Promise<void>;
   editUserMessage: (messageId: string, newContent: string) => Promise<ChatMessage[]>;

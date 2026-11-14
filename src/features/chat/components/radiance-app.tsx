@@ -118,7 +118,7 @@ export default function RadianceApp() {
     setMessageFeedback,
     setMessages,
     setConversations,
-  } = useChatSession();
+  } = useChatSession(language);
 
   // Defensive ref synchronization to eliminate stale closure bugs
   const messagesRef = useRef<ChatMessage[]>(messages);
@@ -131,9 +131,9 @@ export default function RadianceApp() {
       if (messagesRef.current.length === 0) {
         return;
       }
-      appendAssistantMessage(assistantMsg, messagesRef.current, tone, language);
+      appendAssistantMessage(assistantMsg, messagesRef.current, tone);
     },
-    [appendAssistantMessage, tone, language]
+    [appendAssistantMessage, tone]
   );
 
   const handleStreamError = useCallback((error: Error) => {

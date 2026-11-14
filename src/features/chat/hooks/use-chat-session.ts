@@ -12,10 +12,19 @@ import {
 } from "@/lib/types/chat";
 import { conversationService } from "@/lib/db/conversations";
 import { generateFollowUpQuestions } from "@/lib/ai/followups";
+import type { UiLanguage } from "@/lib/i18n/ui";
 
 const MAX_DISPLAYED_FOLLOW_UPS = 2;
 
-export function useChatSession(): UseChatSessionReturn {
+interface FollowUpContext {
+  conversationId: string;
+  userTurn: string;
+  assistantReply: string;
+  tone: string;
+  language: UiLanguage;
+}
+
+export function useChatSession(language: UiLanguage = "en"): UseChatSessionReturn {
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [activeConvId, setActiveConvId] = useState<string | null>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -24,6 +33,40 @@ export function useChatSession(): UseChatSessionReturn {
   const activeConvRef = useRef<string | null>(null);
   const messagesRef = useRef<ChatMessage[]>([]);
   const conversationsRef = useRef<Conversation[]>([]);
+  const followUpContextRef = useRef<FollowUpContext | null>(null);
+  const followUpRequestIdRef = useRef(0);
+  const currentLanguageRef = useRef(language);
+  const previousLanguageRef = useRef(language);
+  currentLanguageRef.current = language;
+
+  const refreshFollowUps = useCallback(async (context: FollowUpContext) => {
+    const requestId = ++followUpRequestIdRef.current;
+    const questions = await generateFollowUpQuestions(
+      context.assistantReply,
+      context.tone,
+      context.language,
+      context.userTurn
+    );
+    if (
+      requestId !== followUpRequestIdRef.current ||
+      followUpContextRef.current !== context ||
+      activeConvRef.current !== context.conversationId
+    ) return;
+    setActiveFollowUps(questions.slice(0, MAX_DISPLAYED_FOLLOW_UPS));
+  }, []);
+
+  useEffect(() => {
+    if (previousLanguageRef.current === language) return;
+    previousLanguageRef.current = language;
+
+    const previousContext = followUpContextRef.current;
+    if (!previousContext || activeConvRef.current !== previousContext.conversationId) return;
+
+    const nextContext = { ...previousContext, language };
+    followUpContextRef.current = nextContext;
+    setActiveFollowUps([]);
+    void refreshFollowUps(nextContext);
+  }, [language, refreshFollowUps]);
 
   // Sync refs with state
   useEffect(() => {
@@ -62,6 +105,8 @@ export function useChatSession(): UseChatSessionReturn {
       setMessages(cached.messages);
       messagesRef.current = cached.messages;
       setActiveFollowUps([]);
+      followUpContextRef.current = null;
+      followUpRequestIdRef.current += 1;
       return;
     }
     conversationService.list().then((list) => {
@@ -72,6 +117,8 @@ export function useChatSession(): UseChatSessionReturn {
         setMessages(conv.messages);
         messagesRef.current = conv.messages;
         setActiveFollowUps([]);
+        followUpContextRef.current = null;
+        followUpRequestIdRef.current += 1;
       }
     });
   }, []);
@@ -82,6 +129,8 @@ export function useChatSession(): UseChatSessionReturn {
     setMessages([]);
     messagesRef.current = [];
     setActiveFollowUps([]);
+    followUpContextRef.current = null;
+    followUpRequestIdRef.current += 1;
   }, []);
 
   const togglePin = useCallback(async (id: string) => {
@@ -128,6 +177,8 @@ export function useChatSession(): UseChatSessionReturn {
       messagesRef.current = nextMessages;
       setMessages(nextMessages);
       setActiveFollowUps([]);
+      followUpContextRef.current = null;
+      followUpRequestIdRef.current += 1;
       return nextMessages;
     },
     []
@@ -138,7 +189,7 @@ export function useChatSession(): UseChatSessionReturn {
       assistantMessage: ChatMessage,
       currentMessages: ChatMessage[],
       tone: string,
-      language: string
+      _language?: string
     ) => {
       const finalMessages = [...currentMessages, assistantMessage];
       messagesRef.current = finalMessages;
@@ -181,23 +232,25 @@ export function useChatSession(): UseChatSessionReturn {
 
       await conversationService.save(updatedConv);
 
+      if (activeConvRef.current !== convId) return;
+
       // Generate intelligent follow-up suggestions in background
       try {
         const latestUserTurn = [...currentMessages].reverse().find((message) => message.role === "user")?.content || "";
-        const followUps = await generateFollowUpQuestions(
-          assistantMessage.content,
+        const context: FollowUpContext = {
+          conversationId: convId,
+          userTurn: latestUserTurn,
+          assistantReply: assistantMessage.content,
           tone,
-          language,
-          latestUserTurn
-        );
-        if (followUps && followUps.length > 0) {
-          setActiveFollowUps(followUps.slice(0, MAX_DISPLAYED_FOLLOW_UPS));
-        }
+          language: currentLanguageRef.current,
+        };
+        followUpContextRef.current = context;
+        await refreshFollowUps(context);
       } catch {
         // Non-critical background task failure
       }
     },
-    []
+    [refreshFollowUps]
   );
 
   const deleteMessage = useCallback(async (messageId: string): Promise<void> => {
@@ -206,6 +259,8 @@ export function useChatSession(): UseChatSessionReturn {
     messagesRef.current = nextMessages;
     setMessages(nextMessages);
     setActiveFollowUps([]);
+    followUpContextRef.current = null;
+    followUpRequestIdRef.current += 1;
 
     const convId = activeConvRef.current;
     if (!convId) return;
@@ -243,6 +298,8 @@ export function useChatSession(): UseChatSessionReturn {
       messagesRef.current = nextMessages;
       setMessages(nextMessages);
       setActiveFollowUps([]);
+      followUpContextRef.current = null;
+      followUpRequestIdRef.current += 1;
 
       const convId = activeConvRef.current;
       if (convId) {
