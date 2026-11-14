@@ -356,3 +356,21 @@
 - Impeccable layout detector: no findings.
 - Browser visual inspection was unavailable because local browser access is disabled for this chat.
 - Automated tests were not run.
+
+## 2026-11-14 — Integrate liquid-glass mobile navigation
+
+### Changed
+
+- Added the supplied Liquid Navbar component under `src/components/ui` and mounted it in the existing mobile navigation.
+- Connected its Chat, History, New Chat, and Settings actions to Radiance’s existing handlers; labels and navigation landmark text follow the selected interface language.
+- Kept the desktop sidebar and recent-chat layout unchanged. The component’s desktop-hidden mobile placement keeps its sample links out of Radiance.
+- Kept the component’s WebGL water effect, reduced-motion handling, off-screen pause, and CSS fallback; no dependencies were added.
+
+### Verification
+
+- `pnpm.cmd typecheck`: passed.
+- `pnpm.cmd lint`: passed with no warnings or errors (Next.js reports that `next lint` is deprecated).
+- `pnpm.cmd build`: passed.
+- Headless browser viewport check at 390×844: four nav items rendered, WebGL mode active, no horizontal overflow or page errors; nav stayed hidden at 1440px.
+- Keyboard ArrowRight selected History; Settings opened; New Chat action ran and the active workspace state stayed on Chat.
+- UI/UX Pro Max design-system search could not run because Python is not installed in this environment. Used the existing dark theme tokens; no dependencies were installed.
