@@ -2,7 +2,7 @@
  * RADIANCE Dynamic Color Theme System
  *
  * Automatically assigns a fresh, harmonious atmospheric color theme from
- * the 28 curated palettes on every site visit.
+ * the curated palettes on every site visit.
  *
  * Invariants:
  * - Never repeats the immediate previous theme consecutively.
@@ -13,7 +13,7 @@
  * - Allows users to manually override or shuffle themes anytime via Settings.
  */
 
-import { COLOR_THEMES, ColorTheme, ThemeId } from "@/lib/types/theme";
+import { COLOR_THEMES, CURATED_COLOR_THEME_IDS, ColorTheme, ThemeId } from "@/lib/types/theme";
 
 export const STORAGE_KEY_LAST_THEME = "radiance_last_theme";
 export const STORAGE_KEY_RECENT_THEMES = "radiance_recent_themes";
@@ -23,10 +23,10 @@ const MAX_HISTORY_LENGTH = 5;
 const DEFAULT_FALLBACK_THEME: ThemeId = "violet";
 
 /**
- * Returns all valid theme IDs registered in COLOR_THEMES.
+ * Returns user-facing theme IDs, excluding redundant legacy palettes.
  */
 export function getAvailableThemeIds(): ThemeId[] {
-  return Object.keys(COLOR_THEMES);
+  return CURATED_COLOR_THEME_IDS;
 }
 
 /**
@@ -48,7 +48,7 @@ export function selectNextDynamicTheme(
   // First filter: Exclude all recent themes if enough options remain
   const historySet = new Set([
     ...(lastThemeId ? [lastThemeId] : []),
-    ...recentHistory.filter((id) => Boolean(id && COLOR_THEMES[id])),
+    ...recentHistory.filter((id) => Boolean(id && CURATED_COLOR_THEME_IDS.includes(id))),
   ]);
 
   let candidates = allThemes.filter((id) => !historySet.has(id));

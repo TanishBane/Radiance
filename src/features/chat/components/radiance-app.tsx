@@ -51,8 +51,14 @@ export default function RadianceApp() {
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [historyOpen, setHistoryOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [previewGradientStyle, setPreviewGradientStyle] = useState<GradientStyle | null>(null);
   const [settingsSection, setSettingsSection] = useState("general");
   const [isComposerFocused, setIsComposerFocused] = useState(false);
+  const visibleGradientStyle = previewGradientStyle ?? gradientStyle;
+
+  useEffect(() => {
+    if (!settingsOpen) setPreviewGradientStyle(null);
+  }, [settingsOpen]);
 
   const handleSettingsChange = useCallback((nextSettings: RadianceSettings) => {
     const withThemeHistory = nextSettings.theme !== settings.theme
@@ -362,12 +368,12 @@ export default function RadianceApp() {
   return (
     <div className="relative flex flex-row h-screen h-[100dvh] w-full max-w-full overflow-hidden bg-[var(--void)] text-[var(--txt)] font-sans select-none">
       {/* Background Engines */}
-      {gradientStyle === "cosmic" && (
+      {visibleGradientStyle === "cosmic" && (
         <AmbientCanvas accentColor={selectedTheme.accent} />
       )}
       <BackgroundLayers
         theme={selectedTheme}
-        gradientStyle={gradientStyle}
+        gradientStyle={visibleGradientStyle}
         bgGradient={selectedTheme.bgGradient}
       />
 
@@ -483,6 +489,7 @@ export default function RadianceApp() {
         conversationCount={conversations.length}
         intelligenceProfile={intelligenceProfile}
         onIntelligenceProfileChange={handleIntelligenceProfileChange}
+        onPreviewAtmosphere={setPreviewGradientStyle}
       />
     </div>
   );

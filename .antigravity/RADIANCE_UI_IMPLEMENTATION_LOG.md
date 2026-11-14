@@ -292,3 +292,19 @@
 - TypeScript and ESLint: passed.
 - Impeccable detector initially flagged the 9px label; updated it to the documented 11px size.
 - The optional UI/UX Pro Max palette lookup could not run because Python is unavailable; existing Radiance tokens were used.
+
+## 2026-11-14 — Curate palettes and preview atmosphere engines
+
+### Changed
+
+- Curated the settings gallery and automatic palette rotation to omit Amber, Sunset, Copper, Solarpunk, and Celestial, keeping the distinct Void, Matcha Zen, and Violet Aurora palettes. Existing palette definitions remain available for previously saved preferences.
+- Changed atmosphere engine selection into a staged flow: choosing an option only changes the candidate; Preview temporarily renders it, Apply saves it, and Cancel or closing settings restores the saved background.
+- Localized the preview instructions and actions across all seven supported interface languages. During preview, the settings surface and overlay become lighter so the live background can be seen behind them.
+
+### Verification
+
+- `pnpm.cmd typecheck`: passed.
+- `pnpm.cmd lint`: passed with no warnings or errors.
+- `pnpm.cmd build`: passed after creating a missing generated `.next/static/chunks/app/api/image` directory; the initial build attempts were blocked by that missing generated directory.
+- Browser visual inspection could not be completed: the local browser session timed out connecting to `http://localhost:3000/chat`.
+- Automated tests were not run.

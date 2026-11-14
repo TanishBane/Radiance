@@ -7,7 +7,7 @@ import { ArrowLeft, Check, ChevronDown, Command, Download, RotateCcw, Search, Se
 import { APP_VERSION } from "@/lib/app-info";
 import { AVAILABLE_MODELS } from "@/lib/ai/models";
 import { TONES } from "@/lib/ai/prompts";
-import { ATMOSPHERE_ENGINES, COLOR_THEMES } from "@/lib/types/theme";
+import { ATMOSPHERE_ENGINES, CURATED_COLOR_THEMES, type GradientStyle } from "@/lib/types/theme";
 import { getMotionTransition } from "@/lib/motion/presets";
 import { KEYBOARD_SHORTCUTS } from "./keyboard-shortcuts";
 import { DEFAULT_SETTINGS } from "./settings-service";
@@ -49,6 +49,8 @@ const SEARCH_TARGETS: Array<{ label: string; section: SectionId; id: string }> =
   { label: "Application version", section: "about", id: "application-version" },
 ];
 
+const noopPreviewAtmosphere = (_engine: GradientStyle | null) => {};
+
 interface SettingsCenterProps {
   language?: UiLanguage;
   open: boolean;
@@ -62,6 +64,7 @@ interface SettingsCenterProps {
   conversationCount: number;
   intelligenceProfile: PersonalIntelligenceProfile;
   onIntelligenceProfileChange: (profile: PersonalIntelligenceProfile) => boolean;
+  onPreviewAtmosphere?: (engine: GradientStyle | null) => void;
 }
 
 function SwitchRow({
@@ -147,6 +150,7 @@ export function SettingsCenter({
   conversationCount,
   intelligenceProfile,
   onIntelligenceProfileChange,
+  onPreviewAtmosphere = noopPreviewAtmosphere,
 }: SettingsCenterProps) {
   const t = useCallback((text: string, values?: Record<string, string | number>) => uiText(language, text, values), [language]);
   const reducedMotion = useReducedMotion() ?? false;
@@ -157,6 +161,8 @@ export function SettingsCenter({
   const [confirmation, setConfirmation] = useState<Confirmation | null>(null);
   const [pending, setPending] = useState(false);
   const [instructionsDraft, setInstructionsDraft] = useState(settings.customInstructions);
+  const [pendingAtmosphere, setPendingAtmosphere] = useState<GradientStyle>(settings.gradientStyle as GradientStyle);
+  const [previewedAtmosphere, setPreviewedAtmosphere] = useState<GradientStyle | null>(null);
   const confirmButtonRef = useRef<HTMLButtonElement>(null);
   const confirmationTriggerRef = useRef<HTMLElement | null>(null);
   const previousFocusRef = useRef<HTMLElement | null>(null);
@@ -169,6 +175,17 @@ export function SettingsCenter({
   }, [open, section]);
 
   useEffect(() => setInstructionsDraft(settings.customInstructions), [settings.customInstructions]);
+
+  useEffect(() => {
+    if (!open) {
+      setPendingAtmosphere(settings.gradientStyle as GradientStyle);
+      setPreviewedAtmosphere(null);
+      onPreviewAtmosphere(null);
+      return;
+    }
+    setPendingAtmosphere(settings.gradientStyle as GradientStyle);
+    setPreviewedAtmosphere(null);
+  }, [open, settings.gradientStyle, onPreviewAtmosphere]);
 
   useEffect(() => {
     if (!pendingSearchTarget) return;
@@ -222,9 +239,9 @@ export function SettingsCenter({
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
       <Dialog.Portal>
-        <Dialog.Overlay className="radiance-dialog-overlay fixed inset-0 z-50 bg-black/70 backdrop-blur-sm" />
+        <Dialog.Overlay className={`radiance-dialog-overlay fixed inset-0 z-50 transition-colors ${previewedAtmosphere ? "bg-black/25" : "bg-black/70 backdrop-blur-sm"}`} />
         <Dialog.Content
-          className="radiance-dialog-center radiance-settings-panel fixed inset-0 z-50 flex h-[100dvh] w-full flex-col overflow-hidden border border-[var(--border)] bg-[var(--deep)] text-[var(--txt)] outline-none md:left-1/2 md:top-1/2 md:h-[min(780px,calc(100dvh-40px))] md:w-[min(1000px,calc(100vw-48px))] md:-translate-x-1/2 md:-translate-y-1/2 md:rounded-[24px] md:shadow-modal"
+          className={`radiance-dialog-center radiance-settings-panel fixed inset-0 z-50 flex h-[100dvh] w-full flex-col overflow-hidden border border-[var(--border)] ${previewedAtmosphere ? "bg-[var(--deep)]/85 backdrop-blur-md" : "bg-[var(--deep)]"} text-[var(--txt)] outline-none md:left-1/2 md:top-1/2 md:h-[min(780px,calc(100dvh-40px))] md:w-[min(1000px,calc(100vw-48px))] md:-translate-x-1/2 md:-translate-y-1/2 md:rounded-[24px] md:shadow-modal`}
           onEscapeKeyDown={(event) => {
             if (confirmation) {
               event.preventDefault();
@@ -389,7 +406,7 @@ export function SettingsCenter({
                           <p className="mt-1 text-xs text-[var(--txt-muted)]">{t("Choose from the palettes already used by Radiance surfaces and background rendering.")}</p>
                         </div>
                         <div className="grid grid-cols-3 gap-2.5 sm:grid-cols-4 lg:grid-cols-5">
-                          {Object.values(COLOR_THEMES).map((theme) => {
+                          {CURATED_COLOR_THEMES.map((theme) => {
                             const selected = settings.theme === theme.id;
                             return (
                               <button
@@ -418,11 +435,58 @@ export function SettingsCenter({
                         <SelectRow
                           id="atmosphere-engine"
                           label={t("Atmosphere engine")}
-                          description={t("Select the live background renderer. Some engines use WebGL or Canvas.")}
-                          value={settings.gradientStyle}
+                          description={t("Choose a background engine, preview it, then apply it when ready.")}
+                          value={pendingAtmosphere}
                           options={ATMOSPHERE_ENGINES.map((engine) => ({ value: engine.id, label: engine.label }))}
-                          onChange={(value) => changeSetting("gradientStyle", value as RadianceSettings["gradientStyle"])}
+                          onChange={(value) => {
+                            setPendingAtmosphere(value as GradientStyle);
+                            setPreviewedAtmosphere(null);
+                            onPreviewAtmosphere(null);
+                          }}
                         />
+                        <div className="-mt-2 flex flex-col gap-3 border-b border-[var(--border)] pb-4 sm:flex-row sm:items-center sm:justify-between">
+                          <p className="max-w-md text-xs leading-relaxed text-[var(--txt-muted)]" aria-live="polite">
+                            {previewedAtmosphere
+                              ? t("Temporary preview active. Apply to save this background.")
+                              : t("Your current background stays active until you apply a preview.")}
+                          </p>
+                          <div className="flex shrink-0 flex-wrap gap-2">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setPreviewedAtmosphere(pendingAtmosphere);
+                                onPreviewAtmosphere(pendingAtmosphere);
+                              }}
+                              className="min-h-10 rounded-xl border border-[var(--border-hover)] px-4 text-sm font-medium text-[var(--txt)] transition-colors hover:bg-[var(--surface-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
+                            >{t("Preview")}</button>
+                            {previewedAtmosphere && (
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const next = { ...settings, gradientStyle: previewedAtmosphere };
+                                  if (onChange(next)) {
+                                    setStatus(t("Saved locally"));
+                                    onPreviewAtmosphere(null);
+                                    setPreviewedAtmosphere(null);
+                                  } else {
+                                    setStatus(t("Could not save. Check browser storage and try again."));
+                                  }
+                                }}
+                                className="min-h-10 rounded-xl bg-[var(--accent)] px-4 text-sm font-medium text-white transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-b)]"
+                              >{t("Apply background")}</button>
+                            )}
+                            {previewedAtmosphere && (
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setPreviewedAtmosphere(null);
+                                  onPreviewAtmosphere(null);
+                                }}
+                                className="min-h-10 rounded-xl px-3 text-sm text-[var(--txt-dim)] transition-colors hover:bg-[var(--surface-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
+                              >{t("Cancel preview")}</button>
+                            )}
+                          </div>
+                        </div>
                         <SwitchRow
                           id="auto-theme"
                           title={t("Rotate palette on each visit")}

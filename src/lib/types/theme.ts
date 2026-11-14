@@ -568,6 +568,14 @@ export const COLOR_THEMES: Record<string, ColorTheme> = {
   },
 };
 
+/** User-facing palettes with intentionally distinct color identities. Legacy
+ * palette definitions remain available so previously saved preferences load. */
+export const CURATED_COLOR_THEME_IDS = Object.keys(COLOR_THEMES).filter(
+  (id) => !["amber", "sunset", "copper", "solarpunk", "celestial"].includes(id)
+);
+
+export const CURATED_COLOR_THEMES = CURATED_COLOR_THEME_IDS.map((id) => COLOR_THEMES[id]);
+
 export type ThemeId = string;
 export const THEMES = COLOR_THEMES;
 

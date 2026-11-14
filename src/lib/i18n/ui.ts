@@ -261,7 +261,52 @@ const surfaceTranslations: Partial<Record<UiLanguage, Record<string, string>>> =
   },
 };
 
+const atmospherePreviewTranslations: Record<UiLanguage, Record<string, string>> = {
+  en: {
+    "Choose a background engine, preview it, then apply it when ready.": "Choose a background engine, preview it, then apply it when ready.",
+    "Temporary preview active. Apply to save this background.": "Temporary preview active. Apply to save this background.",
+    "Your current background stays active until you apply a preview.": "Your current background stays active until you apply a preview.",
+    "Preview": "Preview", "Apply background": "Apply background", "Cancel preview": "Cancel preview",
+  },
+  hi: {
+    "Choose a background engine, preview it, then apply it when ready.": "बैकग्राउंड इंजन चुनें, उसका पूर्वावलोकन करें और तैयार होने पर लागू करें।",
+    "Temporary preview active. Apply to save this background.": "अस्थायी पूर्वावलोकन चालू है। इस बैकग्राउंड को सहेजने के लिए लागू करें।",
+    "Your current background stays active until you apply a preview.": "पूर्वावलोकन लागू करने तक आपका मौजूदा बैकग्राउंड सक्रिय रहेगा।",
+    "Preview": "पूर्वावलोकन", "Apply background": "बैकग्राउंड लागू करें", "Cancel preview": "पूर्वावलोकन रद्द करें",
+  },
+  es: {
+    "Choose a background engine, preview it, then apply it when ready.": "Elige un motor de fondo, previsualízalo y aplícalo cuando quieras.",
+    "Temporary preview active. Apply to save this background.": "Vista previa temporal activa. Aplica para guardar este fondo.",
+    "Your current background stays active until you apply a preview.": "El fondo actual seguirá activo hasta que apliques una vista previa.",
+    "Preview": "Vista previa", "Apply background": "Aplicar fondo", "Cancel preview": "Cancelar vista previa",
+  },
+  fr: {
+    "Choose a background engine, preview it, then apply it when ready.": "Choisissez un moteur d’arrière-plan, prévisualisez-le, puis appliquez-le.",
+    "Temporary preview active. Apply to save this background.": "Aperçu temporaire actif. Appliquez pour enregistrer cet arrière-plan.",
+    "Your current background stays active until you apply a preview.": "L’arrière-plan actuel reste actif jusqu’à l’application de l’aperçu.",
+    "Preview": "Prévisualiser", "Apply background": "Appliquer l’arrière-plan", "Cancel preview": "Annuler l’aperçu",
+  },
+  de: {
+    "Choose a background engine, preview it, then apply it when ready.": "Wähle einen Hintergrund aus, sieh ihn dir an und übernimm ihn anschließend.",
+    "Temporary preview active. Apply to save this background.": "Temporäre Vorschau aktiv. Übernehmen, um diesen Hintergrund zu speichern.",
+    "Your current background stays active until you apply a preview.": "Dein aktueller Hintergrund bleibt aktiv, bis du die Vorschau übernimmst.",
+    "Preview": "Vorschau", "Apply background": "Hintergrund übernehmen", "Cancel preview": "Vorschau abbrechen",
+  },
+  pt: {
+    "Choose a background engine, preview it, then apply it when ready.": "Escolha um mecanismo de fundo, visualize e aplique quando quiser.",
+    "Temporary preview active. Apply to save this background.": "Prévia temporária ativa. Aplique para salvar este fundo.",
+    "Your current background stays active until you apply a preview.": "O fundo atual permanece até você aplicar uma prévia.",
+    "Preview": "Visualizar", "Apply background": "Aplicar fundo", "Cancel preview": "Cancelar prévia",
+  },
+  ja: {
+    "Choose a background engine, preview it, then apply it when ready.": "背景エンジンを選び、プレビューしてから適用できます。",
+    "Temporary preview active. Apply to save this background.": "一時プレビュー中です。適用するとこの背景が保存されます。",
+    "Your current background stays active until you apply a preview.": "プレビューを適用するまで現在の背景が維持されます。",
+    "Preview": "プレビュー", "Apply background": "背景を適用", "Cancel preview": "プレビューを取り消す",
+  },
+};
+
 export function uiText(language: UiLanguage, text: string, values: Record<string, string | number> = {}): string {
-  const translated = surfaceTranslations[language]?.[text] ?? detailTranslations[language]?.[text] ?? sharedTranslations[language]?.[text] ?? translations[language]?.[text] ?? text;
+  const translated = atmospherePreviewTranslations[language]?.[text] ?? surfaceTranslations[language]?.[text] ?? detailTranslations[language]?.[text] ?? sharedTranslations[language]?.[text] ?? translations[language]?.[text] ?? text;
   return translated.replace(/\{([^}]+)\}/g, (_, key: string) => String(values[key] ?? `{${key}}`));
 }
