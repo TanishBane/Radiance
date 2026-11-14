@@ -10,21 +10,24 @@ import {
 import {
   IconPlus,
   IconHistory,
-  IconAdjustmentsHorizontal,
   IconSettings,
 } from "@tabler/icons-react";
 import { motion, useReducedMotion } from "motion/react";
 import { RadianceLogo } from "@/components/branding/radiance-logo";
 import { cn } from "@/lib/utils/cn";
 import { uiText, type UiLanguage } from "@/lib/i18n/ui";
+import type { Conversation } from "@/lib/types/chat";
 
 interface SidebarDockProps {
   language?: UiLanguage;
   onNewChat: () => void;
   onToggleHistory: () => void;
   onToggleSettings: (section?: string) => void;
+  conversations: Conversation[];
+  activeConversationId?: string;
+  onSelectConversation: (id: string) => void;
+  isConversationHistoryLoaded: boolean;
   settingsActive?: boolean;
-  activeSettingsSection?: string;
   open?: boolean;
   setOpen?: React.Dispatch<React.SetStateAction<boolean>>;
 }
@@ -34,8 +37,11 @@ export function SidebarDock({
   onNewChat,
   onToggleHistory,
   onToggleSettings,
+  conversations,
+  activeConversationId,
+  onSelectConversation,
+  isConversationHistoryLoaded,
   settingsActive = false,
-  activeSettingsSection = "general",
   open: controlledOpen,
   setOpen: controlledSetOpen,
 }: SidebarDockProps) {
@@ -43,6 +49,9 @@ export function SidebarDock({
   const open = controlledOpen !== undefined ? controlledOpen : internalOpen;
   const setOpen = controlledSetOpen !== undefined ? controlledSetOpen : setInternalOpen;
   const prefersReducedMotion = useReducedMotion() ?? false;
+  const recentConversations = [...conversations]
+    .sort((a, b) => b.updatedAt - a.updatedAt)
+    .slice(0, 10);
 
   const handleAction = (action: () => void) => {
     action();
@@ -72,27 +81,17 @@ export function SidebarDock({
       onClick: () => handleAction(onToggleHistory),
       badge: "Ctrl+L",
     },
-    {
-      label: uiText(language, "Personalization"),
-      icon: (
-        <div className="w-5 h-5 flex items-center justify-center text-[var(--txt-muted)] group-hover/sidebar:text-[var(--accent-b)] transition-colors">
-          <IconAdjustmentsHorizontal className="w-4 h-4 stroke-[1.8]" />
-        </div>
-      ),
-      onClick: () => handleAction(() => onToggleSettings("personalization")),
-      active: settingsActive && activeSettingsSection === "personalization",
-    },
-    {
-      label: uiText(language, "Settings"),
-      icon: (
-        <div className="w-5 h-5 flex items-center justify-center text-[var(--txt-muted)] group-hover/sidebar:text-[var(--accent-b)] transition-colors">
-          <IconSettings className="w-4 h-4 stroke-[1.8]" />
-        </div>
-      ),
-      onClick: () => handleAction(() => onToggleSettings("general")),
-      active: settingsActive && activeSettingsSection !== "personalization",
-    },
   ];
+  const settingsLink: SidebarLinkItem = {
+    label: uiText(language, "Settings"),
+    icon: (
+      <div className="w-5 h-5 flex items-center justify-center text-[var(--txt-muted)] group-hover/sidebar:text-[var(--accent-b)] transition-colors">
+        <IconSettings className="w-4 h-4 stroke-[1.8]" />
+      </div>
+    ),
+    onClick: () => handleAction(() => onToggleSettings("general")),
+    active: settingsActive,
+  };
 
   return (
     <Sidebar open={open} setOpen={setOpen}>
@@ -139,6 +138,53 @@ export function SidebarDock({
             {mainLinks.map((link, idx) => (
               <SidebarLink key={idx} link={link} />
             ))}
+          </div>
+
+          {open && (
+            <section aria-labelledby="sidebar-recents-heading" className="mt-5 min-w-0">
+              <h2
+                id="sidebar-recents-heading"
+                className="px-3 pb-2 text-[11px] font-semibold uppercase tracking-[0.12em] text-[var(--txt-muted)]"
+              >
+                {uiText(language, "Recents")}
+              </h2>
+              {recentConversations.length > 0 ? (
+                <ul className="flex min-w-0 flex-col gap-1">
+                  {recentConversations.map((conversation) => {
+                    const isActive = conversation.id === activeConversationId;
+                    const title = conversation.title.trim() || uiText(language, "New Chat");
+
+                    return (
+                      <li key={conversation.id} className="min-w-0">
+                        <button
+                          type="button"
+                          title={title}
+                          aria-label={title}
+                          aria-current={isActive ? "page" : undefined}
+                          onClick={() => handleAction(() => onSelectConversation(conversation.id))}
+                          className={cn(
+                            "flex min-h-9 w-full min-w-0 items-center rounded-lg border px-3 text-left text-[13px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-b)]",
+                            isActive
+                              ? "border-[var(--border-accent)] bg-[var(--accent-d)] text-[var(--txt)]"
+                              : "border-transparent text-[var(--txt-muted)] hover:border-white/[0.08] hover:bg-[var(--surface-hover)] hover:text-[var(--txt)]"
+                          )}
+                        >
+                          <span className="truncate">{title}</span>
+                        </button>
+                      </li>
+                    );
+                  })}
+                </ul>
+              ) : (
+                <p className="px-3 py-2 text-xs text-[var(--txt-muted)]">
+                  {uiText(language, isConversationHistoryLoaded ? "No recent chats yet." : "Loading chats…")}
+                </p>
+              )}
+            </section>
+          )}
+
+          <div className="mt-4 flex flex-col gap-1.5">
+            <SidebarLink link={settingsLink} />
           </div>
         </div>
 

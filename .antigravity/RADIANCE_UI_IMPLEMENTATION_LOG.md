@@ -339,3 +339,20 @@
 - `pnpm.cmd build`: passed.
 - Used the browser MCP to inspect the deployed settings flow and confirm the affected control layout; the local browser could not connect for a post-change screenshot.
 - Automated tests were not run.
+
+## 2026-11-14 — Replace sidebar personalization shortcut with recent chats
+
+### Changed
+
+- Removed the Personalization shortcut from the sidebar and placed a Recent chats list between History and Settings.
+- Show the 10 most recently updated local conversations, highlight the active chat, and open a conversation when its title is selected.
+- Localized the section heading and loading/empty states across all seven supported interface languages.
+
+### Verification
+
+- `pnpm.cmd typecheck`: passed.
+- `pnpm.cmd lint`: passed with no warnings or errors (Next.js reports that `next lint` is deprecated).
+- `pnpm.cmd build`: passed.
+- Impeccable layout detector: no findings.
+- Browser visual inspection was unavailable because local browser access is disabled for this chat.
+- Automated tests were not run.

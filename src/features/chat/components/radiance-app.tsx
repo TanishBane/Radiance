@@ -390,7 +390,10 @@ export default function RadianceApp() {
         open={mobileSidebarOpen}
         setOpen={setMobileSidebarOpen}
         settingsActive={settingsOpen}
-        activeSettingsSection={settingsSection}
+        conversations={conversations}
+        activeConversationId={activeConvId || undefined}
+        onSelectConversation={handleSelectConversation}
+        isConversationHistoryLoaded={isConversationHistoryLoaded}
         onNewChat={handleNewChat}
         onToggleHistory={() => {
           setSettingsOpen(false);

@@ -11,6 +11,16 @@ export const UI_LANGUAGE_LABELS: Record<UiLanguage, string> = {
   ja: "日本語",
 };
 
+const recentChatTranslations: Record<UiLanguage, Record<string, string>> = {
+  en: { Recents: "Recents", "No recent chats yet.": "No recent chats yet.", "Loading chats…": "Loading chats…" },
+  hi: { Recents: "हाल की चैट", "No recent chats yet.": "अभी कोई हाल की चैट नहीं है।", "Loading chats…": "चैट लोड हो रही हैं…" },
+  es: { Recents: "Recientes", "No recent chats yet.": "Aún no hay chats recientes.", "Loading chats…": "Cargando chats…" },
+  fr: { Recents: "Récents", "No recent chats yet.": "Aucune conversation récente.", "Loading chats…": "Chargement des conversations…" },
+  de: { Recents: "Zuletzt", "No recent chats yet.": "Noch keine aktuellen Chats.", "Loading chats…": "Chats werden geladen…" },
+  pt: { Recents: "Recentes", "No recent chats yet.": "Ainda não há conversas recentes.", "Loading chats…": "Carregando conversas…" },
+  ja: { Recents: "最近", "No recent chats yet.": "最近のチャットはありません。", "Loading chats…": "チャットを読み込み中…" },
+};
+
 const hindi: Record<string, string> = {
   "Translate": "भाषा",
   "English": "English",
@@ -314,6 +324,6 @@ const atmospherePreviewTranslations: Record<UiLanguage, Record<string, string>> 
 };
 
 export function uiText(language: UiLanguage, text: string, values: Record<string, string | number> = {}): string {
-  const translated = atmospherePreviewTranslations[language]?.[text] ?? surfaceTranslations[language]?.[text] ?? detailTranslations[language]?.[text] ?? sharedTranslations[language]?.[text] ?? translations[language]?.[text] ?? text;
+  const translated = recentChatTranslations[language]?.[text] ?? atmospherePreviewTranslations[language]?.[text] ?? surfaceTranslations[language]?.[text] ?? detailTranslations[language]?.[text] ?? sharedTranslations[language]?.[text] ?? translations[language]?.[text] ?? text;
   return translated.replace(/\{([^}]+)\}/g, (_, key: string) => String(values[key] ?? `{${key}}`));
 }
