@@ -324,3 +324,18 @@
 - `pnpm.cmd build`: passed.
 - The local browser could not reach the development server (`ERR_NETWORK_ACCESS_DENIED`), so a rendered screenshot and keyboard walkthrough were unavailable.
 - Automated tests were not run.
+
+## 2026-11-14 — Fix settings control overlap
+
+### Changed
+
+- Removed the negative margin that pulled the atmosphere preview actions over the engine row divider.
+- Anchored the palette rotation switch thumb to explicit inset positions so the checked state stays within its track.
+
+### Verification
+
+- `pnpm.cmd typecheck`: passed.
+- `pnpm.cmd lint`: passed with no warnings or errors.
+- `pnpm.cmd build`: passed.
+- Used the browser MCP to inspect the deployed settings flow and confirm the affected control layout; the local browser could not connect for a post-change screenshot.
+- Automated tests were not run.

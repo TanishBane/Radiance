@@ -95,7 +95,7 @@ function SwitchRow({
         onClick={() => onCheckedChange(!checked)}
         className={`relative h-7 w-12 shrink-0 rounded-full border transition-colors ${checked ? "border-[var(--accent)] bg-[var(--accent)]" : "border-[var(--border-hover)] bg-[var(--surface-hover)]"}`}
       >
-        <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow-sm transition-transform ${checked ? "translate-x-[22px]" : "translate-x-0.5"}`} />
+        <span className={`absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-white shadow-sm transition-transform ${checked ? "translate-x-6" : "translate-x-0"}`} />
       </button>
     </div>
   );
@@ -440,7 +440,7 @@ export function SettingsCenter({
                             setPendingAtmosphere(value as GradientStyle);
                           }}
                         />
-                        <div className="-mt-2 flex flex-col gap-3 border-b border-[var(--border)] pb-4 sm:flex-row sm:items-center sm:justify-between">
+                        <div className="flex flex-col gap-3 border-b border-[var(--border)] py-4 sm:flex-row sm:items-center sm:justify-between">
                           <p className="max-w-md text-xs leading-relaxed text-[var(--txt-muted)]">
                             {previewingAtmosphere
                               ? t("A temporary preview is active. Return to the chat view to apply or discard it.")
