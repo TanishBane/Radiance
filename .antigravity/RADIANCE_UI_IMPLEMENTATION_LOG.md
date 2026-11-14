@@ -424,3 +424,18 @@
 - Headless browser check at 1440?900 confirmed vertical item order, rendered gradient hover states, and no page errors or horizontal overflow.
 - At 390?844, the mobile drawer showed the same vertical gradient menu with no horizontal overflow.
 - Automated test suites were not run.
+
+
+## 2026-11-14 ? Revert liquid navigation
+
+### Changed
+
+- Restored the standard sidebar action rows and regular mobile footer navigation.
+- Kept the recent-chat list and its placement between History and Settings.
+- Removed the liquid-glass and gradient-menu components and all active references to them.
+
+### Verification
+
+- `pnpm.cmd typecheck`, `pnpm.cmd lint`, and `pnpm.cmd build`: passed.
+- Browser inspection at desktop and mobile widths confirmed no liquid-navigation markup, the expected sidebar and mobile drawer controls, and no horizontal overflow.
+- Automated test suites were not run.

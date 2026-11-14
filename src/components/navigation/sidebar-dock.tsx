@@ -17,7 +17,6 @@ import { RadianceLogo } from "@/components/branding/radiance-logo";
 import { cn } from "@/lib/utils/cn";
 import { uiText, type UiLanguage } from "@/lib/i18n/ui";
 import type { Conversation } from "@/lib/types/chat";
-import { GradientMenu, type GradientMenuItem } from "@/components/ui/gradient-menu";
 
 interface SidebarDockProps {
   language?: UiLanguage;
@@ -83,6 +82,7 @@ export function SidebarDock({
       ),
       onClick: () => handleAction(onToggleHistory),
       badge: "Ctrl+L",
+      active: historyActive,
     },
   ];
   const settingsLink: SidebarLinkItem = {
@@ -95,53 +95,6 @@ export function SidebarDock({
     onClick: () => handleAction(() => onToggleSettings("general")),
     active: settingsActive,
   };
-  const navItems: GradientMenuItem[] = [
-    { label: uiText(language, "New Chat"), icon: <IconPlus className="h-4 w-4" />, badge: "Ctrl+N", fx: "pop", gradientFrom: "#a955ff", gradientTo: "#ea51ff" },
-    { label: uiText(language, "History"), icon: <IconHistory className="h-4 w-4" />, badge: "Ctrl+L", fx: "wave", gradientFrom: "#56CCF2", gradientTo: "#2F80ED" },
-    { label: uiText(language, "Settings"), icon: <IconSettings className="h-4 w-4" />, fx: "spin", gradientFrom: "#FF9966", gradientTo: "#FF5E62" },
-  ];
-  const recentChats = (
-    <section aria-labelledby="sidebar-recents-heading" className="my-2 min-w-0 px-1">
-      <h2
-        id="sidebar-recents-heading"
-        className="px-3 pb-2 text-[11px] font-semibold uppercase tracking-[0.12em] text-[var(--txt-muted)]"
-      >
-        {uiText(language, "Recents")}
-      </h2>
-      {recentConversations.length > 0 ? (
-        <ul className="flex min-w-0 flex-col gap-1">
-          {recentConversations.map((conversation) => {
-            const isActive = conversation.id === activeConversationId;
-            const title = conversation.title.trim() || uiText(language, "New Chat");
-
-            return (
-              <li key={conversation.id} className="min-w-0">
-                <button
-                  type="button"
-                  title={title}
-                  aria-label={title}
-                  aria-current={isActive ? "page" : undefined}
-                  onClick={() => handleAction(() => onSelectConversation(conversation.id))}
-                  className={cn(
-                    "flex min-h-9 w-full min-w-0 items-center rounded-lg border px-3 text-left text-[13px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-b)]",
-                    isActive
-                      ? "border-[var(--border-accent)] bg-[var(--accent-d)] text-[var(--txt)]"
-                      : "border-transparent text-[var(--txt-muted)] hover:border-white/[0.08] hover:bg-[var(--surface-hover)] hover:text-[var(--txt)]"
-                  )}
-                >
-                  <span className="truncate">{title}</span>
-                </button>
-              </li>
-            );
-          })}
-        </ul>
-      ) : (
-        <p className="px-3 py-2 text-xs text-[var(--txt-muted)]">
-          {uiText(language, isConversationHistoryLoaded ? "No recent chats yet." : "Loading chats…")}
-        </p>
-      )}
-    </section>
-  );
 
   return (
     <Sidebar open={open} setOpen={setOpen}>
@@ -183,28 +136,59 @@ export function SidebarDock({
 
           <div className="h-[1px] w-full bg-gradient-to-r from-transparent via-white/[0.10] to-transparent my-2" />
 
-          {open ? (
-            <GradientMenu
-              items={navItems}
-              active={settingsActive ? 2 : historyActive ? 1 : 0}
-              tone="dark"
-              sound={false}
-              ariaLabel={uiText(language, "Chat Navigation")}
-              onChange={(index) => {
-                if (index === 0) handleAction(onNewChat);
-                else if (index === 1) handleAction(onToggleHistory);
-                else handleAction(() => onToggleSettings("general"));
-              }}
-              renderAfterItem={(_, index) => index === 1 ? recentChats : null}
-            />
-          ) : (
-            <div className="flex flex-col gap-1.5">
-              {mainLinks.map((link, idx) => (
-                <SidebarLink key={idx} link={{ ...link, active: idx === 1 ? historyActive : false }} />
-              ))}
-              <SidebarLink link={settingsLink} />
-            </div>
+          {/* Primary Action Links */}
+          <div className="flex flex-col gap-1.5">
+            {mainLinks.map((link, idx) => (
+              <SidebarLink key={idx} link={link} />
+            ))}
+          </div>
+
+          {open && (
+            <section aria-labelledby="sidebar-recents-heading" className="mt-5 min-w-0">
+              <h2
+                id="sidebar-recents-heading"
+                className="px-3 pb-2 text-[11px] font-semibold uppercase tracking-[0.12em] text-[var(--txt-muted)]"
+              >
+                {uiText(language, "Recents")}
+              </h2>
+              {recentConversations.length > 0 ? (
+                <ul className="flex min-w-0 flex-col gap-1">
+                  {recentConversations.map((conversation) => {
+                    const isActive = conversation.id === activeConversationId;
+                    const title = conversation.title.trim() || uiText(language, "New Chat");
+
+                    return (
+                      <li key={conversation.id} className="min-w-0">
+                        <button
+                          type="button"
+                          title={title}
+                          aria-label={title}
+                          aria-current={isActive ? "page" : undefined}
+                          onClick={() => handleAction(() => onSelectConversation(conversation.id))}
+                          className={cn(
+                            "flex min-h-9 w-full min-w-0 items-center rounded-lg border px-3 text-left text-[13px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-b)]",
+                            isActive
+                              ? "border-[var(--border-accent)] bg-[var(--accent-d)] text-[var(--txt)]"
+                              : "border-transparent text-[var(--txt-muted)] hover:border-white/[0.08] hover:bg-[var(--surface-hover)] hover:text-[var(--txt)]"
+                          )}
+                        >
+                          <span className="truncate">{title}</span>
+                        </button>
+                      </li>
+                    );
+                  })}
+                </ul>
+              ) : (
+                <p className="px-3 py-2 text-xs text-[var(--txt-muted)]">
+                  {uiText(language, isConversationHistoryLoaded ? "No recent chats yet." : "Loading chats…")}
+                </p>
+              )}
+            </section>
           )}
+
+          <div className="mt-4 flex flex-col gap-1.5">
+            <SidebarLink link={settingsLink} />
+          </div>
         </div>
 
         {/* Bottom Profile Anchor */}
