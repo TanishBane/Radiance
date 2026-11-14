@@ -407,3 +407,20 @@
 - Headless browser inspection at 1440?900 and 390?844 confirmed the vertical sidebar layout, Recent section order, visible mobile drawer, and no horizontal page overflow.
 - Clicking History opened the existing conversation-history dialog. No page errors were reported in the desktop browser session.
 - Automated test suites were not run.
+
+
+## 2026-11-14 ? Blend gradient hover styling into the liquid sidebar menu
+
+### Changed
+
+- Added a reusable GradientMenu wrapper around the existing vertical liquid navigation.
+- Applied the supplied violet, blue, and coral gradient palette to New Chat, History, and Settings on hover, keyboard focus, and selection; kept the liquid glass indicator and recent-chat placement intact.
+- Used the project's existing Tabler icons and CSS, so no dependency installation or shadcn setup was needed.
+- Disabled the new gradient transitions for reduced-motion preferences.
+
+### Verification
+
+- `pnpm.cmd typecheck`, `pnpm.cmd lint`, and `pnpm.cmd build`: passed.
+- Headless browser check at 1440?900 confirmed vertical item order, rendered gradient hover states, and no page errors or horizontal overflow.
+- At 390?844, the mobile drawer showed the same vertical gradient menu with no horizontal overflow.
+- Automated test suites were not run.

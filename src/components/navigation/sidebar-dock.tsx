@@ -17,7 +17,7 @@ import { RadianceLogo } from "@/components/branding/radiance-logo";
 import { cn } from "@/lib/utils/cn";
 import { uiText, type UiLanguage } from "@/lib/i18n/ui";
 import type { Conversation } from "@/lib/types/chat";
-import { LiquidNavbar, type LiquidNavItem } from "@/components/ui/liquid-glass-navbar";
+import { GradientMenu, type GradientMenuItem } from "@/components/ui/gradient-menu";
 
 interface SidebarDockProps {
   language?: UiLanguage;
@@ -95,10 +95,10 @@ export function SidebarDock({
     onClick: () => handleAction(() => onToggleSettings("general")),
     active: settingsActive,
   };
-  const navItems: LiquidNavItem[] = [
-    { label: uiText(language, "New Chat"), icon: <IconPlus className="h-4 w-4" />, badge: "Ctrl+N", fx: "pop" },
-    { label: uiText(language, "History"), icon: <IconHistory className="h-4 w-4" />, badge: "Ctrl+L", fx: "wave" },
-    { label: uiText(language, "Settings"), icon: <IconSettings className="h-4 w-4" />, fx: "spin" },
+  const navItems: GradientMenuItem[] = [
+    { label: uiText(language, "New Chat"), icon: <IconPlus className="h-4 w-4" />, badge: "Ctrl+N", fx: "pop", gradientFrom: "#a955ff", gradientTo: "#ea51ff" },
+    { label: uiText(language, "History"), icon: <IconHistory className="h-4 w-4" />, badge: "Ctrl+L", fx: "wave", gradientFrom: "#56CCF2", gradientTo: "#2F80ED" },
+    { label: uiText(language, "Settings"), icon: <IconSettings className="h-4 w-4" />, fx: "spin", gradientFrom: "#FF9966", gradientTo: "#FF5E62" },
   ];
   const recentChats = (
     <section aria-labelledby="sidebar-recents-heading" className="my-2 min-w-0 px-1">
@@ -184,14 +184,12 @@ export function SidebarDock({
           <div className="h-[1px] w-full bg-gradient-to-r from-transparent via-white/[0.10] to-transparent my-2" />
 
           {open ? (
-            <LiquidNavbar
+            <GradientMenu
               items={navItems}
               active={settingsActive ? 2 : historyActive ? 1 : 0}
               tone="dark"
-              orientation="vertical"
-              compact={false}
               sound={false}
-              ariaLabel={uiText(language, "Mobile Navigation")}
+              ariaLabel={uiText(language, "Chat Navigation")}
               onChange={(index) => {
                 if (index === 0) handleAction(onNewChat);
                 else if (index === 1) handleAction(onToggleHistory);

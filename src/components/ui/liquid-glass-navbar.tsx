@@ -19,6 +19,8 @@ export type LiquidNavItem = {
   href?: string
   icon?: React.ReactNode
   badge?: string
+  gradientFrom?: string
+  gradientTo?: string
   /** the little scene the icon plays when tapped */
   fx?: NimbusFx
 }
@@ -87,7 +89,13 @@ const NIMBUS_CSS = `
 .nimbus-item:focus-visible{outline:2px solid #00A2FF;outline-offset:2px}
 .nimbus-nav[data-orientation="vertical"]{display:flex;width:100%;flex-direction:column;align-items:stretch;gap:4px;padding:5px;border-radius:16px}
 .nimbus-nav[data-orientation="vertical"] .nimbus-item{display:flex;width:100%;height:42px;justify-content:space-between;padding:0 12px;border-radius:11px;text-align:left}
+.nimbus-gradient-menu .nimbus-item::before,.nimbus-gradient-menu .nimbus-item::after{position:absolute;inset:1px;border-radius:inherit;content:"";pointer-events:none;opacity:0;transition:opacity .28s ease}
+.nimbus-gradient-menu .nimbus-item::before{z-index:0;background:linear-gradient(110deg,color-mix(in srgb,var(--gradient-from) 22%,transparent),color-mix(in srgb,var(--gradient-to) 18%,transparent))}
+.nimbus-gradient-menu .nimbus-item::after{z-index:-1;inset:3px;background:linear-gradient(110deg,var(--gradient-from),var(--gradient-to));filter:blur(12px)}
+.nimbus-gradient-menu .nimbus-item:hover::before,.nimbus-gradient-menu .nimbus-item[aria-current="page"]::before,.nimbus-gradient-menu .nimbus-item:focus-visible::before{opacity:.9}
+.nimbus-gradient-menu .nimbus-item:hover::after,.nimbus-gradient-menu .nimbus-item[aria-current="page"]::after,.nimbus-gradient-menu .nimbus-item:focus-visible::after{opacity:.32}
 .nimbus-item-content{display:inline-flex;min-width:0;align-items:center;gap:9px}
+.nimbus-item-content,.nimbus-badge{position:relative;z-index:1}
 .nimbus-label{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .nimbus-badge{flex:none;border:1px solid rgba(255,255,255,.12);border-radius:999px;background:rgba(255,255,255,.06);padding:4px 8px;color:var(--n-fg-soft);font-size:11px;font-weight:500;line-height:1}
 .nv-ico{position:relative;display:inline-flex;flex:none}
@@ -121,7 +129,7 @@ const NIMBUS_CSS = `
 .nimbus-nav[data-orientation="vertical"][data-compact="true"] .nimbus-label{position:static;width:auto;height:auto;overflow:hidden;clip:auto;white-space:nowrap}
 @media (max-width:520px){.nimbus-nav:not([data-compact="false"]) .nimbus-item{padding:0 13px}.nimbus-nav:not([data-compact="false"]) .nimbus-label{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}}
 @media (min-width:768px) and (max-width:899px){.nimbus-nav--desktop .nimbus-item{padding:0 13px}.nimbus-nav--desktop .nimbus-label{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}}
-@media (prefers-reduced-motion:reduce){.nv-ico svg,.nv-ico::before,.nv-ico::after,.nv-door{animation:none!important;transition:none}}
+@media (prefers-reduced-motion:reduce){.nv-ico svg,.nv-ico::before,.nv-ico::after,.nv-door,.nimbus-gradient-menu .nimbus-item::before,.nimbus-gradient-menu .nimbus-item::after{animation:none!important;transition:none}}
 `
 
 /* ---------- the water shader ---------- */
@@ -622,6 +630,10 @@ export function LiquidNavbar({
         const props = {
           ref: (el: HTMLElement | null) => { itemRefs.current[i] = el },
           className: "nimbus-item",
+          style: {
+            "--gradient-from": it.gradientFrom,
+            "--gradient-to": it.gradientTo,
+          } as React.CSSProperties,
           "aria-current": i === current ? ("page" as const) : undefined,
           onClick: () => select(i),
         }
