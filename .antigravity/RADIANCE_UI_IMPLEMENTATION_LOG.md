@@ -308,3 +308,19 @@
 - `pnpm.cmd build`: passed after creating a missing generated `.next/static/chunks/app/api/image` directory; the initial build attempts were blocked by that missing generated directory.
 - Browser visual inspection could not be completed: the local browser session timed out connecting to `http://localhost:3000/chat`.
 - Automated tests were not run.
+
+## 2026-11-14 — Show atmosphere previews in the chat workspace
+
+### Changed
+
+- The Preview action now closes the large settings dialog and displays the selected engine behind the real chat workspace.
+- Added a compact responsive status strip with Apply background, Back to appearance settings, and Cancel preview actions. The preview remains temporary while the user returns to settings and is saved only by Apply.
+- Kept the preview actions localized across all seven supported interface languages and added a visible recovery message if saving fails.
+
+### Verification
+
+- `pnpm.cmd typecheck`: passed.
+- `pnpm.cmd lint`: passed with no warnings or errors.
+- `pnpm.cmd build`: passed.
+- The local browser could not reach the development server (`ERR_NETWORK_ACCESS_DENIED`), so a rendered screenshot and keyboard walkthrough were unavailable.
+- Automated tests were not run.

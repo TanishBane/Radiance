@@ -2,7 +2,8 @@
 
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { ToneKey, Attachment, ModelOption, ChatMessage, FeedbackRating } from "@/lib/types/chat";
-import { ThemeId, THEMES, GradientStyle } from "@/lib/types/theme";
+import { ThemeId, THEMES, GradientStyle, ATMOSPHERE_ENGINES } from "@/lib/types/theme";
+import { uiText } from "@/lib/i18n/ui";
 import { applyThemeToDom } from "@/lib/theme/dynamic-theme";
 import { DEFAULT_MODEL_ID, getModelById } from "@/lib/ai/models";
 import { conversationService } from "@/lib/db/conversations";
@@ -52,13 +53,16 @@ export default function RadianceApp() {
   const [historyOpen, setHistoryOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [previewGradientStyle, setPreviewGradientStyle] = useState<GradientStyle | null>(null);
+  const [previewSaveFailed, setPreviewSaveFailed] = useState(false);
   const [settingsSection, setSettingsSection] = useState("general");
   const [isComposerFocused, setIsComposerFocused] = useState(false);
   const visibleGradientStyle = previewGradientStyle ?? gradientStyle;
+  const previewedAtmosphereEngine = ATMOSPHERE_ENGINES.find((engine) => engine.id === previewGradientStyle);
 
-  useEffect(() => {
-    if (!settingsOpen) setPreviewGradientStyle(null);
-  }, [settingsOpen]);
+  const handleAtmospherePreview = useCallback((engine: GradientStyle | null) => {
+    setPreviewSaveFailed(false);
+    setPreviewGradientStyle(engine);
+  }, []);
 
   const handleSettingsChange = useCallback((nextSettings: RadianceSettings) => {
     const withThemeHistory = nextSettings.theme !== settings.theme
@@ -405,6 +409,53 @@ export default function RadianceApp() {
           onToggleMobileMenu={() => setMobileSidebarOpen((prev) => !prev)}
         />
 
+        {previewGradientStyle && !settingsOpen && (
+          <div
+            className="shrink-0 border-b border-[var(--border)] bg-[var(--surface-overlay)]/90 px-4 py-3 backdrop-blur-md sm:px-6"
+          >
+            <div className="mx-auto flex max-w-6xl flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between">
+              <div role="status" aria-live="polite" className="min-w-0">
+                <p className="truncate text-sm font-semibold text-[var(--txt)]">
+                  {uiText(language, "Previewing")} {previewedAtmosphereEngine?.label ?? previewGradientStyle}
+                </p>
+                <p className="text-xs text-[var(--txt-muted)]">{uiText(language, "Temporary preview — not saved")}</p>
+                {previewSaveFailed && (
+                  <p className="mt-1 text-xs text-[var(--danger)]">{uiText(language, "Could not save. Check browser storage and try again.")}</p>
+                )}
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    const saved = handleSettingsChange({ ...settings, gradientStyle: previewGradientStyle });
+                    setPreviewSaveFailed(!saved);
+                    if (saved) {
+                      setPreviewGradientStyle(null);
+                    }
+                  }}
+                  className="min-h-11 rounded-xl bg-[var(--accent)] px-4 text-sm font-semibold text-white transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-b)]"
+                >{uiText(language, "Apply background")}</button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setPreviewSaveFailed(false);
+                    openSettings("appearance");
+                  }}
+                  className="min-h-11 rounded-xl border border-[var(--border-hover)] px-4 text-sm font-medium text-[var(--txt)] transition-colors hover:bg-[var(--surface-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
+                >{uiText(language, "Back to appearance settings")}</button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setPreviewSaveFailed(false);
+                    setPreviewGradientStyle(null);
+                  }}
+                  className="min-h-11 rounded-xl px-3 text-sm text-[var(--txt-dim)] transition-colors hover:bg-[var(--surface-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
+                >{uiText(language, "Cancel preview")}</button>
+              </div>
+            </div>
+          </div>
+        )}
+
         <div className="flex-1 flex flex-col min-w-0 overflow-hidden relative">
           <ChatWorkspace
             messages={messages}
@@ -489,7 +540,8 @@ export default function RadianceApp() {
         conversationCount={conversations.length}
         intelligenceProfile={intelligenceProfile}
         onIntelligenceProfileChange={handleIntelligenceProfileChange}
-        onPreviewAtmosphere={setPreviewGradientStyle}
+        onPreviewAtmosphere={handleAtmospherePreview}
+        previewingAtmosphere={previewGradientStyle}
       />
     </div>
   );

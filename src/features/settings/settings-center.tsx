@@ -65,6 +65,7 @@ interface SettingsCenterProps {
   intelligenceProfile: PersonalIntelligenceProfile;
   onIntelligenceProfileChange: (profile: PersonalIntelligenceProfile) => boolean;
   onPreviewAtmosphere?: (engine: GradientStyle | null) => void;
+  previewingAtmosphere?: GradientStyle | null;
 }
 
 function SwitchRow({
@@ -151,6 +152,7 @@ export function SettingsCenter({
   intelligenceProfile,
   onIntelligenceProfileChange,
   onPreviewAtmosphere = noopPreviewAtmosphere,
+  previewingAtmosphere = null,
 }: SettingsCenterProps) {
   const t = useCallback((text: string, values?: Record<string, string | number>) => uiText(language, text, values), [language]);
   const reducedMotion = useReducedMotion() ?? false;
@@ -162,7 +164,6 @@ export function SettingsCenter({
   const [pending, setPending] = useState(false);
   const [instructionsDraft, setInstructionsDraft] = useState(settings.customInstructions);
   const [pendingAtmosphere, setPendingAtmosphere] = useState<GradientStyle>(settings.gradientStyle as GradientStyle);
-  const [previewedAtmosphere, setPreviewedAtmosphere] = useState<GradientStyle | null>(null);
   const confirmButtonRef = useRef<HTMLButtonElement>(null);
   const confirmationTriggerRef = useRef<HTMLElement | null>(null);
   const previousFocusRef = useRef<HTMLElement | null>(null);
@@ -179,13 +180,10 @@ export function SettingsCenter({
   useEffect(() => {
     if (!open) {
       setPendingAtmosphere(settings.gradientStyle as GradientStyle);
-      setPreviewedAtmosphere(null);
-      onPreviewAtmosphere(null);
       return;
     }
-    setPendingAtmosphere(settings.gradientStyle as GradientStyle);
-    setPreviewedAtmosphere(null);
-  }, [open, settings.gradientStyle, onPreviewAtmosphere]);
+    setPendingAtmosphere(previewingAtmosphere ?? settings.gradientStyle as GradientStyle);
+  }, [open, settings.gradientStyle, previewingAtmosphere]);
 
   useEffect(() => {
     if (!pendingSearchTarget) return;
@@ -239,9 +237,9 @@ export function SettingsCenter({
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
       <Dialog.Portal>
-        <Dialog.Overlay className={`radiance-dialog-overlay fixed inset-0 z-50 transition-colors ${previewedAtmosphere ? "bg-black/25" : "bg-black/70 backdrop-blur-sm"}`} />
+        <Dialog.Overlay className="radiance-dialog-overlay fixed inset-0 z-50 bg-black/70 backdrop-blur-sm" />
         <Dialog.Content
-          className={`radiance-dialog-center radiance-settings-panel fixed inset-0 z-50 flex h-[100dvh] w-full flex-col overflow-hidden border border-[var(--border)] ${previewedAtmosphere ? "bg-[var(--deep)]/85 backdrop-blur-md" : "bg-[var(--deep)]"} text-[var(--txt)] outline-none md:left-1/2 md:top-1/2 md:h-[min(780px,calc(100dvh-40px))] md:w-[min(1000px,calc(100vw-48px))] md:-translate-x-1/2 md:-translate-y-1/2 md:rounded-[24px] md:shadow-modal`}
+          className="radiance-dialog-center radiance-settings-panel fixed inset-0 z-50 flex h-[100dvh] w-full flex-col overflow-hidden border border-[var(--border)] bg-[var(--deep)] text-[var(--txt)] outline-none md:left-1/2 md:top-1/2 md:h-[min(780px,calc(100dvh-40px))] md:w-[min(1000px,calc(100vw-48px))] md:-translate-x-1/2 md:-translate-y-1/2 md:rounded-[24px] md:shadow-modal"
           onEscapeKeyDown={(event) => {
             if (confirmation) {
               event.preventDefault();
@@ -435,54 +433,35 @@ export function SettingsCenter({
                         <SelectRow
                           id="atmosphere-engine"
                           label={t("Atmosphere engine")}
-                          description={t("Choose a background engine, preview it, then apply it when ready.")}
+                          description={t("Choose an engine, then preview it full-screen before applying it.")}
                           value={pendingAtmosphere}
                           options={ATMOSPHERE_ENGINES.map((engine) => ({ value: engine.id, label: engine.label }))}
                           onChange={(value) => {
                             setPendingAtmosphere(value as GradientStyle);
-                            setPreviewedAtmosphere(null);
-                            onPreviewAtmosphere(null);
                           }}
                         />
                         <div className="-mt-2 flex flex-col gap-3 border-b border-[var(--border)] pb-4 sm:flex-row sm:items-center sm:justify-between">
-                          <p className="max-w-md text-xs leading-relaxed text-[var(--txt-muted)]" aria-live="polite">
-                            {previewedAtmosphere
-                              ? t("Temporary preview active. Apply to save this background.")
-                              : t("Your current background stays active until you apply a preview.")}
+                          <p className="max-w-md text-xs leading-relaxed text-[var(--txt-muted)]">
+                            {previewingAtmosphere
+                              ? t("A temporary preview is active. Return to the chat view to apply or discard it.")
+                              : t("Preview opens the chat view so you can judge the background in context.")}
                           </p>
                           <div className="flex shrink-0 flex-wrap gap-2">
                             <button
                               type="button"
                               onClick={() => {
-                                setPreviewedAtmosphere(pendingAtmosphere);
                                 onPreviewAtmosphere(pendingAtmosphere);
+                                onOpenChange(false);
                               }}
-                              className="min-h-10 rounded-xl border border-[var(--border-hover)] px-4 text-sm font-medium text-[var(--txt)] transition-colors hover:bg-[var(--surface-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
+                              className="min-h-11 rounded-xl border border-[var(--border-hover)] px-4 text-sm font-medium text-[var(--txt)] transition-colors hover:bg-[var(--surface-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
                             >{t("Preview")}</button>
-                            {previewedAtmosphere && (
+                            {previewingAtmosphere && (
                               <button
                                 type="button"
                                 onClick={() => {
-                                  const next = { ...settings, gradientStyle: previewedAtmosphere };
-                                  if (onChange(next)) {
-                                    setStatus(t("Saved locally"));
-                                    onPreviewAtmosphere(null);
-                                    setPreviewedAtmosphere(null);
-                                  } else {
-                                    setStatus(t("Could not save. Check browser storage and try again."));
-                                  }
-                                }}
-                                className="min-h-10 rounded-xl bg-[var(--accent)] px-4 text-sm font-medium text-white transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-b)]"
-                              >{t("Apply background")}</button>
-                            )}
-                            {previewedAtmosphere && (
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  setPreviewedAtmosphere(null);
                                   onPreviewAtmosphere(null);
                                 }}
-                                className="min-h-10 rounded-xl px-3 text-sm text-[var(--txt-dim)] transition-colors hover:bg-[var(--surface-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
+                                className="min-h-11 rounded-xl px-3 text-sm text-[var(--txt-dim)] transition-colors hover:bg-[var(--surface-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
                               >{t("Cancel preview")}</button>
                             )}
                           </div>
