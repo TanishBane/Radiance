@@ -9,6 +9,7 @@ import { getMotionTransition } from "@/lib/motion/presets";
 import { formatMarkdown, formatRelativeTime, isSafeUrl } from "@/lib/utils/format";
 import { RadianceLogo } from "@/components/branding/radiance-logo";
 import { FollowUpChips } from "./follow-up-chips";
+import { uiText, type UiLanguage } from "@/lib/i18n/ui";
 import {
   Copy,
   Check,
@@ -43,6 +44,7 @@ const DROPDOWN_ITEM_CLS =
   "min-h-[44px] flex items-center gap-2.5 px-3 py-2 text-xs font-medium rounded-lg cursor-pointer outline-none hover:bg-[var(--surface-hover)] focus:bg-[var(--surface-hover)] text-[var(--txt)] transition-colors select-none";
 
 export interface MessageItemProps {
+  language?: UiLanguage;
   message: ChatMessage;
   isStreaming?: boolean;
   followUps?: string[];
@@ -57,6 +59,7 @@ export interface MessageItemProps {
 }
 
 export function MessageItem({
+  language = "en",
   message,
   isStreaming = false,
   followUps,
@@ -69,6 +72,7 @@ export function MessageItem({
   onOpenPersonalIntelligence,
   onRetry,
 }: MessageItemProps) {
+  const t = (text: string) => uiText(language, text);
   const isUser = message.role === "user";
   const prefersReducedMotion = useReducedMotion() ?? false;
   const [copied, setCopied] = useState(false);
@@ -341,7 +345,7 @@ export function MessageItem({
                 onChange={(e) => setEditContent(e.target.value)}
                 onKeyDown={handleEditKeyDown}
                 rows={3}
-                aria-label="Edit message prompt"
+                aria-label={t("Edit message prompt")}
                 data-testid="edit-message-textarea"
                 className="w-full bg-[var(--deep)] border border-[var(--border)] rounded-lg p-2.5 text-base sm:text-xs text-[var(--txt)] focus:border-[var(--accent)] outline-none resize-y min-h-[70px] font-sans"
                 autoFocus
@@ -353,7 +357,7 @@ export function MessageItem({
                   className="min-h-[36px] px-3 py-1.5 text-xs rounded-lg border border-[var(--border)] text-[var(--txt-muted)] hover:text-[var(--txt)] hover:bg-[var(--surface-hover)] transition-colors cursor-pointer touch-target flex items-center justify-center"
                   data-testid="cancel-edit-button"
                 >
-                  Cancel
+                  {t("Cancel")}
                 </button>
                 <button
                   type="button"
@@ -362,7 +366,7 @@ export function MessageItem({
                   className="min-h-[36px] px-3.5 py-1.5 text-xs rounded-lg bg-[var(--accent)] text-[var(--deep)] font-medium hover:opacity-90 disabled:opacity-40 transition-opacity cursor-pointer touch-target flex items-center justify-center"
                   data-testid="save-edit-button"
                 >
-                  Save & Resubmit
+                  {t("Save & Resubmit")}
                 </button>
               </div>
             </div>
@@ -371,7 +375,7 @@ export function MessageItem({
             <div className="flex flex-col gap-2" data-testid="in-message-error-card">
               <div className="flex items-center gap-2 text-xs font-semibold text-red-400">
                 <AlertCircle className="w-4 h-4 shrink-0" />
-                <span>Generation failed</span>
+                <span>{t("Generation failed")}</span>
               </div>
               <p className="text-xs text-red-300 leading-relaxed break-words font-mono">
                 {message.errorDetails || message.content || "An unexpected inference error occurred. Please try again."}
@@ -385,7 +389,7 @@ export function MessageItem({
                     data-testid="error-retry-button"
                   >
                     <RotateCcw className="w-3.5 h-3.5" />
-                    <span>Retry generation</span>
+                    <span>{t("Retry generation")}</span>
                   </button>
                 </div>
               )}
@@ -408,13 +412,13 @@ export function MessageItem({
           {safeImageUrl && (
             <div className="mt-3.5 flex flex-col gap-2 rounded-xl overflow-hidden border border-[var(--border)] bg-[var(--deep)] p-2.5">
               <div className="font-mono text-[9px] uppercase tracking-widest text-[var(--accent)] flex items-center justify-between">
-                <span>Synthesized Flux Visual</span>
+                <span>{t("Synthesized Flux Visual")}</span>
                 <span className="text-[8px] text-[var(--txt-muted)] font-mono">1024x1024</span>
               </div>
               <div className="relative aspect-square max-w-sm rounded-lg overflow-hidden bg-black/40 shadow-inner">
                 <Image
                   src={safeImageUrl}
-                  alt="Generated visual"
+                  alt={t("Generated visual")}
                   fill
                   unoptimized
                   className="object-cover"
@@ -428,7 +432,7 @@ export function MessageItem({
                   className="flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-mono rounded-lg bg-[var(--surface)] border border-[var(--border)] text-[var(--accent)] hover:bg-[var(--surface-hover)] transition-colors touch-target"
                 >
                   <Download className="w-3.5 h-3.5" />
-                  <span>Download</span>
+                  <span>{t("Download")}</span>
                 </a>
               </div>
             </div>
@@ -437,7 +441,7 @@ export function MessageItem({
           {/* Follow-up Question Chips */}
           {followUps && followUps.length > 0 && onSelectFollowUp && (
             <div className="mt-2 pt-2 border-t border-[var(--border)]">
-              <FollowUpChips questions={followUps} onSelect={onSelectFollowUp} />
+              <FollowUpChips language={language} questions={followUps} onSelect={onSelectFollowUp} />
             </div>
           )}
         </div>
@@ -452,7 +456,7 @@ export function MessageItem({
           <time
             dateTime={new Date(message.createdAt).toISOString()}
             title={new Date(message.createdAt).toISOString()}
-            aria-label={`Sent at ${new Date(message.createdAt).toISOString()}`}
+              aria-label={`${t("Sent at")} ${new Date(message.createdAt).toISOString()}`}
             data-testid="message-timestamp"
             className="tabular-nums cursor-default select-none hover:text-[var(--txt)] transition-colors"
           >
@@ -466,8 +470,8 @@ export function MessageItem({
               type="button"
               onClick={handleCopy}
               className={ACTION_BTN_CLS}
-              title={copied ? "Copied to clipboard" : "Copy message"}
-              aria-label={copied ? "Copied to clipboard" : "Copy message"}
+              title={t(copied ? "Copied to clipboard" : "Copy message")}
+              aria-label={t(copied ? "Copied to clipboard" : "Copy message")}
               data-testid="copy-message-button"
             >
               {copied ? <Check className="w-3.5 h-3.5 text-[var(--success)]" /> : <Copy className="w-3.5 h-3.5" />}
@@ -479,8 +483,8 @@ export function MessageItem({
                 type="button"
                 onClick={() => setIsEditing(true)}
                 className={ACTION_BTN_CLS}
-                title="Edit message"
-                aria-label="Edit message"
+                title={t("Edit message")}
+                aria-label={t("Edit message")}
                 data-testid="edit-message-button"
               >
                 <Edit2 className="w-3.5 h-3.5" />
@@ -488,10 +492,10 @@ export function MessageItem({
             )}
 
             {isUser && onRemember && !message.isError && (
-              <button type="button" onClick={() => onRemember(message.id, message.content)} className={ACTION_BTN_CLS} title="Save this message as a note" aria-label="Remember this message" data-testid="remember-message-button"><BookmarkPlus className="w-3.5 h-3.5" /></button>
+              <button type="button" onClick={() => onRemember(message.id, message.content)} className={ACTION_BTN_CLS} title={t("Save this message as a note")} aria-label={t("Remember this message")} data-testid="remember-message-button"><BookmarkPlus className="w-3.5 h-3.5" /></button>
             )}
             {!isUser && message.personalization && onOpenPersonalIntelligence && (
-              <button type="button" onClick={onOpenPersonalIntelligence} className="inline-flex min-h-8 items-center gap-1 rounded-lg px-2 text-[11px] text-[var(--accent-b)] hover:bg-[var(--surface-hover)]" aria-label="Review saved context used for this response"><Sparkles className="h-3 w-3" />{message.personalization.memoryIds.length ? `Personalized · ${message.personalization.memoryIds.length} saved note${message.personalization.memoryIds.length === 1 ? "" : "s"}` : "Adapted to saved preferences"}</button>
+              <button type="button" onClick={onOpenPersonalIntelligence} className="inline-flex min-h-8 items-center gap-1 rounded-lg px-2 text-[11px] text-[var(--accent-b)] hover:bg-[var(--surface-hover)]" aria-label={t("Review saved context used for this response")}><Sparkles className="h-3 w-3" />{message.personalization.memoryIds.length ? `${t("Personalized")} · ${message.personalization.memoryIds.length} ${t(message.personalization.memoryIds.length === 1 ? "saved note" : "saved notes")}` : t("Adapted to saved preferences")}</button>
             )}
 
             {/* Regenerate Assistant Response */}
@@ -500,8 +504,8 @@ export function MessageItem({
                 type="button"
                 onClick={onRegenerate}
                 className={ACTION_BTN_CLS}
-                title="Regenerate response"
-                aria-label="Regenerate response"
+                title={t("Regenerate response")}
+                aria-label={t("Regenerate response")}
                 data-testid="regenerate-message-button"
               >
                 <RotateCcw className="w-3.5 h-3.5" />
@@ -520,8 +524,8 @@ export function MessageItem({
                       ? "text-[var(--accent)] bg-[var(--accent-d)] animate-pulse"
                       : "hover:bg-[var(--surface-hover)] hover:text-[var(--txt)] text-[var(--txt-muted)]"
                   }`}
-                  title={isSpeaking ? "Stop speech" : "Read aloud"}
-                  aria-label={isSpeaking ? "Stop speech" : "Read aloud"}
+                  title={t(isSpeaking ? "Stop speech" : "Read aloud")}
+                  aria-label={t(isSpeaking ? "Stop speech" : "Read aloud")}
                   data-testid="read-aloud-button"
                 >
                   {isSpeaking ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
@@ -537,8 +541,8 @@ export function MessageItem({
                           ? "text-[var(--accent)] bg-[var(--accent-d)]"
                           : "hover:bg-[var(--surface-hover)] hover:text-[var(--txt)] text-[var(--txt-muted)]"
                       }`}
-                      title={message.feedback === "positive" ? "Helpful response (selected)" : "Good response"}
-                      aria-label="Good response"
+                      title={t(message.feedback === "positive" ? "Helpful response (selected)" : "Good response")}
+                      aria-label={t("Good response")}
                       aria-pressed={message.feedback === "positive"}
                       data-testid="feedback-positive-button"
                     >
@@ -553,8 +557,8 @@ export function MessageItem({
                           ? "text-red-400 bg-red-500/10"
                           : "hover:bg-[var(--surface-hover)] hover:text-[var(--txt)] text-[var(--txt-muted)]"
                       }`}
-                      title={message.feedback === "negative" ? "Unhelpful response (selected)" : "Poor response"}
-                      aria-label="Poor response"
+                      title={t(message.feedback === "negative" ? "Unhelpful response (selected)" : "Poor response")}
+                      aria-label={t("Poor response")}
                       aria-pressed={message.feedback === "negative"}
                       data-testid="feedback-negative-button"
                     >
@@ -571,8 +575,8 @@ export function MessageItem({
                 type="button"
                 onClick={onRetry}
                 className="p-1.5 rounded-lg hover:bg-red-500/20 text-red-400 hover:text-red-300 transition-colors touch-target cursor-pointer"
-                title="Retry generation"
-                aria-label="Retry generation"
+                title={t("Retry generation")}
+                aria-label={t("Retry generation")}
                 data-testid="retry-message-button"
               >
                 <RefreshCw className="w-3.5 h-3.5" />
@@ -587,8 +591,8 @@ export function MessageItem({
               type="button"
               onClick={handleExportMarkdown}
               className={ACTION_BTN_CLS}
-              title="Export message as Markdown"
-              aria-label="Export message as Markdown"
+              title={t("Export message as Markdown")}
+              aria-label={t("Export message as Markdown")}
               data-testid="export-message-button"
             >
               <Download className="w-3.5 h-3.5" />
@@ -600,8 +604,8 @@ export function MessageItem({
                 type="button"
                 onClick={handleDelete}
                 className="p-1.5 rounded-lg hover:bg-red-500/15 hover:text-red-400 text-[var(--txt-muted)] transition-colors touch-target cursor-pointer"
-                title="Delete message"
-                aria-label="Delete message"
+                title={t("Delete message")}
+                aria-label={t("Delete message")}
                 data-testid="delete-message-button"
               >
                 <Trash2 className="w-3.5 h-3.5" />
@@ -616,7 +620,7 @@ export function MessageItem({
                 <button
                   type="button"
                   className="min-w-[44px] min-h-[44px] p-2 rounded-lg flex items-center justify-center text-[var(--txt-muted)] hover:text-[var(--txt)] hover:bg-[var(--surface-hover)] active:bg-[var(--surface-raised)] transition-colors touch-target focus-visible:ring-2 focus-visible:ring-[var(--accent)] cursor-pointer"
-                  aria-label="Message actions"
+                  aria-label={t("Message actions")}
                   data-testid="mobile-action-menu-trigger"
                 >
                   <MoreHorizontal className="w-4 h-4" />
@@ -636,7 +640,7 @@ export function MessageItem({
                     data-testid="mobile-action-copy"
                   >
                     {copied ? <Check className="w-4 h-4 text-[var(--success)] shrink-0" /> : <Copy className="w-4 h-4 text-[var(--txt-muted)] shrink-0" />}
-                    <span>{copied ? "Copied to clipboard" : "Copy text"}</span>
+                    <span>{t(copied ? "Copied to clipboard" : "Copy text")}</span>
                   </DropdownMenu.Item>
 
                   {/* Edit (User only) */}
@@ -647,12 +651,12 @@ export function MessageItem({
                       data-testid="mobile-action-edit"
                     >
                       <Edit2 className="w-4 h-4 text-[var(--txt-muted)] shrink-0" />
-                      <span>Edit prompt</span>
+                      <span>{t("Edit prompt")}</span>
                     </DropdownMenu.Item>
                   )}
 
                   {isUser && onRemember && !message.isError && (
-                    <DropdownMenu.Item onSelect={() => onRemember(message.id, message.content)} className={DROPDOWN_ITEM_CLS} data-testid="mobile-action-remember"><BookmarkPlus className="h-4 w-4 text-[var(--txt-muted)]" /><span>Remember this note</span></DropdownMenu.Item>
+                    <DropdownMenu.Item onSelect={() => onRemember(message.id, message.content)} className={DROPDOWN_ITEM_CLS} data-testid="mobile-action-remember"><BookmarkPlus className="h-4 w-4 text-[var(--txt-muted)]" /><span>{t("Remember this note")}</span></DropdownMenu.Item>
                   )}
 
                   {/* Regenerate (Assistant only) */}
@@ -663,7 +667,7 @@ export function MessageItem({
                       data-testid="mobile-action-regenerate"
                     >
                       <RotateCcw className="w-4 h-4 text-[var(--txt-muted)] shrink-0" />
-                      <span>Regenerate response</span>
+                      <span>{t("Regenerate response")}</span>
                     </DropdownMenu.Item>
                   )}
 
@@ -675,7 +679,7 @@ export function MessageItem({
                       data-testid="mobile-action-retry"
                     >
                       <RefreshCw className="w-4 h-4 text-red-400 shrink-0" />
-                      <span>Retry generation</span>
+                      <span>{t("Retry generation")}</span>
                     </DropdownMenu.Item>
                   )}
 
@@ -688,7 +692,7 @@ export function MessageItem({
                         data-testid="mobile-action-feedback-positive"
                       >
                         <ThumbsUp className={`w-4 h-4 shrink-0 ${message.feedback === "positive" ? "text-[var(--accent)] fill-current" : "text-[var(--txt-muted)]"}`} />
-                        <span>{message.feedback === "positive" ? "Liked response (toggle off)" : "Helpful response"}</span>
+                        <span>{t(message.feedback === "positive" ? "Liked response (toggle off)" : "Helpful response")}</span>
                       </DropdownMenu.Item>
 
                       <DropdownMenu.Item
@@ -697,7 +701,7 @@ export function MessageItem({
                         data-testid="mobile-action-feedback-negative"
                       >
                         <ThumbsDown className={`w-4 h-4 shrink-0 ${message.feedback === "negative" ? "text-red-400 fill-current" : "text-[var(--txt-muted)]"}`} />
-                        <span>{message.feedback === "negative" ? "Disliked response (toggle off)" : "Unhelpful response"}</span>
+                        <span>{t(message.feedback === "negative" ? "Disliked response (toggle off)" : "Unhelpful response")}</span>
                       </DropdownMenu.Item>
                     </>
                   )}
@@ -709,7 +713,7 @@ export function MessageItem({
                     data-testid="mobile-action-export"
                   >
                     <Download className="w-4 h-4 text-[var(--txt-muted)] shrink-0" />
-                    <span>Export Markdown (.md)</span>
+                    <span>{t("Export Markdown (.md)")}</span>
                   </DropdownMenu.Item>
 
                   <DropdownMenu.Separator className="h-px my-1 bg-[var(--border)]" />
@@ -730,7 +734,7 @@ export function MessageItem({
                         data-testid="mobile-action-delete"
                       >
                         <Trash2 className="w-4 h-4 text-red-400 shrink-0" />
-                        <span>Delete message</span>
+                    <span>{t("Delete message")}</span>
                       </DropdownMenu.Item>
                     </>
                   )}

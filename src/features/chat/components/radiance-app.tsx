@@ -455,6 +455,7 @@ export default function RadianceApp() {
 
       {/* Slide-out Navigation Drawers & Dialogs */}
       <HistoryDrawer
+        language={language}
         isOpen={historyOpen}
         onClose={() => setHistoryOpen(false)}
         conversations={conversations}
@@ -466,6 +467,7 @@ export default function RadianceApp() {
       />
 
       <SettingsCenter
+        language={language}
         open={settingsOpen}
         onOpenChange={setSettingsOpen}
         section={settingsSection}

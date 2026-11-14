@@ -487,8 +487,8 @@ export function ChatComposer({
                 whileTap={shouldReduceMotion ? undefined : { scale: 0.9 }}
                 onClick={() => removeAttachment(att.id)}
                 className="p-1 rounded-md text-[var(--txt-muted)] hover:text-[var(--danger)] hover:bg-white/5 transition-colors cursor-pointer"
-                title="Remove attachment"
-                aria-label="Remove attachment"
+                title={uiText(language, "Remove attachment")}
+                aria-label={uiText(language, "Remove attachment")}
               >
                 <X className="w-3 h-3" />
               </motion.button>
@@ -567,7 +567,7 @@ export function ChatComposer({
             className="absolute left-4 bottom-[64px] w-56 rounded-xl p-1.5 z-40 bg-[var(--deep)]/95 backdrop-blur-2xl border border-white/[0.12] shadow-[0_12px_36px_0_rgba(0,0,0,0.6),0_0_20px_-4px_var(--accent-g)] flex flex-col gap-0.5 animate-in fade-in zoom-in-95 duration-150"
           >
             <div className="px-2.5 py-1 text-[10px] font-mono uppercase tracking-wider text-[var(--txt-muted)] font-semibold border-b border-white/[0.06] mb-1">
-              Add Context
+              {uiText(language, "Add Context")}
             </div>
             {CONTEXT_OPTIONS.map((item) => (
               <button
@@ -629,14 +629,14 @@ export function ChatComposer({
               transition={{ type: "spring", stiffness: 400, damping: 20 }}
               onClick={() => fileInputRef.current?.click()}
               className="group/btn h-8 px-2.5 rounded-full border border-white/[0.10] bg-[var(--surface)] hover:bg-[var(--surface-hover)] hover:border-[var(--border-accent)] text-[var(--txt-muted)] hover:text-[var(--txt)] transition-all flex items-center gap-1.5 text-xs font-sans font-medium touch-target cursor-pointer backdrop-blur-md shadow-xs"
-              title="Attach file or media"
-              aria-label="Add files"
+              title={uiText(language, "Attach file or media")}
+              aria-label={uiText(language, "Add files")}
             >
               <span className="text-base leading-none font-bold transition-transform duration-200 group-hover/btn:rotate-90">
                 +
               </span>
               <span className="hidden sm:inline-block max-w-0 overflow-hidden whitespace-nowrap group-hover/btn:max-w-[80px] transition-all duration-300 text-[11px] font-sans">
-                Add files
+                {uiText(language, "Add files")}
               </span>
             </motion.button>
 
@@ -718,7 +718,7 @@ export function ChatComposer({
                 aria-haspopup="listbox"
                 aria-expanded={modelMenuOpen}
                 aria-controls="composer-model-listbox"
-                aria-label={`Select AI model. Current model: ${activeModel.name}`}
+                aria-label={`${uiText(language, "Select AI model. Current model:")} ${activeModel.name}`}
               >
                 <Atom className="w-3.5 h-3.5 text-[#c084fc] shrink-0" aria-hidden="true" />
                 <span className="font-sans text-xs sm:text-[13px] font-medium text-[var(--txt)] truncate max-w-[70px] xs:max-w-[110px] sm:max-w-none">
@@ -739,7 +739,7 @@ export function ChatComposer({
                 <div
                   id="composer-model-listbox"
                   role="listbox"
-                  aria-label="Available models"
+                  aria-label={uiText(language, "Available models")}
                   aria-activedescendant={
                     focusedIndex >= 0 && AVAILABLE_MODELS[focusedIndex]
                       ? `model-option-${AVAILABLE_MODELS[focusedIndex].id}`
@@ -751,8 +751,8 @@ export function ChatComposer({
                   className="absolute -left-16 sm:left-0 bottom-full mb-2 w-72 sm:w-80 max-w-[calc(100vw-2rem)] rounded-2xl p-2 z-50 bg-[var(--deep)]/95 backdrop-blur-2xl border border-white/[0.12] shadow-[0_16px_48px_0_rgba(0,0,0,0.65),0_0_28px_-4px_var(--accent-g)] flex flex-col gap-1 max-h-80 overflow-y-auto animate-in fade-in zoom-in-95 duration-150"
                 >
                   <div className="px-3 py-1.5 text-[10px] font-mono uppercase tracking-widest text-[var(--txt-muted)] border-b border-white/[0.08] flex items-center justify-between select-none">
-                    <span>Frontier Inference Models</span>
-                    <span className="text-[9px] text-[var(--accent-b)] font-semibold">Multi-Provider</span>
+                    <span>{uiText(language, "Frontier Inference Models")}</span>
+                    <span className="text-[9px] text-[var(--accent-b)] font-semibold">{uiText(language, "Multi-Provider")}</span>
                   </div>
                   <div className="flex flex-col gap-1 pt-1">
                     {AVAILABLE_MODELS.map((m, idx) => {
@@ -804,13 +804,13 @@ export function ChatComposer({
                             </p>
                             <div className="flex items-center gap-2 mt-1.5 text-[9px] font-mono text-[var(--txt-muted)]">
                               {m.contextWindow && (
-                                <span className="tabular-nums">{(m.contextWindow / 1024).toFixed(0)}k ctx</span>
+                                <span className="tabular-nums">{(m.contextWindow / 1024).toFixed(0)}k {uiText(language, "ctx")}</span>
                               )}
                               {m.supportsVision && (
-                                <span className="text-[var(--accent-b)] font-medium">✦ Multimodal</span>
+                                <span className="text-[var(--accent-b)] font-medium">✦ {uiText(language, "Multimodal")}</span>
                               )}
                               {m.pricingTier === "free" && (
-                                <span className="text-emerald-400 font-medium">Free</span>
+                                <span className="text-emerald-400 font-medium">{uiText(language, "Free")}</span>
                               )}
                             </div>
                           </div>
@@ -837,8 +837,8 @@ export function ChatComposer({
                   ? "bg-red-500/20 border-red-500/40 text-red-400 ring-2 ring-red-500/20"
                   : "border-white/[0.10] bg-[var(--surface)] text-[var(--txt-muted)] hover:text-[var(--txt)] hover:bg-[var(--surface-hover)] hover:border-[var(--border-accent)]"
               }`}
-              title={isRecording ? "Stop recording" : "Record voice input"}
-              aria-label="Record voice input"
+              title={uiText(language, isRecording ? "Stop recording" : "Record voice input")}
+              aria-label={uiText(language, "Record voice input")}
             >
               {isRecording ? (
                 <>
@@ -877,7 +877,7 @@ export function ChatComposer({
                 <Mic className="w-3.5 h-3.5 text-[var(--txt-muted)] group-hover/rec:text-[var(--txt)] transition-colors shrink-0" strokeWidth={2} />
               )}
               <span className="hidden sm:inline-block max-w-0 overflow-hidden whitespace-nowrap group-hover/rec:max-w-[80px] transition-all duration-300 font-mono text-[11px]">
-                {isRecording ? formattedRecordingTime : "Record"}
+                {isRecording ? formattedRecordingTime : uiText(language, "Record")}
               </span>
             </motion.button>
 
@@ -906,10 +906,10 @@ export function ChatComposer({
                   ease: "easeInOut",
                 }}
                 onClick={() => onStop()}
-                aria-label="Stop response generation"
+                aria-label={uiText(language, "Stop response generation")}
                 data-testid="stop-button"
                 className="w-8 h-8 rounded-full bg-[var(--danger)] text-white hover:bg-[var(--danger)]/90 transition-all shadow-[0_0_12px_rgba(232,85,85,0.4)] shrink-0 flex items-center justify-center touch-target cursor-pointer"
-                title="Stop response generation"
+                title={uiText(language, "Stop response generation")}
               >
                 <Square className="w-3.5 h-3.5 fill-white" />
               </motion.button>
@@ -928,14 +928,14 @@ export function ChatComposer({
                 transition={{ type: "spring", stiffness: 450, damping: 25 }}
                 onClick={handleSubmit}
                 disabled={(!input.trim() && attachments.length === 0) || disabled}
-                aria-label="Send message"
+                aria-label={uiText(language, "Send message")}
                 data-testid="send-button"
                 className={`group/send w-8 h-8 rounded-full transition-all shadow-sm shrink-0 flex items-center justify-center touch-target cursor-pointer ${
                   isSubmitReady
                     ? "bg-gradient-to-tr from-[var(--accent)] via-[var(--accent-b)] to-[var(--accent-c)] text-[var(--void)] font-bold shadow-[0_0_18px_var(--accent-g)] hover:brightness-110 active:brightness-95"
                     : "bg-[var(--surface)] border border-white/[0.08] text-[var(--txt-muted)] opacity-40 pointer-events-none"
                 }`}
-                title="Send message (Enter)"
+                title={uiText(language, "Send message (Enter)")}
               >
                 <motion.svg
                   width="15"

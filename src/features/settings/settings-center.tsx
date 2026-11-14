@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import * as Dialog from "@radix-ui/react-dialog";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { ArrowLeft, Check, ChevronDown, Command, Download, RotateCcw, Search, Settings2, Trash2, X } from "lucide-react";
@@ -14,6 +14,7 @@ import { DEFAULT_SETTINGS } from "./settings-service";
 import type { RadianceSettings } from "./settings-schema";
 import { PersonalIntelligenceCenter } from "@/features/intelligence/personal-intelligence-center";
 import type { PersonalIntelligenceProfile } from "@/features/intelligence/profile-schema";
+import { uiText, type UiLanguage } from "@/lib/i18n/ui";
 
 const SECTIONS = [
   { id: "general", label: "General" },
@@ -49,6 +50,7 @@ const SEARCH_TARGETS: Array<{ label: string; section: SectionId; id: string }> =
 ];
 
 interface SettingsCenterProps {
+  language?: UiLanguage;
   open: boolean;
   onOpenChange: (open: boolean) => void;
   section: string;
@@ -133,6 +135,7 @@ function SelectRow({
 }
 
 export function SettingsCenter({
+  language = "en",
   open,
   onOpenChange,
   section,
@@ -145,6 +148,7 @@ export function SettingsCenter({
   intelligenceProfile,
   onIntelligenceProfileChange,
 }: SettingsCenterProps) {
+  const t = useCallback((text: string, values?: Record<string, string | number>) => uiText(language, text, values), [language]);
   const reducedMotion = useReducedMotion() ?? false;
   const [activeSection, setActiveSection] = useState<SectionId>("general");
   const [search, setSearch] = useState("");
@@ -184,13 +188,13 @@ export function SettingsCenter({
 
   const searchResults = useMemo(() => {
     const query = search.trim().toLowerCase();
-    return query ? SEARCH_TARGETS.filter((target) => target.label.toLowerCase().includes(query)) : [];
-  }, [search]);
+    return query ? SEARCH_TARGETS.filter((target) => t(target.label).toLowerCase().includes(query)) : [];
+  }, [search, t]);
 
   const changeSetting = <K extends SettingKey>(key: K, value: RadianceSettings[K]) => {
     const next = { ...settings, [key]: value };
-    if (onChange(next)) setStatus("Saved locally");
-    else setStatus("Could not save. Check browser storage and try again.");
+    if (onChange(next)) setStatus(t("Saved locally"));
+    else setStatus(t("Could not save. Check browser storage and try again."));
   };
 
   const navigateToResult = (result: (typeof SEARCH_TARGETS)[number]) => {
@@ -204,12 +208,12 @@ export function SettingsCenter({
     const succeeded = confirmation === "reset" ? onReset() : await onClearConversations();
     setPending(false);
     if (succeeded) {
-      setStatus(confirmation === "reset" ? "Settings reset to defaults" : "Conversation history cleared");
+      setStatus(t(confirmation === "reset" ? "Settings reset to defaults" : "Conversation history cleared"));
       setInstructionsDraft(DEFAULT_SETTINGS.customInstructions);
       setConfirmation(null);
       requestAnimationFrame(() => confirmationTriggerRef.current?.focus());
     } else {
-      setStatus("The action could not be completed. Your data was not reported as changed.");
+      setStatus(t("The action could not be completed. Your data was not reported as changed."));
     }
   };
 
@@ -236,10 +240,10 @@ export function SettingsCenter({
             previousFocusRef.current?.focus();
           }}
         >
-          <Dialog.Description className="sr-only">Manage your Radiance appearance, response behavior, models and local data.</Dialog.Description>
+          <Dialog.Description className="sr-only">{t("Manage your Radiance appearance, response behavior, models and local data.")}</Dialog.Description>
           <header className="flex shrink-0 items-center gap-3 border-b border-[var(--border)] bg-[var(--deep)] px-4 py-3 pt-[max(0.75rem,env(safe-area-inset-top,0px))] sm:px-6">
             <Dialog.Close asChild>
-              <button type="button" aria-label="Back to chat" className="flex h-11 min-w-11 items-center justify-center rounded-xl text-[var(--txt-muted)] transition-colors hover:bg-[var(--surface-hover)] hover:text-[var(--txt)] md:hidden">
+              <button type="button" aria-label={t("Back to chat")} className="flex h-11 min-w-11 items-center justify-center rounded-xl text-[var(--txt-muted)] transition-colors hover:bg-[var(--surface-hover)] hover:text-[var(--txt)] md:hidden">
                 <ArrowLeft className="h-5 w-5" />
               </button>
             </Dialog.Close>
@@ -248,8 +252,8 @@ export function SettingsCenter({
                 <Settings2 className="h-4 w-4" />
               </div>
               <div className="min-w-0">
-                <Dialog.Title className="font-serif text-lg font-semibold leading-tight text-[var(--txt)] sm:text-xl">Radiance Settings</Dialog.Title>
-                <p className="truncate text-xs text-[var(--txt-muted)]">One place for your workspace preferences</p>
+                <Dialog.Title className="font-serif text-lg font-semibold leading-tight text-[var(--txt)] sm:text-xl">{t("Radiance Settings")}</Dialog.Title>
+                <p className="truncate text-xs text-[var(--txt-muted)]">{t("One place for your workspace preferences")}</p>
               </div>
             </div>
             <label className="relative hidden w-[min(280px,32vw)] sm:block">
@@ -257,36 +261,36 @@ export function SettingsCenter({
               <input
                 type="search"
                 role="searchbox"
-                aria-label="Search settings"
+                aria-label={t("Search settings")}
                 value={search}
                 onChange={(event) => setSearch(event.target.value)}
-                placeholder="Search settings"
+                placeholder={t("Search settings")}
                 className="h-10 w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] pl-9 pr-3 text-sm text-[var(--txt)] placeholder:text-[var(--txt-muted)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
               />
             </label>
             <Dialog.Close asChild>
-              <button type="button" aria-label="Close settings" className="hidden h-11 w-11 shrink-0 items-center justify-center rounded-xl text-[var(--txt-muted)] transition-colors hover:bg-[var(--surface-hover)] hover:text-[var(--txt)] md:flex">
+              <button type="button" aria-label={t("Close settings")} className="hidden h-11 w-11 shrink-0 items-center justify-center rounded-xl text-[var(--txt-muted)] transition-colors hover:bg-[var(--surface-hover)] hover:text-[var(--txt)] md:flex">
                 <X className="h-4 w-4" />
               </button>
             </Dialog.Close>
           </header>
 
           <div className="border-b border-[var(--border)] px-4 py-3 md:hidden">
-            <label htmlFor="settings-section-mobile" className="sr-only">Settings section</label>
+            <label htmlFor="settings-section-mobile" className="sr-only">{t("Settings section")}</label>
             <select
               id="settings-section-mobile"
-              aria-label="Settings section"
+              aria-label={t("Settings section")}
               value={activeSection}
               onChange={(event) => setActiveSection(event.target.value as SectionId)}
               className="h-11 w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 text-sm text-[var(--txt)] focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
             >
-              {SECTIONS.map((entry) => <option key={entry.id} value={entry.id} className="bg-[var(--deep)]">{entry.label}</option>)}
+              {SECTIONS.map((entry) => <option key={entry.id} value={entry.id} className="bg-[var(--deep)]">{t(entry.label)}</option>)}
             </select>
           </div>
 
           <div className="flex min-h-0 flex-1">
-            <nav aria-label="Settings sections" className="hidden w-[220px] shrink-0 flex-col border-r border-[var(--border)] bg-[var(--void)]/35 p-3 md:flex">
-              <div className="px-3 pb-2 pt-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-[var(--txt-muted)]">Preferences</div>
+            <nav aria-label={t("Settings sections")} className="hidden w-[220px] shrink-0 flex-col border-r border-[var(--border)] bg-[var(--void)]/35 p-3 md:flex">
+              <div className="px-3 pb-2 pt-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-[var(--txt-muted)]">{t("Preferences")}</div>
               {SECTIONS.map((entry) => (
                 <button
                   type="button"
@@ -294,9 +298,9 @@ export function SettingsCenter({
                   aria-current={activeSection === entry.id ? "page" : undefined}
                   onClick={() => setActiveSection(entry.id)}
                   className={`mb-1 flex min-h-11 items-center rounded-xl px-3 text-left text-sm transition-colors ${activeSection === entry.id ? "bg-[var(--accent-d)] font-medium text-[var(--accent-b)]" : "text-[var(--txt-dim)] hover:bg-[var(--surface-hover)] hover:text-[var(--txt)]"}`}
-                >{entry.label}</button>
+                >{t(entry.label)}</button>
               ))}
-              <div className="mt-auto border-t border-[var(--border)] px-3 pt-3 text-xs text-[var(--txt-muted)]">Preferences are stored in this browser.</div>
+              <div className="mt-auto border-t border-[var(--border)] px-3 pt-3 text-xs text-[var(--txt-muted)]">{t("Preferences are stored in this browser.")}</div>
             </nav>
 
             <div className="relative min-w-0 flex-1 overflow-y-auto overscroll-contain px-4 pb-[max(1.5rem,env(safe-area-inset-bottom,0px))] pt-4 sm:px-7 sm:pt-6">
@@ -305,10 +309,10 @@ export function SettingsCenter({
                 <input
                   type="search"
                   role="searchbox"
-                  aria-label="Search settings"
+                  aria-label={t("Search settings")}
                   value={search}
                   onChange={(event) => setSearch(event.target.value)}
-                  placeholder="Search settings"
+                  placeholder={t("Search settings")}
                   className="h-11 w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] pl-9 pr-3 text-sm text-[var(--txt)] placeholder:text-[var(--txt-muted)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
                 />
               </label>
@@ -322,14 +326,14 @@ export function SettingsCenter({
                       onClick={() => navigateToResult(result)}
                       className="flex min-h-11 w-full items-center justify-between gap-3 rounded-xl px-3 text-left text-sm text-[var(--txt-dim)] hover:bg-[var(--surface-hover)] hover:text-[var(--txt)]"
                     >
-                      <span>{result.label}</span>
-                      <span className="text-xs text-[var(--txt-muted)]">{SECTIONS.find((entry) => entry.id === result.section)?.label}</span>
+                      <span>{t(result.label)}</span>
+                      <span className="text-xs text-[var(--txt-muted)]">{t(SECTIONS.find((entry) => entry.id === result.section)?.label ?? "General")}</span>
                     </button>
                   ))}
-                  {searchResults.length === 0 && <p className="px-3 py-2 text-sm text-[var(--txt-muted)]">No matching settings.</p>}
+                  {searchResults.length === 0 && <p className="px-3 py-2 text-sm text-[var(--txt-muted)]">{t("No matching settings.")}</p>}
                 </div>
               )}
-              {search.trim() && searchResults.length === 0 && <p role="status" className="mb-3 text-sm text-[var(--txt-muted)]">No settings match “{search}”.</p>}
+              {search.trim() && searchResults.length === 0 && <p role="status" className="mb-3 text-sm text-[var(--txt-muted)]">{t("No settings match “{search}”.", { search })}</p>}
 
               <AnimatePresence mode="wait" initial={false}>
                 <motion.section
@@ -342,15 +346,15 @@ export function SettingsCenter({
                   className="mx-auto max-w-[720px] pb-8"
                 >
                   <div className="mb-6 border-b border-[var(--border)] pb-5">
-                    <p className="mb-1 text-xs font-medium uppercase tracking-[0.13em] text-[var(--accent-b)]">{currentSection.label}</p>
-                    <h2 id="settings-section-title" className="font-serif text-2xl font-semibold tracking-tight text-[var(--txt)] sm:text-[28px]">{currentSection.label}</h2>
-                    <p className="mt-2 max-w-2xl text-sm leading-relaxed text-[var(--txt-muted)]">{sectionDescription(activeSection)}</p>
+                    <p className="mb-1 text-xs font-medium uppercase tracking-[0.13em] text-[var(--accent-b)]">{t(currentSection.label)}</p>
+                    <h2 id="settings-section-title" className="font-serif text-2xl font-semibold tracking-tight text-[var(--txt)] sm:text-[28px]">{t(currentSection.label)}</h2>
+                    <p className="mt-2 max-w-2xl text-sm leading-relaxed text-[var(--txt-muted)]">{t(sectionDescription(activeSection))}</p>
                   </div>
 
                   {activeSection === "general" && (
                     <div className="space-y-6">
                       <section id="settings-shortcuts" aria-labelledby="shortcuts-title">
-                        <h3 id="shortcuts-title" className="mb-2 flex items-center gap-2 text-sm font-semibold text-[var(--txt)]"><Command className="h-4 w-4 text-[var(--accent-b)]" />Keyboard Shortcuts</h3>
+                        <h3 id="shortcuts-title" className="mb-2 flex items-center gap-2 text-sm font-semibold text-[var(--txt)]"><Command className="h-4 w-4 text-[var(--accent-b)]" />{t("Keyboard Shortcuts")}</h3>
                         <div className="overflow-hidden rounded-2xl border border-[var(--border)]">
                           {KEYBOARD_SHORTCUTS.map((shortcut) => (
                             <div key={shortcut.id} className="flex min-h-12 items-center justify-between gap-3 border-b border-[var(--border)] px-3 last:border-0 sm:px-4">
@@ -359,20 +363,20 @@ export function SettingsCenter({
                             </div>
                           ))}
                           <div className="flex min-h-12 items-center justify-between gap-3 border-b border-[var(--border)] px-3 sm:px-4">
-                            <span className="text-sm text-[var(--txt-dim)]">Send message</span>
+                            <span className="text-sm text-[var(--txt-dim)]">{t("Send message")}</span>
                             <kbd className="rounded-lg border border-[var(--border)] bg-[var(--surface)] px-2.5 py-1.5 font-mono text-xs text-[var(--accent-b)]">{settings.enterToSend ? "Enter" : "Ctrl / ⌘ + Enter"}</kbd>
                           </div>
                           <div className="flex min-h-12 items-center justify-between gap-3 px-3 sm:px-4">
-                            <span className="text-sm text-[var(--txt-dim)]">New line</span>
+                            <span className="text-sm text-[var(--txt-dim)]">{t("New line")}</span>
                             <kbd className="rounded-lg border border-[var(--border)] bg-[var(--surface)] px-2.5 py-1.5 font-mono text-xs text-[var(--accent-b)]">{settings.enterToSend ? "Shift + Enter" : "Enter"}</kbd>
                           </div>
                         </div>
-                        <p className="mt-2 text-xs text-[var(--txt-muted)]">These actions use the application’s registered shortcuts. Browser and operating-system shortcuts are not customized here.</p>
+                          <p className="mt-2 text-xs text-[var(--txt-muted)]">{t("These actions use the application’s registered shortcuts. Browser and operating-system shortcuts are not customized here.")}</p>
                       </section>
 
                       <section id="local-session" className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4">
-                        <div className="flex items-center gap-2 text-sm font-semibold text-[var(--txt)]"><span className="h-2 w-2 rounded-full bg-emerald-400" />Local session</div>
-                        <p className="mt-2 text-sm leading-relaxed text-[var(--txt-muted)]">Your preferences and conversations are stored in this browser. This app instance has no signed-in account or settings sync connection.</p>
+                          <div className="flex items-center gap-2 text-sm font-semibold text-[var(--txt)]"><span className="h-2 w-2 rounded-full bg-emerald-400" />{t("Local session")}</div>
+                          <p className="mt-2 text-sm leading-relaxed text-[var(--txt-muted)]">{t("Your preferences and conversations are stored in this browser. This app instance has no signed-in account or settings sync connection.")}</p>
                       </section>
                     </div>
                   )}
@@ -381,8 +385,8 @@ export function SettingsCenter({
                     <div className="space-y-6">
                       <section id="color-theme">
                         <div className="mb-3">
-                          <h3 className="text-sm font-semibold text-[var(--txt)]">Color theme</h3>
-                          <p className="mt-1 text-xs text-[var(--txt-muted)]">Choose from the palettes already used by Radiance surfaces and background rendering.</p>
+                          <h3 className="text-sm font-semibold text-[var(--txt)]">{t("Color theme")}</h3>
+                          <p className="mt-1 text-xs text-[var(--txt-muted)]">{t("Choose from the palettes already used by Radiance surfaces and background rendering.")}</p>
                         </div>
                         <div className="grid grid-cols-3 gap-2.5 sm:grid-cols-4 lg:grid-cols-5">
                           {Object.values(COLOR_THEMES).map((theme) => {
@@ -391,12 +395,12 @@ export function SettingsCenter({
                               <button
                                 key={theme.id}
                                 type="button"
-                                aria-label={`${theme.label} color palette`}
+                                aria-label={`${theme.label} ${t("color palette")}`}
                                 aria-pressed={selected}
                                 onClick={() => {
                                   const next = { ...settings, theme: theme.id, autoTheme: false };
-                                  if (onChange(next)) setStatus("Saved locally");
-                                  else setStatus("Could not save. Check browser storage and try again.");
+                                  if (onChange(next)) setStatus(t("Saved locally"));
+                                  else setStatus(t("Could not save. Check browser storage and try again."));
                                 }}
                                 className={`flex min-h-[64px] items-center gap-2 rounded-xl border px-2.5 text-left transition-colors ${selected ? "border-[var(--accent)] bg-[var(--accent-d)]" : "border-[var(--border)] bg-[var(--surface)] hover:border-[var(--border-hover)]"}`}
                               >
@@ -413,16 +417,16 @@ export function SettingsCenter({
                       <section className="border-t border-[var(--border)] pt-3">
                         <SelectRow
                           id="atmosphere-engine"
-                          label="Atmosphere engine"
-                          description="Select the live background renderer. Some engines use WebGL or Canvas."
+                          label={t("Atmosphere engine")}
+                          description={t("Select the live background renderer. Some engines use WebGL or Canvas.")}
                           value={settings.gradientStyle}
                           options={ATMOSPHERE_ENGINES.map((engine) => ({ value: engine.id, label: engine.label }))}
                           onChange={(value) => changeSetting("gradientStyle", value as RadianceSettings["gradientStyle"])}
                         />
                         <SwitchRow
                           id="auto-theme"
-                          title="Rotate palette on each visit"
-                          description="Choose a different registered palette when the app opens. Selecting a palette turns this off so your choice stays selected."
+                          title={t("Rotate palette on each visit")}
+                          description={t("Choose a different registered palette when the app opens. Selecting a palette turns this off so your choice stays selected.")}
                           checked={settings.autoTheme}
                           onCheckedChange={(value) => changeSetting("autoTheme", value)}
                         />
@@ -434,16 +438,16 @@ export function SettingsCenter({
                     <div className="space-y-5">
                       <SelectRow
                         id="response-tone"
-                        label="Response tone"
-                        description="This tone is sent with new requests and shapes the assistant response."
+                        label={t("Response tone")}
+                        description={t("This tone is sent with new requests and shapes the assistant response.")}
                         value={settings.tone}
                         options={Object.values(TONES).map((tone) => ({ value: tone.id, label: `${tone.label} — ${tone.desc}` }))}
                         onChange={(value) => changeSetting("tone", value as RadianceSettings["tone"])}
                       />
                       <SelectRow
                         id="response-language-setting"
-                        label="Interface and response language"
-                        description="Changes the interface language and the language requested for AI responses."
+                        label={t("Interface and response language")}
+                        description={t("Changes the interface language and the language requested for AI responses.")}
                         value={settings.language}
                         options={[
                           { value: "en", label: "English" },
@@ -458,18 +462,18 @@ export function SettingsCenter({
                       />
                       <section id="custom-instructions" className="border-t border-[var(--border)] pt-5">
                         <div className="mb-3">
-                          <label htmlFor="custom-instructions-input" className="text-sm font-semibold text-[var(--txt)]">Custom instructions</label>
-                          <p className="mt-1 text-xs leading-relaxed text-[var(--txt-muted)]">A personal preference included with your AI request. Radiance keeps its own system and safety instructions authoritative.</p>
+                          <label htmlFor="custom-instructions-input" className="text-sm font-semibold text-[var(--txt)]">{t("Custom instructions")}</label>
+                          <p className="mt-1 text-xs leading-relaxed text-[var(--txt-muted)]">{t("A personal preference included with your AI request. Radiance keeps its own system and safety instructions authoritative.")}</p>
                         </div>
                         <textarea
                           id="custom-instructions-input"
-                          aria-label="Custom instructions"
+                          aria-label={t("Custom instructions")}
                           maxLength={2000}
                           rows={5}
                           value={instructionsDraft}
                           onChange={(event) => setInstructionsDraft(event.target.value)}
                           className="w-full resize-y rounded-xl border border-[var(--border)] bg-[var(--surface)] p-3 text-sm leading-relaxed text-[var(--txt)] placeholder:text-[var(--txt-muted)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
-                          placeholder="For example: Use metric units and explain unfamiliar terms."
+                          placeholder={t("For example: Use metric units and explain unfamiliar terms.")}
                         />
                         <div className="mt-2 flex items-center justify-between gap-2">
                           <span className="text-xs text-[var(--txt-muted)]">{instructionsDraft.length} / 2,000 characters</span>
@@ -478,7 +482,7 @@ export function SettingsCenter({
                             onClick={() => changeSetting("customInstructions", instructionsDraft.trim())}
                             disabled={instructionsDraft.length > 2000}
                             className="min-h-10 rounded-xl bg-[var(--accent)] px-4 text-sm font-medium text-white transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
-                          >Save instructions</button>
+                          >{t("Save instructions")}</button>
                         </div>
                       </section>
                     </div>
@@ -486,8 +490,8 @@ export function SettingsCenter({
 
                   {activeSection === "models" && (
                     <div id="default-model" className="space-y-3">
-                      <h3 className="text-sm font-semibold text-[var(--txt)]">Default model</h3>
-                      <p className="text-xs leading-relaxed text-[var(--txt-muted)]">Used for new requests unless you choose another model in the composer. Provider credentials remain server-side; availability depends on deployment configuration.</p>
+                      <h3 className="text-sm font-semibold text-[var(--txt)]">{t("Default model")}</h3>
+                      <p className="text-xs leading-relaxed text-[var(--txt-muted)]">{t("Used for new requests unless you choose another model in the composer. Provider credentials remain server-side; availability depends on deployment configuration.")}</p>
                       <div className="overflow-hidden rounded-2xl border border-[var(--border)]">
                         {AVAILABLE_MODELS.filter((model) => model.status === "active").map((model) => (
                           <label key={model.id} className="flex min-h-[68px] cursor-pointer items-center gap-3 border-b border-[var(--border)] px-4 last:border-0 hover:bg-[var(--surface)]">
@@ -503,7 +507,7 @@ export function SettingsCenter({
                               <span className="block text-sm font-medium text-[var(--txt)]">{model.name}</span>
                               <span className="mt-0.5 block text-xs text-[var(--txt-muted)]">{model.provider} · {model.sub}</span>
                             </span>
-                            <span className="hidden text-xs text-[var(--accent-b)] sm:block">{model.supportsVision || model.supportsPdf ? "Multimodal" : "Text"}</span>
+                            <span className="hidden text-xs text-[var(--accent-b)] sm:block">{t(model.supportsVision || model.supportsPdf ? "Multimodal" : "Text")}</span>
                           </label>
                         ))}
                       </div>
@@ -511,15 +515,15 @@ export function SettingsCenter({
                   )}
 
                   {activeSection === "personal-intelligence" && (
-                    <PersonalIntelligenceCenter profile={intelligenceProfile} onChange={onIntelligenceProfileChange} />
+                    <PersonalIntelligenceCenter language={language} profile={intelligenceProfile} onChange={onIntelligenceProfileChange} />
                   )}
 
                   {activeSection === "composer" && (
                     <div>
                       <SwitchRow
                         id="enter-to-send"
-                        title="Enter sends a message"
-                        description="When off, Enter inserts a line and Ctrl/Cmd+Enter sends. Shift+Enter always inserts a line."
+                        title={t("Enter sends a message")}
+                        description={t("When off, Enter inserts a line and Ctrl/Cmd+Enter sends. Shift+Enter always inserts a line.")}
                         checked={settings.enterToSend}
                         onCheckedChange={(value) => changeSetting("enterToSend", value)}
                       />
@@ -530,29 +534,29 @@ export function SettingsCenter({
                     <div className="space-y-4">
                       <section id="export-conversations" className="flex flex-col gap-4 rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4 sm:flex-row sm:items-center sm:justify-between">
                         <div>
-                          <h3 className="text-sm font-semibold text-[var(--txt)]">Export conversations</h3>
-                          <p className="mt-1 text-xs text-[var(--txt-muted)]">Download {conversationCount} locally available conversation{conversationCount === 1 ? "" : "s"} as a JSON file.</p>
+                          <h3 className="text-sm font-semibold text-[var(--txt)]">{t("Export conversations")}</h3>
+                          <p className="mt-1 text-xs text-[var(--txt-muted)]">{t("Download {count} locally available conversation(s) as a JSON file.", { count: conversationCount })}</p>
                         </div>
-                        <button type="button" onClick={() => setStatus(onExportConversations() ? "Conversation export downloaded" : "No conversations were available to export")} className="inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-xl border border-[var(--border)] px-4 text-sm text-[var(--txt)] transition-colors hover:bg-[var(--surface-hover)]">
-                          <Download className="h-4 w-4" />Export
+                        <button type="button" onClick={() => setStatus(t(onExportConversations() ? "Conversation export downloaded" : "No conversations were available to export"))} className="inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-xl border border-[var(--border)] px-4 text-sm text-[var(--txt)] transition-colors hover:bg-[var(--surface-hover)]">
+                          <Download className="h-4 w-4" />{t("Export")}
                         </button>
                       </section>
                       <section id="clear-conversations" className="flex flex-col gap-4 rounded-2xl border border-[var(--danger)]/25 bg-[var(--danger-d)]/30 p-4 sm:flex-row sm:items-center sm:justify-between">
                         <div>
-                          <h3 className="text-sm font-semibold text-[var(--txt)]">Clear conversation history</h3>
-                          <p className="mt-1 text-xs leading-relaxed text-[var(--txt-muted)]">Deletes local conversation records. This cannot be undone and does not reset your preferences.</p>
+                          <h3 className="text-sm font-semibold text-[var(--txt)]">{t("Clear conversation history")}</h3>
+                          <p className="mt-1 text-xs leading-relaxed text-[var(--txt-muted)]">{t("Deletes local conversation records. This cannot be undone and does not reset your preferences.")}</p>
                         </div>
                         <button type="button" disabled={conversationCount === 0} onClick={(event) => { confirmationTriggerRef.current = event.currentTarget; setConfirmation("clear"); }} className="inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-xl border border-[var(--danger)]/40 px-4 text-sm text-[var(--danger)] transition-colors hover:bg-[var(--danger-d)] disabled:cursor-not-allowed disabled:opacity-45">
-                          <Trash2 className="h-4 w-4" />Clear history
+                          <Trash2 className="h-4 w-4" />{t("Clear history")}
                         </button>
                       </section>
                       <section id="reset-settings" className="flex flex-col gap-4 rounded-2xl border border-[var(--border)] p-4 sm:flex-row sm:items-center sm:justify-between">
                         <div>
-                          <h3 className="text-sm font-semibold text-[var(--txt)]">Reset settings</h3>
-                          <p className="mt-1 text-xs leading-relaxed text-[var(--txt-muted)]">Restore preference defaults. Conversations and other local data are kept.</p>
+                          <h3 className="text-sm font-semibold text-[var(--txt)]">{t("Reset settings")}</h3>
+                          <p className="mt-1 text-xs leading-relaxed text-[var(--txt-muted)]">{t("Restore preference defaults. Conversations and other local data are kept.")}</p>
                         </div>
                         <button type="button" onClick={(event) => { confirmationTriggerRef.current = event.currentTarget; setConfirmation("reset"); }} className="inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-xl border border-[var(--border)] px-4 text-sm text-[var(--txt-dim)] transition-colors hover:bg-[var(--surface-hover)] hover:text-[var(--txt)]">
-                          <RotateCcw className="h-4 w-4" />Reset settings
+                          <RotateCcw className="h-4 w-4" />{t("Reset settings")}
                         </button>
                       </section>
                     </div>
@@ -561,10 +565,10 @@ export function SettingsCenter({
                   {activeSection === "about" && (
                     <div id="application-version" className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-5">
                       <div className="font-serif text-xl font-semibold text-[var(--txt)]">RADIANCE</div>
-                      <p className="mt-2 text-sm text-[var(--txt-dim)]">Illuminate what is possible.</p>
+                      <p className="mt-2 text-sm text-[var(--txt-dim)]">{t("Illuminate what is possible.")}</p>
                       <dl className="mt-5 divide-y divide-[var(--border)] border-y border-[var(--border)]">
-                        <div className="flex min-h-12 items-center justify-between gap-3 text-sm"><dt className="text-[var(--txt-muted)]">Version</dt><dd className="font-mono text-xs text-[var(--txt)]">{APP_VERSION}</dd></div>
-                        <div className="flex min-h-12 items-center justify-between gap-3 text-sm"><dt className="text-[var(--txt-muted)]">Session</dt><dd className="text-[var(--txt)]">Local browser</dd></div>
+                        <div className="flex min-h-12 items-center justify-between gap-3 text-sm"><dt className="text-[var(--txt-muted)]">{t("Version")}</dt><dd className="font-mono text-xs text-[var(--txt)]">{APP_VERSION}</dd></div>
+                        <div className="flex min-h-12 items-center justify-between gap-3 text-sm"><dt className="text-[var(--txt-muted)]">{t("Session")}</dt><dd className="text-[var(--txt)]">{t("Local browser")}</dd></div>
                       </dl>
                     </div>
                   )}
@@ -578,16 +582,16 @@ export function SettingsCenter({
           {confirmation && (
             <div className="absolute inset-0 z-[70] flex items-center justify-center bg-black/65 p-4" onMouseDown={(event) => event.target === event.currentTarget && setConfirmation(null)}>
               <div role="alertdialog" aria-modal="true" aria-labelledby="confirmation-title" aria-describedby="confirmation-description" className="w-full max-w-md rounded-2xl border border-[var(--border-hover)] bg-[var(--surface-overlay)] p-5 shadow-modal">
-                <h2 id="confirmation-title" className="font-serif text-xl font-semibold text-[var(--txt)]">{confirmation === "reset" ? "Reset settings?" : "Clear conversation history?"}</h2>
+                <h2 id="confirmation-title" className="font-serif text-xl font-semibold text-[var(--txt)]">{t(confirmation === "reset" ? "Reset settings?" : "Clear conversation history?")}</h2>
                 <p id="confirmation-description" className="mt-2 text-sm leading-relaxed text-[var(--txt-muted)]">
                   {confirmation === "reset"
-                    ? "Appearance, model, tone, language, composer and instruction preferences return to their defaults. Conversations are kept."
-                    : `This permanently removes ${conversationCount} locally stored conversation${conversationCount === 1 ? "" : "s"}. Settings are kept.`}
+                    ? t("Appearance, model, tone, language, composer and instruction preferences return to their defaults. Conversations are kept.")
+                    : t("This permanently removes {count} locally stored conversation(s). Settings are kept.", { count: conversationCount })}
                 </p>
                 <div className="mt-6 flex justify-end gap-2">
-                  <button type="button" disabled={pending} onClick={() => setConfirmation(null)} className="min-h-11 rounded-xl px-4 text-sm text-[var(--txt-dim)] hover:bg-[var(--surface-hover)]">Cancel</button>
+                  <button type="button" disabled={pending} onClick={() => setConfirmation(null)} className="min-h-11 rounded-xl px-4 text-sm text-[var(--txt-dim)] hover:bg-[var(--surface-hover)]">{t("Cancel")}</button>
                   <button ref={confirmButtonRef} type="button" disabled={pending} onClick={runConfirmation} className={`min-h-11 rounded-xl px-4 text-sm font-medium text-white disabled:opacity-60 ${confirmation === "clear" ? "bg-[var(--danger)] hover:opacity-90" : "bg-[var(--accent)] hover:opacity-90"}`}>
-                    {pending ? "Working…" : confirmation === "reset" ? "Reset preferences" : "Clear conversations"}
+                    {pending ? t("Working…") : confirmation === "reset" ? t("Reset preferences") : t("Clear conversations")}
                   </button>
                 </div>
               </div>

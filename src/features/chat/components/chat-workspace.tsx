@@ -9,7 +9,7 @@ import { ChatComposer } from "@/components/chat/chat-composer";
 import { formatMarkdown } from "@/lib/utils/format";
 import { RadianceLogo } from "@/components/branding/radiance-logo";
 import { AlertCircle, RotateCcw } from "lucide-react";
-import type { UiLanguage } from "@/lib/i18n/ui";
+import { uiText, type UiLanguage } from "@/lib/i18n/ui";
 
 export interface ChatWorkspaceProps {
   language?: UiLanguage;
@@ -41,6 +41,7 @@ export interface ChatWorkspaceProps {
 }
 
 interface ChatErrorCardProps {
+  language?: UiLanguage;
   error: string | Error;
   errorDetails?: string;
   onRetry?: () => void;
@@ -50,7 +51,7 @@ interface ChatErrorCardProps {
  * In-Message Structured Error Card.
  * Replaces disruptive window.alert() with an accessible, in-chat visual error state and prominent Retry button.
  */
-export function ChatErrorCard({ error, errorDetails, onRetry }: ChatErrorCardProps) {
+export function ChatErrorCard({ error, errorDetails, onRetry, language = "en" }: ChatErrorCardProps) {
   const errorMessage =
     typeof error === "string" ? error : error?.message || "An error occurred during response generation.";
 
@@ -71,7 +72,7 @@ export function ChatErrorCard({ error, errorDetails, onRetry }: ChatErrorCardPro
         <div className="px-4 py-3.5 rounded-2xl rounded-tl-sm text-sm border bg-[var(--danger-d)]/40 border-[var(--danger)]/30 border-l-4 border-l-[var(--danger)] text-[var(--txt)] shadow-[0_4px_24px_rgba(232,85,85,0.08)] glass-panel">
           <div className="flex items-center gap-2 mb-1.5">
             <span className="font-semibold text-xs uppercase tracking-wider text-[var(--danger)]">
-              Generation Error
+              {uiText(language, "Generation Error")}
             </span>
           </div>
 
@@ -91,11 +92,11 @@ export function ChatErrorCard({ error, errorDetails, onRetry }: ChatErrorCardPro
                 type="button"
                 onClick={onRetry}
                 data-testid="error-retry-button"
-                aria-label="Retry failed generation"
+                aria-label={uiText(language, "Retry failed generation")}
                 className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-[var(--danger)] hover:bg-[var(--danger)]/85 text-white shadow-sm transition-all duration-200 active:scale-95 touch-target focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--danger)] cursor-pointer"
               >
                 <RotateCcw className="w-3.5 h-3.5" aria-hidden="true" />
-                <span>Retry</span>
+                <span>{uiText(language, "Retry")}</span>
               </button>
             </div>
           )}
@@ -161,6 +162,7 @@ export function ChatWorkspace({
               msg.isError ? (
                 <ChatErrorCard
                   key={msg.id}
+                  language={language}
                   error={msg.content || "An error occurred during response generation."}
                   errorDetails={msg.errorDetails}
                   onRetry={onRetry}
@@ -168,6 +170,7 @@ export function ChatWorkspace({
               ) : (
                 <MessageItem
                   key={msg.id}
+                  language={language}
                   message={msg}
                   onRegenerate={onRegenerate ? () => onRegenerate(msg.id) : undefined}
                   onEdit={handleEdit ? (newText) => handleEdit(msg.id, newText) : undefined}
@@ -194,7 +197,7 @@ export function ChatWorkspace({
                   <div
                     role="status"
                     aria-live="polite"
-                    aria-label="Generating response"
+                    aria-label={uiText(language, "Generating response")}
                     className="px-4 py-3 rounded-2xl rounded-tl-sm text-sm leading-relaxed border transition-all bg-[var(--ai-bg)] border-[var(--ai-border)] border-l-2 border-l-[var(--accent)] text-[var(--txt)] shadow-[0_4px_24px_rgba(0,0,0,0.25)] glass-panel inline-flex items-center gap-2.5"
                   >
                     <span className="flex items-center gap-1.5 py-0.5" aria-hidden="true">
@@ -203,7 +206,7 @@ export function ChatWorkspace({
                       <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent)] animate-pulse [animation-delay:400ms]" />
                     </span>
                     <span className="font-mono text-xs text-[var(--txt-muted)] tracking-wide">
-                      Thinking...
+                      {uiText(language, "Thinking...")}
                     </span>
                   </div>
                 </div>
@@ -242,6 +245,7 @@ export function ChatWorkspace({
             {/* Active Stream Error Card */}
             {streamError && !isGenerating && (
               <ChatErrorCard
+                language={language}
                 error={streamError}
                 onRetry={onRetry}
               />
@@ -260,6 +264,7 @@ export function ChatWorkspace({
             data-testid="left-follow-up-lane"
           >
             <FollowUpChips
+              language={language}
               questions={activeFollowUps}
               onSelect={onSelectSuggestion}
               label="Left"
@@ -295,6 +300,7 @@ export function ChatWorkspace({
             data-testid="right-follow-up-lane"
           >
             <FollowUpChips
+              language={language}
               questions={activeFollowUps}
               onSelect={onSelectSuggestion}
               label="Right"

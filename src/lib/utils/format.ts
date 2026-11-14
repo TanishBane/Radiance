@@ -507,14 +507,21 @@ export function formatMarkdown(raw: string, options?: FormatMarkdownOptions): st
 /**
  * Returns formatted relative time (e.g. 'just now', '5m ago', '3h ago').
  */
-export function formatRelativeTime(timestamp: number): string {
+export function formatRelativeTime(timestamp: number, locale = "en"): string {
   const diff = Date.now() - timestamp;
   const sec = Math.floor(diff / 1000);
   const min = Math.floor(sec / 60);
   const hr = Math.floor(min / 60);
   const day = Math.floor(hr / 24);
 
-  if (sec < 60) return "just now";
+    if (sec < 60) return locale === "en" ? "just now" : new Intl.RelativeTimeFormat(locale, { numeric: "auto" }).format(0, "second");
+    if (locale !== "en") {
+      const relative = new Intl.RelativeTimeFormat(locale, { numeric: "auto" });
+      if (min < 60) return relative.format(-min, "minute");
+      if (hr < 24) return relative.format(-hr, "hour");
+      if (day < 7) return relative.format(-day, "day");
+      return new Date(timestamp).toLocaleDateString(locale, { month: "short", day: "numeric" });
+    }
   if (min < 60) return `${min}m ago`;
   if (hr < 24) return `${hr}h ago`;
   if (day === 1) return "yesterday";

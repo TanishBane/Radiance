@@ -2,8 +2,10 @@
 
 import React, { useCallback, useState } from "react";
 import { ArrowLeft, ArrowRight, CornerDownRight } from "lucide-react";
+import { uiText, type UiLanguage } from "@/lib/i18n/ui";
 
 interface FollowUpChipsProps {
+  language?: UiLanguage;
   questions: string[];
   onSelect: (question: string) => void;
   label?: string;
@@ -12,19 +14,21 @@ interface FollowUpChipsProps {
 }
 
 export function FollowUpChips({
+  language = "en",
   questions,
   onSelect,
   label,
   startAt = 0,
   compact = false,
 }: FollowUpChipsProps) {
+  const t = (text: string, values?: Record<string, string | number>) => uiText(language, text, values);
   const [activeIndex, setActiveIndex] = useState(startAt);
   const total = questions.length;
   const currentIndex = total > 0 ? activeIndex % total : 0;
   const carouselLabel = label
-    ? `${label} follow-up suggestions`
-    : "Suggested follow-up questions";
-  const controlLabel = label || "suggestion";
+    ? t("{label} follow-up suggestions", { label: t(label) })
+    : t("Suggested follow-up questions");
+  const controlLabel = label ? t(label) : t("suggestion");
   const move = useCallback((direction: number) => {
     setActiveIndex((current) => ((current % total) + direction + total) % total);
   }, [total]);
@@ -65,20 +69,20 @@ export function FollowUpChips({
       {!compact && (
         <div className="mb-2 flex items-center justify-between px-1">
           <p className="min-w-0 truncate text-xs font-medium tracking-wide text-[var(--txt-dim)]">
-            {label || "Continue the conversation"}
+            {label ? t(label) : t("Continue the conversation")}
           </p>
           {total > 1 && (
             <div className="flex shrink-0 items-center gap-1.5">
               <p
                 aria-live="polite"
-                aria-label={`Suggestion ${currentIndex + 1} of ${total}`}
+                aria-label={t("Suggestion {current} of {total}", { current: currentIndex + 1, total })}
                 className="mr-1 text-xs tabular-nums text-[var(--txt-muted)]"
               >
-                {`Suggestion ${currentIndex + 1} of ${total}`}
+                {t("Suggestion {current} of {total}", { current: currentIndex + 1, total })}
               </p>
               <button
                 type="button"
-                aria-label={`Previous ${controlLabel}`}
+                aria-label={t("Previous {label}", { label: controlLabel })}
                 onClick={() => move(-1)}
                 onTouchEnd={(event) => {
                   event.preventDefault();
@@ -90,7 +94,7 @@ export function FollowUpChips({
               </button>
               <button
                 type="button"
-                aria-label={`Next ${controlLabel}`}
+                aria-label={t("Next {label}", { label: controlLabel })}
                 onClick={() => move(1)}
                 onTouchEnd={(event) => {
                   event.preventDefault();
@@ -124,7 +128,7 @@ export function FollowUpChips({
             <button
               key={`${index}-${question}`}
               type="button"
-              aria-label={`Use suggestion: ${question}`}
+              aria-label={t("Use suggestion: {text}", { text: question })}
               aria-current={isActive ? "true" : undefined}
               onClick={() => onSelect(question)}
               tabIndex={isVisible ? 0 : -1}
