@@ -480,3 +480,16 @@
 - Focused unit suites: 111 tests passed across 6 files. The lifecycle suite emits existing jsdom canvas warnings; assertions pass.
 - `pnpm.cmd typecheck`, `pnpm.cmd lint`, `pnpm.cmd build`, and `git diff --check`: passed.
 - Source search confirmed message delete/export controls and handlers are no longer present.
+
+## 2026-11-14 — Simplify the sidebar footer
+
+### Changed
+
+- Replaced the nonfunctional “Radiance Session” profile row and `R` badge with a quiet, noninteractive Local storage status indicator. The expanded sidebar shows its label; the collapsed rail retains an accessible status label.
+
+### Verification
+
+- Added a focused sidebar test; it passed and asserts the profile label and `R` are absent while Local remains.
+- Desktop browser inspection confirmed the updated footer and no profile row. At 390px, the mobile drawer exposes the Local status and the document has no horizontal overflow.
+- `pnpm.cmd typecheck`, `pnpm.cmd lint`, `pnpm.cmd build`, and `git diff --check`: passed.
+- Latest Web Interface Guidelines source reviewed; no issue found in the changed footer markup.

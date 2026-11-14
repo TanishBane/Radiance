@@ -191,22 +191,23 @@ export function SidebarDock({
           </div>
         </div>
 
-        {/* Bottom Profile Anchor */}
+        {/* Local storage indicator */}
         <div className="pt-2">
           <div className="h-[1px] w-full bg-gradient-to-r from-transparent via-white/[0.10] to-transparent mb-2.5" />
-          <SidebarLink
-            link={{
-              label: "Radiance Session",
-              href: "#",
-              icon: (
-                <div className="relative w-7 h-7 rounded-full bg-gradient-to-br from-[var(--surface-raised)] to-[var(--deep)] border border-[var(--accent)]/40 text-[var(--accent-b)] flex items-center justify-center font-mono font-bold text-xs shrink-0 shadow-sm">
-                  <span>R</span>
-                  <span className="absolute -bottom-0.5 -right-0.5 w-2 h-2 rounded-full bg-emerald-400 border border-[var(--deep)] shadow-xs animate-pulse" />
-                </div>
-              ),
-              badge: "Local",
-            }}
-          />
+          <div className={cn("flex", open ? "justify-start px-2.5" : "justify-center")}>
+            <div
+              role="status"
+              aria-label={uiText(language, "Local")}
+              title={uiText(language, "Local")}
+              className={cn(
+                "flex h-8 items-center justify-center gap-1.5 rounded-md border border-emerald-500/25 bg-emerald-500/10 px-2 font-mono text-xs font-semibold text-emerald-400",
+                !open && "w-8 px-0"
+              )}
+            >
+              <span aria-hidden="true" className="h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-400" />
+              {open && <span>{uiText(language, "Local")}</span>}
+            </div>
+          </div>
         </div>
       </SidebarBody>
     </Sidebar>
