@@ -27,23 +27,27 @@ describe("Mobile & Cross-Browser Ergonomics, Touch & Viewport Invariants", () =>
     expect(viewport.interactiveWidget).toBe("resizes-content");
   });
 
-  it("renders mobile navigation toggle button with >=44x44px touch target ergonomics", () => {
-    const handleToggleMobile = vi.fn();
+  it("renders sidebar and search controls with >=44x44px touch targets", () => {
+    const handleToggleSidebar = vi.fn();
+    const handleOpenSearch = vi.fn();
     render(
       <Topbar
         language="en"
         onToggleLanguage={vi.fn()}
         onClearChat={vi.fn()}
         onNewChat={vi.fn()}
-        onToggleMobileMenu={handleToggleMobile}
+        onToggleSidebar={handleToggleSidebar}
+        onOpenSearch={handleOpenSearch}
       />
     );
 
-    const mobileMenuBtn = screen.getByRole("button", { name: /open navigation menu/i });
-    expect(mobileMenuBtn).toBeDefined();
-    expect(mobileMenuBtn.className).toContain("touch-target");
-    expect(mobileMenuBtn.className).toContain("min-w-[44px]");
-    expect(mobileMenuBtn.className).toContain("min-h-[44px]");
+    const sidebarBtn = screen.getByRole("button", { name: "Toggle sidebar" });
+    const searchBtn = screen.getByRole("button", { name: "Search chats" });
+    expect(sidebarBtn.className).toContain("touch-target");
+    expect(sidebarBtn.className).toContain("min-w-[44px]");
+    expect(sidebarBtn.className).toContain("min-h-[44px]");
+    expect(searchBtn.className).toContain("min-w-[44px]");
+    expect(searchBtn.className).toContain("min-h-[44px]");
   });
 
   it("renders topbar language toggles and clear button with finger-friendly touch targets", () => {
@@ -56,12 +60,10 @@ describe("Mobile & Cross-Browser Ergonomics, Touch & Viewport Invariants", () =>
       />
     );
 
-    const enBtn = screen.getByRole("button", { name: "EN" });
-    const hiBtn = screen.getByRole("button", { name: "HI" });
+    const languageBtn = screen.getByRole("button", { name: "Translate" });
     const clearBtn = screen.getByRole("button", { name: /clear active conversation/i });
 
-    expect(enBtn.className).toContain("touch-target");
-    expect(hiBtn.className).toContain("touch-target");
+    expect(languageBtn.className).toContain("min-h-11");
     expect(clearBtn.className).toContain("touch-target");
     expect(clearBtn.className).toContain("min-w-[44px]");
     expect(clearBtn.className).toContain("min-h-[44px]");

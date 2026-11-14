@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useRef } from "react";
 import * as Dialog from "@radix-ui/react-dialog";
 import { Conversation } from "@/lib/types/chat";
 import { formatRelativeTime } from "@/lib/utils/format";
@@ -32,6 +32,7 @@ export function HistoryDrawer({
 }: HistoryDrawerProps) {
   const t = (text: string) => uiText(language, text);
   const [search, setSearch] = useState("");
+  const searchInputRef = useRef<HTMLInputElement>(null);
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -51,7 +52,13 @@ export function HistoryDrawer({
       <Dialog.Portal>
       <Dialog.Overlay className="radiance-dialog-overlay fixed inset-0 z-40 bg-black/60 backdrop-blur-sm" />
 
-      <Dialog.Content className="radiance-dialog-panel radiance-dialog-right fixed right-0 top-0 bottom-0 h-screen h-[100dvh] w-80 max-w-[88vw] z-50 flex flex-col pt-[env(safe-area-inset-top,0px)] pb-[env(safe-area-inset-bottom,0px)] pr-[env(safe-area-inset-right,0px)] bg-[var(--deep)]/95 backdrop-blur-2xl border-l border-[var(--border)] shadow-[-20px_0_50px_rgba(0,0,0,0.6)] outline-none">
+      <Dialog.Content
+        onOpenAutoFocus={(event) => {
+          event.preventDefault();
+          searchInputRef.current?.focus();
+        }}
+        className="radiance-dialog-panel radiance-dialog-right fixed right-0 top-0 bottom-0 h-screen h-[100dvh] w-80 max-w-[88vw] z-50 flex flex-col pt-[env(safe-area-inset-top,0px)] pb-[env(safe-area-inset-bottom,0px)] pr-[env(safe-area-inset-right,0px)] bg-[var(--deep)]/95 backdrop-blur-2xl border-l border-[var(--border)] shadow-[-20px_0_50px_rgba(0,0,0,0.6)] outline-none"
+      >
         <Dialog.Description className="sr-only">{t("Search, select, and manage saved conversations.")}</Dialog.Description>
         {/* Header */}
         <div className="flex items-center justify-between px-4 py-3.5 border-b border-[var(--border)]">
@@ -87,7 +94,10 @@ export function HistoryDrawer({
           <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-[var(--surface)] border border-[var(--border)] focus-within:border-[var(--accent)]">
             <Search className="w-3.5 h-3.5 text-[var(--txt-muted)] shrink-0" />
             <input
-              type="text"
+              ref={searchInputRef}
+              type="search"
+              name="conversation-search"
+              aria-label={t("Search chat history...")}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder={t("Search chat history...")}

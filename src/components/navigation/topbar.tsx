@@ -2,8 +2,7 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import { RadianceLogo } from "@/components/branding/radiance-logo";
-import { Check, ChevronDown, Languages, Trash2 } from "lucide-react";
-import { IconMenu2 } from "@tabler/icons-react";
+import { Check, ChevronDown, Languages, PanelLeft, Search, Trash2 } from "lucide-react";
 import { UI_LANGUAGES, UI_LANGUAGE_LABELS, uiText, type UiLanguage } from "@/lib/i18n/ui";
 
 interface TopbarProps {
@@ -11,7 +10,9 @@ interface TopbarProps {
   onToggleLanguage: (lang: UiLanguage) => void;
   onClearChat: () => void;
   onNewChat: () => void;
-  onToggleMobileMenu?: () => void;
+  onOpenSearch?: () => void;
+  onToggleSidebar?: () => void;
+  sidebarOpen?: boolean;
 }
 
 export function Topbar({
@@ -19,7 +20,9 @@ export function Topbar({
   onToggleLanguage,
   onClearChat,
   onNewChat,
-  onToggleMobileMenu,
+  onOpenSearch,
+  onToggleSidebar,
+  sidebarOpen = false,
 }: TopbarProps) {
   const [languageMenuOpen, setLanguageMenuOpen] = useState(false);
   const languageMenuRef = useRef<HTMLDivElement>(null);
@@ -46,19 +49,30 @@ export function Topbar({
 
   return (
     <header className="sticky top-0 z-30 flex items-center justify-between gap-2 px-2.5 sm:px-4 py-2 sm:py-2.5 pt-[max(0.625rem,env(safe-area-inset-top,0px))] pl-[max(0.625rem,env(safe-area-inset-left,0px))] pr-[max(0.625rem,env(safe-area-inset-right,0px))] bg-[var(--void)]/85 backdrop-blur-xl border-b border-[var(--border)] select-none shrink-0 w-full min-h-[var(--mobile-topbar-h,52px)]">
-      {/* Left: Mobile Menu Toggle & Desktop Context Indicator */}
+      {/* Left: search and sidebar controls */}
       <div className="flex items-center gap-2 sm:gap-3 min-w-0">
-        {/* On Mobile: Hamburger button to open sidebar drawer */}
-        {onToggleMobileMenu && (
+        {onToggleSidebar && (
           <button
             type="button"
-            ref={languageTriggerRef}
-            onClick={onToggleMobileMenu}
+            onClick={onToggleSidebar}
             className="min-w-[44px] min-h-[44px] p-2 rounded-xl border border-[var(--border)] text-[var(--txt-dim)] hover:text-[var(--txt)] hover:bg-[var(--surface-hover)] active:scale-95 transition-all flex items-center justify-center touch-target cursor-pointer"
-            title={uiText(language, "Open navigation menu")}
-            aria-label={uiText(language, "Open navigation menu")}
+            title={uiText(language, "Toggle sidebar")}
+            aria-label={uiText(language, "Toggle sidebar")}
+            aria-pressed={sidebarOpen}
           >
-            <IconMenu2 className="w-5 h-5" />
+            <PanelLeft className="w-5 h-5" aria-hidden="true" />
+          </button>
+        )}
+
+        {onOpenSearch && (
+          <button
+            type="button"
+            onClick={onOpenSearch}
+            className="min-w-[44px] min-h-[44px] p-2 rounded-xl border border-[var(--border)] text-[var(--txt-dim)] hover:text-[var(--txt)] hover:bg-[var(--surface-hover)] active:scale-95 transition-all flex items-center justify-center touch-target cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
+            title={uiText(language, "Search chats")}
+            aria-label={uiText(language, "Search chats")}
+          >
+            <Search className="w-5 h-5" aria-hidden="true" />
           </button>
         )}
 
@@ -73,6 +87,7 @@ export function Topbar({
         <div className="relative" ref={languageMenuRef}>
           <button
             type="button"
+            ref={languageTriggerRef}
             aria-label={uiText(language, "Translate")}
             aria-haspopup="listbox"
             aria-expanded={languageMenuOpen}

@@ -493,3 +493,18 @@
 - Desktop browser inspection confirmed the updated footer and no profile row. At 390px, the mobile drawer exposes the Local status and the document has no horizontal overflow.
 - `pnpm.cmd typecheck`, `pnpm.cmd lint`, `pnpm.cmd build`, and `git diff --check`: passed.
 - Latest Web Interface Guidelines source reviewed; no issue found in the changed footer markup.
+
+## 2026-11-15 — Add header search and sidebar controls
+
+### Changed
+
+- Added a panel-style sidebar toggle and a search button to the chat header, with localized accessible names across all seven supported UI languages and 44px touch targets.
+- Connected Search to the existing conversation history drawer. The search field now receives focus when the drawer opens and continues matching conversation titles and message contents.
+- Moved the language-menu focus return ref to the actual Translate button.
+
+### Verification
+
+- Focused unit suites: 28 passed across the topbar, navigation drawers, and mobile ergonomics checks. Coverage includes both header controls, drawer search focus, and current language-selector sizing.
+- `pnpm.cmd typecheck`, `pnpm.cmd lint`, and `pnpm.cmd build`: passed.
+- Playwright screenshots inspected at 1440×900 and 390×844; both header controls fit at desktop and mobile widths.
+- Obscura MCP blocked the local app URL under its private-network guard; visual review used the installed Playwright browser instead. No Obscura bypass or configuration change was made.

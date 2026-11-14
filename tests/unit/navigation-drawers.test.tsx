@@ -65,6 +65,23 @@ describe("Navigation Drawers Unit Specifications (Accessibility & Dialog Semanti
       expect(screen.getByText("React Server Components")).toBeDefined();
     });
 
+    it("focuses the conversation search field when the drawer opens", () => {
+      render(
+        <HistoryDrawer
+          isOpen={true}
+          onClose={vi.fn()}
+          conversations={mockConversations}
+          activeConversationId="conv_1"
+          onSelectConversation={vi.fn()}
+          onTogglePin={vi.fn()}
+          onDeleteConversation={vi.fn()}
+          onDeleteAll={vi.fn()}
+        />
+      );
+
+      expect(document.activeElement).toBe(screen.getByRole("searchbox", { name: "Search chat history..." }));
+    });
+
     it("invokes onSelectConversation when clicking an item", () => {
       const onSelect = vi.fn();
       render(

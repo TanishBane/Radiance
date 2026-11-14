@@ -396,7 +396,13 @@ export default function RadianceApp() {
           onToggleLanguage={(l) => handleSettingsChange({ ...settings, language: l })}
           onClearChat={handleNewChat}
           onNewChat={handleNewChat}
-          onToggleMobileMenu={() => setMobileSidebarOpen((prev) => !prev)}
+          onToggleSidebar={() => setMobileSidebarOpen((prev) => !prev)}
+          sidebarOpen={mobileSidebarOpen}
+          onOpenSearch={() => {
+            setSettingsOpen(false);
+            setMobileSidebarOpen(false);
+            setHistoryOpen(true);
+          }}
         />
 
         {previewGradientStyle && !settingsOpen && (

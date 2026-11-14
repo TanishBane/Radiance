@@ -21,6 +21,16 @@ const navigationTranslations: Record<UiLanguage, Record<string, string>> = {
   ja: { Recents: "最近", "No recent chats yet.": "最近のチャットはありません。", "Loading chats…": "チャットを読み込み中…", "Chat Navigation": "チャットナビゲーション" },
 };
 
+const headerTranslations: Record<UiLanguage, Record<string, string>> = {
+  en: { "Search chats": "Search chats", "Toggle sidebar": "Toggle sidebar" },
+  hi: { "Search chats": "चैट खोजें", "Toggle sidebar": "साइडबार टॉगल करें" },
+  es: { "Search chats": "Buscar chats", "Toggle sidebar": "Mostrar u ocultar la barra lateral" },
+  fr: { "Search chats": "Rechercher des discussions", "Toggle sidebar": "Afficher ou masquer la barre latérale" },
+  de: { "Search chats": "Chats durchsuchen", "Toggle sidebar": "Seitenleiste ein- oder ausblenden" },
+  pt: { "Search chats": "Pesquisar conversas", "Toggle sidebar": "Mostrar ou ocultar a barra lateral" },
+  ja: { "Search chats": "チャットを検索", "Toggle sidebar": "サイドバーを切り替え" },
+};
+
 const hindi: Record<string, string> = {
   "Translate": "भाषा",
   "English": "English",
@@ -334,6 +344,6 @@ const regenerationTranslations: Record<UiLanguage, string> = {
 };
 
 export function uiText(language: UiLanguage, text: string, values: Record<string, string | number> = {}): string {
-  const translated = text === "Regenerated once" ? regenerationTranslations[language] : navigationTranslations[language]?.[text] ?? atmospherePreviewTranslations[language]?.[text] ?? surfaceTranslations[language]?.[text] ?? detailTranslations[language]?.[text] ?? sharedTranslations[language]?.[text] ?? translations[language]?.[text] ?? text;
+  const translated = text === "Regenerated once" ? regenerationTranslations[language] : headerTranslations[language]?.[text] ?? navigationTranslations[language]?.[text] ?? atmospherePreviewTranslations[language]?.[text] ?? surfaceTranslations[language]?.[text] ?? detailTranslations[language]?.[text] ?? sharedTranslations[language]?.[text] ?? translations[language]?.[text] ?? text;
   return translated.replace(/\{([^}]+)\}/g, (_, key: string) => String(values[key] ?? `{${key}}`));
 }
