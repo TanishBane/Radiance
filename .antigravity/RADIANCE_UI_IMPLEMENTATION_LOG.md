@@ -551,3 +551,21 @@
 - `pnpm.cmd typecheck`, `pnpm.cmd lint`, and `pnpm.cmd build`: passed.
 - Playwright screenshots inspected at 1440×900 and 390×844; both header controls fit at desktop and mobile widths.
 - Obscura MCP blocked the local app URL under its private-network guard; visual review used the installed Playwright browser instead. No Obscura bypass or configuration change was made.
+
+## 2026-11-15 — Redesign the landing page below the preserved hero
+
+### Changed
+
+- Preserved the navigation and hero shown in the approved reference. Reworked every landing section below the hero into an editorial folio: larger serif section titles, aligned copy, quiet violet-black surfaces, and clearer reading order.
+- Replaced repetitive icon-led card grids with a comparison, a connected capability list, and concise process and privacy rows. Kept interactive preference and walkthrough controls intact.
+- Reduced decoration and motion to a single context trace and brief reveal transitions; reduced-motion settings remove the trace animation and retain readable content.
+- Corrected privacy and product copy to describe current behavior accurately: explicit saves, local plaintext storage, bounded matching, and opt-in provider sharing. Marked roadmap items as future ideas.
+- Tightened several section titles after responsive review and removed sticky FAQ positioning.
+
+### Verification
+
+- `pnpm build`, `pnpm typecheck`, `pnpm lint`, and `git diff --check`: passed.
+- Production screenshots reviewed at 1440, 768, and 390 pixels. Automated measurements found zero horizontal overflow at all three widths.
+- Browser interaction checks confirmed the walkthrough changes steps, preference controls render Detailed and Structured responses, FAQ answers expand, and reduced-motion disables the context trace animation.
+- The page-wide visual inspector still flags the intentionally preserved hero (its headline, glow, gradient, and suggestion cards) and its font/image heuristics; it also identifies the mobile “Personal Intelligence” process label as an eyebrow. These were not changed because the reference explicitly excludes the hero and the label names the active process.
+- The UI detector reports advisory font sizes against its generic type ramp; Radiance’s local homepage direction uses a surface-specific display scale documented in `DESIGN.md`.

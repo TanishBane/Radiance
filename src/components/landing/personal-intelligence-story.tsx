@@ -2,43 +2,27 @@
 
 import React from "react";
 import { motion, useReducedMotion } from "motion/react";
-import { 
-  FileText, 
-  Sliders, 
-  Search, 
-  ShieldCheck, 
-  Sparkles,
-  ArrowRight
-} from "lucide-react";
 import { motionEasing } from "@/lib/motion/presets";
 import "./personal-intelligence-story.css";
 
 const PILLARS = [
   {
-    id: "pillar-1",
-    icon: <FileText className="w-5 h-5 text-violet-400" />,
-    iconBg: "rgba(139, 92, 246, 0.15)",
+    id: "saved-notes",
     title: "Saved Notes",
     desc: "Preserve project constraints, coding rules, thesis points, and recurring definitions. Stored locally under your explicit direction."
   },
   {
-    id: "pillar-2",
-    icon: <Sliders className="w-5 h-5 text-rose-400" />,
-    iconBg: "rgba(244, 63, 94, 0.15)",
+    id: "response-preferences",
     title: "Response Preferences",
     desc: "Tune tone, explanation depth, and output structure. Prefer concise bullets, academic citations, or step-by-step technical blueprints."
   },
   {
-    id: "pillar-3",
-    icon: <Search className="w-5 h-5 text-cyan-400" />,
-    iconBg: "rgba(6, 182, 212, 0.15)",
+    id: "context-retrieval",
     title: "Relevant Context Retrieval",
     desc: "Bounded lexical matching brings forward matching notes when relevant to the prompt, without sharing irrelevant private history."
   },
   {
-    id: "pillar-4",
-    icon: <ShieldCheck className="w-5 h-5 text-emerald-400" />,
-    iconBg: "rgba(16, 185, 129, 0.15)",
+    id: "sharing-control",
     title: "Provider-Sharing Control",
     desc: "You control whether personal context reaches third-party AI models (Groq, Gemini, OpenRouter). Completely opt-in per request."
   }
@@ -62,7 +46,7 @@ export function PersonalIntelligenceStory() {
           transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.6, ease: motionEasing.entrance }}
         >
           <h2 id="intelligence-story-title" className="intelligence-story-title">
-            An AI experience shaped around your context.
+            Your context, carried forward.
           </h2>
 
           <p className="intelligence-story-lede">
@@ -71,9 +55,9 @@ export function PersonalIntelligenceStory() {
         </motion.div>
 
         {/* 4 Pillars Grid */}
-        <div className="intelligence-pillars-grid" data-ui>
+        <ol className="intelligence-pillars-grid">
           {PILLARS.map((pillar, idx) => (
-            <motion.div
+            <motion.li
               key={pillar.id}
               className="intelligence-pillar-card"
               initial={shouldReduceMotion ? false : { opacity: 0, y: 24 }}
@@ -81,17 +65,14 @@ export function PersonalIntelligenceStory() {
               viewport={{ once: true, amount: 0.2 }}
               transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.5, delay: idx * 0.1, ease: motionEasing.entrance }}
             >
-              <div 
-                className="intelligence-pillar-icon"
-                style={{ background: pillar.iconBg }}
-              >
-                {pillar.icon}
+              <span className="intelligence-pillar-marker" aria-hidden="true" />
+              <div className="intelligence-pillar-copy">
+                <h3 className="intelligence-pillar-title">{pillar.title}</h3>
+                <p className="intelligence-pillar-desc">{pillar.desc}</p>
               </div>
-              <h3 className="intelligence-pillar-title">{pillar.title}</h3>
-              <p className="intelligence-pillar-desc">{pillar.desc}</p>
-            </motion.div>
+            </motion.li>
           ))}
-        </div>
+        </ol>
       </div>
     </section>
   );

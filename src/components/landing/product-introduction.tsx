@@ -5,14 +5,14 @@ export function ProductIntroduction() {
     <section id="product" className="landing-section story-introduction">
       <div className="landing-shell story-intro-grid">
         <div>
-          <h2 className="landing-section-title">Saved by you. Ready when it matters.</h2>
+          <h2 className="landing-section-title">Saved by you. Ready when needed.</h2>
         </div>
         <div className="story-intro-copy">
           <p className="landing-copy" style={{ marginTop: 0 }}>
-            A useful assistant should not make you start from zero. Keep the project details and working preferences you choose, then return to the work instead of repeating yourself.
+            Keep the project details and working preferences you choose, then return to the work without restating them each time.
           </p>
           <p className="landing-copy">
-            Personal Intelligence gives those details a clear home: notes you save, preferences you set, and a sharing switch you control.
+            Personal Intelligence gives those details a clear home: notes you save, preferences you set, and a sharing control you choose.
           </p>
           <p className="story-boundary">Nothing is inferred in the background. A note is saved only when you choose to save it.</p>
         </div>

@@ -2,49 +2,29 @@
 
 import React from "react";
 import { motion, useReducedMotion } from "motion/react";
-import { 
-  Database, 
-  Search, 
-  Workflow, 
-  Cpu, 
-  Zap,
-  CheckCircle2
-} from "lucide-react";
 import { motionEasing } from "@/lib/motion/presets";
 import "./context-pipeline.css";
 
 const STAGES = [
   {
     key: "store",
-    step: "Local Store",
     title: "Local Note Store",
-    desc: "Saved notes and preferences remain encrypted in browser localStorage until an active prompt triggers context assembly.",
-    icon: <Database className="w-5 h-5 text-cyan-400" />,
-    iconBg: "rgba(6, 182, 212, 0.15)"
+    desc: "Notes and response preferences are stored in plaintext in this browser profile. They are not synchronized across devices."
   },
   {
     key: "matcher",
-    step: "Lexical Match",
     title: "Bounded Lexical Matcher",
-    desc: "Keyword-driven token matching checks incoming prompt tokens against saved note triggers without executing unverified vector extrapolations.",
-    icon: <Search className="w-5 h-5 text-amber-400" />,
-    iconBg: "rgba(245, 158, 11, 0.15)"
+    desc: "Radiance compares a new prompt with saved notes using bounded lexical matching to identify relevant context."
   },
   {
     key: "envelope",
-    step: "Context Envelope",
-    title: "Context Injection Envelope",
-    desc: "Matched constraints are assembled into an isolated system preamble, clearly demarcated to prevent prompt injection or drift.",
-    icon: <Workflow className="w-5 h-5 text-coral-400" />,
-    iconBg: "rgba(251, 146, 60, 0.15)"
+    title: "Request assembly",
+    desc: "A limited set of matching notes and selected preference labels can be added to the request when sharing is enabled."
   },
   {
     key: "synthesis",
-    step: "Model Synthesis",
     title: "Model Synthesis Stream",
-    desc: "Target model (Groq, Gemini, OpenRouter) streams formatted reasoning tokens adhering strictly to your verified preferences.",
-    icon: <Cpu className="w-5 h-5 text-blue-400" />,
-    iconBg: "rgba(59, 130, 246, 0.15)"
+    desc: "The model you selected receives the request and any context you chose to share, then generates its reply."
   }
 ];
 
@@ -66,18 +46,17 @@ export function ContextPipelineSection() {
           transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.6, ease: motionEasing.entrance }}
         >
           <h2 id="pipeline-heading" className="pipeline-title">
-            The right context. At the right moment.
+            How chosen context reaches a reply.
           </h2>
 
           <p className="pipeline-lede">
-            Trace how Radiance retrieves and activates your personal knowledge. A bounded, transparent pipeline that values determinism, user consent, and token efficiency over opaque autonomous agents.
+            Follow the path from notes saved on this device to a later request. Matching context is shared only when you turn sharing on.
           </p>
         </motion.div>
 
-        {/* 4-Stage Pathway Grid */}
-        <div className="pipeline-track" data-ui>
+        <ol className="pipeline-track">
           {STAGES.map((stage, idx) => (
-            <motion.div
+            <motion.li
               key={stage.key}
               className="pipeline-node"
               initial={shouldReduceMotion ? false : { opacity: 0, y: 24 }}
@@ -85,21 +64,11 @@ export function ContextPipelineSection() {
               viewport={{ once: true, amount: 0.2 }}
               transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.5, delay: idx * 0.12, ease: motionEasing.entrance }}
             >
-              <div className="flex items-center justify-between">
-                <span className="pipeline-node-step">{stage.step}</span>
-                <div 
-                  className="pipeline-node-icon"
-                  style={{ background: stage.iconBg }}
-                >
-                  {stage.icon}
-                </div>
-              </div>
-
               <h3 className="pipeline-node-title">{stage.title}</h3>
               <p className="pipeline-node-desc">{stage.desc}</p>
-            </motion.div>
+            </motion.li>
           ))}
-        </div>
+        </ol>
       </div>
     </section>
   );

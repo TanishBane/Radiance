@@ -1,0 +1,719 @@
+/* The homepage folio treatment begins below the preserved masthead and hero. */
+.landing-root {
+  --folio-ground: var(--void);
+  --folio-raised: var(--deep);
+  --folio-ink: var(--txt);
+  --folio-muted: var(--txt-dim);
+  --folio-accent: var(--accent);
+}
+
+.landing-root #problem,
+.landing-root #product,
+.landing-root #preview,
+.landing-root #intelligence,
+.landing-root #preferences,
+.landing-root #pipeline,
+.landing-root #privacy,
+.landing-root #faq,
+.landing-root #vision,
+.landing-root #start {
+  position: relative;
+  isolation: isolate;
+  overflow: clip;
+  width: 100%;
+  padding: clamp(4.5rem, 8vw, 7rem) clamp(1.25rem, 4vw, 3.5rem);
+  color: var(--folio-ink);
+  background: var(--folio-ground) !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+/* Quiet shifts in the violet-black surface keep long reading sections distinct. */
+.landing-root #product,
+.landing-root #preferences,
+.landing-root #privacy,
+.landing-root #start {
+  background: var(--folio-raised) !important;
+}
+
+.landing-root #problem .problem-shell,
+.landing-root #product .landing-shell,
+.landing-root #preview .landing-shell,
+.landing-root #intelligence .intelligence-story-shell,
+.landing-root #preferences .preference-sandbox-shell,
+.landing-root #pipeline .pipeline-shell,
+.landing-root #privacy .privacy-shell,
+.landing-root #faq .landing-shell,
+.landing-root #vision .vision-shell,
+.landing-root #start .landing-shell,
+.landing-root .landing-footer > .landing-shell {
+  width: min(100%, 1280px);
+  max-width: 1280px;
+  margin-inline: auto;
+  z-index: auto;
+}
+
+.landing-root :is(
+  #problem h2, #product h2, #preview h2, #intelligence h2, #preferences h2,
+  #pipeline h2, #privacy h2, #faq h2, #vision h2, #start h2
+) {
+  max-width: 16ch;
+  margin: 0;
+  color: var(--folio-ink);
+  font-family: var(--font-serif), Georgia, serif;
+  font-size: clamp(2.5rem, 5.2vw, 4.5rem);
+  font-weight: 500;
+  letter-spacing: -0.025em;
+  line-height: 0.98;
+  text-wrap: balance;
+  text-shadow: none;
+}
+
+.landing-root :is(
+  #problem p, #product p, #preview p, #intelligence p, #preferences p,
+  #pipeline p, #privacy p, #faq p, #vision p, #start p
+) {
+  color: var(--folio-muted);
+  font-size: 1rem;
+  line-height: 1.7;
+  text-shadow: none;
+}
+
+.landing-root :is(
+  #problem .problem-header, #intelligence .intelligence-story-header,
+  #preferences .preference-sandbox-header, #pipeline .pipeline-header,
+  #privacy .privacy-header, #vision .vision-header
+) {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(18rem, 0.8fr);
+  align-items: end;
+  gap: clamp(2rem, 7vw, 7rem);
+  width: 100%;
+  max-width: none;
+  margin: 0 0 clamp(3rem, 6vw, 5rem);
+  text-align: start;
+}
+
+.landing-root :is(
+  #problem .problem-lede, #intelligence .intelligence-story-lede,
+  #preferences .preference-lede, #pipeline .pipeline-lede,
+  #privacy .privacy-lede, #vision .vision-lede
+) {
+  max-width: 55ch;
+  margin: 0;
+  font-size: clamp(1rem, 1.3vw, 1.2rem);
+}
+
+/* Compare two real conversation states without putting each in a glass panel. */
+.landing-root #problem .problem-shell { align-items: stretch; }
+.landing-root #problem .problem-comparison-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(2rem, 6vw, 6rem);
+  width: 100%;
+}
+.landing-root #problem .problem-panel {
+  min-width: 0;
+  padding: 1.5rem 0 0;
+  border: 0 !important;
+  border-radius: 0;
+  background: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  transform: none;
+}
+.landing-root #problem .problem-panel-radiance {
+  padding-inline-start: clamp(1.5rem, 4vw, 3.5rem);
+  border-inline-start: 1px solid var(--border) !important;
+}
+.landing-root #problem .problem-panel-header {
+  min-height: 3rem;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: 0 0 1.75rem;
+  padding: 0;
+  border: 0;
+  color: var(--folio-ink);
+  font-size: 1.1rem;
+}
+.landing-root #problem .problem-panel-header > span:first-child {
+  color: var(--folio-ink) !important;
+}
+.landing-root #problem .problem-badge-state {
+  padding: 0;
+  color: var(--folio-muted) !important;
+  font-size: 0.875rem;
+  font-weight: 400;
+  background: transparent !important;
+  border: 0 !important;
+}
+.landing-root #problem .problem-badge-state svg,
+.landing-root #problem .problem-panel-header svg { display: none; }
+.landing-root #problem .problem-dialogue-flow {
+  gap: 1.5rem;
+  margin: 0;
+}
+.landing-root #problem .problem-bubble-user,
+.landing-root #problem .problem-bubble-ai {
+  max-width: 100%;
+  padding: 0;
+  color: var(--folio-ink) !important;
+  font-size: clamp(1rem, 1.4vw, 1.25rem);
+  line-height: 1.65;
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 0;
+}
+.landing-root #problem .problem-bubble-ai { color: var(--folio-muted) !important; }
+.landing-root #problem .problem-bubble-ai > div {
+  margin-block-start: 1rem;
+  padding: 1rem;
+  color: var(--folio-ink) !important;
+  font-size: 0.875rem;
+  line-height: 1.65;
+  background: var(--folio-raised) !important;
+  border-radius: 0.5rem;
+}
+.landing-root #problem .problem-panel-footer {
+  margin-block-start: 2rem;
+  padding: 0;
+  color: var(--folio-muted) !important;
+  font-size: 0.875rem;
+  border: 0;
+}
+
+/* The product explanation becomes a marginal note beside one example exchange. */
+.landing-root #product .story-intro-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.8fr) minmax(20rem, 0.9fr);
+  gap: 2rem clamp(2rem, 7vw, 7rem);
+  align-items: start;
+}
+.landing-root #product .landing-section-title { max-width: none; }
+.landing-root #product .story-intro-copy { max-width: 58ch; }
+.landing-root #product .story-intro-copy .landing-copy { margin: 0 0 1rem; }
+.landing-root #product .story-boundary {
+  margin: 1.5rem 0 0;
+  padding-inline-start: 1rem;
+  border-inline-start: 2px solid var(--folio-accent);
+  color: var(--folio-ink);
+}
+.landing-root #product .story-visual {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+  gap: clamp(2rem, 7vw, 7rem);
+  margin: clamp(2.5rem, 5vw, 4rem) 0 0;
+  padding: 2rem 0 0;
+  border: 0;
+  border-top: 1px solid var(--border);
+  background: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+.landing-root #product .story-compare-panel {
+  display: grid;
+  align-content: start;
+  gap: 0.9rem;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+.landing-root #product .story-compare-label,
+.landing-root #product .story-compare-foot { color: var(--folio-muted); font-size: 0.875rem; }
+.landing-root #product .story-compare-question,
+.landing-root #product .story-compare-answer {
+  margin: 0;
+  color: var(--folio-ink);
+  font-size: clamp(1.1rem, 1.5vw, 1.35rem);
+  line-height: 1.55;
+}
+.landing-root #product .story-after { padding-inline-start: clamp(1.5rem, 4vw, 3.5rem); border-inline-start: 1px solid var(--border); }
+
+/* The live walkthrough keeps its controls, with the example treated as a page margin. */
+.landing-root #preview .landing-preview-intro {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(18rem, 0.8fr);
+  align-items: end;
+  gap: clamp(2rem, 7vw, 7rem);
+  margin: 0 0 3rem;
+}
+.landing-root #preview .landing-section-title { max-width: none; }
+.landing-root #preview .landing-preview-description { max-width: 50ch; margin: 0; }
+.landing-root #preview .landing-preview {
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+.landing-root #preview .landing-preview-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: 0 0 1rem;
+  border: 0;
+  border-bottom: 1px solid var(--border);
+  background: transparent;
+}
+.landing-root #preview .landing-preview-steps { display: flex; flex-wrap: wrap; gap: 1.5rem; }
+.landing-root #preview .landing-preview-steps button {
+  min-height: 44px;
+  padding: 0 0.25rem;
+  color: var(--folio-muted);
+  background: transparent;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  border-radius: 0;
+  transition: color 160ms ease, border-color 160ms ease;
+}
+.landing-root #preview .landing-preview-steps button[aria-pressed="true"] {
+  color: var(--folio-ink);
+  border-bottom-color: var(--folio-accent);
+}
+.landing-root #preview .landing-preview-steps button:hover { color: var(--folio-ink); }
+.landing-root #preview .landing-preview-steps button:focus-visible,
+.landing-root #faq button:focus-visible,
+.landing-root #preferences button:focus-visible,
+.landing-root #start a:focus-visible {
+  outline: 2px solid var(--accent-b);
+  outline-offset: 4px;
+}
+.landing-root #preview .landing-preview-meta { display: flex; gap: 1rem; color: var(--folio-muted); font-size: 0.875rem; }
+.landing-root #preview .landing-demo-tag { color: var(--folio-muted); }
+.landing-root #preview .landing-preview-body {
+  display: grid;
+  grid-template-columns: minmax(10rem, 0.35fr) minmax(0, 1fr);
+  gap: clamp(2rem, 7vw, 7rem);
+  min-height: 14rem;
+  padding: 2rem 0 0;
+}
+.landing-root #preview .landing-preview-rail {
+  color: var(--folio-accent);
+  font-size: 0.875rem;
+}
+.landing-root #preview .landing-preview-rail > span { background-color: var(--folio-accent) !important; box-shadow: none !important; }
+.landing-root #preview .landing-preview-main h3 {
+  margin: 0 0 1rem;
+  color: var(--folio-ink);
+  font: 500 clamp(1.75rem, 3vw, 2.75rem)/1.05 var(--font-serif), Georgia, serif;
+}
+.landing-root #preview .landing-preview-main .landing-copy { max-width: 65ch; margin: 0; }
+.landing-root #preview .landing-preview-sample {
+  max-width: 60ch;
+  margin: 1.5rem 0 0;
+  padding-inline-start: 1rem;
+  color: var(--folio-ink);
+  border-inline-start: 2px solid var(--folio-accent);
+}
+.landing-root #preview .landing-preview-sample-mark { display: none; }
+
+/* A single context trace connects the four capabilities. */
+.landing-root #intelligence .intelligence-pillars-grid {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0;
+  margin: 0;
+  padding: 0 0 0 1.75rem;
+  list-style: none;
+}
+.landing-root #intelligence .intelligence-pillars-grid::before {
+  position: absolute;
+  inset-block: 1rem 1.5rem;
+  inset-inline-start: 0.35rem;
+  width: 1px;
+  background: var(--border-hover);
+  content: "";
+  transform: scaleY(1);
+  transform-origin: top;
+  animation: folio-trace-in 700ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.landing-root #intelligence .intelligence-pillar-card {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(14rem, 0.6fr) minmax(0, 1fr);
+  align-items: baseline;
+  gap: clamp(1.5rem, 6vw, 6rem);
+  min-width: 0;
+  padding: 1.5rem 0;
+  border: 0 !important;
+  border-radius: 0;
+  background: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  transform: none;
+  list-style: none;
+}
+.landing-root #intelligence .intelligence-pillar-marker {
+  position: absolute;
+  inset-inline-start: -1.72rem;
+  top: 2rem;
+  width: 0.65rem;
+  height: 0.65rem;
+  border: 2px solid var(--folio-accent);
+  border-radius: 50%;
+  background: var(--folio-ground);
+}
+.landing-root #intelligence .intelligence-pillar-title {
+  margin: 0;
+  color: var(--folio-ink);
+  font: 500 clamp(1.4rem, 2vw, 1.9rem)/1.2 var(--font-serif), Georgia, serif;
+}
+.landing-root #intelligence .intelligence-pillar-desc { max-width: 65ch; margin: 0; font-size: 1rem; }
+
+/* Preference controls remain interactive; the response itself is the focal point. */
+.landing-root #preferences .preference-sandbox-shell { align-items: stretch; }
+.landing-root #preferences .preference-sandbox-header { align-items: end; }
+.landing-root #preferences .preference-title { max-width: none; }
+.landing-root #preferences .preference-stage-container {
+  display: grid;
+  grid-template-columns: minmax(11rem, 0.32fr) minmax(0, 1fr);
+  align-items: start;
+  gap: 1.5rem clamp(2rem, 5vw, 5rem);
+  width: 100%;
+  padding: 2rem 0 0;
+  border: 0;
+  border-top: 1px solid var(--border);
+  border-radius: 0;
+  background: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+.landing-root #preferences .preference-toggle-bar {
+  display: grid;
+  gap: 0.25rem;
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+.landing-root #preferences .preference-toggle-btn {
+  justify-content: flex-start;
+  min-height: 44px;
+  padding: 0 0.75rem;
+  color: var(--folio-muted);
+  font-size: 0.95rem;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  transition: color 160ms ease, background-color 160ms ease;
+}
+.landing-root #preferences .preference-toggle-btn-active {
+  color: var(--folio-ink);
+  background: var(--folio-raised);
+  box-shadow: inset 2px 0 var(--folio-accent);
+}
+.landing-root #preferences .preference-result-card {
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+.landing-root #preferences .preference-result-meta {
+  align-items: baseline;
+  gap: 1rem 2rem;
+  margin: 0 0 1.5rem;
+  padding: 0 0 1rem;
+  border: 0;
+  border-bottom: 1px solid var(--border);
+}
+.landing-root #preferences .preference-result-label { color: var(--folio-accent); font-size: 0.9rem; font-weight: 500; }
+.landing-root #preferences .preference-result-meta > span:last-child { color: var(--folio-muted); font-size: 0.875rem; }
+.landing-root #preferences .preference-result-body { color: var(--folio-ink); font-size: 1rem; line-height: 1.75; }
+.landing-root #preferences .preference-result-body > div > div { color: var(--folio-ink); }
+.landing-root #preferences .preference-result-body code { color: var(--folio-ink); }
+.landing-root #preferences .preference-demo-note {
+  grid-column: 2;
+  margin: 0;
+  color: var(--folio-muted);
+  font-size: 0.875rem;
+}
+
+/* Explain the actual retrieval path as a reading sequence, not four mini-panels. */
+.landing-root #pipeline .pipeline-shell { align-items: stretch; }
+.landing-root #pipeline .pipeline-track {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.landing-root #pipeline .pipeline-node {
+  display: grid;
+  grid-template-columns: minmax(15rem, 0.6fr) minmax(0, 1fr);
+  align-items: baseline;
+  gap: clamp(1.5rem, 6vw, 6rem);
+  padding: 1.5rem 0;
+  border: 0;
+  border-top: 1px solid var(--border);
+  border-radius: 0;
+  background: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  transform: none;
+  list-style: none;
+}
+.landing-root #pipeline .pipeline-node::after { display: none; }
+.landing-root #pipeline .pipeline-node-title {
+  margin: 0;
+  color: var(--folio-ink);
+  font: 500 clamp(1.35rem, 2vw, 1.8rem)/1.2 var(--font-serif), Georgia, serif;
+}
+.landing-root #pipeline .pipeline-node-desc { max-width: 65ch; margin: 0; color: var(--folio-muted); font-size: 1rem; }
+
+/* Plain-language privacy, with the storage boundary kept visible and legible. */
+.landing-root #privacy .privacy-shell { align-items: stretch; }
+.landing-root #privacy .privacy-header { grid-template-columns: minmax(0, 0.8fr) minmax(20rem, 0.8fr); }
+.landing-root #privacy .privacy-header > div { align-self: end; }
+.landing-root #privacy .privacy-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 44px;
+  color: var(--folio-ink);
+  font-size: 0.95rem;
+  text-underline-offset: 0.25em;
+  text-decoration-color: var(--folio-accent);
+}
+.landing-root #privacy .privacy-link:hover { color: var(--accent-b); }
+.landing-root #privacy .privacy-truth-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.landing-root #privacy .privacy-card {
+  display: grid;
+  grid-template-columns: minmax(15rem, 0.6fr) minmax(0, 1fr);
+  align-items: baseline;
+  gap: clamp(1.5rem, 6vw, 6rem);
+  padding: 1.5rem 0;
+  border: 0;
+  border-top: 1px solid var(--border);
+  border-radius: 0;
+  background: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  list-style: none;
+}
+.landing-root #privacy .privacy-card-title {
+  margin: 0;
+  color: var(--folio-ink);
+  font: 500 clamp(1.3rem, 1.9vw, 1.7rem)/1.25 var(--font-serif), Georgia, serif;
+}
+.landing-root #privacy .privacy-card-desc { max-width: 65ch; margin: 0; color: var(--folio-muted); font-size: 1rem; }
+.landing-root #privacy .privacy-boundary {
+  max-width: 75ch;
+  margin: 2rem 0 0;
+  padding-inline-start: 1rem;
+  border-inline-start: 2px solid var(--folio-accent);
+  color: var(--folio-ink);
+  font-size: 0.95rem;
+}
+
+/* Future work is marked as future; the layout gives each idea room to read. */
+.landing-root #vision .vision-shell { align-items: stretch; }
+.landing-root #vision .vision-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.landing-root #vision .vision-card {
+  display: grid;
+  grid-template-columns: minmax(15rem, 0.6fr) minmax(0, 1fr);
+  align-items: baseline;
+  gap: clamp(1.5rem, 6vw, 6rem);
+  padding: 1.5rem 0;
+  border: 0;
+  border-top: 1px solid var(--border);
+  border-radius: 0;
+  background: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  transform: none;
+  list-style: none;
+}
+.landing-root #vision .vision-card-title {
+  margin: 0;
+  color: var(--folio-ink);
+  font: 500 clamp(1.35rem, 2vw, 1.8rem)/1.2 var(--font-serif), Georgia, serif;
+}
+.landing-root #vision .vision-card-desc { max-width: 65ch; margin: 0; color: var(--folio-muted); font-size: 1rem; }
+
+/* The questions stay operable by keyboard and reveal their answer in place. */
+.landing-root #faq .landing-faq {
+  display: grid;
+  grid-template-columns: minmax(15rem, 0.65fr) minmax(0, 1fr);
+  align-items: start;
+  gap: clamp(2rem, 7vw, 7rem);
+}
+.landing-root #faq .landing-faq-heading { position: static; align-self: start; }
+.landing-root #faq .landing-section-title { max-width: 8ch; }
+.landing-root #faq .landing-faq-list { border: 0; }
+.landing-root #faq .landing-faq-item {
+  border: 0;
+  border-top: 1px solid var(--border);
+  border-radius: 0;
+  background: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+.landing-root #faq .landing-faq-item > h3 { margin: 0; }
+.landing-root #faq .landing-faq-item button {
+  display: flex;
+  width: 100%;
+  min-height: 56px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: 0.75rem 0;
+  color: var(--folio-ink);
+  text-align: start;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+}
+.landing-root #faq .landing-faq-item button:hover { color: var(--accent-b); }
+.landing-root #faq .landing-faq-item button > span:last-child { color: var(--folio-accent); font-size: 1.25rem; }
+.landing-root #faq .landing-faq-item > div { padding: 0 2rem 1rem 0; }
+.landing-root #faq .landing-faq-item > div p { max-width: 65ch; margin: 0; }
+
+/* A quiet ending, with the real chat destination as the sole action. */
+.landing-root #start .landing-finale-inner {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 2rem;
+}
+.landing-root #start .landing-section-title { max-width: 16ch; }
+.landing-root #start .landing-finale-copy { max-width: 58rem; }
+.landing-root #start .landing-finale-copy h2 { max-width: none; }
+.landing-root #start .landing-finale-copy p { max-width: 56ch; margin: 1.5rem 0 0; font-size: 1.1rem; }
+.landing-root #start .landing-final-link {
+  display: inline-flex;
+  min-height: 48px;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 0 1.25rem;
+  color: var(--void);
+  font-weight: 600;
+  text-decoration: none;
+  background: var(--txt);
+  border-radius: 8px;
+  transition: background-color 160ms ease, transform 160ms ease;
+}
+.landing-root #start .landing-final-link:hover { background: #fff; transform: translateY(-1px); }
+.landing-root #start .landing-final-link:active { transform: translateY(0); }
+
+.landing-root .landing-footer {
+  padding: 3rem clamp(1.25rem, 4vw, 3.5rem) 1.5rem;
+  color: var(--folio-ink);
+  background: var(--folio-ground);
+  border: 0;
+}
+.landing-root .landing-footer-grid {
+  grid-template-columns: minmax(0, 1.5fr) repeat(2, minmax(9rem, 0.5fr));
+  gap: clamp(2rem, 6vw, 6rem);
+  padding: 2rem 0;
+  border-top: 1px solid var(--border);
+}
+.landing-root .landing-footer-grid > div > p { max-width: 45ch; margin: 1rem 0 0; color: var(--folio-muted); }
+.landing-root .landing-footer-heading { margin: 0 0 0.75rem; color: var(--folio-ink); font-weight: 500; }
+.landing-root .landing-footer-grid nav { display: grid; align-content: start; gap: 0.65rem; }
+.landing-root .landing-footer-grid nav a { min-height: 32px; color: var(--folio-muted); text-decoration: none; }
+.landing-root .landing-footer-grid nav a:hover { color: var(--folio-ink); }
+.landing-root .landing-footer-meta { margin: 0; padding-top: 1rem; color: var(--folio-muted); border-top: 1px solid var(--border); }
+
+@keyframes folio-trace-in {
+  from { transform: scaleY(0); }
+  to { transform: scaleY(1); }
+}
+
+@media (max-width: 900px) {
+  .landing-root :is(
+    #problem .problem-header, #intelligence .intelligence-story-header,
+    #preferences .preference-sandbox-header, #pipeline .pipeline-header,
+    #privacy .privacy-header, #vision .vision-header,
+    #preview .landing-preview-intro
+  ) { grid-template-columns: 1fr; gap: 1.25rem; }
+
+  .landing-root #product .story-intro-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 760px) {
+  .landing-root :is(
+    #problem .problem-header, #intelligence .intelligence-story-header,
+    #preferences .preference-sandbox-header, #pipeline .pipeline-header,
+    #privacy .privacy-header, #vision .vision-header,
+    #preview .landing-preview-intro
+  ) { grid-template-columns: 1fr; gap: 1.25rem; }
+
+  .landing-root #problem .problem-comparison-grid,
+  .landing-root #product .story-intro-grid,
+  .landing-root #product .story-visual,
+  .landing-root #preview .landing-preview-body { grid-template-columns: 1fr; }
+
+  .landing-root #problem .problem-panel-radiance,
+  .landing-root #product .story-after {
+    padding-inline-start: 0;
+    border-inline-start: 0 !important;
+  }
+  .landing-root #problem .problem-panel-radiance,
+  .landing-root #product .story-after { padding-block-start: 1.5rem; border-block-start: 1px solid var(--border) !important; }
+  .landing-root #product .story-visual { gap: 1.5rem; }
+  .landing-root #faq .landing-section-title { max-width: 14ch; }
+  .landing-root #preview .landing-preview-toolbar { align-items: flex-start; flex-direction: column; }
+  .landing-root #preview .landing-preview-steps { gap: 0.5rem 1.25rem; }
+  .landing-root #preview .landing-preview-body { gap: 1rem; }
+  .landing-root #preferences .preference-stage-container { grid-template-columns: 1fr; }
+  .landing-root #preferences .preference-toggle-bar { display: flex; flex-wrap: wrap; }
+  .landing-root #preferences .preference-toggle-btn { justify-content: center; padding-inline: 0.75rem; }
+  .landing-root #preferences .preference-demo-note { grid-column: 1; }
+  .landing-root :is(#intelligence .intelligence-pillar-card, #pipeline .pipeline-node, #privacy .privacy-card, #vision .vision-card) {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+  .landing-root #faq .landing-faq { grid-template-columns: 1fr; gap: 2rem; }
+  .landing-root #faq .landing-faq-heading { position: static; }
+  .landing-root #start .landing-finale-inner { align-items: flex-start; flex-direction: column; }
+  .landing-root .landing-footer-grid { grid-template-columns: 1fr 1fr; }
+  .landing-root .landing-footer-grid > div { grid-column: 1 / -1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .landing-root #intelligence .intelligence-pillars-grid::before { animation: none; }
+  .landing-root #start .landing-final-link { transition: none; }
+}

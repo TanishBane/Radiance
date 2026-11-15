@@ -49,7 +49,6 @@ export function LandingFaq() {
     <section id="faq" className="landing-section">
       <div className="landing-shell landing-faq">
         <div className="landing-faq-heading">
-          <span className="landing-eyebrow">Good to know</span>
           <h2 className="landing-section-title">Questions, answered.</h2>
         </div>
         <div className="landing-faq-list">

@@ -2,36 +2,24 @@
 
 import React from "react";
 import { motion, useReducedMotion } from "motion/react";
-import { 
-  ShieldCheck, 
-  HardDrive, 
-  Share2, 
-  Trash2, 
-  Lock,
-  CheckCircle2,
-  AlertCircle
-} from "lucide-react";
 import { motionEasing } from "@/lib/motion/presets";
 import "./privacy-and-vision.css";
 
 const PRIVACY_PILLARS = [
   {
     id: "p-1",
-    title: "Browser-Local Plaintext Storage",
-    desc: "Your Personal Intelligence notes and response preferences live strictly in your client's localStorage. There is zero background cloud profile synchronization.",
-    icon: <HardDrive className="w-5 h-5 text-emerald-400" />
+    title: "Stored on this device",
+    desc: "Notes and response preferences are kept in plaintext browser storage on this profile. They are not account-isolated or synchronized across devices."
   },
   {
     id: "p-2",
-    title: "Opt-In Provider Sharing",
-    desc: "When interacting with external AI inference APIs (Groq, Gemini, OpenRouter), context transmission is disabled by default. You explicitly decide what gets shared.",
-    icon: <Share2 className="w-5 h-5 text-teal-400" />
+    title: "Sharing is your choice",
+    desc: "Relevant notes and selected preference labels are sent to the selected AI provider only when you enable sharing."
   },
   {
     id: "p-3",
-    title: "One-Click Context Reset",
-    desc: "Export your notes to portable JSON or permanently wipe your local memory profile in a single click from the Settings Center with zero residual trace.",
-    icon: <Trash2 className="w-5 h-5 text-mint-400" />
+    title: "Manage your saved context",
+    desc: "You can edit, export, or delete saved notes and preferences from Radiance settings."
   }
 ];
 
@@ -57,12 +45,12 @@ export function PrivacyFortress() {
           </h2>
 
           <p className="privacy-lede">
-            We reject deceptive privacy marketing. We don&apos;t make unsupported claims about zero-knowledge encryption where it doesn&apos;t exist. Here is the exact truth of Radiance&apos;s data boundaries:
+            Saved context stays under your control. Here is where it is stored and what happens when you choose to share it:
           </p>
           <div className="mt-4">
             <a 
               href="/privacy" 
-              className="inline-flex items-center gap-1 text-sm font-semibold text-emerald-400 hover:text-emerald-300 transition-colors"
+              className="privacy-link"
             >
               <span>Read the current privacy model</span>
               <span aria-hidden="true">↗</span>
@@ -70,10 +58,9 @@ export function PrivacyFortress() {
           </div>
         </motion.div>
 
-        {/* 3-Card Truth Grid */}
-        <div className="privacy-truth-grid">
+        <ul className="privacy-truth-grid">
           {PRIVACY_PILLARS.map((item, idx) => (
-            <motion.div
+            <motion.li
               key={item.id}
               className="privacy-card"
               initial={shouldReduceMotion ? false : { opacity: 0, y: 24 }}
@@ -81,22 +68,16 @@ export function PrivacyFortress() {
               viewport={{ once: true, amount: 0.2 }}
               transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.5, delay: idx * 0.12, ease: motionEasing.entrance }}
             >
-              <div className="privacy-card-icon">
-                {item.icon}
-              </div>
               <h3 className="privacy-card-title">{item.title}</h3>
               <p className="privacy-card-desc">{item.desc}</p>
-            </motion.div>
+            </motion.li>
           ))}
-        </div>
+        </ul>
 
         {/* Technical Disclaimer Box */}
-        <div className="p-4 rounded-xl bg-emerald-950/40 border border-emerald-500/20 text-xs text-emerald-200/90 flex items-start gap-3">
-          <AlertCircle className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-          <p className="m-0 leading-relaxed">
-            <strong>Technical MVP Boundary:</strong> Profile data is preserved in browser-local storage without account isolation or end-to-end encryption. Context sent to external model providers is governed by their respective API privacy policies.
-          </p>
-        </div>
+        <p className="privacy-boundary">
+          Storage is not end-to-end encrypted. Do not save secrets here. Provider data handling follows the selected provider&apos;s API privacy terms.
+        </p>
       </div>
     </section>
   );

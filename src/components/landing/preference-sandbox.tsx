@@ -2,14 +2,6 @@
 
 import React, { useState } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "motion/react";
-import { 
-  Sliders, 
-  AlignLeft, 
-  ListTree, 
-  FileCode2, 
-  Sparkles,
-  Info
-} from "lucide-react";
 import { motionEasing } from "@/lib/motion/presets";
 import "./personal-intelligence-story.css";
 
@@ -19,7 +11,6 @@ interface ModeDetail {
   id: PreferenceMode;
   label: string;
   badge: string;
-  icon: React.ReactNode;
   userPrompt: string;
   output: React.ReactNode;
 }
@@ -28,8 +19,7 @@ const MODES: Record<PreferenceMode, ModeDetail> = {
   concise: {
     id: "concise",
     label: "Concise",
-    badge: "Preference: High Signal · Zero Filler",
-    icon: <AlignLeft className="w-4 h-4" />,
+    badge: "Concise response",
     userPrompt: "How does distributed consensus work in Raft?",
     output: (
       <div className="space-y-2">
@@ -45,8 +35,7 @@ const MODES: Record<PreferenceMode, ModeDetail> = {
   detailed: {
     id: "detailed",
     label: "Detailed",
-    badge: "Preference: Deep Analytical Exposition",
-    icon: <FileCode2 className="w-4 h-4" />,
+    badge: "Detailed response",
     userPrompt: "How does distributed consensus work in Raft?",
     output: (
       <div className="space-y-3">
@@ -68,8 +57,7 @@ const MODES: Record<PreferenceMode, ModeDetail> = {
   structured: {
     id: "structured",
     label: "Structured",
-    badge: "Preference: Tabular & Architectural Hierarchy",
-    icon: <ListTree className="w-4 h-4" />,
+    badge: "Structured response",
     userPrompt: "How does distributed consensus work in Raft?",
     output: (
       <div className="space-y-3 font-mono text-xs">
@@ -108,7 +96,7 @@ export function PreferenceSandbox() {
           transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.6, ease: motionEasing.entrance }}
         >
           <h2 id="preferences-heading" className="preference-title">
-            An answer should feel right for you.
+            Answers that fit your way.
           </h2>
 
           <p className="preference-lede">
@@ -119,7 +107,7 @@ export function PreferenceSandbox() {
         {/* Sandbox Stage */}
         <div className="preference-stage-container">
           {/* Segmented Control Bar */}
-          <div className="preference-toggle-bar" role="tablist" aria-label="Response Preferences">
+          <div className="preference-toggle-bar" role="group" aria-label="Response style">
             {(["concise", "detailed", "structured"] as PreferenceMode[]).map((mode) => {
               const item = MODES[mode];
               const isActive = selectedMode === mode;
@@ -127,12 +115,10 @@ export function PreferenceSandbox() {
                 <button
                   key={mode}
                   type="button"
-                  role="tab"
-                  aria-selected={isActive}
+                  aria-pressed={isActive}
                   onClick={() => setSelectedMode(mode)}
                   className={`preference-toggle-btn ${isActive ? "preference-toggle-btn-active" : ""}`}
                 >
-                  {item.icon}
                   <span>{item.label}</span>
                 </button>
               );
@@ -142,8 +128,7 @@ export function PreferenceSandbox() {
           {/* Dynamic Result Card */}
           <div className="preference-result-card">
             <div className="preference-result-meta">
-              <span className="text-xs font-mono text-amber-400 font-semibold tracking-wide flex items-center gap-1.5">
-                <Sparkles className="w-3.5 h-3.5" />
+              <span className="preference-result-label">
                 {current.badge}
               </span>
               <span className="text-xs text-slate-400">
@@ -166,10 +151,7 @@ export function PreferenceSandbox() {
             </div>
           </div>
 
-          <div className="mt-4 flex items-center justify-center gap-2 text-xs text-slate-400">
-            <Info className="w-3.5 h-3.5 text-amber-400" />
-            <span>Illustrative demonstration · Configurable live in Radiance Settings Center</span>
-          </div>
+          <p className="preference-demo-note">Illustrative example · Response preferences are configurable in Radiance settings</p>
         </div>
       </div>
     </section>

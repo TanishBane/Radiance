@@ -16,6 +16,7 @@ import "./problem-comparison.css";
 import "./personal-intelligence-story.css";
 import "./context-pipeline.css";
 import "./privacy-and-vision.css";
+import "./landing-folio.css";
 
 import { LandingNav } from "./landing-nav";
 import { HeroLandscape } from "./hero-landscape";

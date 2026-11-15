@@ -8,7 +8,7 @@ const STEPS = [
     id: "save",
     label: "Save a preference",
     rail: "Personal Intelligence",
-    badgeColor: "var(--radiance-blue)",
+    badgeColor: "var(--accent)",
     title: "You save a preference",
     body: "Demonstration data: “More concise” is recorded as a response preference. No automatic learning is taking place.",
     sample: "Preference · More concise",
@@ -17,7 +17,7 @@ const STEPS = [
     id: "vault",
     label: "See it stored",
     rail: "Saved on this device",
-    badgeColor: "var(--radiance-violet)",
+    badgeColor: "var(--accent)",
     title: "The note appears in Settings",
     body: "Demonstration data: a project note sits beside the preference. You can edit or delete either item.",
     sample: "Note · Thesis: keep citations inline",
@@ -26,7 +26,7 @@ const STEPS = [
     id: "retrieve",
     label: "Ask later",
     rail: "Lexical retrieval",
-    badgeColor: "var(--radiance-amber)",
+    badgeColor: "var(--accent)",
     title: "A later question retrieves overlap",
     body: "Demonstration data: asking about the thesis outline matches the saved note. Unrelated notes are not attached.",
     sample: "Retrieved · Thesis: keep citations inline",
@@ -35,7 +35,7 @@ const STEPS = [
     id: "reply",
     label: "See the shape",
     rail: "Reply preview",
-    badgeColor: "var(--radiance-emerald)",
+    badgeColor: "var(--accent)",
     title: "The reply follows the preference",
     body: "Demonstration data: the preview is shorter because the concise preference is in effect, and only if sharing is enabled.",
     sample: "Here is a short outline with inline citations…",
@@ -51,9 +51,7 @@ export function ProductPreview() {
     <section id="preview" className="landing-section landing-product-preview">
       <div className="landing-shell">
         <div className="landing-preview-intro">
-          <h2 className="landing-section-title">
-            A walk through the current path
-          </h2>
+          <h2 className="landing-section-title">The current path</h2>
           <p className="landing-copy landing-preview-description">
             This sequence uses demonstration data. It is not connected to your Personal Intelligence vault.
           </p>
@@ -90,7 +88,6 @@ export function ProductPreview() {
                   borderRadius: "50%",
                   backgroundColor: current.badgeColor,
                   marginRight: "8px",
-                  boxShadow: `0 0 10px ${current.badgeColor}`,
                 }}
               />
               {current.rail}

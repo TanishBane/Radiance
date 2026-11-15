@@ -5,10 +5,7 @@ import { motion, useReducedMotion } from "motion/react";
 import { 
   XCircle, 
   CheckCircle2, 
-  Sparkles, 
   RotateCcw, 
-  Zap, 
-  ArrowRight,
   Database
 } from "lucide-react";
 import { motionEasing } from "@/lib/motion/presets";
@@ -32,11 +29,11 @@ export function ProblemComparisonSection() {
           transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.6, ease: motionEasing.entrance }}
         >
           <h2 id="problem-heading" className="problem-title">
-            Your context shouldn&apos;t disappear between conversations.
+            Keep the context you chose.
           </h2>
 
           <p className="problem-lede">
-            Traditional AI models reset every session. You repeat your role, your formatting constraints, and your preferences again and again. Radiance remembers your explicit guidance so you can focus on building.
+            A new conversation may not include the details from your last one. Radiance lets you save notes and response preferences, then choose whether relevant context is shared with your selected model.
           </p>
         </motion.div>
 
@@ -54,7 +51,7 @@ export function ProblemComparisonSection() {
               <span className="font-semibold text-slate-200">Without Saved Context</span>
               <span className="problem-badge-state problem-badge-red">
                 <XCircle className="w-3.5 h-3.5" />
-                <span>Starts from zero every session</span>
+                <span>Context may need repeating</span>
               </span>
             </div>
 
@@ -84,26 +81,25 @@ export function ProblemComparisonSection() {
           >
             <div className="problem-panel-header">
               <span className="font-semibold text-white flex items-center gap-2">
-                <Sparkles className="w-4 h-4 text-cyan-400" />
                 <span>With Radiance Personal Intelligence</span>
               </span>
               <span className="problem-badge-state problem-badge-cyan">
                 <CheckCircle2 className="w-3.5 h-3.5" />
-                <span>Context brought forward automatically</span>
+                <span>When sharing is enabled</span>
               </span>
             </div>
 
             <div className="problem-active-context-bar">
               <Database className="w-3.5 h-3.5 text-cyan-400" />
-              <span>Saved notes and preferences active: Strict TypeScript · Concise Output</span>
+              <span>Example saved notes and response preferences</span>
             </div>
 
             <div className="problem-dialogue-flow">
-              <div className="problem-bubble-user" style={{ background: "rgba(6, 182, 212, 0.15)", borderColor: "rgba(6, 182, 212, 0.3)" }}>
+              <div className="problem-bubble-user">
                 &ldquo;Outline the session state machine for the new auth workflow.&rdquo;
               </div>
 
-              <div className="problem-bubble-ai" style={{ background: "rgba(10, 22, 42, 0.8)", borderColor: "rgba(6, 182, 212, 0.2)" }}>
+              <div className="problem-bubble-ai">
                 &ldquo;Here is the discriminated union state model. Strictly typed, zero `any`, inline transitions:&rdquo;
                 <div className="mt-2 p-2 rounded bg-black/40 font-mono text-xs text-cyan-300">
                   type AuthState = &#123; status: &apos;idle&apos; &#125; | &#123; status: &apos;authenticating&apos;; token: string &#125;;
@@ -111,9 +107,8 @@ export function ProblemComparisonSection() {
               </div>
             </div>
 
-            <div className="problem-panel-footer text-cyan-300/90">
-              <Zap className="w-4 h-4 text-cyan-400" />
-              <span>Instant relevance without prompting overhead or redundant instructions.</span>
+            <div className="problem-panel-footer">
+              <span>Relevant saved context is included only when sharing is on.</span>
             </div>
           </motion.div>
         </div>
