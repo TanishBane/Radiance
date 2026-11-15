@@ -1,5 +1,20 @@
 # Radiance UI implementation log
 
+## 2026-11-15 — Refine the Personal Intelligence walkthrough
+
+### Changed
+
+- Tightened the walkthrough to Radiance’s editorial hierarchy, with a serif section heading and a dark, stable preview surface that keeps the animated equalizer atmospheric instead of washing through the content.
+- Made the four step controls easier to scan, clarified the current step and demonstration-data label, and replaced the nested sample tile with a simple contextual row.
+- Kept the existing demo copy and behavior, with a compact two-column step selector on phones and reduced-motion-aware content transitions.
+
+### Verification
+
+- `pnpm.cmd typecheck`, `pnpm.cmd lint`, and `git diff --check` passed.
+- Inspected the walkthrough at desktop size and 390×844. At 390px the document stayed within the viewport; controls formed a usable two-column grid and the content remained readable.
+- Clicked “See it stored”; the active state and sample content updated to step 2 of 4.
+- A production build was not run because multiple local Next.js development servers are active and share the `.next` output directory.
+
 ## 2026-11-15 — Animate the Personal Intelligence CTA
 
 ### Changed

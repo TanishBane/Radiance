@@ -313,33 +313,67 @@
 .landing-feature .landing-panel { padding: 0; border: 0; color: var(--landing-quiet); }
 
 .landing-preview {
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 18px;
-  background: rgba(8, 12, 28, 0.45);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  margin-top: clamp(24px, 3vw, 40px);
   overflow: hidden;
+  border: 1px solid var(--border-hover);
+  border-radius: var(--radius-lg);
+  background: var(--surface-overlay);
+  backdrop-filter: blur(16px) saturate(120%);
+  -webkit-backdrop-filter: blur(16px) saturate(120%);
 }
-.landing-preview-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 16px 0; border-bottom: 1px solid var(--landing-hairline); }
-.landing-preview-steps { display: flex; flex-wrap: wrap; gap: 4px; }
+.landing-preview-intro { max-width: 760px; }
+.landing-product-preview { position: relative; isolation: isolate; }
+.landing-product-preview::before {
+  position: absolute;
+  z-index: -1;
+  inset: 0 0 auto;
+  height: clamp(360px, 42vw, 520px);
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--void) 76%, transparent),
+    color-mix(in srgb, var(--void) 48%, transparent) 62%,
+    transparent
+  );
+  content: "";
+  pointer-events: none;
+}
+.landing-root .landing-product-preview .landing-preview-intro .landing-section-title {
+  max-width: 18ch;
+  color: var(--txt);
+  font-family: var(--font-serif), "Cormorant Garamond", Georgia, serif;
+  font-size: clamp(2.4rem, 4vw, 3.3rem);
+  font-weight: 500;
+  letter-spacing: -.03em;
+  line-height: 1.04;
+  text-shadow: 0 2px 18px var(--void);
+}
+.landing-preview-description { max-width: 62ch; margin-top: 12px; text-shadow: 0 1px 10px var(--void); }
+.landing-preview-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 16px 22px; border-bottom: 1px solid var(--landing-hairline); }
+.landing-preview-steps { display: flex; flex-wrap: wrap; gap: 6px; }
 .landing-preview-steps button {
-  min-height: 40px;
-  padding: 0 12px;
-  border: 1px solid transparent;
-  border-radius: 6px;
+  min-height: 44px;
+  padding: 0 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
   background: transparent;
   color: var(--landing-muted);
   cursor: pointer;
   font-size: .875rem;
+  font-weight: 500;
+  transition: color var(--motion-feedback) ease, background-color var(--motion-feedback) ease, border-color var(--motion-feedback) ease;
 }
-.landing-preview-steps button:hover { color: var(--txt); }
-.landing-preview-steps button[aria-pressed="true"] { border-color: var(--border); color: var(--txt); background: var(--surface); }
-.landing-demo-tag { color: var(--landing-quiet); font-size: .7rem; white-space: nowrap; }
-.landing-preview-body { display: grid; grid-template-columns: 220px minmax(0, 1fr); min-height: 250px; }
-.landing-preview-rail { padding: 22px 20px 22px 0; border-right: 1px solid var(--landing-hairline); color: var(--landing-quiet); font-size: .85rem; }
-.landing-preview-main { padding: 24px 0 24px 30px; }
-.landing-preview-main h3 { font-family: var(--font-serif), "Cormorant Garamond", Georgia, serif; font-size: 1.6rem !important; }
-.landing-preview-main .landing-panel { margin-top: 20px !important; color: var(--txt); font-family: var(--font-mono), ui-monospace, monospace; font-size: .8125rem !important; }
+.landing-preview-steps button:hover { border-color: var(--border-hover); background: var(--surface); color: var(--txt); }
+.landing-preview-steps button[aria-pressed="true"] { border-color: var(--border-accent); background: var(--accent-d); color: var(--txt); font-weight: 600; }
+.landing-preview-meta { display: flex; flex: 0 0 auto; align-items: center; gap: 14px; }
+.landing-preview-count { color: var(--landing-muted); font-size: .75rem; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.landing-demo-tag { padding: 6px 9px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface); color: var(--landing-muted); font-size: .7rem; white-space: nowrap; }
+.landing-preview-body { display: grid; grid-template-columns: 204px minmax(0, 1fr); min-height: 250px; padding: 0 22px 4px; }
+.landing-preview-rail { padding: 28px 18px 28px 0; border-right: 1px solid var(--landing-hairline); color: var(--landing-muted); font-size: .85rem; line-height: 1.5; }
+.landing-preview-main { padding: 28px 8px 28px 28px; }
+.landing-preview-main h3 { margin: 0; color: var(--txt); font-family: var(--font-serif), "Cormorant Garamond", Georgia, serif; font-size: clamp(1.6rem, 2.4vw, 2rem); font-weight: 500; letter-spacing: -.02em; line-height: 1.2; }
+.landing-preview-main > .landing-copy { max-width: 68ch; margin-top: 12px !important; line-height: 1.65 !important; }
+.landing-preview-sample { display: flex; align-items: center; gap: 12px; margin: 22px 0 0; padding: 16px 0 0; border-top: 1px solid var(--landing-hairline); color: var(--txt); font-size: .9375rem; line-height: 1.5; }
+.landing-preview-sample-mark { width: 8px; height: 8px; flex: 0 0 auto; border-radius: 50%; }
 
 .landing-faq { display: grid; grid-template-columns: minmax(0, .7fr) minmax(0, 1.3fr); gap: 48px; }
 .landing-faq-item { padding: 0 2px; border-top: 1px solid var(--landing-hairline); transition: border-color 150ms ease-out; }
@@ -414,11 +448,13 @@
   .landing-steps { grid-template-columns: 1fr; gap: 24px; }
   .landing-feature,
   .landing-feature:nth-child(even) { grid-template-columns: 1fr; gap: 7px; padding: 22px 0; }
-  .landing-preview-toolbar { align-items: flex-start; flex-direction: column; }
-  .landing-preview-steps { width: 100%; }
-  .landing-preview-steps button { padding-inline: 9px; }
+  .landing-preview-toolbar { align-items: stretch; flex-direction: column; gap: 12px; padding: 14px 16px; }
+  .landing-preview-steps { display: grid; width: 100%; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px; }
+  .landing-preview-steps button { min-width: 0; padding-inline: 10px; text-align: left; }
+  .landing-preview-meta { justify-content: space-between; }
   .landing-preview-body { grid-template-columns: 1fr; min-height: 0; }
-  .landing-preview-rail { padding: 18px 0 12px; border-right: 0; border-bottom: 1px solid var(--landing-hairline); }
+  .landing-preview-body { padding: 0 16px 4px; }
+  .landing-preview-rail { padding: 16px 0 12px; border-right: 0; border-bottom: 1px solid var(--landing-hairline); }
   .landing-preview-main { padding: 18px 0 22px; }
   .landing-footer-grid { grid-template-columns: 1fr 1fr; gap: 26px 20px; }
   .landing-footer-grid > div:first-child { grid-column: 1 / -1; }

@@ -48,19 +48,19 @@ export function ProductPreview() {
   const shouldReduceMotion = useReducedMotion();
 
   return (
-    <section id="preview" className="landing-section">
+    <section id="preview" className="landing-section landing-product-preview">
       <div className="landing-shell">
-        <div style={{ maxWidth: "640px", textShadow: "0 2px 14px rgba(6, 9, 24, 0.85)" }}>
-          <h2 className="landing-section-title" style={{ color: "#ffffff", textShadow: "0 2px 16px rgba(6, 9, 24, 0.9)" }}>
+        <div className="landing-preview-intro">
+          <h2 className="landing-section-title">
             A walk through the current path
           </h2>
-          <p className="landing-copy" style={{ marginTop: "12px", color: "rgba(255, 255, 255, 0.92)", textShadow: "0 2px 12px rgba(6, 9, 24, 0.85)" }}>
+          <p className="landing-copy landing-preview-description">
             This sequence uses demonstration data. It is not connected to your Personal Intelligence vault.
           </p>
         </div>
-        <div className="landing-preview" style={{ marginTop: 40 }}>
+        <div className="landing-preview">
           <div className="landing-preview-toolbar">
-            <div className="landing-preview-steps" role="group" aria-label="Demonstration steps">
+            <div className="landing-preview-steps" role="group" aria-label="Walkthrough steps">
               {STEPS.map((item, index) => (
                 <button
                   key={item.id}
@@ -68,16 +68,17 @@ export function ProductPreview() {
                   aria-pressed={index === step}
                   aria-controls="landing-preview-content"
                   onClick={() => setStep(index)}
-                  style={{
-                    position: "relative",
-                    transition: "color 0.2s ease, background-color 0.2s ease",
-                  }}
                 >
                   {item.label}
                 </button>
               ))}
             </div>
-            <span className="landing-demo-tag">Demonstration data</span>
+            <div className="landing-preview-meta">
+              <span className="landing-preview-count">
+                Step {step + 1} of {STEPS.length}
+              </span>
+              <span className="landing-demo-tag">Demonstration data</span>
+            </div>
           </div>
           <div id="landing-preview-content" className="landing-preview-body" aria-live="polite">
             <aside className="landing-preview-rail">
@@ -103,34 +104,20 @@ export function ProductPreview() {
                 exit={shouldReduceMotion ? undefined : { opacity: 0, y: -8 }}
                 transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
               >
-                <h3
-                  style={{
-                    margin: 0,
-                    fontSize: "1.5rem",
-                    fontWeight: 600,
-                    letterSpacing: "-0.02em",
-                    fontFamily: "var(--font-sans), sans-serif",
-                  }}
-                >
+                <h3>
                   {current.title}
                 </h3>
-                <p className="landing-copy" style={{ marginTop: "10px", lineHeight: 1.65 }}>
+                <p className="landing-copy">
                   {current.body}
                 </p>
-                <div
-                  className="landing-panel"
-                  style={{
-                    marginTop: 24,
-                    fontFamily: "var(--font-mono)",
-                    fontSize: "0.875rem",
-                    borderLeft: `3px solid ${current.badgeColor}`,
-                    background: "rgba(255, 255, 255, 0.03)",
-                    padding: "14px 18px",
-                    borderRadius: "10px",
-                  }}
-                >
-                  <p style={{ margin: 0, color: "var(--txt)" }}>{current.sample}</p>
-                </div>
+                <p className="landing-preview-sample">
+                  <span
+                    className="landing-preview-sample-mark"
+                    aria-hidden="true"
+                    style={{ backgroundColor: current.badgeColor }}
+                  />
+                  {current.sample}
+                </p>
               </motion.div>
             </AnimatePresence>
           </div>
