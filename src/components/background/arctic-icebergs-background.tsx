@@ -16,6 +16,45 @@ export interface ArcticIcebergsBackgroundProps {
   className?: string;
 }
 
+export function drawAsciiRuns(
+  ctx: CanvasRenderingContext2D,
+  cols: number,
+  rows: number,
+  cellW: number,
+  cellH: number,
+  glyphAt: (index: number) => string,
+  colorAt: (index: number) => string
+) {
+  for (let y = 0; y < rows; y++) {
+    let runStart = 0;
+    let runColor = "";
+    let runText = "";
+    let hasGlyph = false;
+
+    const flush = (end: number) => {
+      if (!hasGlyph) return;
+      ctx.fillStyle = runColor;
+      ctx.fillText(runText, (runStart + end) * cellW / 2, (y + 0.5) * cellH);
+    };
+
+    for (let x = 0; x < cols; x++) {
+      const index = y * cols + x;
+      const color = colorAt(index);
+      const glyph = glyphAt(index) || " ";
+      if (x > runStart && color !== runColor) {
+        flush(x);
+        runStart = x;
+        runText = "";
+        hasGlyph = false;
+      }
+      runColor = color;
+      runText += glyph;
+      hasGlyph ||= glyph !== " ";
+    }
+    flush(cols);
+  }
+}
+
 /**
  * AtmosphericArtBackground:
  * Multi-Stage Generative ASCII Textmode Canvas System:
@@ -297,20 +336,7 @@ export function ArcticIcebergsBackground({ className }: ArcticIcebergsBackground
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
 
-        const totalCells = cols * rows;
-        for (let idx = 0; idx < totalCells; idx++) {
-          const ch = frame.ch[idx];
-          if (!ch || ch === " ") continue;
-
-          const colorKey = frame.co[idx];
-          const colorHex = palette[colorKey] || "#ffffff";
-
-          const x = idx % cols;
-          const y = Math.floor(idx / cols);
-
-          ctx.fillStyle = colorHex;
-          ctx.fillText(ch, (x + 0.5) * cellW, (y + 0.5) * cellH);
-        }
+        drawAsciiRuns(ctx, cols, rows, cellW, cellH, (i) => frame.ch[i] || " ", (i) => palette[frame.co[i]] || "#ffffff");
 
         if (prefersReducedMotion) {
           animId = null;
@@ -426,18 +452,7 @@ export function ArcticIcebergsBackground({ className }: ArcticIcebergsBackground
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
 
-        const totalCells = cols * rows;
-        for (let idx = 0; idx < totalCells; idx++) {
-          const lv = frame.levels[idx];
-          const ch = LEVELS[lv];
-          const colorHex = frame.palHex[frame.colorIndices[idx]] || "#fff6e8";
-
-          const x = idx % cols;
-          const y = Math.floor(idx / cols);
-
-          ctx.fillStyle = colorHex;
-          ctx.fillText(ch, (x + 0.5) * cellW, (y + 0.5) * cellH);
-        }
+        drawAsciiRuns(ctx, cols, rows, cellW, cellH, (i) => LEVELS[frame.levels[i]] || " ", (i) => frame.palHex[frame.colorIndices[i]] || "#fff6e8");
 
         if (prefersReducedMotion) {
           animId = null;
@@ -551,20 +566,7 @@ export function ArcticIcebergsBackground({ className }: ArcticIcebergsBackground
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
 
-        const totalCells = cols * rows;
-        for (let idx = 0; idx < totalCells; idx++) {
-          const ch = frame.ch[idx];
-          if (!ch || ch === " ") continue;
-
-          const colorKey = frame.co[idx];
-          const colorHex = palette[colorKey] || "#dfe8ff";
-
-          const x = idx % cols;
-          const y = Math.floor(idx / cols);
-
-          ctx.fillStyle = colorHex;
-          ctx.fillText(ch, (x + 0.5) * cellW, (y + 0.5) * cellH);
-        }
+        drawAsciiRuns(ctx, cols, rows, cellW, cellH, (i) => frame.ch[i] || " ", (i) => palette[frame.co[i]] || "#dfe8ff");
 
         if (prefersReducedMotion) {
           animId = null;
@@ -677,20 +679,7 @@ export function ArcticIcebergsBackground({ className }: ArcticIcebergsBackground
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
 
-        const totalCells = cols * rows;
-        for (let idx = 0; idx < totalCells; idx++) {
-          const ch = frame.ch[idx];
-          if (!ch || ch === " ") continue;
-
-          const colorKey = frame.co[idx];
-          const colorHex = palette[colorKey] || "#ffd27f";
-
-          const x = idx % cols;
-          const y = Math.floor(idx / cols);
-
-          ctx.fillStyle = colorHex;
-          ctx.fillText(ch, (x + 0.5) * cellW, (y + 0.5) * cellH);
-        }
+        drawAsciiRuns(ctx, cols, rows, cellW, cellH, (i) => frame.ch[i] || " ", (i) => palette[frame.co[i]] || "#ffd27f");
 
         if (prefersReducedMotion) {
           animId = null;
@@ -802,20 +791,7 @@ export function ArcticIcebergsBackground({ className }: ArcticIcebergsBackground
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
 
-        const totalCells = cols * rows;
-        for (let idx = 0; idx < totalCells; idx++) {
-          const ch = frame.ch[idx];
-          if (!ch || ch === " ") continue;
-
-          const colorKey = frame.co[idx];
-          const colorHex = palette[colorKey] || "#d9e2ff";
-
-          const x = idx % cols;
-          const y = Math.floor(idx / cols);
-
-          ctx.fillStyle = colorHex;
-          ctx.fillText(ch, (x + 0.5) * cellW, (y + 0.5) * cellH);
-        }
+        drawAsciiRuns(ctx, cols, rows, cellW, cellH, (i) => frame.ch[i] || " ", (i) => palette[frame.co[i]] || "#d9e2ff");
 
         if (prefersReducedMotion) {
           animId = null;
@@ -927,18 +903,7 @@ export function ArcticIcebergsBackground({ className }: ArcticIcebergsBackground
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
 
-        const totalCells = cols * rows;
-        for (let idx = 0; idx < totalCells; idx++) {
-          const lv = frame.levels[idx];
-          const ch = EARTH_LEVELS[lv];
-          const colorHex = frame.palHex[frame.colorIndices[idx]] || "#fffaf0";
-
-          const x = idx % cols;
-          const y = Math.floor(idx / cols);
-
-          ctx.fillStyle = colorHex;
-          ctx.fillText(ch, (x + 0.5) * cellW, (y + 0.5) * cellH);
-        }
+        drawAsciiRuns(ctx, cols, rows, cellW, cellH, (i) => EARTH_LEVELS[frame.levels[i]] || " ", (i) => frame.palHex[frame.colorIndices[i]] || "#fffaf0");
 
         if (prefersReducedMotion) {
           animId = null;
@@ -1049,18 +1014,7 @@ export function ArcticIcebergsBackground({ className }: ArcticIcebergsBackground
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
 
-        const totalCells = cols * rows;
-        for (let idx = 0; idx < totalCells; idx++) {
-          const lv = frame.levels[idx];
-          const ch = CYCLIST_LEVELS[lv];
-          const colorHex = frame.palHex[frame.colorIndices[idx]] || "#fff2cc";
-
-          const x = idx % cols;
-          const y = Math.floor(idx / cols);
-
-          ctx.fillStyle = colorHex;
-          ctx.fillText(ch, (x + 0.5) * cellW, (y + 0.5) * cellH);
-        }
+        drawAsciiRuns(ctx, cols, rows, cellW, cellH, (i) => CYCLIST_LEVELS[frame.levels[i]] || " ", (i) => frame.palHex[frame.colorIndices[i]] || "#fff2cc");
 
         if (prefersReducedMotion) {
           animId = null;
@@ -1170,18 +1124,7 @@ export function ArcticIcebergsBackground({ className }: ArcticIcebergsBackground
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
 
-        const totalCells = cols * rows;
-        for (let idx = 0; idx < totalCells; idx++) {
-          const lv = frame.levels[idx];
-          const ch = PAGODA_LEVELS[lv];
-          const colorHex = frame.palHex[frame.colorIndices[idx]] || "#fffaea";
-
-          const x = idx % cols;
-          const y = Math.floor(idx / cols);
-
-          ctx.fillStyle = colorHex;
-          ctx.fillText(ch, (x + 0.5) * cellW, (y + 0.5) * cellH);
-        }
+        drawAsciiRuns(ctx, cols, rows, cellW, cellH, (i) => PAGODA_LEVELS[frame.levels[i]] || " ", (i) => frame.palHex[frame.colorIndices[i]] || "#fffaea");
 
         if (prefersReducedMotion) {
           animId = null;
@@ -1289,20 +1232,7 @@ export function ArcticIcebergsBackground({ className }: ArcticIcebergsBackground
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
 
-        const totalCells = cols * rows;
-        for (let idx = 0; idx < totalCells; idx++) {
-          const ch = frame.ch[idx];
-          if (!ch || ch === " ") continue;
-
-          const colorKey = frame.co[idx];
-          const colorHex = palette[colorKey] || "#f0c48a";
-
-          const x = idx % cols;
-          const y = Math.floor(idx / cols);
-
-          ctx.fillStyle = colorHex;
-          ctx.fillText(ch, (x + 0.5) * cellW, (y + 0.5) * cellH);
-        }
+        drawAsciiRuns(ctx, cols, rows, cellW, cellH, (i) => frame.ch[i] || " ", (i) => palette[frame.co[i]] || "#f0c48a");
 
         if (prefersReducedMotion) {
           animId = null;
@@ -1407,20 +1337,7 @@ export function ArcticIcebergsBackground({ className }: ArcticIcebergsBackground
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
 
-        const totalCells = cols * rows;
-        for (let idx = 0; idx < totalCells; idx++) {
-          const ch = frame.ch[idx];
-          if (!ch || ch === " ") continue;
-
-          const colorKey = frame.co[idx];
-          const colorHex = palette[colorKey] || "#a8ffc8";
-
-          const x = idx % cols;
-          const y = Math.floor(idx / cols);
-
-          ctx.fillStyle = colorHex;
-          ctx.fillText(ch, (x + 0.5) * cellW, (y + 0.5) * cellH);
-        }
+        drawAsciiRuns(ctx, cols, rows, cellW, cellH, (i) => frame.ch[i] || " ", (i) => palette[frame.co[i]] || "#a8ffc8");
 
         if (prefersReducedMotion) {
           animId = null;

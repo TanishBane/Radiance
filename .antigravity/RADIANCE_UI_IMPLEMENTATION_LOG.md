@@ -614,3 +614,16 @@
 - Chromium landing browser suite: 8 passed, 11 failed. Failures target stale hero selectors, removed copy, and obsolete section expectations; the mobile Safari browser is unavailable in this environment.
 - Desktop and mobile screenshots were inspected. No Core Web Vitals run was available; no LCP, INP, or CLS improvement is claimed.
 - `pnpm measure:bundle` still exits over budget (reports 3273 kB gzip for `/layout` and 4202 kB for `/page`). The script's route accounting needs validation before treating those totals as per-route payload measurements.
+
+## 2026-11-15 — Canvas text draw-call optimization
+
+### Changed
+
+- Batched adjacent same-color ASCII canvas cells into a single `fillText` call, including blank cells within a run, while preserving each scene's existing grid, glyphs, colors, animation frames, and timing.
+- Added focused tests for color-run batching and skipping blank-only rows.
+
+### Verification
+
+- `pnpm build`, `pnpm typecheck`, and `pnpm lint`: passed.
+- Focused ASCII background tests: 12 passed.
+- No real low-end device profiling, frame-time trace, or Core Web Vitals run was available. This reduces repeated canvas API calls, but cannot establish a universal zero-lag guarantee or quantify device-level gains.
