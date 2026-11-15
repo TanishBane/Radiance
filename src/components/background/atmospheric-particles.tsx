@@ -19,7 +19,8 @@ export function AtmosphericParticles() {
 
   useEffect(() => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    if (!canvas || typeof canvas.getContext !== "function") return;
+
     let ctx: CanvasRenderingContext2D | null = null;
     try {
       ctx = canvas.getContext("2d");
@@ -28,23 +29,19 @@ export function AtmosphericParticles() {
     }
     if (!ctx) return;
 
-    let animId: number;
-    let isRunning = true;
+    let animId: number | null = null;
+    let isDisposed = false;
+    let isIntersecting = true;
 
-    const prefersReducedMotion =
-      typeof window !== "undefined" &&
-      typeof window.matchMedia === "function" &&
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const motionQuery =
+      typeof window !== "undefined" && typeof window.matchMedia === "function"
+        ? window.matchMedia("(prefers-reduced-motion: reduce)")
+        : null;
+
+    let prefersReducedMotion = motionQuery ? motionQuery.matches : false;
 
     let width = (canvas.width = window.innerWidth);
     let height = (canvas.height = window.innerHeight);
-
-    const handleResize = () => {
-      if (!canvas) return;
-      width = canvas.width = window.innerWidth;
-      height = canvas.height = window.innerHeight;
-    };
-    window.addEventListener("resize", handleResize);
 
     // Mouse tracking with smooth lerp
     const targetMouse = { x: 0, y: 0 };
@@ -79,18 +76,15 @@ export function AtmosphericParticles() {
         alphaSpeed: 0.8 + Math.random() * 1.5,
         phase: Math.random() * Math.PI * 2,
         vx: (Math.random() - 0.5) * 0.12,
-        vy: -0.06 - Math.random() * 0.10, // Gentle upward celestial drift
+        vy: -0.06 - Math.random() * 0.1, // Gentle upward celestial drift
         depth: 0.3 + Math.random() * 0.7,
       });
     }
 
     let lastTime = performance.now();
 
-    const render = (now: number) => {
-      if (!isRunning) return;
-      const dt = Math.min((now - lastTime) / 1000, 0.1);
-      lastTime = now;
-
+    const drawParticles = (dt: number) => {
+      if (!ctx) return;
       ctx.clearRect(0, 0, width, height);
 
       // Smooth lerp mouse parallax
@@ -130,31 +124,111 @@ export function AtmosphericParticles() {
         ctx.shadowBlur = p.radius > 1 ? 3 : 0;
         ctx.fill();
       }
+    };
+
+    const stopLoop = () => {
+      if (animId !== null) {
+        cancelAnimationFrame(animId);
+        animId = null;
+      }
+    };
+
+    const startLoop = () => {
+      if (isDisposed || prefersReducedMotion || document.hidden || !isIntersecting) {
+        return;
+      }
+      if (animId === null) {
+        lastTime = performance.now();
+        animId = requestAnimationFrame(render);
+      }
+    };
+
+    const render = (now: number) => {
+      if (isDisposed) return;
+      if (document.hidden || !isIntersecting || prefersReducedMotion) {
+        animId = null;
+        return;
+      }
+
+      const dt = Math.min((now - lastTime) / 1000, 0.1);
+      lastTime = now;
+
+      drawParticles(dt);
 
       animId = requestAnimationFrame(render);
     };
 
-    animId = requestAnimationFrame(render);
+    const handleResize = () => {
+      if (!canvas || isDisposed) return;
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+      if (prefersReducedMotion) {
+        drawParticles(0);
+      }
+    };
+    window.addEventListener("resize", handleResize, { passive: true });
+
+    // Initial render / loop startup
+    if (prefersReducedMotion) {
+      drawParticles(0);
+    } else {
+      startLoop();
+    }
 
     const handleVisibility = () => {
-      isRunning = document.visibilityState === "visible";
-      if (isRunning) {
-        lastTime = performance.now();
-        animId = requestAnimationFrame(render);
+      if (document.hidden) {
+        stopLoop();
       } else {
-        cancelAnimationFrame(animId);
+        startLoop();
       }
     };
     document.addEventListener("visibilitychange", handleVisibility);
 
+    const handleMotionChange = (e: MediaQueryListEvent) => {
+      prefersReducedMotion = e.matches;
+      if (prefersReducedMotion) {
+        stopLoop();
+        drawParticles(0);
+      } else {
+        startLoop();
+      }
+    };
+    if (motionQuery && typeof motionQuery.addEventListener === "function") {
+      motionQuery.addEventListener("change", handleMotionChange);
+    }
+
+    // IntersectionObserver to pause particle canvas when not in view
+    let observer: IntersectionObserver | null = null;
+    if (typeof IntersectionObserver !== "undefined") {
+      observer = new IntersectionObserver(
+        (entries) => {
+          const entry = entries[0];
+          isIntersecting = entry ? entry.isIntersecting : true;
+          if (isIntersecting) {
+            startLoop();
+          } else {
+            stopLoop();
+          }
+        },
+        { rootMargin: "50px" }
+      );
+      observer.observe(canvas);
+    }
+
     return () => {
-      isRunning = false;
-      cancelAnimationFrame(animId);
+      isDisposed = true;
+      stopLoop();
       window.removeEventListener("resize", handleResize);
       window.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("touchstart", handleTouch);
       window.removeEventListener("touchmove", handleTouch);
       document.removeEventListener("visibilitychange", handleVisibility);
+      if (motionQuery && typeof motionQuery.removeEventListener === "function") {
+        motionQuery.removeEventListener("change", handleMotionChange);
+      }
+      if (observer) {
+        observer.disconnect();
+      }
     };
   }, []);
 

@@ -32,8 +32,8 @@
   gap: 0.5rem;
   padding: 0.35rem 0.85rem;
   border-radius: 9999px;
-  background: rgba(16, 185, 129, 0.15);
-  border: 1px solid rgba(16, 185, 129, 0.3);
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.28);
   color: #34d399;
   font-family: var(--font-mono, monospace);
   font-size: 0.75rem;
@@ -51,15 +51,51 @@
   line-height: 1.12;
   color: #ffffff;
   margin: 0 0 1.25rem;
-  text-shadow: 0 2px 14px rgba(10, 4, 12, 0.75);
+  text-shadow: 0 2px 14px rgba(10, 4, 18, 0.85);
 }
 
 .privacy-lede {
   font-size: clamp(1.05rem, 1.8vw, 1.25rem);
   line-height: 1.6;
-  color: rgba(240, 244, 255, 0.78);
+  color: rgba(240, 244, 255, 0.82);
   margin: 0;
-  text-shadow: 0 1px 8px rgba(10, 4, 12, 0.85);
+  text-shadow: 0 1px 8px rgba(10, 4, 18, 0.85);
+}
+
+.privacy-link-wrapper {
+  margin-top: 1.5rem;
+  display: flex;
+  justify-content: center;
+}
+
+.privacy-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1.1rem;
+  border-radius: 9999px;
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  color: #34d399;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.privacy-link:hover {
+  background: rgba(16, 185, 129, 0.18);
+  border-color: rgba(16, 185, 129, 0.45);
+  color: #6ee7b7;
+  transform: translateY(-1px);
+}
+
+.privacy-link-arrow {
+  transition: transform 0.2s ease;
+}
+
+.privacy-link:hover .privacy-link-arrow {
+  transform: translate(2px, -2px);
 }
 
 /* Privacy Truth Grid */
@@ -68,44 +104,114 @@
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 1.75rem;
   margin-bottom: 2.5rem;
+  list-style: none;
+  padding: 0;
 }
 
 .privacy-card {
-  padding: 1.75rem;
-  border-radius: 18px;
-  background: rgba(8, 12, 28, 0.45);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  padding: 1.85rem 1.5rem;
+  border-radius: 20px;
+  background: rgba(12, 16, 36, 0.55);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
   border: 1px solid rgba(255, 255, 255, 0.08);
-  border-top: 1px solid rgba(16, 185, 129, 0.35);
+  border-top: 2px solid rgba(16, 185, 129, 0.45);
   box-shadow: 0 16px 36px rgba(0, 0, 0, 0.4);
   display: flex;
   flex-direction: column;
   gap: 0.85rem;
+  transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.privacy-card:hover {
+  transform: translateY(-5px);
+  border-color: rgba(16, 185, 129, 0.4);
+  box-shadow: 0 20px 42px rgba(0, 0, 0, 0.5), 0 0 28px rgba(16, 185, 129, 0.12);
+}
+
+.privacy-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
 }
 
 .privacy-card-icon {
-  width: 44px;
-  height: 44px;
+  width: 42px;
+  height: 42px;
   border-radius: 12px;
-  background: rgba(16, 185, 129, 0.15);
+  background: rgba(16, 185, 129, 0.14);
+  border: 1px solid rgba(16, 185, 129, 0.28);
+  color: #34d399;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 0.25rem;
+}
+
+.privacy-card-badge {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: #34d399;
+  text-transform: uppercase;
+  padding: 0.2rem 0.55rem;
+  border-radius: 9999px;
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.2);
 }
 
 .privacy-card-title {
-  font-size: 1.2rem;
+  font-size: 1.22rem;
   font-weight: 600;
   color: #ffffff;
   letter-spacing: -0.02em;
+  line-height: 1.3;
+  margin: 0;
 }
 
 .privacy-card-desc {
-  font-size: 0.9rem;
-  line-height: 1.6;
+  font-size: 0.895rem;
+  line-height: 1.62;
   color: rgba(203, 213, 225, 0.8);
+  margin: 0;
+  flex-grow: 1;
+}
+
+.privacy-card-footer {
+  margin-top: 0.5rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.privacy-card-metric {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.72rem;
+  color: rgba(148, 163, 184, 0.75);
+  letter-spacing: 0.03em;
+}
+
+/* Technical Disclaimer Box */
+.privacy-boundary-box {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1.25rem 1.5rem;
+  border-radius: 16px;
+  background: rgba(16, 185, 129, 0.06);
+  border: 1px solid rgba(16, 185, 129, 0.22);
+}
+
+.privacy-boundary-icon {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.privacy-boundary {
+  font-size: 0.885rem;
+  line-height: 1.6;
+  color: rgba(209, 250, 229, 0.88);
+  margin: 0;
 }
 
 /* Section 07: Future Vision */
@@ -137,8 +243,8 @@
   gap: 0.5rem;
   padding: 0.35rem 0.85rem;
   border-radius: 9999px;
-  background: rgba(139, 92, 246, 0.18);
-  border: 1px solid rgba(139, 92, 246, 0.35);
+  background: rgba(168, 85, 247, 0.15);
+  border: 1px solid rgba(168, 85, 247, 0.32);
   color: #c084fc;
   font-family: var(--font-mono, monospace);
   font-size: 0.75rem;
@@ -156,15 +262,15 @@
   line-height: 1.12;
   color: #ffffff;
   margin: 0 0 1.25rem;
-  text-shadow: 0 2px 14px rgba(2, 4, 12, 0.75);
+  text-shadow: 0 2px 14px rgba(10, 4, 18, 0.85);
 }
 
 .vision-lede {
   font-size: clamp(1.05rem, 1.8vw, 1.25rem);
   line-height: 1.6;
-  color: rgba(240, 244, 255, 0.78);
+  color: rgba(240, 244, 255, 0.82);
   margin: 0;
-  text-shadow: 0 1px 8px rgba(2, 4, 12, 0.85);
+  text-shadow: 0 1px 8px rgba(10, 4, 18, 0.85);
 }
 
 /* Vision Cards Grid */
@@ -172,35 +278,62 @@
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 1.75rem;
+  list-style: none;
+  padding: 0;
+  margin: 0;
 }
 
 .vision-card {
-  padding: 1.85rem;
-  border-radius: 18px;
-  background: rgba(8, 12, 28, 0.45);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  padding: 1.85rem 1.5rem;
+  border-radius: 20px;
+  background: rgba(12, 16, 36, 0.55);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
   border: 1px solid rgba(255, 255, 255, 0.08);
-  border-top: 1px solid rgba(236, 72, 153, 0.35);
+  border-top: 2px solid rgba(236, 72, 153, 0.45);
   box-shadow: 0 16px 36px rgba(0, 0, 0, 0.4);
   display: flex;
   flex-direction: column;
   gap: 0.85rem;
-  transition: transform 0.2s ease, border-color 0.2s ease;
+  transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
 }
 
 .vision-card:hover {
-  transform: translateY(-4px);
-  border-color: rgba(236, 72, 153, 0.5);
+  transform: translateY(-5px);
+  border-color: rgba(236, 72, 153, 0.45);
+  box-shadow: 0 20px 42px rgba(0, 0, 0, 0.5), 0 0 28px rgba(236, 72, 153, 0.15);
+}
+
+.vision-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.vision-card-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: rgba(236, 72, 153, 0.12);
+  border: 1px solid rgba(236, 72, 153, 0.25);
+  color: #f472b6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .vision-badge {
   font-family: var(--font-mono, monospace);
-  font-size: 0.725rem;
+  font-size: 0.65rem;
   font-weight: 700;
+  letter-spacing: 0.06em;
   color: #f472b6;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  padding: 0.2rem 0.55rem;
+  border-radius: 9999px;
+  background: rgba(236, 72, 153, 0.1);
+  border: 1px solid rgba(236, 72, 153, 0.2);
 }
 
 .vision-card-title {
@@ -208,17 +341,42 @@
   font-weight: 600;
   color: #ffffff;
   letter-spacing: -0.02em;
+  line-height: 1.3;
+  margin: 0;
 }
 
 .vision-card-desc {
-  font-size: 0.9rem;
-  line-height: 1.6;
-  color: rgba(203, 213, 225, 0.78);
+  font-size: 0.895rem;
+  line-height: 1.62;
+  color: rgba(203, 213, 225, 0.8);
+  margin: 0;
+  flex-grow: 1;
+}
+
+.vision-card-footer {
+  margin-top: 0.5rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.vision-card-detail {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.72rem;
+  color: rgba(192, 132, 252, 0.85);
+  letter-spacing: 0.02em;
 }
 
 @media (max-width: 860px) {
   .privacy-truth-grid,
   .vision-grid {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .privacy-card,
+  .vision-card,
+  .privacy-link {
+    transition: none;
   }
 }

@@ -1,15 +1,78 @@
 "use client";
 
 import React, { useState, useEffect, memo } from "react";
-import { AnimatePresence, motion, useReducedMotion } from "motion/react";
-import { Sparkles, Globe, ArrowUpRight } from "lucide-react";
+import { AnimatePresence, motion, useReducedMotion, type Variants } from "motion/react";
+import { Globe, ArrowUpRight } from "lucide-react";
 import { HeroProductStage } from "./hero-product-stage";
 import { HoverActionButton } from "@/components/ui/hover-button-1";
 import { ShinyButton } from "@/components/ui/shiny-button";
-import { motionDurations, motionEasing } from "@/lib/motion/presets";
+import { motionEasing } from "@/lib/motion/presets";
 import "./hero-landscape.css";
 
-const heroHeadlineWords = ["context", "preferences", "notes"];
+const heroHeadlineWords = ["context", "preferences", "notes"] as const;
+
+// Variants for headline character reveal
+const wordContainerVariants: Variants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.042,
+      delayChildren: 0.06,
+    },
+  },
+  exit: {
+    opacity: 0,
+    y: "-0.28em",
+    filter: "blur(3px)",
+    transition: {
+      duration: 0.22,
+      ease: motionEasing.standard,
+    },
+  },
+};
+
+const charVariants: Variants = {
+  hidden: {
+    opacity: 0,
+    y: "0.24em",
+    filter: "blur(3px)",
+  },
+  visible: {
+    opacity: 1,
+    y: 0,
+    filter: "blur(0px)",
+    transition: {
+      duration: 0.24,
+      ease: motionEasing.entrance,
+    },
+  },
+};
+
+// Coordinated entrance animation variants for top showcase
+const showcaseContainerVariants: Variants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.11,
+      delayChildren: 0.04,
+    },
+  },
+};
+
+const showcaseItemVariants: Variants = {
+  hidden: { opacity: 0, y: 22, filter: "blur(4px)" },
+  visible: {
+    opacity: 1,
+    y: 0,
+    filter: "blur(0px)",
+    transition: {
+      duration: 0.62,
+      ease: motionEasing.entrance,
+    },
+  },
+};
 
 const HeroLiveClock = memo(function HeroLiveClock() {
   const [currentTime, setCurrentTime] = useState("07:23:14 AM");
@@ -47,10 +110,12 @@ export function HeroLandscape() {
 
     const interval = setInterval(() => {
       setHeadlineWordIndex((index) => (index + 1) % heroHeadlineWords.length);
-    }, 4600);
+    }, 4400);
 
     return () => clearInterval(interval);
   }, [shouldReduceMotion]);
+
+  const currentWord = heroHeadlineWords[headlineWordIndex];
 
   return (
     <section 
@@ -61,43 +126,74 @@ export function HeroLandscape() {
       <div className="hero-landscape-shell">
         {/* Top Hero Centered Showcase */}
         <div className="hero-center-showcase">
-          {/* Editorial Typography & High-Craft CTAs */}
+          {/* Editorial Typography & High-Craft CTAs with coordinated entrance reveals */}
           <motion.div 
             className="hero-editorial-column hero-editorial-center"
-            initial={shouldReduceMotion ? false : { opacity: 0, y: 24 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.6, ease: motionEasing.entrance }}
+            variants={shouldReduceMotion ? undefined : showcaseContainerVariants}
+            initial={shouldReduceMotion ? false : "hidden"}
+            animate="visible"
           >
-            <h1
+            <motion.h1
               id="hero-display-heading"
               className="hero-narrative-title landing-display"
               aria-label="AI that brings your context forward."
+              variants={shouldReduceMotion ? undefined : showcaseItemVariants}
             >
-              AI that brings your{" "}
-              <em className="hero-serif-accent" aria-hidden="true">
-                <span className="hero-serif-accent-rotator">
-                  <span className="hero-serif-accent-measure">preferences</span>
-                  <AnimatePresence initial={false} mode="wait">
-                    <motion.span
-                      key={heroHeadlineWords[headlineWordIndex]}
-                      className="hero-serif-accent-word"
-                      initial={{ opacity: 0, y: "0.35em" }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: "-0.35em" }}
-                      transition={{ duration: motionDurations.entrance, ease: motionEasing.standard }}
-                    >
-                      {heroHeadlineWords[headlineWordIndex]}
-                    </motion.span>
-                  </AnimatePresence>
-                </span>{" "}forward.
-              </em>
-            </h1>
+              <span className="sr-only">AI that brings your context, preferences, and notes forward.</span>
+              <span aria-hidden="true">
+                AI that brings your{" "}
+                <em className="hero-serif-accent">
+                  <span className="hero-serif-accent-rotator">
+                    {/* Layout-stability anchor: reserves exact width/height of the longest keyword */}
+                    <span className="hero-serif-accent-measure">
+                      preferences
+                      <span className="hero-typing-caret" style={{ opacity: 0 }} />
+                    </span>
 
-            <p className="hero-narrative-lede landing-lede">
+                    {shouldReduceMotion ? (
+                      <span className="hero-serif-accent-word">
+                        {heroHeadlineWords[0]}
+                      </span>
+                    ) : (
+                      <AnimatePresence initial={false} mode="wait">
+                        <motion.span
+                          key={currentWord}
+                          className="hero-serif-accent-word"
+                          variants={wordContainerVariants}
+                          initial="hidden"
+                          animate="visible"
+                          exit="exit"
+                        >
+                          {currentWord.split("").map((char, index) => (
+                            <motion.span
+                              key={`${currentWord}-${index}-${char}`}
+                              variants={charVariants}
+                              className="hero-serif-accent-char"
+                            >
+                              {char}
+                            </motion.span>
+                          ))}
+                          <span className="hero-typing-caret" />
+                        </motion.span>
+                      </AnimatePresence>
+                    )}
+                  </span>{" "}
+                  forward.
+                </em>
+              </span>
+            </motion.h1>
+
+            <motion.p 
+              className="hero-narrative-lede landing-lede"
+              variants={shouldReduceMotion ? undefined : showcaseItemVariants}
+            >
               Bring your saved context and preferences into your AI experience. Radiance helps make meaningful conversations more personal, useful, and consistent.
-            </p>
+            </motion.p>
 
-            <div className="hero-actions-row landing-hero-actions">
+            <motion.div 
+              className="hero-actions-row landing-hero-actions"
+              variants={shouldReduceMotion ? undefined : showcaseItemVariants}
+            >
               <ShinyButton href="/chat" className="hero-btn-primary">
                 Chat with Radiance <ArrowUpRight className="inline w-4 h-4 ml-1 -mt-0.5" />
               </ShinyButton>
@@ -107,21 +203,25 @@ export function HeroLandscape() {
                 label="Explore Personal Intelligence"
                 className="hero-btn-secondary"
               />
-            </div>
+            </motion.div>
 
-            <p className="landing-hero-proof hero-trust-row" aria-label="Saved context preview">
+            <motion.p 
+              className="landing-hero-proof hero-trust-row" 
+              aria-label="Saved context preview"
+              variants={shouldReduceMotion ? undefined : showcaseItemVariants}
+            >
               <span>Saved note · Keep citations inline</span>
               <span>More concise</span>
-            </p>
+            </motion.p>
           </motion.div>
         </div>
 
         {/* Live Telemetry Status Dock (Synasite Reference) */}
         <motion.div 
           className="hero-telemetry-dock"
-          initial={shouldReduceMotion ? false : { opacity: 0, y: 16 }}
+          initial={shouldReduceMotion ? false : { opacity: 0, y: 18 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.6, delay: 0.2, ease: motionEasing.entrance }}
+          transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.65, delay: 0.36, ease: motionEasing.entrance }}
           aria-label="Live engine telemetry"
         >
           <div className="telemetry-node">
@@ -152,7 +252,7 @@ export function HeroLandscape() {
           style={{ width: "100%", maxWidth: "980px", marginTop: "3.5rem" }}
           initial={shouldReduceMotion ? false : { opacity: 0, scale: 0.97, y: 32 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
-          transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.7, delay: 0.25, ease: motionEasing.entrance }}
+          transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.72, delay: 0.46, ease: motionEasing.entrance }}
         >
           <HeroProductStage />
         </motion.div>
