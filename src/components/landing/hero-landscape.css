@@ -4,8 +4,8 @@
    ========================================================================== */
 
 .hero-landscape-section {
-  --hero-headline-accent: #d8caff;
-  --hero-headline-glow: #7c5cff;
+  --hero-headline-accent: #d8f1ff;
+  --hero-headline-glow: #4db7ff;
   position: relative;
   width: 100%;
   display: flex;
@@ -237,22 +237,23 @@
   }
 }
 
-/* Radiance violet headline accent */
+/* Radiance ice-blue luminous headline accent */
 .hero-serif-accent,
 .hero-narrative-title em,
 .hero-landscape-section .landing-display em {
-  font-family: var(--font-serif), Cormorant Garamond, Newsreader, Georgia, serif !important;
+  font-family: var(--font-sans) !important;
   font-style: italic !important;
-  font-weight: 400 !important;
-  letter-spacing: -0.01em;
+  font-weight: 600 !important;
+  letter-spacing: -0.035em;
   color: var(--hero-headline-accent) !important;
   -webkit-text-fill-color: var(--hero-headline-accent) !important;
   text-shadow:
-    0 2px 16px color-mix(in srgb, var(--void) 94%, transparent),
+    0 2px 14px color-mix(in srgb, var(--void) 90%, transparent),
     0 0 2px color-mix(in srgb, var(--void) 98%, transparent),
-    0 0 12px color-mix(in srgb, var(--hero-headline-accent) 78%, transparent),
-    0 0 30px color-mix(in srgb, var(--hero-headline-glow) 62%, transparent),
-    0 0 48px color-mix(in srgb, var(--hero-headline-glow) 34%, transparent);
+    0 0 8px color-mix(in srgb, var(--hero-headline-accent) 92%, transparent),
+    0 0 24px color-mix(in srgb, var(--hero-headline-glow) 90%, transparent),
+    0 0 50px color-mix(in srgb, var(--hero-headline-glow) 68%, transparent),
+    0 0 84px color-mix(in srgb, var(--hero-headline-glow) 42%, transparent);
   display: inline;
   padding-right: 0.08em;
 }
