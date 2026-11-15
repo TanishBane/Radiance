@@ -1,5 +1,19 @@
 # Radiance UI implementation log
 
+## 2026-11-15 — Animate the Context Forward headline
+
+### Changed
+
+- Added a restrained rotating headline word: context, preferences, and notes share the existing “forward” phrase. The complete line remains available as stable assistive-technology text.
+- Kept the editorial serif treatment and replaced its orange-to-cyan gradient with a solid Radiance lilac accent and a subtle dark edge for contrast over the animated equalizer.
+- Respected reduced-motion preferences and reserved the changing word width to avoid layout shifts.
+
+### Verification
+
+- `pnpm.cmd typecheck`, `pnpm.cmd lint`, `pnpm.cmd build`, and `git diff --check` passed.
+- Inspected the running page at 714×614. The headline visibly changed between captures; the title and supporting paragraph have separate, non-overlapping layout boxes.
+- The style scan reported gradient text in two other pre-existing CSS rules; the changed headline accent uses a solid color. A full desktop viewport was not available in the browser preview.
+
 ## 2026-11-14 — Solid frosted-glass suggestion cards
 
 ### Changed

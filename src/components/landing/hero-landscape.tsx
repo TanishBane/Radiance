@@ -1,13 +1,15 @@
 "use client";
 
 import React, { useState, useEffect, memo } from "react";
-import { motion, useReducedMotion } from "motion/react";
+import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { Sparkles, Globe, ArrowUpRight } from "lucide-react";
 import { HeroProductStage } from "./hero-product-stage";
 import { LandingCta } from "./landing-cta";
 import { ShinyButton } from "@/components/ui/shiny-button";
 import { motionDurations, motionEasing } from "@/lib/motion/presets";
 import "./hero-landscape.css";
+
+const heroHeadlineWords = ["context", "preferences", "notes"];
 
 const HeroLiveClock = memo(function HeroLiveClock() {
   const [currentTime, setCurrentTime] = useState("07:23:14 AM");
@@ -38,6 +40,17 @@ const HeroLiveClock = memo(function HeroLiveClock() {
 
 export function HeroLandscape() {
   const shouldReduceMotion = useReducedMotion();
+  const [headlineWordIndex, setHeadlineWordIndex] = useState(0);
+
+  useEffect(() => {
+    if (shouldReduceMotion) return;
+
+    const interval = setInterval(() => {
+      setHeadlineWordIndex((index) => (index + 1) % heroHeadlineWords.length);
+    }, 4600);
+
+    return () => clearInterval(interval);
+  }, [shouldReduceMotion]);
 
   return (
     <section 
@@ -55,9 +68,29 @@ export function HeroLandscape() {
             animate={{ opacity: 1, y: 0 }}
             transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.6, ease: motionEasing.entrance }}
           >
-            <h1 id="hero-display-heading" className="hero-narrative-title landing-display">
+            <h1
+              id="hero-display-heading"
+              className="hero-narrative-title landing-display"
+              aria-label="AI that brings your context forward."
+            >
               AI that brings your{" "}
-              <em className="hero-serif-accent">context forward.</em>
+              <em className="hero-serif-accent" aria-hidden="true">
+                <span className="hero-serif-accent-rotator">
+                  <span className="hero-serif-accent-measure">preferences</span>
+                  <AnimatePresence initial={false} mode="wait">
+                    <motion.span
+                      key={heroHeadlineWords[headlineWordIndex]}
+                      className="hero-serif-accent-word"
+                      initial={{ opacity: 0, y: "0.35em" }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: "-0.35em" }}
+                      transition={{ duration: motionDurations.entrance, ease: motionEasing.standard }}
+                    >
+                      {heroHeadlineWords[headlineWordIndex]}
+                    </motion.span>
+                  </AnimatePresence>
+                </span>{" "}forward.
+              </em>
             </h1>
 
             <p className="hero-narrative-lede landing-lede">

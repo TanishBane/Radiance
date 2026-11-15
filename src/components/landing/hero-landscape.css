@@ -235,7 +235,7 @@
   }
 }
 
-/* Retreats Warm Golden-Amber Italic Serif Emphasis */
+/* Radiance violet headline accent */
 .hero-serif-accent,
 .hero-narrative-title em,
 .hero-landscape-section .landing-display em {
@@ -243,11 +243,31 @@
   font-style: italic !important;
   font-weight: 400 !important;
   letter-spacing: -0.01em;
-  background: linear-gradient(135deg, #fef08a 0%, #fb923c 45%, #38bdf8 100%) !important;
-  -webkit-background-clip: text !important;
-  -webkit-text-fill-color: transparent !important;
-  display: inline-block;
+  color: #d8caff !important;
+  -webkit-text-fill-color: #d8caff !important;
+  text-shadow: 0 2px 16px rgba(4, 3, 12, 0.9), 0 0 2px rgba(4, 3, 12, 0.95);
+  display: inline;
   padding-right: 0.08em;
+}
+
+.hero-serif-accent-rotator {
+  display: inline-grid;
+  grid-template-areas: "headline";
+  vertical-align: baseline;
+}
+
+.hero-serif-accent-measure,
+.hero-serif-accent-word {
+  grid-area: headline;
+  white-space: nowrap;
+}
+
+.hero-serif-accent-measure {
+  visibility: hidden;
+}
+
+.hero-serif-accent-word {
+  display: inline-block;
 }
 
 /* Narrative Lede */
