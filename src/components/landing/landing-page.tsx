@@ -16,6 +16,7 @@ import "./landing-folio.css";
 import { LandingNav } from "./landing-nav";
 import { HeroLandscape } from "./hero-landscape";
 import { LandingFooter } from "./landing-footer";
+import { FloatingMobileCTA } from "./floating-mobile-cta";
 
 function SectionFallback({ id, minHeight = "520px" }: { id: string; minHeight?: string }) {
   return (
@@ -212,6 +213,9 @@ export function LandingPage() {
 
       {/* Global Landing Footer */}
       <LandingFooter />
+
+      {/* Floating Sticky Mobile CTA */}
+      <FloatingMobileCTA />
     </div>
   );
 }

@@ -92,17 +92,18 @@ export function Topbar({
             aria-haspopup="listbox"
             aria-expanded={languageMenuOpen}
             onClick={() => setLanguageMenuOpen((open) => !open)}
-            className="flex min-h-11 items-center gap-2 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 text-xs font-medium text-[var(--txt)] hover:bg-[var(--surface-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
+            className="flex min-h-11 items-center gap-1.5 sm:gap-2 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-2.5 sm:px-3 text-xs font-medium text-[var(--txt)] hover:bg-[var(--surface-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] touch-target cursor-pointer"
           >
             <Languages className="h-4 w-4 shrink-0" aria-hidden="true" />
-            <span>{uiText(language, "Translate")}</span>
+            <span className="hidden xs:inline">{uiText(language, "Translate")}</span>
+            <span className="xs:hidden uppercase font-mono text-[11px] font-semibold">{language}</span>
             <ChevronDown className="h-3.5 w-3.5 text-[var(--txt-muted)]" aria-hidden="true" />
           </button>
           {languageMenuOpen && (
             <div
               role="listbox"
               aria-label={uiText(language, "Interface and response language")}
-              className="absolute right-0 top-full z-[60] mt-2 max-h-[min(70vh,22rem)] w-52 overflow-y-auto rounded-xl border border-white/15 bg-[#100d18] p-1.5 text-[var(--txt)] shadow-2xl"
+              className="absolute right-0 top-full z-[60] mt-2 max-h-[min(70vh,22rem)] w-52 max-w-[min(calc(100vw-1.5rem),14rem)] overflow-y-auto rounded-xl border border-white/15 bg-[#100d18] p-1.5 text-[var(--txt)] shadow-2xl"
             >
               {UI_LANGUAGES.map((option) => (
                 <button
@@ -115,7 +116,7 @@ export function Topbar({
                     setLanguageMenuOpen(false);
                     languageTriggerRef.current?.focus();
                   }}
-                  className="flex min-h-10 w-full items-center justify-between rounded-lg px-3 text-left text-sm text-white hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
+                  className="flex min-h-11 w-full items-center justify-between rounded-lg px-3 text-left text-sm text-white hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] touch-target cursor-pointer"
                 >
                   <span>{UI_LANGUAGE_LABELS[option]}</span>
                   {language === option && <Check className="h-4 w-4 text-[var(--accent-b)]" aria-hidden="true" />}

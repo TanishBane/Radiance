@@ -1,20 +1,90 @@
 {
-  "name": "RADIANCE AI",
+  "id": "/radiance-ai-app",
+  "name": "RADIANCE — Intelligent AI Platform",
   "short_name": "Radiance",
-  "description": "Illuminate what is possible — Production AI Platform",
-  "start_url": "/",
+  "description": "Illuminate what is possible. High-precision reasoning, multi-provider inference, and ambient spatial computing.",
+  "start_url": "/chat?source=pwa",
+  "scope": "/",
   "display": "standalone",
-  "background_color": "#06060a",
-  "theme_color": "#06060a",
-  "orientation": "portrait",
+  "display_override": [
+    "window-controls-overlay",
+    "standalone",
+    "minimal-ui"
+  ],
+  "orientation": "portrait-primary",
+  "background_color": "#0d0915",
+  "theme_color": "#0d0915",
+  "lang": "en",
+  "dir": "ltr",
+  "categories": [
+    "productivity",
+    "utilities",
+    "artificial-intelligence"
+  ],
+  "prefer_related_applications": false,
   "icons": [
     {
       "src": "/icon.svg",
       "sizes": "any",
       "type": "image/svg+xml",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
     }
   ],
-  "categories": ["productivity", "utilities", "ai"],
-  "lang": "en"
+  "shortcuts": [
+    {
+      "name": "New Chat",
+      "short_name": "New Chat",
+      "description": "Start a fresh reasoning session",
+      "url": "/chat?new=true&source=pwa_shortcut",
+      "icons": [
+        {
+          "src": "/icon.svg",
+          "sizes": "any"
+        }
+      ]
+    },
+    {
+      "name": "Settings & Intelligence",
+      "short_name": "Settings",
+      "description": "Adjust AI models, atmosphere engines, and memories",
+      "url": "/chat?section=general&source=pwa_shortcut",
+      "icons": [
+        {
+          "src": "/icon.svg",
+          "sizes": "any"
+        }
+      ]
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/opengraph-image.png",
+      "sizes": "1280x640",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Radiance Atmospheric Workspace on Desktop"
+    },
+    {
+      "src": "/opengraph-image.png",
+      "sizes": "1280x640",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Radiance Mobile Chat & Streaming Reasoning"
+    }
+  ],
+  "share_target": {
+    "action": "/chat",
+    "method": "GET",
+    "params": {
+      "text": "share_text",
+      "title": "share_title",
+      "url": "share_url"
+    }
+  }
 }

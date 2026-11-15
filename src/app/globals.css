@@ -216,6 +216,30 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
   min-height: 100svh;
 }
 
+/* ══ MOBILE SCROLL CONTAINMENT & SNAP CAROUSEL ══ */
+.chat-scroll-container {
+  overscroll-behavior-y: contain;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
+}
+
+.mobile-snap-carousel {
+  display: flex;
+  flex-direction: row;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.mobile-snap-carousel::-webkit-scrollbar {
+  display: none;
+}
+.mobile-snap-item {
+  flex: 0 0 85vw;
+  max-width: 340px;
+  scroll-snap-align: center;
+}
+
 /* ══ HIGH-CRAFT GLASSMORPHISM SURFACES & RESTRAINED ELEVATION ══ */
 .glass-panel {
   background: var(--surface-raised);

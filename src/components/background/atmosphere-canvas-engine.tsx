@@ -852,8 +852,21 @@ export function AtmosphereCanvasEngine({ theme, engine }: AtmosphereCanvasEngine
     };
 
     if (prefersReducedMotion) {
-      // Draw static first frame for accessibility
-      drawSilkRibbons(0);
+      // Draw static first frame for accessibility based on selected engine
+      switch (engine) {
+        case "aurora-curtains": drawAuroraCurtains(0); break;
+        case "meteor-shower": drawMeteorShower(0); break;
+        case "radiant-grid": drawRadiantGrid(0); break;
+        case "quantum-field": drawQuantumField(); break;
+        case "liquid-lava": drawLiquidLava(); break;
+        case "matrix-rain": drawMatrixRain(); break;
+        case "silk-ribbons": drawSilkRibbons(0); break;
+        case "radial-pulse": drawRadialPulse(0); break;
+        case "solar-corona": drawSolarCorona(0); break;
+        case "bokeh-blur": drawBokehBlur(); break;
+        case "star-chase": drawStarChase(0); break;
+        default: drawSilkRibbons(0); break;
+      }
       return;
     }
 

@@ -42,6 +42,9 @@ export function AtmosphericParticles() {
 
     let width = (canvas.width = window.innerWidth);
     let height = (canvas.height = window.innerHeight);
+    const isMobile = width < 768 || (typeof navigator !== "undefined" && /Android|iPhone|iPad/i.test(navigator.userAgent));
+    const minFrameInterval = isMobile ? 33.3 : 16.6; // 30 FPS cap on mobile
+    let lastMobileFrameTime = 0;
 
     // Mouse tracking with smooth lerp
     const targetMouse = { x: 0, y: 0 };
@@ -121,7 +124,7 @@ export function AtmosphericParticles() {
         ctx.arc(p.x + offsetX, p.y + offsetY, p.radius, 0, Math.PI * 2);
         ctx.fillStyle = `rgba(255, 255, 255, ${opacity})`;
         ctx.shadowColor = "rgba(255, 255, 255, 0.6)";
-        ctx.shadowBlur = p.radius > 1 ? 3 : 0;
+        ctx.shadowBlur = isMobile ? 0 : (p.radius > 1 ? 3 : 0);
         ctx.fill();
       }
     };
@@ -149,6 +152,12 @@ export function AtmosphericParticles() {
         animId = null;
         return;
       }
+
+      if (isMobile && now - lastMobileFrameTime < minFrameInterval) {
+        animId = requestAnimationFrame(render);
+        return;
+      }
+      lastMobileFrameTime = now;
 
       const dt = Math.min((now - lastTime) / 1000, 0.1);
       lastTime = now;

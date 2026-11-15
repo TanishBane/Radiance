@@ -48,7 +48,7 @@ export function AmbientCanvas({ accentColor = "#7c5cff" }: AmbientCanvasProps) {
       const w = window.innerWidth;
       const h = window.innerHeight;
       const isMobile = w < 768;
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, isMobile ? 1.5 : 2));
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, isMobile ? 1.0 : 2));
       renderer.setSize(w, h, false);
       camera.aspect = w / h;
       camera.updateProjectionMatrix();

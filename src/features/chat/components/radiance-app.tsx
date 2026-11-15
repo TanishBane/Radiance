@@ -33,6 +33,9 @@ import { SidebarDock } from "@/components/navigation/sidebar-dock";
 import { HistoryDrawer } from "@/components/navigation/history-drawer";
 import { MobileBottomNav } from "@/components/navigation/mobile-bottom-nav";
 import { SettingsCenter } from "@/features/settings/settings-center";
+import { usePWA } from "@/lib/pwa/use-pwa";
+import { OfflineIndicator } from "@/components/ui/offline-indicator";
+import { PWAInstallBanner } from "@/components/ui/pwa-install-banner";
 
 // Feature Modules
 import { useChatSession } from "@/features/chat/hooks/use-chat-session";
@@ -40,6 +43,7 @@ import { useChatStream } from "@/features/chat/hooks/use-chat-stream";
 import { ChatWorkspace } from "@/features/chat/components/chat-workspace";
 
 export default function RadianceApp() {
+  const { isOnline, canInstall, promptInstall, dismissInstall } = usePWA();
   const [showSplash, setShowSplash] = useState(true);
   const [settings, setSettings] = useState<RadianceSettings>(DEFAULT_SETTINGS);
   const [intelligenceProfile, setIntelligenceProfile] = useState<PersonalIntelligenceProfile>(() => createDefaultIntelligenceProfile());
@@ -537,6 +541,14 @@ export default function RadianceApp() {
         onIntelligenceProfileChange={handleIntelligenceProfileChange}
         onPreviewAtmosphere={handleAtmospherePreview}
         previewingAtmosphere={previewGradientStyle}
+      />
+
+      {/* PWA Offline & Install Indicators */}
+      <OfflineIndicator isOnline={isOnline} />
+      <PWAInstallBanner
+        canInstall={canInstall}
+        onInstall={promptInstall}
+        onDismiss={dismissInstall}
       />
     </div>
   );

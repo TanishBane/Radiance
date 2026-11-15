@@ -11,6 +11,8 @@ import { RadianceLogo } from "@/components/branding/radiance-logo";
 import { FollowUpChips } from "./follow-up-chips";
 import { uiText, type UiLanguage } from "@/lib/i18n/ui";
 import { canRegenerateResponse } from "@/lib/chat/regeneration-policy";
+import { shareContent } from "@/lib/mobile/share";
+import { safeVibrate } from "@/lib/mobile/haptics";
 import {
   Copy,
   Check,
@@ -28,6 +30,7 @@ import {
   Clock,
   BookmarkPlus,
   Sparkles,
+  Share2,
 } from "lucide-react";
 
 const CODE_EXT_MAP: Record<string, string> = {
@@ -107,6 +110,14 @@ export function MessageItem({
         setCopied(false);
       }
     }, 2000);
+  };
+
+  const handleShare = async () => {
+    safeVibrate("tap");
+    await shareContent({
+      title: isUser ? "User Prompt" : "Radiance AI Response",
+      text: message.content,
+    });
   };
 
   const handleFeedback = (rating: FeedbackRating) => {
@@ -459,6 +470,18 @@ export function MessageItem({
               {copied ? <Check className="w-3.5 h-3.5 text-[var(--success)]" /> : <Copy className="w-3.5 h-3.5" />}
             </button>
 
+            {/* Share Message */}
+            <button
+              type="button"
+              onClick={handleShare}
+              className={ACTION_BTN_CLS}
+              title={t("Share message")}
+              aria-label={t("Share message")}
+              data-testid="share-message-button"
+            >
+              <Share2 className="w-3.5 h-3.5" />
+            </button>
+
             {/* Edit User Message */}
             {isUser && onEdit && (
               <button
@@ -595,6 +618,16 @@ export function MessageItem({
                   >
                     {copied ? <Check className="w-4 h-4 text-[var(--success)] shrink-0" /> : <Copy className="w-4 h-4 text-[var(--txt-muted)] shrink-0" />}
                     <span>{t(copied ? "Copied to clipboard" : "Copy text")}</span>
+                  </DropdownMenu.Item>
+
+                  {/* Share */}
+                  <DropdownMenu.Item
+                    onSelect={handleShare}
+                    className={DROPDOWN_ITEM_CLS}
+                    data-testid="mobile-action-share"
+                  >
+                    <Share2 className="w-4 h-4 text-[var(--txt-muted)] shrink-0" />
+                    <span>{t("Share message")}</span>
                   </DropdownMenu.Item>
 
                   {/* Edit (User only) */}

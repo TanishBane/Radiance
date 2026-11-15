@@ -252,9 +252,10 @@ export function WebGLStarfield({ tier: propTier }: WebGLStarfieldProps = {}) {
           colorCVec: hexToVec3(t.colorC),
         }));
 
-        // Clamp devicePixelRatio to max 1.5 on mobile to protect mobile GPUs from thermal throttling
+        // Clamp devicePixelRatio on mobile to protect mobile GPUs from thermal throttling
         const rawDpr = window.devicePixelRatio || 1;
-        const maxDpr = isMobileDevice ? Math.min(tierConfig.maxDpr, 1.5) : tierConfig.maxDpr;
+        const mobileDprCap = activeTier === "high" ? 1.25 : 1.0;
+        const maxDpr = isMobileDevice ? Math.min(tierConfig.maxDpr, mobileDprCap) : tierConfig.maxDpr;
         const dpr = Math.min(Math.max(rawDpr, 1), maxDpr);
 
         renderer = new THREE.WebGLRenderer({
@@ -735,14 +736,19 @@ export function WebGLStarfield({ tier: propTier }: WebGLStarfieldProps = {}) {
           finalPass.uniforms.iTime.value = t;
 
           // Render Composers
-          camera.layers.set(LAYERS.TORUS_SCENE);
-          torusComposer.render();
-          camera.layers.set(LAYERS.BLOOM_SCENE);
-          bloomComposer.render();
+          if (tierConfig.enableBloom) {
+            camera.layers.set(LAYERS.TORUS_SCENE);
+            torusComposer.render();
+            camera.layers.set(LAYERS.BLOOM_SCENE);
+            bloomComposer.render();
 
-          // Connect output render buffer textures to final composite shader
-          finalPass.uniforms.bloomTexture.value = bloomComposer.readBuffer.texture;
-          finalPass.uniforms.torusTexture.value = torusComposer.readBuffer.texture;
+            // Connect output render buffer textures to final composite shader
+            finalPass.uniforms.bloomTexture.value = bloomComposer.readBuffer.texture;
+            finalPass.uniforms.torusTexture.value = torusComposer.readBuffer.texture;
+          } else {
+            finalPass.uniforms.bloomTexture.value = dummyHalo;
+            finalPass.uniforms.torusTexture.value = dummyHalo;
+          }
 
           camera.layers.set(LAYERS.ENTIRE_SCENE);
           finalComposer.render();
@@ -756,7 +762,8 @@ export function WebGLStarfield({ tier: propTier }: WebGLStarfieldProps = {}) {
           const w = Math.max(window.innerWidth, 1);
           const h = Math.max(window.innerHeight, 1);
           const currentIsMobile = w <= 768 || capabilities.isMobile;
-          const currentMaxDpr = currentIsMobile ? Math.min(tierConfig.maxDpr, 1.5) : tierConfig.maxDpr;
+          const currentMobileCap = activeTier === "high" ? 1.25 : 1.0;
+          const currentMaxDpr = currentIsMobile ? Math.min(tierConfig.maxDpr, currentMobileCap) : tierConfig.maxDpr;
           const currentDpr = Math.min(Math.max(window.devicePixelRatio || 1, 1), currentMaxDpr);
 
           renderer.setPixelRatio(currentDpr);

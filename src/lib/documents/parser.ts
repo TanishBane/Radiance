@@ -1,4 +1,3 @@
-import mammoth from "mammoth";
 import { Attachment } from "@/lib/types/chat";
 
 export interface ParsedDocumentResult {
@@ -71,12 +70,14 @@ export async function parseDocumentFile(
     };
   }
 
-  // 3. Process DOCX with Mammoth
+  // 3. Process DOCX with Mammoth (dynamically imported for mobile bundle optimization)
   if (
     name.endsWith(".docx") ||
     mime === "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
   ) {
     try {
+      const mammothModule = await import("mammoth");
+      const mammoth = (mammothModule.default ?? mammothModule) as typeof mammothModule.default;
       const result = await mammoth.extractRawText({ arrayBuffer: buffer });
       const cleanText = result.value.trim().replace(/\u0000/g, "");
       const words = cleanText ? cleanText.split(/\s+/).length : 0;

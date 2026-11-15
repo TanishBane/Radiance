@@ -122,7 +122,7 @@ export function RadianceLogo({
         cfg.text
       )}
     >
-      adiance
+      RADIANCE
     </span>
   );
 
@@ -136,12 +136,11 @@ export function RadianceLogo({
           aria-label={ariaLabel}
           className={cn("inline-flex items-center bg-transparent border-0 p-0 cursor-pointer select-none group text-left", cfg.gap, className)}
         >
-          {symbolContent}
           {wordmarkContent}
         </button>
       );
     }
-    return <div className={cn("inline-flex items-center", cfg.gap, className)}>{symbolContent}{wordmarkContent}</div>;
+    return <div className={cn("inline-flex items-center", cfg.gap, className)}>{wordmarkContent}</div>;
   }
 
   // Pure symbol without container button if onClick is not provided

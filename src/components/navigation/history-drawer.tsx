@@ -182,19 +182,23 @@ function ConversationItem({
   const t = (text: string) => uiText(language, text);
   return (
     <div
-      onClick={onSelect}
-      className={`group flex items-center justify-between p-2.5 rounded-xl cursor-pointer transition-all border ${
+      className={`group flex items-center justify-between p-2.5 rounded-xl transition-all border ${
         isActive
           ? "bg-[var(--accent-d)] border-[var(--accent)]/50 text-[var(--txt)]"
           : "bg-[var(--surface)] border-transparent hover:bg-[var(--surface-hover)] hover:border-[var(--border)] text-[var(--txt-dim)]"
       }`}
     >
-      <div className="flex flex-col flex-1 min-w-0 pr-2">
-        <span className="text-xs font-medium truncate">{conv.title}</span>
+      <button
+        type="button"
+        onClick={onSelect}
+        className="flex flex-col flex-1 min-w-0 pr-2 text-left bg-transparent border-0 cursor-pointer p-0 min-h-[44px] justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] rounded-lg touch-target"
+        aria-label={`${t("Select conversation")}: ${conv.title}`}
+      >
+        <span className="text-xs font-medium truncate w-full">{conv.title}</span>
         <span className="text-[10px] text-[var(--txt-muted)] font-mono">
           {formatRelativeTime(conv.updatedAt, language)}
         </span>
-      </div>
+      </button>
 
       <div className="flex items-center gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
         <button

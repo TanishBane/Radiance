@@ -12,7 +12,7 @@
 
 import { useEffect, useState } from "react";
 
-export type VisualQualityTier = "high" | "balanced" | "lightweight";
+export type VisualQualityTier = "high" | "balanced" | "lightweight" | "power-efficient";
 
 export interface ClientCapabilities {
   prefersReducedMotion: boolean;
@@ -21,6 +21,11 @@ export interface ClientCapabilities {
   saveData: boolean;
   webglSupported: boolean;
   isMobile: boolean;
+  deviceMemory?: number;
+  batteryLevel?: number;
+  isDischarging?: boolean;
+  effectiveType?: string;
+  tier?: VisualQualityTier;
 }
 
 export interface VisualTierConfig {
@@ -62,6 +67,16 @@ export const VISUAL_TIER_CONFIGS: Record<VisualQualityTier, VisualTierConfig> = 
     enableBloom: false,
     driftSpeed: 0.2, // Near-static calm drift
     barrelRoll: 0.0, // 0 barrel roll when requested
+    twinkle: 0.2,
+    repelStrength: 0.0,
+  },
+  "power-efficient": {
+    tier: "power-efficient",
+    starCount: 600,
+    maxDpr: 1.0,
+    enableBloom: false,
+    driftSpeed: 0.2,
+    barrelRoll: 0.0,
     twinkle: 0.2,
     repelStrength: 0.0,
   },
@@ -178,6 +193,35 @@ export function getVisualQualityTier(
 
   // Capable desktop (>= 6 cores, unthrottled WebGL, no save-data, no reduced motion)
   return "high";
+}
+
+/**
+ * Resolves the 3-tier mobile-aware visual quality profile (high, balanced, power-efficient).
+ */
+export function resolveVisualQualityTier(
+  capabilities?: Partial<ClientCapabilities>
+): VisualQualityTier {
+  const merged: ClientCapabilities = {
+    ...detectClientCapabilities(),
+    ...capabilities,
+  };
+
+  if (merged.tier === "power-efficient" || merged.tier === "lightweight") {
+    return merged.tier;
+  }
+
+  // Low battery (< 20% and discharging) drops to power-efficient
+  if (merged.batteryLevel !== undefined && merged.batteryLevel <= 0.2 && merged.isDischarging) {
+    return "power-efficient";
+  }
+
+  // Constrained device memory (<= 2GB) drops to power-efficient
+  if (merged.deviceMemory !== undefined && merged.deviceMemory > 0 && merged.deviceMemory <= 2) {
+    return "power-efficient";
+  }
+
+  const baseTier = getVisualQualityTier(merged);
+  return baseTier === "lightweight" ? "power-efficient" : baseTier;
 }
 
 /**

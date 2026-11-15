@@ -102,9 +102,12 @@
   }
 
   .landing-root .hero-editorial-center .hero-narrative-title,
-  .landing-root .hero-editorial-center .landing-display {
-    max-width: 13ch;
-    font-size: clamp(2.7rem, 11vw, 4rem);
+  .landing-root .hero-editorial-center .landing-display,
+  .landing-root .hero-headline {
+    max-width: 100%;
+    font-size: clamp(2.1rem, 7.5vw, 2.9rem);
+    line-height: 1.1;
+    word-break: break-word;
   }
 
   .landing-root .hero-telemetry-dock {
@@ -638,8 +641,10 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  min-height: 44px;
   border: 1px solid rgba(255, 255, 255, 0.15) !important;
   background: rgba(255, 255, 255, 0.05) !important;
   color: #ffffff !important;

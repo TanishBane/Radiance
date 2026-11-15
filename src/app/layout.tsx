@@ -38,7 +38,15 @@ export const metadata: Metadata = {
     shortcut: "/icon.svg",
     apple: "/icon.svg",
   },
-  manifest: "/manifest.json",
+  manifest: "/manifest.webmanifest",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "RADIANCE",
+  },
+  formatDetection: {
+    telephone: false,
+  },
   openGraph: {
     title: "RADIANCE — Intelligent AI Platform",
     description:

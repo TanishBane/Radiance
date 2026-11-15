@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import { getMotionTransition } from "@/lib/motion/presets";
 import { uiText, type UiLanguage } from "@/lib/i18n/ui";
+import { safeVibrate } from "@/lib/mobile/haptics";
 
 export interface MobileBottomNavProps {
   language?: UiLanguage;
@@ -47,7 +48,10 @@ export function MobileBottomNav({
         {/* 1. Chat Workspace */}
         <button
           type="button"
-          onClick={onFocusChat}
+          onClick={() => {
+            safeVibrate("selection");
+            onFocusChat?.();
+          }}
           className={`flex-1 flex flex-col items-center justify-center min-h-[44px] min-w-[44px] py-1 rounded-xl transition-all cursor-pointer touch-target ${
             activeTab === "chat"
               ? "text-[var(--accent-b)] font-semibold"
@@ -72,7 +76,10 @@ export function MobileBottomNav({
         {/* 2. History */}
         <button
           type="button"
-          onClick={onToggleHistory}
+          onClick={() => {
+            safeVibrate("selection");
+            onToggleHistory();
+          }}
           className={`flex-1 flex flex-col items-center justify-center min-h-[44px] min-w-[44px] py-1 rounded-xl transition-all cursor-pointer touch-target ${
             activeTab === "history"
               ? "text-[var(--accent-b)] font-semibold"
@@ -101,7 +108,10 @@ export function MobileBottomNav({
             whileTap={prefersReducedMotion ? undefined : { scale: 0.92 }}
             whileHover={prefersReducedMotion ? undefined : { scale: 1.05 }}
             transition={{ type: "spring", stiffness: 450, damping: 22 }}
-            onClick={onNewChat}
+            onClick={() => {
+              safeVibrate("tap");
+              onNewChat();
+            }}
             className="w-11 h-11 min-w-[44px] min-h-[44px] -mt-2 rounded-2xl bg-gradient-to-tr from-[var(--accent)] via-[var(--accent-b)] to-[var(--accent-c)] text-[var(--void)] shadow-[0_4px_16px_var(--accent-g)] flex items-center justify-center font-bold touch-target cursor-pointer border border-white/20 active:brightness-90"
           aria-label={uiText(language, "Start New Chat")}
             data-testid="bottom-nav-new-chat"
@@ -113,7 +123,10 @@ export function MobileBottomNav({
         {/* 4. Settings Center */}
         <button
           type="button"
-          onClick={onToggleSettings}
+          onClick={() => {
+            safeVibrate("selection");
+            onToggleSettings();
+          }}
           className={`flex-1 flex flex-col items-center justify-center min-h-[44px] min-w-[44px] py-1 rounded-xl transition-all cursor-pointer touch-target ${
             activeTab === "settings"
               ? "text-[var(--accent-b)] font-semibold"

@@ -18,11 +18,13 @@ import {
   Terminal,
   Compass,
   MessageSquare,
+  Camera,
 } from "lucide-react";
 import { Attachment, ModelOption } from "@/lib/types/chat";
 import { AVAILABLE_MODELS, DEFAULT_MODEL_ID, getModelById } from "@/lib/ai/models";
 import { createAttachmentFromFile } from "@/lib/documents/parser";
 import { uiText, type UiLanguage } from "@/lib/i18n/ui";
+import { safeVibrate } from "@/lib/mobile/haptics";
 
 export type ComposerMode = "Plan" | "Ask" | "Build";
 
@@ -158,6 +160,8 @@ export function ChatComposer({
 
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const cameraInputRef = useRef<HTMLInputElement | null>(null);
+  const [attachmentMenuOpen, setAttachmentMenuOpen] = useState(false);
   const recognitionRef = useRef<SpeechRecognitionInstance | null>(null);
   const isSubmittingRef = useRef(false);
   const modelTriggerRef = useRef<HTMLButtonElement | null>(null);
@@ -240,11 +244,13 @@ export function ChatComposer({
       setModeMenuOpen(false);
       setModelMenuOpen(false);
       setContextMenuOpen(false);
+      setAttachmentMenuOpen(false);
     };
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         setModeMenuOpen(false);
+        setAttachmentMenuOpen(false);
         if (modelMenuOpen) {
           setModelMenuOpen(false);
           modelTriggerRef.current?.focus();
@@ -285,6 +291,7 @@ export function ChatComposer({
     const trimmed = input.trim();
     if ((!trimmed && attachments.length === 0) || isGenerating || disabled) return;
 
+    safeVibrate("tap");
     isSubmittingRef.current = true;
     try {
       if (mode && mode !== "Build") {
@@ -617,28 +624,90 @@ export function ChatComposer({
           onChange={handleFileChange}
         />
 
+        {/* Hidden Camera Input */}
+        <input
+          ref={cameraInputRef}
+          type="file"
+          accept="image/*"
+          capture="environment"
+          className="hidden"
+          onChange={handleFileChange}
+          aria-label="Take photo with camera"
+        />
+
         {/* Controls Bar with Professional Icons & Glassmorphic Pills */}
         <div className="flex items-center justify-between gap-1.5 sm:gap-2 pt-2 border-t border-white/[0.08] relative z-10">
           {/* Left Controls: Add Files, Mode Selector, Model Trigger */}
           <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 min-w-0 flex-1 overflow-visible py-0.5">
             {/* 1. Add Files Expanding Glass Pill */}
-            <motion.button
-              type="button"
-              whileHover={shouldReduceMotion ? undefined : { scale: 1.04, y: -0.5 }}
-              whileTap={shouldReduceMotion ? undefined : { scale: 0.96 }}
-              transition={{ type: "spring", stiffness: 400, damping: 20 }}
-              onClick={() => fileInputRef.current?.click()}
-              className="group/btn h-8 px-2.5 rounded-full border border-white/[0.10] bg-[var(--surface)] hover:bg-[var(--surface-hover)] hover:border-[var(--border-accent)] text-[var(--txt-muted)] hover:text-[var(--txt)] transition-all flex items-center gap-1.5 text-xs font-sans font-medium touch-target cursor-pointer backdrop-blur-md shadow-xs"
-              title={uiText(language, "Attach file or media")}
-              aria-label={uiText(language, "Add files")}
-            >
-              <span className="text-base leading-none font-bold transition-transform duration-200 group-hover/btn:rotate-90">
-                +
-              </span>
-              <span className="hidden sm:inline-block max-w-0 overflow-hidden whitespace-nowrap group-hover/btn:max-w-[80px] transition-all duration-300 text-[11px] font-sans">
-                {uiText(language, "Add files")}
-              </span>
-            </motion.button>
+            <div className="relative">
+              <motion.button
+                type="button"
+                whileHover={shouldReduceMotion ? undefined : { scale: 1.04, y: -0.5 }}
+                whileTap={shouldReduceMotion ? undefined : { scale: 0.96 }}
+                transition={{ type: "spring", stiffness: 400, damping: 20 }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  safeVibrate("selection");
+                  setModeMenuOpen(false);
+                  setModelMenuOpen(false);
+                  setAttachmentMenuOpen((prev) => !prev);
+                }}
+                className="group/btn h-8 px-2.5 rounded-full border border-white/[0.10] bg-[var(--surface)] hover:bg-[var(--surface-hover)] hover:border-[var(--border-accent)] text-[var(--txt-muted)] hover:text-[var(--txt)] transition-all flex items-center gap-1.5 text-xs font-sans font-medium touch-target cursor-pointer backdrop-blur-md shadow-xs"
+                title={uiText(language, "Attach file or media")}
+                aria-label={uiText(language, "Add files")}
+                aria-haspopup="true"
+                aria-expanded={attachmentMenuOpen}
+              >
+                <span className="text-base leading-none font-bold transition-transform duration-200 group-hover/btn:rotate-90">
+                  +
+                </span>
+                <span className="hidden sm:inline-block max-w-0 overflow-hidden whitespace-nowrap group-hover/btn:max-w-[80px] transition-all duration-300 text-[11px] font-sans">
+                  {uiText(language, "Add files")}
+                </span>
+              </motion.button>
+
+              {attachmentMenuOpen && (
+                <div
+                  className="absolute left-0 bottom-full mb-2 w-48 rounded-xl p-1 z-50 bg-[var(--deep)]/95 backdrop-blur-2xl border border-white/[0.12] shadow-2xl flex flex-col gap-0.5 animate-in fade-in zoom-in-95 duration-150"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setAttachmentMenuOpen(false);
+                      cameraInputRef.current?.click();
+                    }}
+                    className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium text-[var(--txt)] hover:bg-white/10 transition-colors w-full text-left touch-target cursor-pointer min-h-[44px]"
+                  >
+                    <Camera className="w-4 h-4 text-emerald-400 shrink-0" />
+                    <span>{uiText(language, "Take Photo")}</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setAttachmentMenuOpen(false);
+                      fileInputRef.current?.click();
+                    }}
+                    className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium text-[var(--txt)] hover:bg-white/10 transition-colors w-full text-left touch-target cursor-pointer min-h-[44px]"
+                  >
+                    <FileText className="w-4 h-4 text-[var(--accent-b)] shrink-0" />
+                    <span>{uiText(language, "Upload Files")}</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setAttachmentMenuOpen(false);
+                      toggleVoice();
+                    }}
+                    className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium text-[var(--txt)] hover:bg-white/10 transition-colors w-full text-left touch-target cursor-pointer min-h-[44px]"
+                  >
+                    <Mic className="w-4 h-4 text-[var(--accent-c)] shrink-0" />
+                    <span>{uiText(language, "Voice Input")}</span>
+                  </button>
+                </div>
+              )}
+            </div>
 
             {/* 2. Mode Selector Pill (Build / Plan / Ask) */}
             <div className="relative">
@@ -908,7 +977,7 @@ export function ChatComposer({
                 onClick={() => onStop()}
                 aria-label={uiText(language, "Stop response generation")}
                 data-testid="stop-button"
-                className="w-8 h-8 rounded-full bg-[var(--danger)] text-white hover:bg-[var(--danger)]/90 transition-all shadow-[0_0_12px_rgba(232,85,85,0.4)] shrink-0 flex items-center justify-center touch-target cursor-pointer"
+                className="relative before:absolute before:-inset-2 before:content-[''] w-8 h-8 rounded-full bg-[var(--danger)] text-white hover:bg-[var(--danger)]/90 transition-all shadow-[0_0_12px_rgba(232,85,85,0.4)] shrink-0 flex items-center justify-center touch-target cursor-pointer"
                 title={uiText(language, "Stop response generation")}
               >
                 <Square className="w-3.5 h-3.5 fill-white" />
@@ -930,7 +999,7 @@ export function ChatComposer({
                 disabled={(!input.trim() && attachments.length === 0) || disabled}
                 aria-label={uiText(language, "Send message")}
                 data-testid="send-button"
-                className={`group/send w-8 h-8 rounded-full transition-all shadow-sm shrink-0 flex items-center justify-center touch-target cursor-pointer ${
+                className={`group/send relative before:absolute before:-inset-2 before:content-[''] w-8 h-8 rounded-full transition-all shadow-sm shrink-0 flex items-center justify-center touch-target cursor-pointer ${
                   isSubmitReady
                     ? "bg-gradient-to-tr from-[var(--accent)] via-[var(--accent-b)] to-[var(--accent-c)] text-[var(--void)] font-bold shadow-[0_0_18px_var(--accent-g)] hover:brightness-110 active:brightness-95"
                     : "bg-[var(--surface)] border border-white/[0.08] text-[var(--txt-muted)] opacity-40 pointer-events-none"
