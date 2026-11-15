@@ -20,17 +20,18 @@ import "./landing-folio.css";
 
 import { LandingNav } from "./landing-nav";
 import { HeroLandscape } from "./hero-landscape";
-import { ProblemComparisonSection } from "./problem-comparison-section";
-import { ProductIntroduction } from "./product-introduction";
-import { ProductPreview } from "./product-preview";
-import { PersonalIntelligenceStory } from "./personal-intelligence-story";
-import { PreferenceSandbox } from "./preference-sandbox";
-import { ContextPipelineSection } from "./context-pipeline-section";
-import { PrivacyFortress } from "./privacy-fortress";
-import { LandingFaq } from "./landing-faq";
-import { FutureVisionStory } from "./future-vision-story";
-import { ImmersiveFinalCta } from "./immersive-final-cta";
 import { LandingFooter } from "./landing-footer";
+
+const ProblemComparisonSection = dynamic(() => import("./problem-comparison-section").then((module) => module.ProblemComparisonSection));
+const ProductIntroduction = dynamic(() => import("./product-introduction").then((module) => module.ProductIntroduction));
+const ProductPreview = dynamic(() => import("./product-preview").then((module) => module.ProductPreview));
+const PersonalIntelligenceStory = dynamic(() => import("./personal-intelligence-story").then((module) => module.PersonalIntelligenceStory));
+const PreferenceSandbox = dynamic(() => import("./preference-sandbox").then((module) => module.PreferenceSandbox));
+const ContextPipelineSection = dynamic(() => import("./context-pipeline-section").then((module) => module.ContextPipelineSection));
+const PrivacyFortress = dynamic(() => import("./privacy-fortress").then((module) => module.PrivacyFortress));
+const LandingFaq = dynamic(() => import("./landing-faq").then((module) => module.LandingFaq));
+const FutureVisionStory = dynamic(() => import("./future-vision-story").then((module) => module.FutureVisionStory));
+const ImmersiveFinalCta = dynamic(() => import("./immersive-final-cta").then((module) => module.ImmersiveFinalCta));
 
 const ArcticIcebergsBackground = dynamic(
   () => import("@/components/background/arctic-icebergs-background").then((module) => module.ArcticIcebergsBackground),

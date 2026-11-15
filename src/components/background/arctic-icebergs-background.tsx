@@ -64,14 +64,35 @@ export function ArcticIcebergsBackground({ className }: ArcticIcebergsBackground
   const [fadeLeaves, setFadeLeaves] = useState(0);
   const [fadeAurora, setFadeAurora] = useState(0);
   const [fadeStart, setFadeStart] = useState(0);
+  const fadeValleyActive = fadeValley > 0.01;
+  const fadeValleyComplete = fadeValley >= 0.99;
+  const fadeMoonlitActive = fadeMoonlit > 0.01;
+  const fadeMoonlitComplete = fadeMoonlit >= 0.99;
+  const fadeMountainActive = fadeMountain > 0.01;
+  const fadeMountainComplete = fadeMountain >= 0.99;
+  const fadeSkylineActive = fadeSkyline > 0.01;
+  const fadeSkylineComplete = fadeSkyline >= 0.99;
+  const fadeEarthActive = fadeEarth > 0.01;
+  const fadeEarthComplete = fadeEarth >= 0.99;
+  const fadeCyclistActive = fadeCyclist > 0.01;
+  const fadeCyclistComplete = fadeCyclist >= 0.99;
+  const fadePagodaActive = fadePagoda > 0.01;
+  const fadePagodaComplete = fadePagoda >= 0.99;
+  const fadeLeavesActive = fadeLeaves > 0.01;
+  const fadeLeavesComplete = fadeLeaves >= 0.99;
+  const fadeAuroraActive = fadeAurora > 0.01;
+  const fadeAuroraComplete = fadeAurora >= 0.99;
+  const fadeStartActive = fadeStart > 0.01;
+  const fadeStartComplete = fadeStart >= 0.99;
 
   // Scroll listener tracking #problem, #product, and #preview sections
   useEffect(() => {
     let ticking = false;
+    let frameId: number | null = null;
 
     const onScroll = () => {
       if (!ticking) {
-        window.requestAnimationFrame(() => {
+        frameId = window.requestAnimationFrame(() => {
           const vh = window.innerHeight;
           const startFade = vh * 0.92;
           const endFade = vh * 0.22;
@@ -167,6 +188,7 @@ export function ArcticIcebergsBackground({ className }: ArcticIcebergsBackground
           }
 
           ticking = false;
+          frameId = null;
         });
         ticking = true;
       }
@@ -177,6 +199,7 @@ export function ArcticIcebergsBackground({ className }: ArcticIcebergsBackground
     window.addEventListener("resize", onScroll, { passive: true });
 
     return () => {
+      if (frameId !== null) window.cancelAnimationFrame(frameId);
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onScroll);
     };
@@ -225,16 +248,16 @@ export function ArcticIcebergsBackground({ className }: ArcticIcebergsBackground
     window.addEventListener("resize", handleResize, { passive: true });
 
     const isLayerActive =
-      fadeValley < 0.99 &&
-      fadeMoonlit < 0.99 &&
-      fadeMountain < 0.99 &&
-      fadeSkyline < 0.99 &&
-      fadeEarth < 0.99 &&
-      fadeCyclist < 0.99 &&
-      fadePagoda < 0.99 &&
-      fadeLeaves < 0.99 &&
-      fadeAurora < 0.99 &&
-      fadeStart < 0.99;
+      !fadeValleyComplete &&
+      !fadeMoonlitComplete &&
+      !fadeMountainComplete &&
+      !fadeSkylineComplete &&
+      !fadeEarthComplete &&
+      !fadeCyclistComplete &&
+      !fadePagodaComplete &&
+      !fadeLeavesComplete &&
+      !fadeAuroraComplete &&
+      !fadeStartComplete;
 
     const handleVisibilityChange = () => {
       isVisible = document.visibilityState === "visible";
@@ -308,7 +331,7 @@ export function ArcticIcebergsBackground({ className }: ArcticIcebergsBackground
       window.removeEventListener("resize", handleResize);
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
-  }, [fadeValley, fadeMoonlit, fadeMountain, fadeSkyline, fadeEarth, fadeCyclist, fadePagoda, fadeLeaves, fadeAurora, fadeStart]);
+  }, [fadeValleyComplete, fadeMoonlitComplete, fadeMountainComplete, fadeSkylineComplete, fadeEarthComplete, fadeCyclistComplete, fadePagodaComplete, fadeLeavesComplete, fadeAuroraComplete, fadeStartComplete]);
 
   // 2. Balloon Valley Sunrise Canvas Controller
   useEffect(() => {
@@ -354,16 +377,16 @@ export function ArcticIcebergsBackground({ className }: ArcticIcebergsBackground
     window.addEventListener("resize", handleResize, { passive: true });
 
     const isLayerActive =
-      fadeValley > 0.01 &&
-      fadeMoonlit < 0.99 &&
-      fadeMountain < 0.99 &&
-      fadeSkyline < 0.99 &&
-      fadeEarth < 0.99 &&
-      fadeCyclist < 0.99 &&
-      fadePagoda < 0.99 &&
-      fadeLeaves < 0.99 &&
-      fadeAurora < 0.99 &&
-      fadeStart < 0.99;
+      fadeValleyActive &&
+      !fadeMoonlitComplete &&
+      !fadeMountainComplete &&
+      !fadeSkylineComplete &&
+      !fadeEarthComplete &&
+      !fadeCyclistComplete &&
+      !fadePagodaComplete &&
+      !fadeLeavesComplete &&
+      !fadeAuroraComplete &&
+      !fadeStartComplete;
 
     const handleVisibilityChange = () => {
       isVisible = document.visibilityState === "visible";
@@ -435,7 +458,7 @@ export function ArcticIcebergsBackground({ className }: ArcticIcebergsBackground
       window.removeEventListener("resize", handleResize);
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
-  }, [fadeValley, fadeMoonlit, fadeMountain, fadeSkyline, fadeEarth, fadeCyclist, fadePagoda, fadeLeaves, fadeAurora, fadeStart]);
+  }, [fadeValleyActive, fadeMoonlitComplete, fadeMountainComplete, fadeSkylineComplete, fadeEarthComplete, fadeCyclistComplete, fadePagodaComplete, fadeLeavesComplete, fadeAuroraComplete, fadeStartComplete]);
 
   // 3. Moonlit Sea Canvas Controller
   useEffect(() => {
@@ -480,15 +503,15 @@ export function ArcticIcebergsBackground({ className }: ArcticIcebergsBackground
     window.addEventListener("resize", handleResize, { passive: true });
 
     const isLayerActive =
-      fadeMoonlit > 0.01 &&
-      fadeMountain < 0.99 &&
-      fadeSkyline < 0.99 &&
-      fadeEarth < 0.99 &&
-      fadeCyclist < 0.99 &&
-      fadePagoda < 0.99 &&
-      fadeLeaves < 0.99 &&
-      fadeAurora < 0.99 &&
-      fadeStart < 0.99;
+      fadeMoonlitActive &&
+      !fadeMountainComplete &&
+      !fadeSkylineComplete &&
+      !fadeEarthComplete &&
+      !fadeCyclistComplete &&
+      !fadePagodaComplete &&
+      !fadeLeavesComplete &&
+      !fadeAuroraComplete &&
+      !fadeStartComplete;
 
     const handleVisibilityChange = () => {
       isVisible = document.visibilityState === "visible";
@@ -562,7 +585,7 @@ export function ArcticIcebergsBackground({ className }: ArcticIcebergsBackground
       window.removeEventListener("resize", handleResize);
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
-  }, [fadeMoonlit, fadeMountain, fadeSkyline, fadeEarth, fadeCyclist, fadePagoda, fadeLeaves, fadeAurora, fadeStart]);
+  }, [fadeMoonlitActive, fadeMountainComplete, fadeSkylineComplete, fadeEarthComplete, fadeCyclistComplete, fadePagodaComplete, fadeLeavesComplete, fadeAuroraComplete, fadeStartComplete]);
 
   // 4. Mountain Sunrise Canvas Controller
   useEffect(() => {
@@ -607,14 +630,14 @@ export function ArcticIcebergsBackground({ className }: ArcticIcebergsBackground
     window.addEventListener("resize", handleResize, { passive: true });
 
     const isLayerActive =
-      fadeMountain > 0.01 &&
-      fadeSkyline < 0.99 &&
-      fadeEarth < 0.99 &&
-      fadeCyclist < 0.99 &&
-      fadePagoda < 0.99 &&
-      fadeLeaves < 0.99 &&
-      fadeAurora < 0.99 &&
-      fadeStart < 0.99;
+      fadeMountainActive &&
+      !fadeSkylineComplete &&
+      !fadeEarthComplete &&
+      !fadeCyclistComplete &&
+      !fadePagodaComplete &&
+      !fadeLeavesComplete &&
+      !fadeAuroraComplete &&
+      !fadeStartComplete;
 
     const handleVisibilityChange = () => {
       isVisible = document.visibilityState === "visible";
@@ -688,7 +711,7 @@ export function ArcticIcebergsBackground({ className }: ArcticIcebergsBackground
       window.removeEventListener("resize", handleResize);
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
-  }, [fadeMountain, fadeSkyline, fadeEarth, fadeCyclist, fadePagoda, fadeLeaves, fadeAurora, fadeStart]);
+  }, [fadeMountainActive, fadeSkylineComplete, fadeEarthComplete, fadeCyclistComplete, fadePagodaComplete, fadeLeavesComplete, fadeAuroraComplete, fadeStartComplete]);
 
   // 5. City Skyline Night Canvas Controller
   useEffect(() => {
@@ -733,13 +756,13 @@ export function ArcticIcebergsBackground({ className }: ArcticIcebergsBackground
     window.addEventListener("resize", handleResize, { passive: true });
 
     const isLayerActive =
-      fadeSkyline > 0.01 &&
-      fadeEarth < 0.99 &&
-      fadeCyclist < 0.99 &&
-      fadePagoda < 0.99 &&
-      fadeLeaves < 0.99 &&
-      fadeAurora < 0.99 &&
-      fadeStart < 0.99;
+      fadeSkylineActive &&
+      !fadeEarthComplete &&
+      !fadeCyclistComplete &&
+      !fadePagodaComplete &&
+      !fadeLeavesComplete &&
+      !fadeAuroraComplete &&
+      !fadeStartComplete;
 
     const handleVisibilityChange = () => {
       isVisible = document.visibilityState === "visible";
@@ -813,7 +836,7 @@ export function ArcticIcebergsBackground({ className }: ArcticIcebergsBackground
       window.removeEventListener("resize", handleResize);
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
-  }, [fadeSkyline, fadeEarth, fadeCyclist, fadePagoda, fadeLeaves, fadeAurora, fadeStart]);
+  }, [fadeSkylineActive, fadeEarthComplete, fadeCyclistComplete, fadePagodaComplete, fadeLeavesComplete, fadeAuroraComplete, fadeStartComplete]);
 
   // 6. Orbit Window Earth Canvas Controller
   useEffect(() => {
@@ -859,12 +882,12 @@ export function ArcticIcebergsBackground({ className }: ArcticIcebergsBackground
     window.addEventListener("resize", handleResize, { passive: true });
 
     const isLayerActive =
-      fadeEarth > 0.01 &&
-      fadeCyclist < 0.99 &&
-      fadePagoda < 0.99 &&
-      fadeLeaves < 0.99 &&
-      fadeAurora < 0.99 &&
-      fadeStart < 0.99;
+      fadeEarthActive &&
+      !fadeCyclistComplete &&
+      !fadePagodaComplete &&
+      !fadeLeavesComplete &&
+      !fadeAuroraComplete &&
+      !fadeStartComplete;
 
     const handleVisibilityChange = () => {
       isVisible = document.visibilityState === "visible";
@@ -936,7 +959,7 @@ export function ArcticIcebergsBackground({ className }: ArcticIcebergsBackground
       window.removeEventListener("resize", handleResize);
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
-  }, [fadeEarth, fadeCyclist, fadePagoda, fadeLeaves, fadeAurora, fadeStart]);
+  }, [fadeEarthActive, fadeCyclistComplete, fadePagodaComplete, fadeLeavesComplete, fadeAuroraComplete, fadeStartComplete]);
 
   // 7. Autumn Road Cyclist Canvas Controller
   useEffect(() => {
@@ -982,11 +1005,11 @@ export function ArcticIcebergsBackground({ className }: ArcticIcebergsBackground
     window.addEventListener("resize", handleResize, { passive: true });
 
     const isLayerActive =
-      fadeCyclist > 0.01 &&
-      fadePagoda < 0.99 &&
-      fadeLeaves < 0.99 &&
-      fadeAurora < 0.99 &&
-      fadeStart < 0.99;
+      fadeCyclistActive &&
+      !fadePagodaComplete &&
+      !fadeLeavesComplete &&
+      !fadeAuroraComplete &&
+      !fadeStartComplete;
 
     const handleVisibilityChange = () => {
       isVisible = document.visibilityState === "visible";
@@ -1058,7 +1081,7 @@ export function ArcticIcebergsBackground({ className }: ArcticIcebergsBackground
       window.removeEventListener("resize", handleResize);
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
-  }, [fadeCyclist, fadePagoda, fadeLeaves, fadeAurora, fadeStart]);
+  }, [fadeCyclistActive, fadePagodaComplete, fadeLeavesComplete, fadeAuroraComplete, fadeStartComplete]);
 
   // 8. Autumn Pagoda Maples Canvas Controller
   useEffect(() => {
@@ -1104,10 +1127,10 @@ export function ArcticIcebergsBackground({ className }: ArcticIcebergsBackground
     window.addEventListener("resize", handleResize, { passive: true });
 
     const isLayerActive =
-      fadePagoda > 0.01 &&
-      fadeLeaves < 0.99 &&
-      fadeAurora < 0.99 &&
-      fadeStart < 0.99;
+      fadePagodaActive &&
+      !fadeLeavesComplete &&
+      !fadeAuroraComplete &&
+      !fadeStartComplete;
 
     const handleVisibilityChange = () => {
       isVisible = document.visibilityState === "visible";
@@ -1179,7 +1202,7 @@ export function ArcticIcebergsBackground({ className }: ArcticIcebergsBackground
       window.removeEventListener("resize", handleResize);
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
-  }, [fadePagoda, fadeLeaves, fadeAurora, fadeStart]);
+  }, [fadePagodaActive, fadeLeavesComplete, fadeAuroraComplete, fadeStartComplete]);
 
   // 9. Falling Leaves Canvas Controller
   useEffect(() => {
@@ -1224,9 +1247,9 @@ export function ArcticIcebergsBackground({ className }: ArcticIcebergsBackground
     window.addEventListener("resize", handleResize, { passive: true });
 
     const isLayerActive =
-      fadeLeaves > 0.01 &&
-      fadeAurora < 0.99 &&
-      fadeStart < 0.99;
+      fadeLeavesActive &&
+      !fadeAuroraComplete &&
+      !fadeStartComplete;
 
     const handleVisibilityChange = () => {
       isVisible = document.visibilityState === "visible";
@@ -1300,7 +1323,7 @@ export function ArcticIcebergsBackground({ className }: ArcticIcebergsBackground
       window.removeEventListener("resize", handleResize);
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
-  }, [fadeLeaves, fadeAurora, fadeStart]);
+  }, [fadeLeavesActive, fadeAuroraComplete, fadeStartComplete]);
 
   // 10. Aurora Curtains Canvas Controller
   useEffect(() => {
@@ -1344,7 +1367,7 @@ export function ArcticIcebergsBackground({ className }: ArcticIcebergsBackground
     handleResize();
     window.addEventListener("resize", handleResize, { passive: true });
 
-    const isLayerActive = fadeAurora > 0.01 && fadeStart < 0.99;
+    const isLayerActive = fadeAuroraActive && !fadeStartComplete;
 
     const handleVisibilityChange = () => {
       isVisible = document.visibilityState === "visible";
@@ -1418,7 +1441,7 @@ export function ArcticIcebergsBackground({ className }: ArcticIcebergsBackground
       window.removeEventListener("resize", handleResize);
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
-  }, [fadeAurora, fadeStart]);
+  }, [fadeAuroraActive, fadeStartComplete]);
 
   return (
     <div
@@ -1447,7 +1470,6 @@ export function ArcticIcebergsBackground({ className }: ArcticIcebergsBackground
           height: "100%",
           opacity: Math.max(0, (1 - fadeValley) * (1 - fadeMoonlit) * (1 - fadeMountain) * (1 - fadeSkyline) * (1 - fadeEarth) * (1 - fadeCyclist) * (1 - fadePagoda) * (1 - fadeLeaves) * (1 - fadeAurora) * (1 - fadeStart)),
           transition: "opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1)",
-          willChange: "opacity",
         }}
         aria-hidden="true"
       />
@@ -1463,7 +1485,6 @@ export function ArcticIcebergsBackground({ className }: ArcticIcebergsBackground
           height: "100%",
           opacity: Math.max(0, fadeValley * (1 - fadeMoonlit) * (1 - fadeMountain) * (1 - fadeSkyline) * (1 - fadeEarth) * (1 - fadeCyclist) * (1 - fadePagoda) * (1 - fadeLeaves) * (1 - fadeAurora) * (1 - fadeStart)),
           transition: "opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1)",
-          willChange: "opacity",
         }}
         aria-hidden="true"
       />
@@ -1479,7 +1500,6 @@ export function ArcticIcebergsBackground({ className }: ArcticIcebergsBackground
           height: "100%",
           opacity: Math.max(0, fadeMoonlit * (1 - fadeMountain) * (1 - fadeSkyline) * (1 - fadeEarth) * (1 - fadeCyclist) * (1 - fadePagoda) * (1 - fadeLeaves) * (1 - fadeAurora) * (1 - fadeStart)),
           transition: "opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1)",
-          willChange: "opacity",
         }}
         aria-hidden="true"
       />
@@ -1495,7 +1515,6 @@ export function ArcticIcebergsBackground({ className }: ArcticIcebergsBackground
           height: "100%",
           opacity: Math.max(0, fadeMountain * (1 - fadeSkyline) * (1 - fadeEarth) * (1 - fadeCyclist) * (1 - fadePagoda) * (1 - fadeLeaves) * (1 - fadeAurora) * (1 - fadeStart)),
           transition: "opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1)",
-          willChange: "opacity",
         }}
         aria-hidden="true"
       />
@@ -1511,7 +1530,6 @@ export function ArcticIcebergsBackground({ className }: ArcticIcebergsBackground
           height: "100%",
           opacity: Math.max(0, fadeSkyline * (1 - fadeEarth) * (1 - fadeCyclist) * (1 - fadePagoda) * (1 - fadeLeaves) * (1 - fadeAurora) * (1 - fadeStart)),
           transition: "opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1)",
-          willChange: "opacity",
         }}
         aria-hidden="true"
       />
@@ -1527,7 +1545,6 @@ export function ArcticIcebergsBackground({ className }: ArcticIcebergsBackground
           height: "100%",
           opacity: Math.max(0, fadeEarth * (1 - fadeCyclist) * (1 - fadePagoda) * (1 - fadeLeaves) * (1 - fadeAurora) * (1 - fadeStart)),
           transition: "opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1)",
-          willChange: "opacity",
         }}
         aria-hidden="true"
       />
@@ -1543,7 +1560,6 @@ export function ArcticIcebergsBackground({ className }: ArcticIcebergsBackground
           height: "100%",
           opacity: Math.max(0, fadeCyclist * (1 - fadePagoda) * (1 - fadeLeaves) * (1 - fadeAurora) * (1 - fadeStart)),
           transition: "opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1)",
-          willChange: "opacity",
         }}
         aria-hidden="true"
       />
@@ -1559,7 +1575,6 @@ export function ArcticIcebergsBackground({ className }: ArcticIcebergsBackground
           height: "100%",
           opacity: Math.max(0, fadePagoda * (1 - fadeLeaves) * (1 - fadeAurora) * (1 - fadeStart)),
           transition: "opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1)",
-          willChange: "opacity",
         }}
         aria-hidden="true"
       />
@@ -1575,7 +1590,6 @@ export function ArcticIcebergsBackground({ className }: ArcticIcebergsBackground
           height: "100%",
           opacity: Math.max(0, fadeLeaves * (1 - fadeAurora) * (1 - fadeStart)),
           transition: "opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1)",
-          willChange: "opacity",
         }}
         aria-hidden="true"
       />
@@ -1591,7 +1605,6 @@ export function ArcticIcebergsBackground({ className }: ArcticIcebergsBackground
           height: "100%",
           opacity: Math.max(0, fadeAurora * (1 - fadeStart)),
           transition: "opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1)",
-          willChange: "opacity",
         }}
         aria-hidden="true"
       />

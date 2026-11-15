@@ -597,3 +597,19 @@
 - Full unit run: 590 passed, 10 failed across 6 files. Failures include existing React-global and outdated landing-content assertions.
 - Full browser run was stopped after 27 of 306 cases because existing chat and landing assertions target removed controls/headlines; the configured Mobile Safari project also lacks its WebKit executable.
 - No Core Web Vitals or device performance measurements were collected, so no measured performance improvement is claimed.
+
+## 2026-11-15 — Landing motion and loading optimization
+
+### Changed
+
+- Split below-hero storytelling and interactive sections into separate Next.js dynamic-import chunks while retaining server rendering for their content.
+- Changed the ten ASCII scene controllers to restart only when a scene becomes active or fully replaced. Previously, every interpolated scroll opacity update restarted the affected canvas effects and their animation loops.
+- Removed permanent `will-change: opacity` promotion from all full-viewport canvases so the browser can promote layers only while needed for transitions.
+- Added cancellation for a pending scroll animation frame when the background unmounts.
+
+### Verification
+
+- `pnpm lint` and `pnpm build`: passed. Build route output reports homepage first-load JavaScript at 243 kB, down from 249 kB before section chunking.
+- Focused ASCII background tests: 10 passed. A nearby hero unit suite still has one pre-existing `React is not defined` failure.
+- Chromium landing browser suite: 8 passed, 11 failed. Failures target stale hero selectors, removed copy, and obsolete section expectations; the mobile Safari browser is unavailable in this environment.
+- Desktop and mobile screenshots were inspected. No Core Web Vitals run was available; no LCP, INP, or CLS improvement is claimed.
