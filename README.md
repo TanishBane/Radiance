@@ -1,3 +1,8 @@
+| 📖 [README](README.md) | ⚖️ [License](LICENSE) | 📜 [Third-Party Notices](THIRD_PARTY_NOTICES.md) | 🔍 [License Audit](LICENSE_AUDIT.md) | 🤝 [CLA](CONTRIBUTOR_LICENSE_AGREEMENT.md) | 👥 [Contributing](CONTRIBUTING.md) | 🛡️ [Security](SECURITY.md) |
+| :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+
+---
+
 <div align="center">
 
   <img src="public/brand/radiance-symbol.svg" width="72" height="72" alt="Radiance Emblem" />
@@ -20,6 +25,17 @@
   [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-v4-38bdf8?logo=tailwindcss)](https://tailwindcss.com/)
 
   <br />
+
+  <p align="center">
+    <a href="README.md"><b>📖 README</b></a> &nbsp;&bull;&nbsp;
+    <a href="LICENSE"><b>⚖️ License</b></a> &nbsp;&bull;&nbsp;
+    <a href="THIRD_PARTY_NOTICES.md"><b>📜 Third-Party Notices</b></a> &nbsp;&bull;&nbsp;
+    <a href="LICENSE_AUDIT.md"><b>🔍 License Audit</b></a> &nbsp;&bull;&nbsp;
+    <a href="CONTRIBUTOR_LICENSE_AGREEMENT.md"><b>🤝 CLA</b></a> &nbsp;&bull;&nbsp;
+    <a href="CONTRIBUTING.md"><b>👥 Contributing</b></a> &nbsp;&bull;&nbsp;
+    <a href="SECURITY.md"><b>🛡️ Security</b></a>
+  </p>
+
   <br />
 
   <img src="docs/assets/radiance-social-preview.png" alt="Radiance Platform Banner" width="100%" />
@@ -389,3 +405,16 @@ Copyright &copy; 2026 [COPYRIGHT HOLDER NAME OR LEGAL ENTITY]. All Rights Reserv
 - **Commercial Deployment:** Unauthorized resale, redistribution, sublicensing, white-labeling, or independent commercial SaaS deployment is strictly prohibited without an explicit commercial license.
 - **Third-Party Open Source:** All third-party libraries, UI components, fonts, and assets remain governed by their respective upstream permissive licenses. See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) and the [LICENSES/](LICENSES/) directory.
 - **Contributions:** All community contributions are subject to the [Contributor License Agreement](CONTRIBUTOR_LICENSE_AGREEMENT.md).
+
+### Repository Legal & Governance Directory
+
+| Document | Purpose & Scope | Quick Link |
+| :--- | :--- | :--- |
+| **Primary License** | Core source-available proprietary license terms & restrictions | [`LICENSE`](LICENSE) |
+| **Third-Party Notices** | Comprehensive inventory of 258 dependencies, 21st.dev components & fonts | [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md) |
+| **Upstream Licenses** | Canonical upstream license texts (MIT, Apache-2.0, BSD, OFL-1.1, etc.) | [`LICENSES/`](LICENSES/) |
+| **Compliance Audit** | Internal engineering compliance audit record & risk resolution matrix | [`LICENSE_AUDIT.md`](LICENSE_AUDIT.md) |
+| **Contributor CLA** | Contributor License Agreement & DCO certification terms | [`CONTRIBUTOR_LICENSE_AGREEMENT.md`](CONTRIBUTOR_LICENSE_AGREEMENT.md) |
+| **Contribution Guide** | Developer contribution workflows, quality gates & PR template | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| **Code of Conduct** | Community standards and expectations for inclusive participation | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) |
+| **Security Policy** | Vulnerability disclosure policy & safe-harbor research authorization | [`SECURITY.md`](SECURITY.md) |

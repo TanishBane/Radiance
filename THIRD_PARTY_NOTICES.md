@@ -7,6 +7,11 @@
 
 ---
 
+| 📖 [README](README.md) | ⚖️ [License](LICENSE) | 📜 [Third-Party Notices](THIRD_PARTY_NOTICES.md) | 🔍 [License Audit](LICENSE_AUDIT.md) | 🤝 [CLA](CONTRIBUTOR_LICENSE_AGREEMENT.md) | 👥 [Contributing](CONTRIBUTING.md) | 🛡️ [Security](SECURITY.md) |
+| :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+
+---
+
 ## Overview
 
 Radiance incorporates open-source and third-party software components, libraries, user-interface elements, shaders, fonts, and assets. This document acknowledges upstream authors and provides the required legal copyright notices, permission terms, and disclaimers in accordance with each component's upstream license.

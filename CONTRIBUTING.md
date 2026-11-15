@@ -1,5 +1,10 @@
 # Contributing to Radiance
 
+| 📖 [README](README.md) | ⚖️ [License](LICENSE) | 📜 [Third-Party Notices](THIRD_PARTY_NOTICES.md) | 🔍 [License Audit](LICENSE_AUDIT.md) | 🤝 [CLA](CONTRIBUTOR_LICENSE_AGREEMENT.md) | 👥 [Contributing](CONTRIBUTING.md) | 🛡️ [Security](SECURITY.md) |
+| :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+
+---
+
 Thank you for your interest in contributing to **Radiance**! We welcome contributions that help us build a high-precision, beautifully crafted AI workspace engineered for multi-model reasoning, spatial computing, and user-controlled intelligence.
 
 Please take a moment to review this guide before submitting issues or pull requests.

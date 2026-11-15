@@ -6,6 +6,11 @@
 
 ---
 
+| 📖 [README](README.md) | ⚖️ [License](LICENSE) | 📜 [Third-Party Notices](THIRD_PARTY_NOTICES.md) | 🔍 [License Audit](LICENSE_AUDIT.md) | 🤝 [CLA](CONTRIBUTOR_LICENSE_AGREEMENT.md) | 👥 [Contributing](CONTRIBUTING.md) | 🛡️ [Security](SECURITY.md) |
+| :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+
+---
+
 Thank you for your interest in contributing to Radiance ("the Project"), maintained by [COPYRIGHT HOLDER NAME OR LEGAL ENTITY] ("Project Maintainer").
 
 In order to clarify the intellectual property licenses granted with Contributions, this Contributor License Agreement ("Agreement") must be accepted by any individual or entity submitting Contributions to the Project.

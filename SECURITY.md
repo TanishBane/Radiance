@@ -1,5 +1,10 @@
 # Security Policy
 
+| 📖 [README](README.md) | ⚖️ [License](LICENSE) | 📜 [Third-Party Notices](THIRD_PARTY_NOTICES.md) | 🔍 [License Audit](LICENSE_AUDIT.md) | 🤝 [CLA](CONTRIBUTOR_LICENSE_AGREEMENT.md) | 👥 [Contributing](CONTRIBUTING.md) | 🛡️ [Security](SECURITY.md) |
+| :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+
+---
+
 The Radiance architecture team takes application security, operational reliability, and user privacy seriously. We appreciate the contributions of security researchers and community members in responsibly identifying and disclosing potential vulnerabilities.
 
 ---

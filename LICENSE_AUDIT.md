@@ -7,6 +7,11 @@
 
 ---
 
+| 📖 [README](README.md) | ⚖️ [License](LICENSE) | 📜 [Third-Party Notices](THIRD_PARTY_NOTICES.md) | 🔍 [License Audit](LICENSE_AUDIT.md) | 🤝 [CLA](CONTRIBUTOR_LICENSE_AGREEMENT.md) | 👥 [Contributing](CONTRIBUTING.md) | 🛡️ [Security](SECURITY.md) |
+| :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+
+---
+
 ## 1. Executive Summary & Verification Verdict
 
 An exhaustive compliance audit and post-audit remediation was conducted across all files, components, shaders, dependencies, fonts, and graphical assets of the Radiance platform.
