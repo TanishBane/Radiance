@@ -613,3 +613,4 @@
 - Focused ASCII background tests: 10 passed. A nearby hero unit suite still has one pre-existing `React is not defined` failure.
 - Chromium landing browser suite: 8 passed, 11 failed. Failures target stale hero selectors, removed copy, and obsolete section expectations; the mobile Safari browser is unavailable in this environment.
 - Desktop and mobile screenshots were inspected. No Core Web Vitals run was available; no LCP, INP, or CLS improvement is claimed.
+- `pnpm measure:bundle` still exits over budget (reports 3273 kB gzip for `/layout` and 4202 kB for `/page`). The script's route accounting needs validation before treating those totals as per-route payload measurements.
