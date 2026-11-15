@@ -4,7 +4,7 @@ import React, { useState, useEffect, memo } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { Sparkles, Globe, ArrowUpRight } from "lucide-react";
 import { HeroProductStage } from "./hero-product-stage";
-import { LandingCta } from "./landing-cta";
+import { HoverActionButton } from "@/components/ui/hover-button-1";
 import { ShinyButton } from "@/components/ui/shiny-button";
 import { motionDurations, motionEasing } from "@/lib/motion/presets";
 import "./hero-landscape.css";
@@ -102,9 +102,11 @@ export function HeroLandscape() {
                 Chat with Radiance <ArrowUpRight className="inline w-4 h-4 ml-1 -mt-0.5" />
               </ShinyButton>
 
-              <LandingCta href="#intelligence" variant="ghost" size="lg" className="hero-btn-secondary landing-cta-ghost">
-                Explore Personal Intelligence <span aria-hidden="true">↓</span>
-              </LandingCta>
+              <HoverActionButton
+                href="#intelligence"
+                label="Explore Personal Intelligence"
+                className="hero-btn-secondary"
+              />
             </div>
 
             <p className="landing-hero-proof hero-trust-row" aria-label="Saved context preview">

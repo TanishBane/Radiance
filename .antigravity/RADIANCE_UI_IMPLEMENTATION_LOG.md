@@ -1,5 +1,17 @@
 # Radiance UI implementation log
 
+## 2026-11-15 — Animate the Personal Intelligence CTA
+
+### Changed
+
+- Replaced the landing-page Personal Intelligence CTA with an accessible animated link. Its label slides away on hover or keyboard focus as a color sweep reveals the same label and a right arrow; the resting state keeps the down arrow.
+- Preserved the existing `#intelligence` destination, responsive hero layout, Radiance theme tokens, and reduced-motion support.
+
+### Verification
+
+- `pnpm.cmd typecheck`, `pnpm.cmd lint`, `pnpm.cmd build`, and `git diff --check` passed.
+- A stable visual browser check was unavailable: existing development servers share the build output, and the isolated production preview failed to load its generated Sentry vendor chunk. No screenshot-level visual verification is claimed.
+
 ## 2026-11-15 — Animate the Context Forward headline
 
 ### Changed
