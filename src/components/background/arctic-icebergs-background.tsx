@@ -16,7 +16,7 @@ export interface ArcticIcebergsBackgroundProps {
   className?: string;
 }
 
-export function drawAsciiRuns(
+function drawAsciiCells(
   ctx: CanvasRenderingContext2D,
   cols: number,
   rows: number,
@@ -25,33 +25,14 @@ export function drawAsciiRuns(
   glyphAt: (index: number) => string,
   colorAt: (index: number) => string
 ) {
-  for (let y = 0; y < rows; y++) {
-    let runStart = 0;
-    let runColor = "";
-    let runText = "";
-    let hasGlyph = false;
+  for (let index = 0; index < cols * rows; index++) {
+    const glyph = glyphAt(index);
+    if (!glyph || glyph === " ") continue;
 
-    const flush = (end: number) => {
-      if (!hasGlyph) return;
-      ctx.fillStyle = runColor;
-      ctx.fillText(runText, (runStart + end) * cellW / 2, (y + 0.5) * cellH);
-    };
-
-    for (let x = 0; x < cols; x++) {
-      const index = y * cols + x;
-      const color = colorAt(index);
-      const glyph = glyphAt(index) || " ";
-      if (x > runStart && color !== runColor) {
-        flush(x);
-        runStart = x;
-        runText = "";
-        hasGlyph = false;
-      }
-      runColor = color;
-      runText += glyph;
-      hasGlyph ||= glyph !== " ";
-    }
-    flush(cols);
+    ctx.fillStyle = colorAt(index);
+    const x = index % cols;
+    const y = Math.floor(index / cols);
+    ctx.fillText(glyph, (x + 0.5) * cellW, (y + 0.5) * cellH);
   }
 }
 
@@ -209,7 +190,7 @@ export function ArcticIcebergsBackground({ className }: ArcticIcebergsBackground
       ctx.font = `${fontSize}px "Cascadia Code", "Fira Code", "Courier New", monospace`;
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
-      drawAsciiRuns(ctx, icebergsMeta.cols, icebergsMeta.rows, cellW, cellH, (i) => frame.ch[i] || " ", (i) => icebergsMeta.palette[frame.co[i]] || "#ffffff");
+      drawAsciiCells(ctx, icebergsMeta.cols, icebergsMeta.rows, cellW, cellH, (i) => frame.ch[i] || " ", (i) => icebergsMeta.palette[frame.co[i]] || "#ffffff");
     });
 
     // 2. Balloon Valley
@@ -224,7 +205,7 @@ export function ArcticIcebergsBackground({ className }: ArcticIcebergsBackground
       ctx.font = `${fontSize}px "Cascadia Code", "Fira Code", "Courier New", monospace`;
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
-      drawAsciiRuns(ctx, VALLEY_W, VALLEY_H, cellW, cellH, (i) => VALLEY_LEVELS[frame.levels[i]] || " ", (i) => frame.palHex[frame.colorIndices[i]] || "#fff6e8");
+      drawAsciiCells(ctx, VALLEY_W, VALLEY_H, cellW, cellH, (i) => VALLEY_LEVELS[frame.levels[i]] || " ", (i) => frame.palHex[frame.colorIndices[i]] || "#fff6e8");
     });
 
     // 3. Moonlit Sea
@@ -239,7 +220,7 @@ export function ArcticIcebergsBackground({ className }: ArcticIcebergsBackground
       ctx.font = `${fontSize}px "Cascadia Code", "Fira Code", "Courier New", monospace`;
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
-      drawAsciiRuns(ctx, moonlitMeta.cols, moonlitMeta.rows, cellW, cellH, (i) => frame.ch[i] || " ", (i) => moonlitMeta.palette[frame.co[i]] || "#dfe8ff");
+      drawAsciiCells(ctx, moonlitMeta.cols, moonlitMeta.rows, cellW, cellH, (i) => frame.ch[i] || " ", (i) => moonlitMeta.palette[frame.co[i]] || "#dfe8ff");
     });
 
     // 4. Mountain Sunrise
@@ -254,7 +235,7 @@ export function ArcticIcebergsBackground({ className }: ArcticIcebergsBackground
       ctx.font = `${fontSize}px "Cascadia Code", "Fira Code", "Courier New", monospace`;
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
-      drawAsciiRuns(ctx, mountainMeta.cols, mountainMeta.rows, cellW, cellH, (i) => frame.ch[i] || " ", (i) => mountainMeta.palette[frame.co[i]] || "#ffd27f");
+      drawAsciiCells(ctx, mountainMeta.cols, mountainMeta.rows, cellW, cellH, (i) => frame.ch[i] || " ", (i) => mountainMeta.palette[frame.co[i]] || "#ffd27f");
     });
 
     // 5. Skyline Night
@@ -269,7 +250,7 @@ export function ArcticIcebergsBackground({ className }: ArcticIcebergsBackground
       ctx.font = `${fontSize}px "Cascadia Code", "Fira Code", "Courier New", monospace`;
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
-      drawAsciiRuns(ctx, skylineMeta.cols, skylineMeta.rows, cellW, cellH, (i) => frame.ch[i] || " ", (i) => skylineMeta.palette[frame.co[i]] || "#d9e2ff");
+      drawAsciiCells(ctx, skylineMeta.cols, skylineMeta.rows, cellW, cellH, (i) => frame.ch[i] || " ", (i) => skylineMeta.palette[frame.co[i]] || "#d9e2ff");
     });
 
     // 6. Orbit Earth
@@ -284,7 +265,7 @@ export function ArcticIcebergsBackground({ className }: ArcticIcebergsBackground
       ctx.font = `${fontSize}px "Cascadia Code", "Fira Code", "Courier New", monospace`;
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
-      drawAsciiRuns(ctx, EARTH_W, EARTH_H, cellW, cellH, (i) => EARTH_LEVELS[frame.levels[i]] || " ", (i) => frame.palHex[frame.colorIndices[i]] || "#fffaf0");
+      drawAsciiCells(ctx, EARTH_W, EARTH_H, cellW, cellH, (i) => EARTH_LEVELS[frame.levels[i]] || " ", (i) => frame.palHex[frame.colorIndices[i]] || "#fffaf0");
     });
 
     // 7. Autumn Cyclist
@@ -299,7 +280,7 @@ export function ArcticIcebergsBackground({ className }: ArcticIcebergsBackground
       ctx.font = `${fontSize}px "Cascadia Code", "Fira Code", "Courier New", monospace`;
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
-      drawAsciiRuns(ctx, CYCLIST_W, CYCLIST_H, cellW, cellH, (i) => CYCLIST_LEVELS[frame.levels[i]] || " ", (i) => frame.palHex[frame.colorIndices[i]] || "#fff2cc");
+      drawAsciiCells(ctx, CYCLIST_W, CYCLIST_H, cellW, cellH, (i) => CYCLIST_LEVELS[frame.levels[i]] || " ", (i) => frame.palHex[frame.colorIndices[i]] || "#fff2cc");
     });
 
     // 8. Pagoda Maples
@@ -314,7 +295,7 @@ export function ArcticIcebergsBackground({ className }: ArcticIcebergsBackground
       ctx.font = `${fontSize}px "Cascadia Code", "Fira Code", "Courier New", monospace`;
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
-      drawAsciiRuns(ctx, PAGODA_W, PAGODA_H, cellW, cellH, (i) => PAGODA_LEVELS[frame.levels[i]] || " ", (i) => frame.palHex[frame.colorIndices[i]] || "#fffaea");
+      drawAsciiCells(ctx, PAGODA_W, PAGODA_H, cellW, cellH, (i) => PAGODA_LEVELS[frame.levels[i]] || " ", (i) => frame.palHex[frame.colorIndices[i]] || "#fffaea");
     });
 
     // 9. Falling Leaves
@@ -329,7 +310,7 @@ export function ArcticIcebergsBackground({ className }: ArcticIcebergsBackground
       ctx.font = `${fontSize}px "Cascadia Code", "Fira Code", "Courier New", monospace`;
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
-      drawAsciiRuns(ctx, leavesMeta.cols, leavesMeta.rows, cellW, cellH, (i) => frame.ch[i] || " ", (i) => leavesMeta.palette[frame.co[i]] || "#f0c48a");
+      drawAsciiCells(ctx, leavesMeta.cols, leavesMeta.rows, cellW, cellH, (i) => frame.ch[i] || " ", (i) => leavesMeta.palette[frame.co[i]] || "#f0c48a");
     });
 
     // 10. Aurora Curtains
@@ -344,7 +325,7 @@ export function ArcticIcebergsBackground({ className }: ArcticIcebergsBackground
       ctx.font = `${fontSize}px "Cascadia Code", "Fira Code", "Courier New", monospace`;
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
-      drawAsciiRuns(ctx, auroraMeta.cols, auroraMeta.rows, cellW, cellH, (i) => frame.ch[i] || " ", (i) => auroraMeta.palette[frame.co[i]] || "#a8ffc8");
+      drawAsciiCells(ctx, auroraMeta.cols, auroraMeta.rows, cellW, cellH, (i) => frame.ch[i] || " ", (i) => auroraMeta.palette[frame.co[i]] || "#a8ffc8");
     });
 
     const allLayers = [
