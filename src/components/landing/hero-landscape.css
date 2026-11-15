@@ -4,8 +4,8 @@
    ========================================================================== */
 
 .hero-landscape-section {
-  --hero-headline-accent: #d8f1ff;
-  --hero-headline-glow: #4db7ff;
+  --hero-headline-accent: #ff4d5d;
+  --hero-headline-glow: #ff1838;
   position: relative;
   width: 100%;
   display: flex;
@@ -237,7 +237,7 @@
   }
 }
 
-/* Radiance ice-blue luminous headline accent */
+/* Radiance red luminous headline accent */
 .hero-serif-accent,
 .hero-narrative-title em,
 .hero-landscape-section .landing-display em {

@@ -5,16 +5,16 @@
 ### Changed
 
 - Added a restrained rotating headline word: context, preferences, and notes share the existing “forward” phrase. The complete line remains available as stable assistive-technology text.
-- Replaced the orange-to-cyan gradient with ice-blue text in the existing Plus Jakarta Sans family, italic semibold to retain contrast with the bold headline.
-- Increased the light-blue glow with four layered accents and a dark edge for contrast over the animated equalizer. Headline-scoped tokens keep the color independent of the landing page’s blue accent override.
+- Replaced the orange-to-cyan gradient with red text in the existing Plus Jakarta Sans family, italic semibold to retain contrast with the bold headline.
+- Kept the brighter layered red glow and dark edge for contrast over the animated equalizer. Headline-scoped tokens keep the color independent of the landing page’s blue accent override.
 - Respected reduced-motion preferences and reserved the changing word width to avoid layout shifts.
 
 ### Verification
 
 - `pnpm.cmd typecheck`, `pnpm.cmd lint`, `pnpm.cmd build`, and `git diff --check` passed.
 - Inspected the running page at 714×614. The headline visibly changed between captures; the title and supporting paragraph have separate, non-overlapping layout boxes.
-- Follow-up browser capture at 1275×700 confirmed the light-blue text, stronger blue glow, and updated sans-serif italic; the displayed word changed from “context” to “preferences,” confirming the animation remains active.
-- The style scan reported gradient text in two other pre-existing CSS rules; the headline uses solid light-blue text with blue shadows.
+- Follow-up browser capture at 1275×700 confirmed the red text and matching glow; the displayed word changed between captures, confirming the animation remains active.
+- The style scan reported gradient text in two other pre-existing CSS rules; the headline uses solid red text with red shadows.
 
 ## 2026-11-14 — Solid frosted-glass suggestion cards
 
