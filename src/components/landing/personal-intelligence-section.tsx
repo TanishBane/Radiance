@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { RadianceLogo } from "@/components/branding/radiance-logo";
 
 const CONTROLS = [
   {
@@ -59,7 +60,7 @@ export function PersonalIntelligenceSection() {
             aria-label="Illustrative Personal Intelligence settings preview"
           >
             <div className="story-settings-top">
-              <span>RADIANCE / SETTINGS</span>
+              <span className="inline-flex items-center gap-1.5"><RadianceLogo variant="lockup" size="xs" aria-hidden /> / SETTINGS</span>
               <span>•••</span>
             </div>
             <span className="story-settings-kicker">ILLUSTRATIVE PREVIEW · SAMPLE DATA</span>

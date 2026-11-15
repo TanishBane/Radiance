@@ -118,12 +118,11 @@ export function RadianceLogo({
   const wordmarkContent = (
     <span
       className={cn(
-        "font-serif tracking-[0.16em] font-bold text-[var(--txt)] transition-colors select-none",
-        "group-hover:text-[var(--accent-b)]",
+        "font-serif tracking-[0.035em] font-bold select-none gradient-text-brand",
         cfg.text
       )}
     >
-      RADIANCE
+      adiance
     </span>
   );
 
@@ -135,13 +134,14 @@ export function RadianceLogo({
           type="button"
           onClick={onClick}
           aria-label={ariaLabel}
-          className={cn("bg-transparent border-0 p-0 cursor-pointer select-none group text-left", className)}
+          className={cn("inline-flex items-center bg-transparent border-0 p-0 cursor-pointer select-none group text-left", cfg.gap, className)}
         >
+          {symbolContent}
           {wordmarkContent}
         </button>
       );
     }
-    return <div className={cn("inline-flex items-center", className)}>{wordmarkContent}</div>;
+    return <div className={cn("inline-flex items-center", cfg.gap, className)}>{symbolContent}{wordmarkContent}</div>;
   }
 
   // Pure symbol without container button if onClick is not provided

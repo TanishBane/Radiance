@@ -15,6 +15,7 @@ import type { RadianceSettings } from "./settings-schema";
 import { PersonalIntelligenceCenter } from "@/features/intelligence/personal-intelligence-center";
 import type { PersonalIntelligenceProfile } from "@/features/intelligence/profile-schema";
 import { uiText, type UiLanguage } from "@/lib/i18n/ui";
+import { RadianceLogo } from "@/components/branding/radiance-logo";
 
 const SECTIONS = [
   { id: "general", label: "General" },
@@ -607,7 +608,7 @@ export function SettingsCenter({
 
                   {activeSection === "about" && (
                     <div id="application-version" className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-5">
-                      <div className="font-serif text-xl font-semibold text-[var(--txt)]">RADIANCE</div>
+                      <RadianceLogo variant="lockup" size="md" aria-hidden />
                       <p className="mt-2 text-sm text-[var(--txt-dim)]">{t("Illuminate what is possible.")}</p>
                       <dl className="mt-5 divide-y divide-[var(--border)] border-y border-[var(--border)]">
                         <div className="flex min-h-12 items-center justify-between gap-3 text-sm"><dt className="text-[var(--txt-muted)]">{t("Version")}</dt><dd className="font-mono text-xs text-[var(--txt)]">{APP_VERSION}</dd></div>

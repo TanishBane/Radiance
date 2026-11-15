@@ -703,27 +703,6 @@
   gap: 12px;
 }
 
-.hero-stage-icon-box {
-  width: 52px;
-  height: 52px;
-  border-radius: 16px;
-  background: linear-gradient(135deg, rgba(6, 182, 212, 0.25), rgba(99, 102, 241, 0.25));
-  border: 1px solid rgba(56, 189, 248, 0.4);
-  box-shadow: 0 0 24px rgba(6, 182, 212, 0.25);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.hero-stage-r-logo {
-  font-size: 24px;
-  font-weight: 800;
-  background: linear-gradient(135deg, #38bdf8, #ffffff, #818cf8);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
-
 .hero-stage-title {
   font-family: var(--font-newsreader), Georgia, serif;
   font-size: clamp(28px, 4.5vw, 42px);
@@ -731,6 +710,26 @@
   letter-spacing: -0.02em;
   color: #f8fafc;
   margin: 0;
+}
+
+.hero-stage-brand-lockup {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.015em;
+  white-space: nowrap;
+}
+
+.hero-stage-brand-symbol {
+  display: inline-flex;
+  width: 0.82em;
+  height: 0.72em;
+  color: #f8fafc;
+  transform: translateY(0.04em);
+}
+
+.hero-stage-brand-symbol > svg {
+  width: 100%;
+  height: 100%;
 }
 
 .hero-stage-radiance-gradient {

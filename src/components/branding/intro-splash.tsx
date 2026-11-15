@@ -56,8 +56,8 @@ export function IntroSplash({ onComplete }: { onComplete?: () => void }) {
                 className="w-24 h-21 text-[var(--accent)]"
               />
             </div>
-            <div className="font-serif text-2xl md:text-3xl tracking-[0.24em] font-bold uppercase text-[var(--txt)]">
-              RADIANCE
+            <div className="font-serif text-2xl md:text-3xl tracking-[0.035em] font-bold lowercase gradient-text-brand">
+              adiance
             </div>
             <div className="font-serif italic text-xs tracking-wider text-[var(--txt-dim)]">
               Illuminate what is possible

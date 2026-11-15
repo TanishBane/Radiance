@@ -123,8 +123,8 @@ export function SidebarDock({
                 className="flex flex-col min-w-0"
               >
                 <div className="flex items-center">
-                  <span className="font-serif font-semibold text-sm text-[var(--txt)] tracking-[0.16em] leading-none">
-                    RADIANCE
+                  <span className="font-serif font-bold text-sm gradient-text-brand tracking-[0.035em] leading-none">
+                    adiance
                   </span>
                 </div>
                 <span className="font-mono text-[11px] font-semibold uppercase tracking-[0.06em] text-[var(--accent-b)] mt-1">

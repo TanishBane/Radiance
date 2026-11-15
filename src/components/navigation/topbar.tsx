@@ -76,9 +76,9 @@ export function Topbar({
           </button>
         )}
 
-        {/* On Mobile: Compact brand logo */}
+        {/* On Mobile: Compact brand lockup */}
         <div className="md:hidden flex items-center gap-2">
-          <RadianceLogo size="sm" onClick={onNewChat} showWordmark={false} />
+          <RadianceLogo variant="lockup" size="sm" onClick={onNewChat} />
         </div>
       </div>
 

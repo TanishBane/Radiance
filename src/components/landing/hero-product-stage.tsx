@@ -174,14 +174,11 @@ export function HeroProductStage() {
     >
       {/* Central Radiance Brand Header */}
       <div className="hero-stage-header">
-        <div className="hero-stage-mark" aria-hidden="true">
-          <div className="hero-stage-icon-box">
-            <span className="hero-stage-r-logo">R</span>
-          </div>
-        </div>
-
         <h2 className="hero-stage-title">
-          Hello, I Am <span className="hero-stage-radiance-gradient">Radiance</span>
+          Hello, I Am <span className="hero-stage-brand-lockup" role="img" aria-label="Radiance">
+            <RadianceLogo variant="symbol" size="md" showWordmark={false} className="hero-stage-brand-symbol [&>svg]:!w-full [&>svg]:!h-full" aria-hidden />
+            <span className="hero-stage-radiance-gradient">adiance</span>
+          </span>
         </h2>
 
         <p className="hero-stage-tagline">

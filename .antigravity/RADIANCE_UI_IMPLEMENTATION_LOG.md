@@ -614,3 +614,16 @@
 - Chromium landing browser suite: 8 passed, 11 failed. Failures target stale hero selectors, removed copy, and obsolete section expectations; the mobile Safari browser is unavailable in this environment.
 - Desktop and mobile screenshots were inspected. No Core Web Vitals run was available; no LCP, INP, or CLS improvement is claimed.
 - `pnpm measure:bundle` still exits over budget (reports 3273 kB gzip for `/layout` and 4202 kB for `/page`). The script's route accounting needs validation before treating those totals as per-route payload measurements.
+
+## 2026-11-16 — R-symbol and “adiance” brand lockup
+
+### Changed
+
+- Updated the shared wordmark to pair the official striped R symbol with the existing theme gradient on “adiance”.
+- Applied the lockup to the landing navigation and footer, chat mobile top bar, open sidebar, intro splash, settings About panel, personal-intelligence preview, and landing product-stage headline.
+- Kept standalone R symbols in compact avatar and app-icon contexts, and kept “Radiance” spelled out in ordinary copy and accessible labels.
+
+### Verification
+
+- `pnpm typecheck`, `pnpm lint`, and `pnpm build`: passed.
+- Reviewed the local landing and chat views at the available 710px viewport; the compact header and inline hero mark render as R plus gradient “adiance”.
