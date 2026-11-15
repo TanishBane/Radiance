@@ -320,7 +320,6 @@ export const data: ImageData = {
 ],
 };
 
-export const createStarryRidge = imagePiece(meta, data, { shooting: true });
+const createStarryRidge = imagePiece(meta, data, { shooting: true });
 export default createStarryRidge;
-export { LEVELS } from "./image";
 export type { StarryRidgeFrame };

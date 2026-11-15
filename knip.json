@@ -1,0 +1,13 @@
+{
+  "$schema": "https://unpkg.com/knip@5/overview/configuration-schema.json",
+  "ignore": [
+    ".agents/**",
+    "legacy/**",
+    "scripts/**",
+    "src/lib/db/server.ts"
+  ],
+  "ignoreDependencies": [
+    "eslint",
+    "eslint-config-next"
+  ]
+}

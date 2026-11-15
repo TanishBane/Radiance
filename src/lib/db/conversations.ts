@@ -131,7 +131,10 @@ export const conversationService = {
           })),
       }));
 
-      return cloudConvs;
+      // Merge cloud and local records so unsynced offline conversations remain accessible
+      const cloudIds = new Set(cloudConvs.map((c) => c.id));
+      const unSyncedLocal = local.filter((c) => !cloudIds.has(c.id));
+      return [...cloudConvs, ...unSyncedLocal].sort((a, b) => b.updatedAt - a.updatedAt);
     } catch (err) {
       console.warn("[ConversationService] Cloud fetch failed, falling back to local:", err);
       return local;

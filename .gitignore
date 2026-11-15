@@ -47,3 +47,7 @@ Thumbs.db
 .env*
 .taste-skill/
 /.antigravity/prototypes/
+
+# Python cache
+__pycache__/
+*.pyc

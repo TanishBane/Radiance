@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { ToneKey, Attachment, ModelOption, ChatMessage, FeedbackRating } from "@/lib/types/chat";
-import { ThemeId, THEMES, GradientStyle, ATMOSPHERE_ENGINES } from "@/lib/types/theme";
+import { ThemeId, COLOR_THEMES, GradientStyle, ATMOSPHERE_ENGINES } from "@/lib/types/theme";
 import { uiText } from "@/lib/i18n/ui";
 import { applyThemeToDom } from "@/lib/theme/dynamic-theme";
 import { DEFAULT_MODEL_ID, getModelById } from "@/lib/ai/models";
@@ -160,7 +160,7 @@ export default function RadianceApp() {
     ? messages.filter((message) => message.id !== pendingRegenerationRef.current?.message.id)
     : messages;
 
-  const selectedTheme = THEMES[theme] || THEMES.violet;
+  const selectedTheme = COLOR_THEMES[theme] || COLOR_THEMES.violet;
   const selectedModel = getModelById(modelId);
 
   // Restore and validate local preferences; rotate palettes through the registered theme set.

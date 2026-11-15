@@ -577,7 +577,6 @@ export const CURATED_COLOR_THEME_IDS = Object.keys(COLOR_THEMES).filter(
 export const CURATED_COLOR_THEMES = CURATED_COLOR_THEME_IDS.map((id) => COLOR_THEMES[id]);
 
 export type ThemeId = string;
-export const THEMES = COLOR_THEMES;
 
 export interface AtmosphereEngineInfo {
   id: GradientStyle;

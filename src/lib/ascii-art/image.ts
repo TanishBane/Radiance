@@ -41,7 +41,7 @@ export interface StarryRidgeFrame {
   shootingStars?: { x: number; y: number; alpha: number }[];
 }
 
-export const LEVELS = "▁▂▃▄▅▆▇█";
+const LEVELS = "▁▂▃▄▅▆▇█";
 export const DOT_LEVELS = LEVELS;
 
 interface ShootingStarTrack {

@@ -76,7 +76,24 @@ export const safeLocalStorage = {
   },
 
   saveConversation(conv: Conversation): boolean {
-    return this.set(`${CONV_PREFIX}${conv.id}`, conv);
+    const sanitizedConv: Conversation = {
+      ...conv,
+      messages: (conv.messages || []).map((m) => {
+        if (!m.attachments || m.attachments.length === 0) return m;
+        return {
+          ...m,
+          attachments: m.attachments.map((a) => {
+            // Omit oversized dataUrl to prevent localStorage QuotaExceededError (5MB browser limit)
+            if (a.dataUrl && a.dataUrl.length > 64 * 1024) {
+              const { dataUrl: _, ...rest } = a;
+              return rest;
+            }
+            return a;
+          }),
+        };
+      }),
+    };
+    return this.set(`${CONV_PREFIX}${sanitizedConv.id}`, sanitizedConv);
   },
 
   deleteConversation(id: string): void {
