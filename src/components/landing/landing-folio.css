@@ -1,7 +1,7 @@
 /* The homepage folio treatment begins below the preserved masthead and hero. */
 .landing-root {
-  --folio-ground: var(--void);
-  --folio-raised: var(--deep);
+  --folio-ground: color-mix(in srgb, var(--void) 82%, transparent);
+  --folio-raised: color-mix(in srgb, var(--deep) 86%, transparent);
   --folio-ink: var(--txt);
   --folio-muted: var(--txt-dim);
   --folio-accent: var(--accent);

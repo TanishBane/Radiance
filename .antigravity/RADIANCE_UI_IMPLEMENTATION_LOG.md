@@ -569,3 +569,15 @@
 - Browser interaction checks confirmed the walkthrough changes steps, preference controls render Detailed and Structured responses, FAQ answers expand, and reduced-motion disables the context trace animation.
 - The page-wide visual inspector still flags the intentionally preserved hero (its headline, glow, gradient, and suggestion cards) and its font/image heuristics; it also identifies the mobile “Personal Intelligence” process label as an eyebrow. These were not changed because the reference explicitly excludes the hero and the label names the active process.
 - The UI detector reports advisory font sizes against its generic type ramp; Radiance’s local homepage direction uses a surface-specific display scale documented in `DESIGN.md`.
+
+## 2026-11-15 — Keep ASCII artwork visible beneath landing sections
+
+### Changed
+
+- Replaced the opaque landing section fills with translucent dark tints so the existing animated ASCII background remains visible throughout the page while preserving contrast for the content.
+
+### Verification
+
+- Reviewed production screenshots at 1440px and 390px widths; ASCII artwork is visible through the sections and the copy remains readable.
+- Automated viewport measurements at 1440px, 768px, and 390px reported zero horizontal overflow.
+- `pnpm build`, `pnpm typecheck`, `pnpm lint`, and `git diff --check`: passed.
