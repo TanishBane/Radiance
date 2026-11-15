@@ -16,6 +16,11 @@ function contrastRatio(foreground: string, background: string): number {
 }
 
 test.describe("Radiance landing page", () => {
+  test("publishes accurate product metadata", async ({ page }) => {
+    await page.goto("/");
+    await expect(page).toHaveTitle(/AI that brings your context forward/i);
+    await expect(page.locator('meta[name="description"]')).toHaveAttribute("content", /saved context and response preferences/i);
+  });
   test("hero chat CTA text has readable contrast at mobile width", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/");

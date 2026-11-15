@@ -581,3 +581,19 @@
 - Reviewed production screenshots at 1440px and 390px widths; ASCII artwork is visible through the sections and the copy remains readable.
 - Automated viewport measurements at 1440px, 768px, and 390px reported zero horizontal overflow.
 - `pnpm build`, `pnpm typecheck`, `pnpm lint`, and `git diff --check`: passed.
+
+## 2026-11-15 — Landing motion and performance audit
+
+### Audit and change
+
+- Confirmed the landing page already has a reduced-motion-aware hero word rotation with a stable accessible heading label, viewport-triggered section reveals, and a dynamically loaded background engine that pauses scene work outside the relevant viewport.
+- Corrected the homepage title, description, and Open Graph copy; they previously described a lead-management product instead of Radiance's saved-context AI workspace.
+- Kept the existing motion and background systems intact during this audit; no new dependencies were added.
+
+### Verification
+
+- Added and ran a Chromium browser assertion for the homepage title and description; it failed against the old metadata and passed after correction.
+- `pnpm lint`, `pnpm typecheck`, and `pnpm build`: passed.
+- Full unit run: 590 passed, 10 failed across 6 files. Failures include existing React-global and outdated landing-content assertions.
+- Full browser run was stopped after 27 of 306 cases because existing chat and landing assertions target removed controls/headlines; the configured Mobile Safari project also lacks its WebKit executable.
+- No Core Web Vitals or device performance measurements were collected, so no measured performance improvement is claimed.
