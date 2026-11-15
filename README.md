@@ -5,7 +5,11 @@
 
 <div align="center">
 
-  <img src="public/brand/radiance-symbol.svg" width="72" height="72" alt="Radiance Emblem" />
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="public/brand/radiance-symbol-white.svg" />
+    <source media="(prefers-color-scheme: light)" srcset="public/brand/radiance-symbol-dark.svg" />
+    <img src="public/brand/radiance-symbol-white.svg" width="72" height="72" alt="Radiance Emblem" />
+  </picture>
 
   # RADIANCE
 

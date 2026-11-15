@@ -120,6 +120,22 @@ describe("Radiance Official Brand Identity — Vector System & Architecture", ()
       expect(content).not.toContain('<rect width="800" height="700" fill="#000"');
     });
 
+    it("has valid public/brand/radiance-symbol-white.svg for dark themes", () => {
+      const filePath = path.join(rootDir, "public", "brand", "radiance-symbol-white.svg");
+      expect(fs.existsSync(filePath)).toBe(true);
+      const content = fs.readFileSync(filePath, "utf8");
+      expect(content).toContain('viewBox="0 0 800 700"');
+      expect(content).toContain('fill="#ffffff"');
+    });
+
+    it("has valid public/brand/radiance-symbol-dark.svg for light themes", () => {
+      const filePath = path.join(rootDir, "public", "brand", "radiance-symbol-dark.svg");
+      expect(fs.existsSync(filePath)).toBe(true);
+      const content = fs.readFileSync(filePath, "utf8");
+      expect(content).toContain('viewBox="0 0 800 700"');
+      expect(content).toContain('fill="#12111a"');
+    });
+
     it("has valid public/brand/radiance-wordmark.svg", () => {
       const filePath = path.join(rootDir, "public", "brand", "radiance-wordmark.svg");
       expect(fs.existsSync(filePath)).toBe(true);

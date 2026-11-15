@@ -9,7 +9,7 @@ async function generateSocialPreview() {
     deviceScaleFactor: 2,
   });
 
-  const symbolSvgPath = path.resolve(process.cwd(), "public/brand/radiance-symbol.svg");
+  const symbolSvgPath = path.resolve(process.cwd(), "public/brand/radiance-symbol-white.svg");
   const symbolSvgContent = fs.readFileSync(symbolSvgPath, "utf8");
 
   const htmlContent = `
@@ -19,7 +19,7 @@ async function generateSocialPreview() {
   <meta charset="utf-8">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
@@ -37,9 +37,9 @@ async function generateSocialPreview() {
     }
     .ambient-glow {
       position: absolute;
-      width: 900px;
-      height: 500px;
-      background: radial-gradient(ellipse at 50% 40%, rgba(124, 92, 255, 0.32) 0%, rgba(192, 132, 252, 0.15) 35%, rgba(12, 11, 20, 0) 70%);
+      width: 920px;
+      height: 520px;
+      background: radial-gradient(ellipse at 50% 40%, rgba(124, 92, 255, 0.35) 0%, rgba(192, 132, 252, 0.16) 35%, rgba(12, 11, 20, 0) 70%);
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
@@ -60,8 +60,8 @@ async function generateSocialPreview() {
       border: 1px solid rgba(255, 255, 255, 0.08);
       border-radius: 28px;
       pointer-events: none;
-      box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.1),
-                  0 24px 64px -12px rgba(0, 0, 0, 0.8);
+      box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.12),
+                  0 24px 64px -12px rgba(0, 0, 0, 0.85);
     }
     .content {
       position: relative;
@@ -74,31 +74,36 @@ async function generateSocialPreview() {
       padding: 40px;
     }
     .logo-gem {
-      width: 92px;
-      height: 92px;
+      width: 96px;
+      height: 96px;
       border-radius: 24px;
-      background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02));
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      box-shadow: 0 12px 32px -4px rgba(124, 92, 255, 0.35), inset 0 1px 0 0 rgba(255, 255, 255, 0.2);
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, rgba(124, 92, 255, 0.08) 50%, rgba(255, 255, 255, 0.03) 100%);
+      border: 1px solid rgba(255, 255, 255, 0.20);
+      box-shadow: 0 16px 36px -6px rgba(124, 92, 255, 0.45), 0 0 24px rgba(255, 255, 255, 0.10), inset 0 1px 0 0 rgba(255, 255, 255, 0.30);
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 16px;
-      color: #bfa7ff;
+      padding: 18px;
+      color: #ffffff;
     }
     .logo-gem svg {
       width: 100%;
       height: 100%;
-      filter: drop-shadow(0 2px 8px rgba(124, 92, 255, 0.6));
+      color: #ffffff;
+      fill: #ffffff;
+      filter: drop-shadow(0 2px 10px rgba(255, 255, 255, 0.85)) drop-shadow(0 4px 20px rgba(124, 92, 255, 0.65));
+    }
+    .logo-gem svg path {
+      fill: #ffffff !important;
     }
     .brand-title {
       font-family: 'Cormorant Garamond', serif;
       font-size: 64px;
       font-weight: 700;
-      letter-spacing: 0.16em;
+      letter-spacing: 0.22em;
       line-height: 1;
       text-transform: uppercase;
-      background: linear-gradient(135deg, #ffffff 0%, #d8c7ff 40%, #7c5cff 80%, #e27aff 100%);
+      background: linear-gradient(135deg, #ffffff 0%, #ffffff 35%, #ddd4ff 65%, #a78bfa 100%);
       -webkit-background-clip: text;
       -webkit-fill-color: transparent;
       color: transparent;
@@ -107,7 +112,7 @@ async function generateSocialPreview() {
     .tagline {
       font-size: 20px;
       font-weight: 500;
-      color: rgba(243, 241, 236, 0.90);
+      color: rgba(243, 241, 236, 0.92);
       letter-spacing: 0.02em;
     }
     .tagline span {
@@ -116,9 +121,9 @@ async function generateSocialPreview() {
     }
     .description {
       font-size: 15px;
-      color: rgba(243, 241, 236, 0.60);
+      color: rgba(243, 241, 236, 0.65);
       max-width: 680px;
-      line-height: 1.5;
+      line-height: 1.55;
     }
     .pill-row {
       display: flex;
@@ -135,7 +140,7 @@ async function generateSocialPreview() {
       border-radius: 9999px;
       background: rgba(255, 255, 255, 0.04);
       border: 1px solid rgba(255, 255, 255, 0.10);
-      color: rgba(243, 241, 236, 0.80);
+      color: rgba(243, 241, 236, 0.82);
       letter-spacing: 0.04em;
     }
     .pill-accent {
@@ -174,10 +179,15 @@ async function generateSocialPreview() {
   `;
 
   await page.setContent(htmlContent, { waitUntil: "networkidle" });
-  const outPath = path.resolve(process.cwd(), "docs/assets/radiance-social-preview.png");
-  await page.screenshot({ path: outPath });
+  const previewPath = path.resolve(process.cwd(), "docs/assets/radiance-social-preview.png");
+  const ogPath = path.resolve(process.cwd(), "public/opengraph-image.png");
+
+  await page.screenshot({ path: previewPath });
+  fs.copyFileSync(previewPath, ogPath);
   await browser.close();
-  console.log("Generated social preview at:", outPath);
+
+  console.log("Generated social preview at:", previewPath);
+  console.log("Synchronized OpenGraph image at:", ogPath);
 }
 
 generateSocialPreview().catch(console.error);

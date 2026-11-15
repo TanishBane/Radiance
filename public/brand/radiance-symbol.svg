@@ -1,4 +1,12 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 700" fill="none">
+  <style>
+    :root { color: #ffffff; }
+    path { fill: #ffffff; }
+    @media (prefers-color-scheme: light) {
+      :root { color: #12111a; }
+      path { fill: #12111a; }
+    }
+  </style>
   <g fill="currentColor">
     <path data-band="1" data-seg="A" id="radiance-stripe-1A" d="M 141.6 84.0 L 209.4 84.0 A 13.6 13.6 0 0 1 209.4 111.2 L 141.6 111.2 A 13.6 13.6 0 0 1 141.6 84.0 Z" />
     <path data-band="1" data-seg="B" id="radiance-stripe-1B" d="M 258.6 84.0 L 547.0 84.0 C 580.0 84.0 610.0 95.0 629.0 111.2 L 258.6 111.2 A 13.6 13.6 0 0 1 258.6 84.0 Z" />
