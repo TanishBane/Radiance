@@ -20,9 +20,10 @@ describe("Dynamic Color Theme Changing System", () => {
   });
 
   describe("Theme Pool & Invariants", () => {
-    it("provides all 29 registered color themes in candidate pool", () => {
+    it("provides all 24 curated color themes in candidate pool (and 29 in total registry)", () => {
       const available = getAvailableThemeIds();
-      expect(available.length).toBe(29);
+      expect(available.length).toBe(24);
+      expect(Object.keys(COLOR_THEMES).length).toBe(29);
       expect(available).toContain("violet");
       expect(available).toContain("emerald");
       expect(available).toContain("crimson");

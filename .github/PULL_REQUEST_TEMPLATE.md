@@ -47,3 +47,5 @@ Please provide evidence confirming this pull request passes all quality gates:
 - [ ] I have preserved user data and existing configuration invariants.
 - [ ] I have not committed any credentials, API keys, or private secrets.
 - [ ] Relevant documentation or ADRs have been updated if necessary.
+- [ ] I have read and agree to the terms of the [Radiance Contributor License Agreement (CLA)](CONTRIBUTOR_LICENSE_AGREEMENT.md).
+- [ ] My commits include a Developer Certificate of Origin (`Signed-off-by: Name <email>`) certifying original authorship.

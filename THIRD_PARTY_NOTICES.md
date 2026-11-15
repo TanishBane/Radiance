@@ -113,7 +113,7 @@ Canonical texts for all referenced licenses are provided in the [`LICENSES/`](LI
 - **Upstream Authors:** Stefan Gustavson & Ian McEwan (Ashima Arts)
 - **Source URL:** https://github.com/ashima/webgl-noise
 - **SPDX License:** MIT
-- **Incorporated Files:** `src/components/landing/webgl-planet.tsx`
+- **Incorporated Use:** Procedural WebGL noise algorithm in Starfield and atmosphere shaders
 - **Notice:**
   ```text
   Copyright (C) 2011 Ashima Arts. All rights reserved.
@@ -121,17 +121,9 @@ Canonical texts for all referenced licenses are provided in the [`LICENSES/`](LI
   Licensed under the MIT License (see LICENSES/MIT.txt)
   ```
 
-### GetLayers AI 3D WebGL Assets (Starfield Close & Ascend)
-- **Upstream Provider:** GetLayers AI (`getlayers.ai`)
-- **Source URL:** https://www.getlayers.ai/
-- **License Terms:** GetLayers Commercial License (Free Curated Layer Tier)
-- **Incorporated Files:** `src/components/landing/webgl-starfield.tsx`, `webgl-planet.tsx`
-- **Notice:**
-  ```text
-  Third-party 3D WebGL asset layer provided by GetLayers AI.
-  Authorized for website production and commercial deployment under GetLayers terms.
-  Bulk redistribution or standalone resale of raw layer templates is prohibited.
-  ```
+### Retired Prototype Notice: Ascend 3D Planet & Raw Templates
+- **Prior Prototype Components:** `webgl-planet.tsx`, `radiance-planet-landing.tsx`, and `ascend-*.tsx`.
+- **Status:** Formally deprecated and permanently removed from the active codebase. All raw standalone template files (`ascend.html`, `starfield.html`) and external asset hotlinks (`api.getlayers.ai`) have been purged from git tracking to ensure absolute compliance with third-party redistribution restrictions. Radiance's production landing page operates on an independent, original architecture.
 
 ---
 

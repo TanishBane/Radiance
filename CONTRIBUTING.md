@@ -187,15 +187,20 @@ Radiance is maintained under a source-available proprietary license model. We we
 ### 1. Contributor Copyright Retention
 When you contribute code, documentation, or design assets to Radiance, **you retain full copyright ownership of your contributions**. You do not assign your copyright to Radiance or its maintainers.
 
-### 2. Contributor License Grant
-By submitting a pull request or patch to Radiance, you agree to the terms of the [Radiance Contributor License Agreement (CLA)](CONTRIBUTOR_LICENSE_AGREEMENT.md). Under the CLA, you grant [COPYRIGHT HOLDER NAME OR LEGAL ENTITY] a perpetual, worldwide, royalty-free, non-exclusive license to use, modify, sublicense, and distribute your contribution as part of the Radiance platform under our source-available and commercial licenses.
+### 2. Contributor License Grant (CLA)
+All community contributions are subject to the [Radiance Contributor License Agreement (CLA)](CONTRIBUTOR_LICENSE_AGREEMENT.md). Under the CLA, you grant [COPYRIGHT HOLDER NAME OR LEGAL ENTITY] a perpetual, worldwide, royalty-free, non-exclusive license to use, modify, sublicense, and distribute your contribution as part of the Radiance platform under our source-available and commercial licenses.
 
-### 3. Developer Certificate of Origin (DCO)
-We encourage contributors to include a `Signed-off-by` line in their commit messages:
-```bash
-git commit -s -m "feat(chat): add streaming message retry logic"
-```
-By signing off on a commit, you certify that the contribution is your original creation and that you have the right to submit it under the project's CLA.
+### 3. Developer Certificate of Origin (DCO) & CLA Acceptance
+To ensure unambiguous legal validity, we separate certification of authorship from license grant acceptance:
+- **Developer Certificate of Origin (DCO):** Contributors must include a `Signed-off-by` line in their commit messages (`git commit -s`):
+  ```bash
+  git commit -s -m "feat(chat): add streaming message retry logic"
+  ```
+  This certifies that the contribution is your original creation and that you have the legal right to submit it.
+- **Explicit CLA Acceptance:** When submitting a pull request, you must confirm acceptance of the CLA by checking the affirmative agreement checkbox in the pull request description:
+  ```markdown
+  - [x] I have read and agree to the terms of the Radiance Contributor License Agreement (CLA).
+  ```
 
 ### 4. Third-Party Code in Pull Requests
 If your pull request incorporates third-party open-source code (e.g., from MIT or Apache-2.0 licensed projects), you must:

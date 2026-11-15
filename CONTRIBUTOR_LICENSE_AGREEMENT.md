@@ -59,6 +59,22 @@ Should You wish to submit work that is not Your original creation, You may submi
 
 ---
 
-## 7. Acceptance Mechanism
+## 7. Acceptance Mechanism & Separation from DCO
 
-By opening a pull request, submitting code, or including a `Signed-off-by: Your Name <email>` line in Your commit metadata (Developer Certificate of Origin), You confirm Your acceptance of this Agreement.
+To ensure unambiguous legal clarity, acceptance of this Contributor License Agreement is distinct from the Developer Certificate of Origin (DCO):
+
+1. **Developer Certificate of Origin (DCO):** Contributors are requested to sign off on commits (`git commit -s`) with `Signed-off-by: Your Name <email>`. The DCO certifies that You are the original author or have the legal right to submit the contribution.
+2. **Explicit CLA Acceptance:** Acceptance of the licensing terms and patent grant in this Agreement requires explicit affirmative consent. When opening a pull request, You must affirmatively check the CLA agreement box in the pull request template:
+   ```markdown
+   - [x] I have read and agree to the terms of the Radiance Contributor License Agreement (CLA).
+   ```
+   Alternatively, acceptance may be recorded by posting an explicit comment on the pull request stating:
+   `I agree to the terms of the Radiance Contributor License Agreement.`
+
+Contributions will only be reviewed and merged once both authorship certification (DCO) and explicit CLA acceptance are recorded.
+
+---
+
+## 8. Legal Counsel Review Disclaimer
+
+This Contributor License Agreement is a standardized engineering framework drafted to protect both contributors and the project maintainers. It uses the placeholder `[COPYRIGHT HOLDER NAME OR LEGAL ENTITY]` pending final legal entity designation. Contributors and maintainers acknowledge that this document does not constitute formal legal counsel and is subject to review by qualified intellectual property legal counsel before enterprise enforcement.

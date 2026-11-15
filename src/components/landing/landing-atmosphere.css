@@ -184,3 +184,16 @@
     animation: none !important;
   }
 }
+
+/* Fixed WebGL canvas layer behind landing content */
+.planet-canvas,
+.starfield-canvas {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  display: block;
+  z-index: 0;
+  pointer-events: none;
+}

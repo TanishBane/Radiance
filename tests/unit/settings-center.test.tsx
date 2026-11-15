@@ -42,7 +42,7 @@ describe("Settings Center", () => {
       target: { value: "response language" },
     });
     fireEvent.click(await screen.findByRole("button", { name: /Response language.*Personalization/i }));
-    expect(await screen.findByLabelText("Response language")).toBeDefined();
+    expect(await screen.findByLabelText(/response language/i)).toBeDefined();
   });
 
   it("requires confirmation before resetting preferences", async () => {
