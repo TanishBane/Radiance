@@ -4,6 +4,8 @@
    ========================================================================== */
 
 .hero-landscape-section {
+  --hero-headline-accent: #d8caff;
+  --hero-headline-glow: #7c5cff;
   position: relative;
   width: 100%;
   display: flex;
@@ -243,9 +245,14 @@
   font-style: italic !important;
   font-weight: 400 !important;
   letter-spacing: -0.01em;
-  color: #d8caff !important;
-  -webkit-text-fill-color: #d8caff !important;
-  text-shadow: 0 2px 16px rgba(4, 3, 12, 0.9), 0 0 2px rgba(4, 3, 12, 0.95);
+  color: var(--hero-headline-accent) !important;
+  -webkit-text-fill-color: var(--hero-headline-accent) !important;
+  text-shadow:
+    0 2px 16px color-mix(in srgb, var(--void) 94%, transparent),
+    0 0 2px color-mix(in srgb, var(--void) 98%, transparent),
+    0 0 12px color-mix(in srgb, var(--hero-headline-accent) 78%, transparent),
+    0 0 30px color-mix(in srgb, var(--hero-headline-glow) 62%, transparent),
+    0 0 48px color-mix(in srgb, var(--hero-headline-glow) 34%, transparent);
   display: inline;
   padding-right: 0.08em;
 }
