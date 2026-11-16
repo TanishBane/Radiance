@@ -48,9 +48,9 @@ export function Topbar({
   }, [languageMenuOpen]);
 
   return (
-    <header className="sticky top-0 z-30 flex items-center justify-between gap-2 px-2.5 sm:px-4 py-2 sm:py-2.5 pt-[max(0.625rem,env(safe-area-inset-top,0px))] pl-[max(0.625rem,env(safe-area-inset-left,0px))] pr-[max(0.625rem,env(safe-area-inset-right,0px))] bg-[var(--void)]/85 backdrop-blur-xl border-b border-[var(--border)] select-none shrink-0 w-full min-h-[var(--mobile-topbar-h,52px)]">
+    <header className="sticky top-0 z-[20] flex items-center justify-between gap-1.5 sm:gap-2 px-2 sm:px-4 py-2 sm:py-2.5 pt-[max(0.625rem,env(safe-area-inset-top,0px))] pl-[max(0.625rem,env(safe-area-inset-left,0px))] pr-[max(0.625rem,env(safe-area-inset-right,0px))] bg-[var(--void)]/90 backdrop-blur-xl border-b border-[var(--border)] select-none shrink-0 w-full min-h-[var(--mobile-topbar-h,52px)]">
       {/* Left: search and sidebar controls */}
-      <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+      <div className="flex items-center gap-1.5 sm:gap-3 min-w-0">
         {onToggleSidebar && (
           <button
             type="button"
@@ -77,7 +77,7 @@ export function Topbar({
         )}
 
         {/* On Mobile: Compact brand lockup with narrow-screen (<380px) symbol fallback to prevent overflow */}
-        <div className="md:hidden flex items-center">
+        <div className="md:hidden flex items-center shrink-0">
           <RadianceLogo
             variant="lockup"
             size="sm"
@@ -88,7 +88,7 @@ export function Topbar({
       </div>
 
       {/* Right: Interface and response language & clear conversation */}
-      <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+      <div className="flex items-center gap-1 sm:gap-2 shrink-0">
         <div className="relative" ref={languageMenuRef}>
           <button
             type="button"
@@ -97,7 +97,7 @@ export function Topbar({
             aria-haspopup="listbox"
             aria-expanded={languageMenuOpen}
             onClick={() => setLanguageMenuOpen((open) => !open)}
-            className="flex min-h-11 items-center gap-1.5 sm:gap-2 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-2.5 sm:px-3 text-xs font-medium text-[var(--txt)] hover:bg-[var(--surface-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] touch-target cursor-pointer"
+            className="flex min-h-11 items-center gap-1.5 sm:gap-2 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-2 sm:px-3 text-xs font-medium text-[var(--txt)] hover:bg-[var(--surface-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] touch-target cursor-pointer"
           >
             <Languages className="h-4 w-4 shrink-0" aria-hidden="true" />
             <span className="hidden xs:inline">{uiText(language, "Translate")}</span>
@@ -108,7 +108,7 @@ export function Topbar({
             <div
               role="listbox"
               aria-label={uiText(language, "Interface and response language")}
-              className="absolute right-0 top-full z-[60] mt-2 max-h-[min(70vh,22rem)] w-52 max-w-[min(calc(100vw-1.5rem),14rem)] overflow-y-auto rounded-xl border border-white/15 bg-[#100d18] p-1.5 text-[var(--txt)] shadow-2xl"
+              className="absolute right-0 top-full z-[30] mt-2 max-h-[min(70vh,22rem)] w-52 max-w-[min(calc(100vw-1.5rem),14rem)] overflow-y-auto rounded-xl border border-white/15 bg-[#100d18] p-1.5 text-[var(--txt)] shadow-2xl"
             >
               {UI_LANGUAGES.map((option) => (
                 <button

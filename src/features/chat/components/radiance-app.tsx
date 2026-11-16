@@ -34,6 +34,7 @@ import { HistoryDrawer } from "@/components/navigation/history-drawer";
 import { MobileBottomNav } from "@/components/navigation/mobile-bottom-nav";
 import { SettingsCenter } from "@/features/settings/settings-center";
 import { usePWA } from "@/lib/pwa/use-pwa";
+import { useVisualViewport } from "@/lib/mobile/use-visual-viewport";
 import { OfflineIndicator } from "@/components/ui/offline-indicator";
 import { PWAInstallBanner } from "@/components/ui/pwa-install-banner";
 
@@ -44,6 +45,7 @@ import { ChatWorkspace } from "@/features/chat/components/chat-workspace";
 
 export default function RadianceApp() {
   const { isOnline, canInstall, promptInstall, dismissInstall } = usePWA();
+  const { isKeyboardOpen, keyboardHeight, isLayoutResizedByBrowser } = useVisualViewport();
   const [showSplash, setShowSplash] = useState(true);
   const [settings, setSettings] = useState<RadianceSettings>(DEFAULT_SETTINGS);
   const [intelligenceProfile, setIntelligenceProfile] = useState<PersonalIntelligenceProfile>(() => createDefaultIntelligenceProfile());
@@ -394,14 +396,27 @@ export default function RadianceApp() {
       />
 
       {/* Right: Main Application Pane */}
-      <main className="flex-1 flex flex-col min-w-0 h-full overflow-hidden relative z-10">
+      <main
+        className="flex-1 flex flex-col min-w-0 h-full overflow-hidden relative z-10"
+        style={
+          isKeyboardOpen && !isLayoutResizedByBrowser && keyboardHeight > 0
+            ? { height: `calc(100dvh - ${keyboardHeight}px)` }
+            : undefined
+        }
+      >
         <Topbar
           language={language}
           onToggleLanguage={(l) => handleSettingsChange({ ...settings, language: l })}
           onClearChat={handleNewChat}
           onNewChat={handleNewChat}
-          onToggleSidebar={() => setMobileSidebarOpen((prev) => !prev)}
-          sidebarOpen={mobileSidebarOpen}
+          onToggleSidebar={() => {
+            if (typeof window !== "undefined" && window.innerWidth < 768) {
+              setHistoryOpen((prev) => !prev);
+            } else {
+              setMobileSidebarOpen((prev) => !prev);
+            }
+          }}
+          sidebarOpen={mobileSidebarOpen || historyOpen}
           onOpenSearch={() => {
             setSettingsOpen(false);
             setMobileSidebarOpen(false);
@@ -485,7 +500,7 @@ export default function RadianceApp() {
         {/* Mobile Thumb-Zone Bottom Navigation */}
         <MobileBottomNav
           language={language}
-          isComposerFocused={isComposerFocused}
+          isComposerFocused={isKeyboardOpen}
           activeTab={
             historyOpen
               ? "history"
@@ -520,6 +535,8 @@ export default function RadianceApp() {
         onTogglePin={togglePin}
         onDeleteConversation={handleDeleteConversation}
         onDeleteAll={handleDeleteAllConversations}
+        onNewChat={handleNewChat}
+        onOpenSettings={openSettings}
       />
 
       <SettingsCenter
@@ -544,11 +561,16 @@ export default function RadianceApp() {
       />
 
       {/* PWA Offline & Install Indicators */}
-      <OfflineIndicator isOnline={isOnline} />
+      <OfflineIndicator
+        isOnline={isOnline}
+        hasActiveBanner={canInstall}
+        isComposerFocused={isKeyboardOpen}
+      />
       <PWAInstallBanner
         canInstall={canInstall}
         onInstall={promptInstall}
         onDismiss={dismissInstall}
+        isComposerFocused={isKeyboardOpen}
       />
     </div>
   );

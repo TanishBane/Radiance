@@ -436,9 +436,10 @@ describe("ChatComposer Component & Deduplication Controls", () => {
       fireEvent.click(modelTrigger);
 
       const listbox = screen.getByRole("listbox");
-      expect(listbox.className).toContain("-left-16");
-      expect(listbox.className).toContain("sm:left-0");
-      expect(listbox.className).toContain("max-w-[calc(100vw-2rem)]");
+      expect(listbox.className).toContain("fixed inset-x-0 bottom-0");
+      expect(listbox.className).toContain("rounded-t-[24px]");
+      expect(listbox.className).toContain("md:absolute");
+      expect(listbox.className).toContain("md:bottom-full");
     });
   });
 });

@@ -621,7 +621,7 @@ describe("Milestone 3 Challenger 2: Workspace Lifecycle, TTFT & Session Contamin
       });
 
       // Start stream
-      const textarea = screen.getByPlaceholderText(/Ask RADIANCE anything/i);
+      const textarea = await screen.findByPlaceholderText(/Ask RADIANCE anything/i);
       fireEvent.change(textarea, { target: { value: "Continue story" } });
       await act(async () => {
         fireEvent.click(screen.getByTestId("send-button"));

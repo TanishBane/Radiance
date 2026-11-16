@@ -84,6 +84,28 @@
     --sar: env(safe-area-inset-right, 0px);
     --sab: env(safe-area-inset-bottom, 0px);
     --sal: env(safe-area-inset-left, 0px);
+
+    /* ══ AUTHORITATIVE HIERARCHICAL Z-INDEX SCALE ══ */
+    --z-canvas: 0;
+    --z-atmosphere: 1;
+    --z-base: 2;
+    --z-sticky: 10;
+    --z-dock: 20;
+    --z-composer: 25;
+    --z-popover: 30;
+    --z-floating-banner: 40;
+    --z-drawer-backdrop: 50;
+    --z-drawer: 55;
+    --z-modal-backdrop: 60;
+    --z-modal: 65;
+    --z-nested-modal: 70;
+    --z-toast: 80;
+    --z-splash: 100;
+
+    /* Mobile Layout Metrics & Responsive Offsets */
+    --mobile-topbar-h: 52px;
+    --mobile-bottom-nav-h: 58px;
+    --mobile-composer-min-h: 56px;
   }
 
   *, *::before, *::after {
@@ -251,6 +273,48 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 @media (horizontal-viewport-segments: 2) {
   :root {
     --fold-width: env(viewport-segment-width 0 0);
+  }
+}
+
+/* ══ MOBILE BOTTOM ACTION SHEET & DIALOG LAYER TOKENS ══ */
+.mobile-action-sheet-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.72);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: var(--z-modal-backdrop, 60);
+}
+
+.mobile-action-sheet-content {
+  position: fixed;
+  inset-x: 0;
+  bottom: 0;
+  max-height: min(85vh, 620px);
+  background: linear-gradient(180deg, rgba(20, 17, 30, 0.98) 0%, rgba(10, 9, 16, 0.99) 100%);
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+  border-top: 1px solid rgba(255, 255, 255, 0.14);
+  border-top-left-radius: 24px;
+  border-top-right-radius: 24px;
+  padding-bottom: max(1.25rem, env(safe-area-inset-bottom, 0px));
+  z-index: var(--z-modal, 65);
+  box-shadow: 0 -12px 48px rgba(0, 0, 0, 0.8), 0 0 28px -6px var(--accent-g);
+  overflow: hidden;
+  outline: none;
+}
+
+.action-sheet-grab-handle {
+  width: 36px;
+  height: 4px;
+  flex-shrink: 0;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.3);
+  margin: 8px auto 12px auto;
+}
+@media (min-width: 768px) {
+  .action-sheet-grab-handle {
+    display: none !important;
   }
 }
 

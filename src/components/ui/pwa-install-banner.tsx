@@ -8,10 +8,11 @@ interface PWAInstallBannerProps {
   canInstall: boolean;
   onInstall: () => void;
   onDismiss: () => void;
+  isComposerFocused?: boolean;
 }
 
-export function PWAInstallBanner({ canInstall, onInstall, onDismiss }: PWAInstallBannerProps) {
-  if (!canInstall) return null;
+export function PWAInstallBanner({ canInstall, onInstall, onDismiss, isComposerFocused = false }: PWAInstallBannerProps) {
+  if (!canInstall || isComposerFocused) return null;
 
   return (
     <aside

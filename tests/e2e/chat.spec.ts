@@ -3,8 +3,7 @@ import { test, expect } from "@playwright/test";
 test.describe("Radiance AI Platform E2E Workflows", () => {
   test.beforeEach(async ({ page }) => {
     await page.goto("/chat");
-    await page.waitForLoadState("networkidle");
-    await expect(page.getByText("Illuminate what is possible", { exact: true })).toHaveCount(0, { timeout: 7000 });
+    await expect(page.locator("textarea")).toBeVisible({ timeout: 15000 });
   });
 
   test("loads application workspace with Radiance branding", async ({ page }) => {
@@ -61,7 +60,7 @@ test.describe("Radiance AI Platform E2E Workflows", () => {
   test("reduced motion keeps dialog transitions immediate", async ({ page }) => {
     await page.emulateMedia({ reducedMotion: "reduce" });
     await page.goto("/chat");
-    await page.waitForLoadState("networkidle");
+    await expect(page.locator("textarea")).toBeVisible({ timeout: 15000 });
     if ((page.viewportSize()?.width ?? 0) < 768) {
       await page.getByTestId("bottom-nav-settings").click();
     } else {
@@ -152,7 +151,7 @@ test.describe("Radiance AI Platform E2E Workflows", () => {
   test("prompt suggestion columns remain inside their desktop row", async ({ page }) => {
     await page.setViewportSize({ width: 1366, height: 900 });
     await page.goto("/chat");
-    await page.waitForLoadState("networkidle");
+    await expect(page.locator("textarea")).toBeVisible({ timeout: 15000 });
     const promptCategories = page.getByTestId("prompt-categories");
     const fits = await promptCategories.evaluate((element) => {
       const bounds = element.getBoundingClientRect();

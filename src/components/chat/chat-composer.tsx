@@ -158,6 +158,7 @@ function ChatComposerBase({
     }, 4500);
   };
 
+  const containerRef = useRef<HTMLDivElement | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const cameraInputRef = useRef<HTMLInputElement | null>(null);
@@ -240,7 +241,10 @@ function ChatComposerBase({
 
   // Global click-outside and Escape key listener
   useEffect(() => {
-    const handleGlobalClick = () => {
+    const handleGlobalPointerDown = (e: MouseEvent | TouchEvent) => {
+      if (containerRef.current && containerRef.current.contains(e.target as Node)) {
+        return;
+      }
       setModeMenuOpen(false);
       setModelMenuOpen(false);
       setContextMenuOpen(false);
@@ -259,10 +263,10 @@ function ChatComposerBase({
       }
     };
 
-    window.addEventListener("click", handleGlobalClick);
+    window.addEventListener("pointerdown", handleGlobalPointerDown);
     window.addEventListener("keydown", handleKeyDown);
     return () => {
-      window.removeEventListener("click", handleGlobalClick);
+      window.removeEventListener("pointerdown", handleGlobalPointerDown);
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, [modelMenuOpen]);
@@ -429,6 +433,7 @@ function ChatComposerBase({
 
   const handleOpenModelMenu = (e: React.MouseEvent) => {
     e.stopPropagation();
+    e.nativeEvent?.stopImmediatePropagation?.();
     setModeMenuOpen(false);
     setContextMenuOpen(false);
     setModelMenuOpen((prev) => !prev);
@@ -470,11 +475,14 @@ function ChatComposerBase({
   const isSubmitReady = input.trim().length > 0 || attachments.length > 0;
 
   useEffect(() => {
-    textareaRef.current?.focus();
+    // Only auto-focus on desktop viewports to avoid opening soft keyboard on mobile landing
+    if (typeof window !== "undefined" && window.innerWidth >= 768) {
+      textareaRef.current?.focus();
+    }
   }, []);
 
   return (
-    <div className="relative isolate z-30 w-full max-w-3xl mx-auto px-3 sm:px-4 pb-[max(1rem,env(safe-area-inset-bottom,0px))] select-none">
+    <div ref={containerRef} className="relative isolate z-30 w-full max-w-3xl mx-auto px-3 sm:px-4 pb-2 md:pb-[max(1rem,env(safe-area-inset-bottom,0px))] select-none">
       {/* Attached Files Preview Bar */}
       {attachments.length > 0 && (
         <div className="flex flex-wrap gap-2 mb-2 p-2 rounded-xl bg-gradient-to-r from-[var(--surface-raised)]/90 via-[var(--surface-raised)]/70 to-[var(--accent-d)]/20 border border-white/[0.10] shadow-sm backdrop-blur-xl animate-in fade-in slide-in-from-bottom-2 duration-200">
@@ -636,11 +644,11 @@ function ChatComposerBase({
         />
 
         {/* Controls Bar with Professional Icons & Glassmorphic Pills */}
-        <div className="flex items-center justify-between gap-1.5 sm:gap-2 pt-2 border-t border-white/[0.08] relative z-10">
+        <div className="flex items-center justify-between gap-1 sm:gap-2 pt-2 border-t border-white/[0.08] relative z-10">
           {/* Left Controls: Add Files, Mode Selector, Model Trigger */}
-          <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 min-w-0 flex-1 overflow-visible py-0.5">
+          <div className="flex flex-nowrap items-center gap-1 sm:gap-2 min-w-0 flex-1 overflow-visible py-0.5">
             {/* 1. Add Files Expanding Glass Pill */}
-            <div className="relative">
+            <div className="relative shrink-0">
               <motion.button
                 type="button"
                 whileHover={shouldReduceMotion ? undefined : { scale: 1.04, y: -0.5 }}
@@ -648,12 +656,13 @@ function ChatComposerBase({
                 transition={{ type: "spring", stiffness: 400, damping: 20 }}
                 onClick={(e) => {
                   e.stopPropagation();
+                  e.nativeEvent?.stopImmediatePropagation?.();
                   safeVibrate("selection");
                   setModeMenuOpen(false);
                   setModelMenuOpen(false);
                   setAttachmentMenuOpen((prev) => !prev);
                 }}
-                className="group/btn h-8 px-2.5 rounded-full border border-white/[0.10] bg-[var(--surface)] hover:bg-[var(--surface-hover)] hover:border-[var(--border-accent)] text-[var(--txt-muted)] hover:text-[var(--txt)] transition-all flex items-center gap-1.5 text-xs font-sans font-medium touch-target cursor-pointer backdrop-blur-md shadow-xs"
+                className="group/btn h-8 px-2 sm:px-2.5 rounded-full border border-white/[0.10] bg-[var(--surface)] hover:bg-[var(--surface-hover)] hover:border-[var(--border-accent)] text-[var(--txt-muted)] hover:text-[var(--txt)] transition-all flex items-center justify-center gap-1.5 text-xs font-sans font-medium touch-target cursor-pointer backdrop-blur-md shadow-xs"
                 title={uiText(language, "Attach file or media")}
                 aria-label={uiText(language, "Add files")}
                 aria-haspopup="true"
@@ -668,49 +677,60 @@ function ChatComposerBase({
               </motion.button>
 
               {attachmentMenuOpen && (
-                <div
-                  className="absolute left-0 bottom-full mb-2 w-48 rounded-xl p-1 z-50 bg-[var(--deep)]/95 backdrop-blur-2xl border border-white/[0.12] shadow-2xl flex flex-col gap-0.5 animate-in fade-in zoom-in-95 duration-150"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setAttachmentMenuOpen(false);
-                      cameraInputRef.current?.click();
-                    }}
-                    className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium text-[var(--txt)] hover:bg-white/10 transition-colors w-full text-left touch-target cursor-pointer min-h-[44px]"
+                <>
+                  <div
+                    className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[60] md:hidden"
+                    onClick={() => setAttachmentMenuOpen(false)}
+                    aria-hidden="true"
+                  />
+                  <div
+                    className="fixed inset-x-0 bottom-0 z-[65] max-h-[75vh] w-full left-0 right-0 max-w-full rounded-t-[24px] bg-[var(--deep)]/98 backdrop-blur-2xl border-t border-white/[0.15] p-3 pb-[max(1.5rem,env(safe-area-inset-bottom,0px))] shadow-[0_-12px_48px_rgba(0,0,0,0.8)] md:absolute md:inset-x-auto md:max-h-none md:rounded-xl md:w-48 md:p-1 md:z-50 md:bottom-full md:left-0 md:mb-2 md:border md:border-white/[0.12] md:shadow-2xl flex flex-col gap-1 animate-in fade-in slide-in-from-bottom-4 md:slide-in-from-bottom-0 md:zoom-in-95 duration-200"
+                    onClick={(e) => e.stopPropagation()}
                   >
-                    <Camera className="w-4 h-4 text-emerald-400 shrink-0" />
-                    <span>{uiText(language, "Take Photo")}</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setAttachmentMenuOpen(false);
-                      fileInputRef.current?.click();
-                    }}
-                    className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium text-[var(--txt)] hover:bg-white/10 transition-colors w-full text-left touch-target cursor-pointer min-h-[44px]"
-                  >
-                    <FileText className="w-4 h-4 text-[var(--accent-b)] shrink-0" />
-                    <span>{uiText(language, "Upload Files")}</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setAttachmentMenuOpen(false);
-                      toggleVoice();
-                    }}
-                    className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium text-[var(--txt)] hover:bg-white/10 transition-colors w-full text-left touch-target cursor-pointer min-h-[44px]"
-                  >
-                    <Mic className="w-4 h-4 text-[var(--accent-c)] shrink-0" />
-                    <span>{uiText(language, "Voice Input")}</span>
-                  </button>
-                </div>
+                    <div className="md:hidden action-sheet-grab-handle shrink-0" aria-hidden="true" />
+                    <div className="md:hidden px-3 py-1 mb-1 font-serif font-bold text-sm text-[var(--txt)]">
+                      {uiText(language, "Add Media & Context")}
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setAttachmentMenuOpen(false);
+                        cameraInputRef.current?.click();
+                      }}
+                      className="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-medium text-[var(--txt)] hover:bg-white/10 active:bg-white/15 transition-colors w-full text-left touch-target cursor-pointer min-h-[48px]"
+                    >
+                      <Camera className="w-4 h-4 text-emerald-400 shrink-0" />
+                      <span>{uiText(language, "Take Photo")}</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setAttachmentMenuOpen(false);
+                        fileInputRef.current?.click();
+                      }}
+                      className="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-medium text-[var(--txt)] hover:bg-white/10 active:bg-white/15 transition-colors w-full text-left touch-target cursor-pointer min-h-[48px]"
+                    >
+                      <FileText className="w-4 h-4 text-[var(--accent-b)] shrink-0" />
+                      <span>{uiText(language, "Upload Files")}</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setAttachmentMenuOpen(false);
+                        toggleVoice();
+                      }}
+                      className="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-medium text-[var(--txt)] hover:bg-white/10 active:bg-white/15 transition-colors w-full text-left touch-target cursor-pointer min-h-[48px]"
+                    >
+                      <Mic className="w-4 h-4 text-[var(--accent-c)] shrink-0" />
+                      <span>{uiText(language, "Voice Input")}</span>
+                    </button>
+                  </div>
+                </>
               )}
             </div>
 
             {/* 2. Mode Selector Pill (Build / Plan / Ask) */}
-            <div className="relative">
+            <div className="relative shrink-0">
               <motion.button
                 type="button"
                 whileHover={shouldReduceMotion ? undefined : { scale: 1.03, y: -0.5 }}
@@ -721,7 +741,7 @@ function ChatComposerBase({
                   setModelMenuOpen(false);
                   setModeMenuOpen((prev) => !prev);
                 }}
-                className="h-8 px-2.5 rounded-full border border-white/[0.10] bg-[var(--surface)] hover:bg-[var(--surface-hover)] hover:border-[var(--border-accent)] text-[var(--txt)] transition-all flex items-center gap-1.5 text-xs font-sans font-medium touch-target cursor-pointer backdrop-blur-md shadow-xs"
+                className="h-8 px-2 sm:px-2.5 rounded-full border border-white/[0.10] bg-[var(--surface)] hover:bg-[var(--surface-hover)] hover:border-[var(--border-accent)] text-[var(--txt)] transition-all flex items-center gap-1.5 text-xs font-sans font-medium touch-target cursor-pointer backdrop-blur-md shadow-xs"
                 aria-haspopup="true"
                 aria-expanded={modeMenuOpen}
               >
@@ -737,41 +757,52 @@ function ChatComposerBase({
               </motion.button>
 
               {modeMenuOpen && (
-                <div
-                  onClick={(e) => e.stopPropagation()}
-                  className="absolute left-0 bottom-full mb-2 w-44 rounded-xl p-1.5 z-50 bg-[var(--deep)]/95 backdrop-blur-2xl border border-white/[0.12] shadow-[0_12px_36px_0_rgba(0,0,0,0.6),0_0_20px_-4px_var(--accent-g)] flex flex-col gap-0.5 animate-in fade-in zoom-in-95 duration-150"
-                >
-                  {orderedModes.map((m) => {
-                    const isSelected = m === mode;
-                    return (
-                      <motion.button
-                        key={m}
-                        type="button"
-                        whileHover={shouldReduceMotion ? undefined : { x: 2 }}
-                        transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setMode(m);
-                          setModeMenuOpen(false);
-                        }}
-                        className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-sans font-medium flex items-center justify-between text-[var(--txt)] hover:bg-[var(--surface-hover)] transition-colors cursor-pointer ${
-                          isSelected ? "bg-[var(--accent-d)] text-[var(--accent-b)] font-semibold" : ""
-                        }`}
-                      >
-                        <div className="flex items-center gap-2">
-                          {renderModeIcon(m)}
-                          <span>{uiText(language, m)}</span>
-                        </div>
-                        {isSelected && <CheckmarkIcon />}
-                      </motion.button>
-                    );
-                  })}
-                </div>
+                <>
+                  <div
+                    className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[60] md:hidden"
+                    onClick={() => setModeMenuOpen(false)}
+                    aria-hidden="true"
+                  />
+                  <div
+                    onClick={(e) => e.stopPropagation()}
+                    className="fixed inset-x-0 bottom-0 z-[65] max-h-[75vh] w-full rounded-t-[24px] bg-[var(--deep)]/98 backdrop-blur-2xl border-t border-white/[0.15] p-3 pb-[max(1.5rem,env(safe-area-inset-bottom,0px))] shadow-[0_-12px_48px_rgba(0,0,0,0.8)] md:fixed-none md:inset-x-auto md:max-h-none md:rounded-xl md:w-44 md:p-1.5 md:z-50 md:bottom-full md:left-0 md:mb-2 md:border md:border-white/[0.12] md:shadow-[0_12px_36px_0_rgba(0,0,0,0.6),0_0_20px_-4px_var(--accent-g)] flex flex-col gap-1 animate-in fade-in slide-in-from-bottom-4 md:slide-in-from-bottom-0 md:zoom-in-95 duration-200"
+                  >
+                    <div className="md:hidden action-sheet-grab-handle" />
+                    <div className="md:hidden px-3 py-1 mb-1 font-serif font-bold text-sm text-[var(--txt)]">
+                      {uiText(language, "Select Composer Mode")}
+                    </div>
+                    {orderedModes.map((m) => {
+                      const isSelected = m === mode;
+                      return (
+                        <motion.button
+                          key={m}
+                          type="button"
+                          whileHover={shouldReduceMotion ? undefined : { x: 2 }}
+                          transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setMode(m);
+                            setModeMenuOpen(false);
+                          }}
+                          className={`w-full text-left px-3 py-2 rounded-xl text-xs font-sans font-medium flex items-center justify-between text-[var(--txt)] hover:bg-[var(--surface-hover)] active:bg-white/10 transition-colors cursor-pointer min-h-[44px] touch-target ${
+                            isSelected ? "bg-[var(--accent-d)] text-[var(--accent-b)] font-semibold" : ""
+                          }`}
+                        >
+                          <div className="flex items-center gap-2.5">
+                            {renderModeIcon(m)}
+                            <span>{uiText(language, m)}</span>
+                          </div>
+                          {isSelected && <CheckmarkIcon />}
+                        </motion.button>
+                      );
+                    })}
+                  </div>
+                </>
               )}
             </div>
 
             {/* 3. Real Model Selector Pill (Image 2) */}
-            <div className="relative inline-flex items-center">
+            <div className="relative inline-flex items-center min-w-0">
               <motion.button
                 ref={modelTriggerRef}
                 id="composer-model-trigger"
@@ -783,111 +814,119 @@ function ChatComposerBase({
                 onClick={handleOpenModelMenu}
                 onKeyDown={handleTriggerKeyDown}
                 title={activeModel.name}
-                className="h-8 px-2.5 sm:px-3 rounded-full border border-white/[0.10] bg-[var(--surface)] hover:bg-[var(--surface-hover)] hover:border-[var(--border-accent)] text-[var(--txt)] transition-all flex items-center gap-1.5 sm:gap-2 text-xs font-sans font-medium touch-target cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] backdrop-blur-md shadow-xs"
+                className="h-8 px-2 sm:px-3 rounded-full border border-white/[0.10] bg-[var(--surface)] hover:bg-[var(--surface-hover)] hover:border-[var(--border-accent)] text-[var(--txt)] transition-all flex items-center gap-1 sm:gap-2 text-xs font-sans font-medium touch-target cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] backdrop-blur-md shadow-xs min-w-0"
                 aria-haspopup="listbox"
                 aria-expanded={modelMenuOpen}
                 aria-controls="composer-model-listbox"
                 aria-label={`${uiText(language, "Select AI model. Current model:")} ${activeModel.name}`}
               >
                 <Atom className="w-3.5 h-3.5 text-[#c084fc] shrink-0" aria-hidden="true" />
-                <span className="font-sans text-xs sm:text-[13px] font-medium text-[var(--txt)] truncate max-w-[70px] xs:max-w-[110px] sm:max-w-none">
+                <span className="font-sans text-xs sm:text-[13px] font-medium text-[var(--txt)] truncate max-w-[70px] xs:max-w-[100px] sm:max-w-none">
                   {activeModel.name}
                 </span>
                 <motion.span
                   animate={shouldReduceMotion ? undefined : { rotate: modelMenuOpen ? 180 : 0 }}
                   transition={{ type: "spring", stiffness: 350, damping: 25 }}
-                  className="inline-flex items-center justify-center text-[var(--txt-muted)]"
+                  className="inline-flex items-center justify-center text-[var(--txt-muted)] shrink-0"
                   aria-hidden="true"
                 >
                   <ChevronDown className="w-3.5 h-3.5" />
                 </motion.span>
               </motion.button>
 
-              {/* Model Selector Popover */}
+              {/* Model Selector Popover / Sheet */}
               {modelMenuOpen && (
-                <div
-                  id="composer-model-listbox"
-                  role="listbox"
-                  aria-label={uiText(language, "Available models")}
-                  aria-activedescendant={
-                    focusedIndex >= 0 && AVAILABLE_MODELS[focusedIndex]
-                      ? `model-option-${AVAILABLE_MODELS[focusedIndex].id}`
-                      : undefined
-                  }
-                  tabIndex={-1}
-                  onKeyDown={handleListboxKeyDown}
-                  onClick={(e) => e.stopPropagation()}
-                  className="absolute -left-16 sm:left-0 bottom-full mb-2 w-72 sm:w-80 max-w-[calc(100vw-2rem)] rounded-2xl p-2 z-50 bg-[var(--deep)]/95 backdrop-blur-2xl border border-white/[0.12] shadow-[0_16px_48px_0_rgba(0,0,0,0.65),0_0_28px_-4px_var(--accent-g)] flex flex-col gap-1 max-h-80 overflow-y-auto animate-in fade-in zoom-in-95 duration-150"
-                >
-                  <div className="px-3 py-1.5 text-[10px] font-mono uppercase tracking-widest text-[var(--txt-muted)] border-b border-white/[0.08] flex items-center justify-between select-none">
-                    <span>{uiText(language, "Frontier Inference Models")}</span>
-                    <span className="text-[9px] text-[var(--accent-b)] font-semibold">{uiText(language, "Multi-Provider")}</span>
-                  </div>
-                  <div className="flex flex-col gap-1 pt-1">
-                    {AVAILABLE_MODELS.map((m, idx) => {
-                      const isSelected = m.id === activeModel.id;
-                      const isItemFocused = focusedIndex === idx;
-                      return (
-                        <motion.button
-                          key={m.id}
-                          ref={(el) => {
-                            optionRefs.current[idx] = el;
-                          }}
-                          id={`model-option-${m.id}`}
-                          type="button"
-                          role="option"
-                          tabIndex={isItemFocused ? 0 : -1}
-                          aria-selected={isSelected}
-                          data-testid={`model-option-${m.id}`}
-                          whileHover={shouldReduceMotion ? undefined : { x: 2 }}
-                          transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                          onClick={(e) => handleSelectModel(e, m)}
-                          onKeyDown={(e) => {
-                            if (e.key === "Enter" || e.key === " ") {
-                              handleSelectModel(e, m);
-                            }
-                          }}
-                          className={`flex items-start gap-2.5 p-2.5 rounded-xl text-left transition-all font-sans cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[var(--accent)] ${
-                            isSelected
-                              ? "bg-[var(--accent-d)] border border-[var(--accent)] text-[var(--txt)] ring-1 ring-[var(--accent)]/40 shadow-sm"
-                              : "hover:bg-[var(--surface-hover)] text-[var(--txt-dim)] hover:text-[var(--txt)] border border-transparent"
-                          }`}
-                        >
-                          <div className="mt-0.5 shrink-0 select-none">
-                            {renderModelIcon(m.id)}
-                          </div>
-                          <div className="flex flex-col flex-1 min-w-0">
-                            <div className="flex items-center justify-between gap-1">
-                              <span className="text-xs font-semibold font-sans text-[var(--txt)] truncate">
-                                {m.name}
-                              </span>
-                              <div className="flex items-center gap-1.5 shrink-0">
-                                <span className="text-[9px] uppercase px-1.5 py-0.5 rounded bg-[var(--surface)] text-[var(--txt-muted)] border border-white/[0.08] font-mono">
-                                  {m.provider}
+                <>
+                  <div
+                    className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[60] md:hidden"
+                    onClick={() => setModelMenuOpen(false)}
+                    aria-hidden="true"
+                  />
+                  <div
+                    id="composer-model-listbox"
+                    role="listbox"
+                    aria-label={uiText(language, "Available models")}
+                    aria-activedescendant={
+                      focusedIndex >= 0 && AVAILABLE_MODELS[focusedIndex]
+                        ? `model-option-${AVAILABLE_MODELS[focusedIndex].id}`
+                        : undefined
+                    }
+                    tabIndex={-1}
+                    onKeyDown={handleListboxKeyDown}
+                    onClick={(e) => e.stopPropagation()}
+                    className="fixed inset-x-0 bottom-0 z-[65] max-h-[82vh] w-full left-0 right-0 max-w-full rounded-t-[24px] bg-[var(--deep)]/98 backdrop-blur-2xl border-t border-white/[0.15] p-3 pb-[max(1.5rem,env(safe-area-inset-bottom,0px))] shadow-[0_-12px_48px_rgba(0,0,0,0.8),0_0_32px_-6px_var(--accent-g)] md:absolute md:inset-x-auto md:bottom-full md:left-0 md:right-auto md:mb-2 md:w-80 md:max-w-none md:rounded-2xl md:p-2 md:z-50 md:max-h-80 md:border md:border-white/[0.12] md:shadow-[0_16px_48px_0_rgba(0,0,0,0.65),0_0_28px_-4px_var(--accent-g)] flex flex-col gap-1 overflow-y-auto animate-in fade-in slide-in-from-bottom-4 md:slide-in-from-bottom-0 md:zoom-in-95 duration-200"
+                  >
+                    <div className="md:hidden action-sheet-grab-handle shrink-0" aria-hidden="true" />
+                    <div className="px-3 py-1.5 text-[10px] font-mono uppercase tracking-widest text-[var(--txt-muted)] border-b border-white/[0.08] flex items-center justify-between select-none">
+                      <span className="font-semibold text-[var(--txt)] text-xs md:text-[10px] md:font-normal md:text-[var(--txt-muted)]">{uiText(language, "Frontier Inference Models")}</span>
+                      <span className="text-[10px] text-[var(--accent-b)] font-semibold">{uiText(language, "Multi-Provider")}</span>
+                    </div>
+                    <div className="flex flex-col gap-1.5 pt-1.5">
+                      {AVAILABLE_MODELS.map((m, idx) => {
+                        const isSelected = m.id === activeModel.id;
+                        const isItemFocused = focusedIndex === idx;
+                        return (
+                          <motion.button
+                            key={m.id}
+                            ref={(el) => {
+                              optionRefs.current[idx] = el;
+                            }}
+                            id={`model-option-${m.id}`}
+                            type="button"
+                            role="option"
+                            tabIndex={isItemFocused ? 0 : -1}
+                            aria-selected={isSelected}
+                            data-testid={`model-option-${m.id}`}
+                            whileHover={shouldReduceMotion ? undefined : { x: 2 }}
+                            transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                            onClick={(e) => handleSelectModel(e, m)}
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter" || e.key === " ") {
+                                handleSelectModel(e, m);
+                              }
+                            }}
+                            className={`flex items-start gap-3 p-3 md:p-2.5 rounded-xl text-left transition-all font-sans cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[var(--accent)] min-h-[52px] touch-target ${
+                              isSelected
+                                ? "bg-[var(--accent-d)] border border-[var(--accent)] text-[var(--txt)] ring-1 ring-[var(--accent)]/40 shadow-sm"
+                                : "hover:bg-[var(--surface-hover)] active:bg-white/10 text-[var(--txt-dim)] hover:text-[var(--txt)] border border-transparent"
+                            }`}
+                          >
+                            <div className="mt-0.5 shrink-0 select-none">
+                              {renderModelIcon(m.id)}
+                            </div>
+                            <div className="flex flex-col flex-1 min-w-0">
+                              <div className="flex items-center justify-between gap-1">
+                                <span className="text-xs sm:text-sm md:text-xs font-semibold font-sans text-[var(--txt)] truncate">
+                                  {m.name}
                                 </span>
-                                {isSelected && <CheckmarkIcon />}
+                                <div className="flex items-center gap-1.5 shrink-0">
+                                  <span className="text-[9px] uppercase px-1.5 py-0.5 rounded bg-[var(--surface)] text-[var(--txt-muted)] border border-white/[0.08] font-mono">
+                                    {m.provider}
+                                  </span>
+                                  {isSelected && <CheckmarkIcon />}
+                                </div>
+                              </div>
+                              <p className="text-[11px] text-[var(--txt-muted)] line-clamp-1 mt-0.5 leading-tight font-sans">
+                                {m.sub}
+                              </p>
+                              <div className="flex items-center gap-2 mt-1.5 text-[9px] font-mono text-[var(--txt-muted)]">
+                                {m.contextWindow && (
+                                  <span className="tabular-nums">{(m.contextWindow / 1024).toFixed(0)}k {uiText(language, "ctx")}</span>
+                                )}
+                                {m.supportsVision && (
+                                  <span className="text-[var(--accent-b)] font-medium">✦ {uiText(language, "Multimodal")}</span>
+                                )}
+                                {m.pricingTier === "free" && (
+                                  <span className="text-emerald-400 font-medium">{uiText(language, "Free")}</span>
+                                )}
                               </div>
                             </div>
-                            <p className="text-[11px] text-[var(--txt-muted)] line-clamp-1 mt-0.5 leading-tight font-sans">
-                              {m.sub}
-                            </p>
-                            <div className="flex items-center gap-2 mt-1.5 text-[9px] font-mono text-[var(--txt-muted)]">
-                              {m.contextWindow && (
-                                <span className="tabular-nums">{(m.contextWindow / 1024).toFixed(0)}k {uiText(language, "ctx")}</span>
-                              )}
-                              {m.supportsVision && (
-                                <span className="text-[var(--accent-b)] font-medium">✦ {uiText(language, "Multimodal")}</span>
-                              )}
-                              {m.pricingTier === "free" && (
-                                <span className="text-emerald-400 font-medium">{uiText(language, "Free")}</span>
-                              )}
-                            </div>
-                          </div>
-                        </motion.button>
-                      );
-                    })}
+                          </motion.button>
+                        );
+                      })}
+                    </div>
                   </div>
-                </div>
+                </>
               )}
             </div>
           </div>

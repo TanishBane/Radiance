@@ -6,6 +6,7 @@ export interface VisualViewportState {
   viewportHeight: number;
   keyboardHeight: number;
   isKeyboardOpen: boolean;
+  isLayoutResizedByBrowser: boolean;
 }
 
 export function useVisualViewport(): VisualViewportState {
@@ -13,6 +14,7 @@ export function useVisualViewport(): VisualViewportState {
     viewportHeight: typeof window !== "undefined" ? window.innerHeight : 0,
     keyboardHeight: 0,
     isKeyboardOpen: false,
+    isLayoutResizedByBrowser: false,
   });
 
   useEffect(() => {
@@ -38,11 +40,13 @@ export function useVisualViewport(): VisualViewportState {
 
       const isKeyboardOpen = diff > 150; // Threshold for virtual keyboard
       const keyboardHeight = isKeyboardOpen ? Math.max(0, diff) : 0;
+      const isLayoutResizedByBrowser = (windowHeight < baselineHeight - 100);
 
       setState({
         viewportHeight: currentHeight,
         keyboardHeight,
         isKeyboardOpen,
+        isLayoutResizedByBrowser,
       });
 
       // Export dynamic CSS property for CSS layout bindings

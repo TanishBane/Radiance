@@ -456,6 +456,7 @@
   .landing-preview-body { padding: 0 16px 4px; }
   .landing-preview-rail { padding: 16px 0 12px; border-right: 0; border-bottom: 1px solid var(--landing-hairline); }
   .landing-preview-main { padding: 18px 0 22px; }
+  .landing-footer { padding-bottom: calc(96px + var(--sab)); }
   .landing-footer-grid { grid-template-columns: 1fr 1fr; gap: 26px 20px; }
   .landing-footer-grid > div:first-child { grid-column: 1 / -1; }
   .landing-finale { padding: 80px 0 72px; }
