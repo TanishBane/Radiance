@@ -115,7 +115,7 @@ export interface ChatComposerProps {
   onFocusChange?: (focused: boolean) => void;
 }
 
-export function ChatComposer({
+function ChatComposerBase({
   language = "en",
   onSend,
   onStop,
@@ -1030,3 +1030,6 @@ export function ChatComposer({
     </div>
   );
 }
+
+export const ChatComposer = React.memo(ChatComposerBase);
+ChatComposer.displayName = "ChatComposer";

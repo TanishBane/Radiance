@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { motion, useReducedMotion } from "motion/react";
-import { ChatMessage, FeedbackRating } from "@/lib/types/chat";
+import { ChatMessage, FeedbackRating, Attachment } from "@/lib/types/chat";
 import { getMotionTransition } from "@/lib/motion/presets";
 import { formatMarkdown, formatRelativeTime, isSafeUrl } from "@/lib/utils/format";
 import { RadianceLogo } from "@/components/branding/radiance-logo";
@@ -60,7 +60,7 @@ export interface MessageItemProps {
   onRetry?: () => void;
 }
 
-export function MessageItem({
+function MessageItemBase({
   language = "en",
   message,
   isStreaming = false,
@@ -710,3 +710,95 @@ export function MessageItem({
     </motion.div>
   );
 }
+
+function areAttachmentsEqual(a?: Attachment[], b?: Attachment[]): boolean {
+  if (a === b) return true;
+  if (!a || !b) return false;
+  if (a.length !== b.length) return false;
+  for (let i = 0; i < a.length; i++) {
+    const itemA = a[i];
+    const itemB = b[i];
+    if (
+      itemA.id !== itemB.id ||
+      itemA.name !== itemB.name ||
+      itemA.type !== itemB.type ||
+      itemA.size !== itemB.size ||
+      itemA.mime !== itemB.mime ||
+      itemA.dataUrl !== itemB.dataUrl ||
+      itemA.storagePath !== itemB.storagePath ||
+      itemA.extractedText !== itemB.extractedText
+    ) {
+      return false;
+    }
+  }
+  return true;
+}
+
+function areFollowUpsEqual(a?: string[], b?: string[]): boolean {
+  if (a === b) return true;
+  if (!a || !b) return false;
+  if (a.length !== b.length) return false;
+  for (let i = 0; i < a.length; i++) {
+    if (a[i] !== b[i]) return false;
+  }
+  return true;
+}
+
+function areMessagesEqual(a: ChatMessage, b: ChatMessage): boolean {
+  if (a === b) return true;
+  if (!a || !b) return false;
+  if (
+    a.id !== b.id ||
+    a.role !== b.role ||
+    a.content !== b.content ||
+    a.createdAt !== b.createdAt ||
+    a.isError !== b.isError ||
+    a.errorDetails !== b.errorDetails ||
+    (a as unknown as Record<string, unknown>).error !== (b as unknown as Record<string, unknown>).error ||
+    a.feedback !== b.feedback ||
+    a.responseMode !== b.responseMode ||
+    a.generatedImageUrl !== b.generatedImageUrl ||
+    a.regenerationCount !== b.regenerationCount ||
+    a.lastRegeneratedAt !== b.lastRegeneratedAt ||
+    (a as unknown as { model?: { id?: string } }).model?.id !==
+      (b as unknown as { model?: { id?: string } }).model?.id
+  ) {
+    return false;
+  }
+  if (!areAttachmentsEqual(a.attachments, b.attachments)) {
+    return false;
+  }
+  if (a.personalization !== b.personalization) {
+    if (!a.personalization || !b.personalization) return false;
+    if (a.personalization.mode !== b.personalization.mode) return false;
+    if (a.personalization.memoryIds?.length !== b.personalization.memoryIds?.length) return false;
+    if (a.personalization.preferenceIds?.length !== b.personalization.preferenceIds?.length) return false;
+  }
+  return true;
+}
+
+export function areMessageItemPropsEqual(prev: MessageItemProps, next: MessageItemProps): boolean {
+  // 1. Primitive & Render-affecting props
+  if (prev.language !== next.language) return false;
+  if (prev.isStreaming !== next.isStreaming) return false;
+
+  // 2. Message object comparison (id, content, feedback, isError, error, model?.id, attachments)
+  if (!areMessagesEqual(prev.message, next.message)) return false;
+
+  // 3. FollowUps array comparison
+  if (!areFollowUpsEqual(prev.followUps, next.followUps)) return false;
+
+  // 4. Callback reference checks (prevent stale closure bugs)
+  if (prev.onFeedback !== next.onFeedback) return false;
+  if (prev.onRetry !== next.onRetry) return false;
+  if (prev.onRegenerate !== next.onRegenerate) return false;
+  if (prev.onEdit !== next.onEdit) return false;
+  if (prev.onRemember !== next.onRemember) return false;
+  if (prev.onSelectFollowUp !== next.onSelectFollowUp) return false;
+  if (prev.onOpenPersonalIntelligence !== next.onOpenPersonalIntelligence) return false;
+
+  return true;
+}
+
+export const MessageItem = React.memo(MessageItemBase, areMessageItemPropsEqual);
+MessageItem.displayName = "MessageItem";

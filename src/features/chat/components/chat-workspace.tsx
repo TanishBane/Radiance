@@ -105,6 +105,53 @@ export function ChatErrorCard({ error, errorDetails, onRetry, language = "en" }:
   );
 }
 
+interface MessageItemRowProps {
+  msg: ChatMessage;
+  language: UiLanguage;
+  onRegenerate?: (id: string) => void;
+  onEdit?: (id: string, text: string) => void;
+  onFeedback?: (messageId: string, feedback: FeedbackRating) => void;
+  onRememberMessage?: (messageId: string, content: string) => void;
+  onOpenPersonalIntelligence?: () => void;
+  onRetry?: () => void;
+}
+
+const MessageItemRow = React.memo(function MessageItemRow({
+  msg,
+  language,
+  onRegenerate,
+  onEdit,
+  onFeedback,
+  onRememberMessage,
+  onOpenPersonalIntelligence,
+  onRetry,
+}: MessageItemRowProps) {
+  const handleRegenerate = React.useCallback(() => {
+    onRegenerate?.(msg.id);
+  }, [onRegenerate, msg.id]);
+
+  const handleEdit = React.useCallback(
+    (newText: string) => {
+      onEdit?.(msg.id, newText);
+    },
+    [onEdit, msg.id]
+  );
+
+  return (
+    <MessageItem
+      language={language}
+      message={msg}
+      onRegenerate={onRegenerate ? handleRegenerate : undefined}
+      onEdit={onEdit ? handleEdit : undefined}
+      onFeedback={onFeedback}
+      onRemember={onRememberMessage}
+      onOpenPersonalIntelligence={onOpenPersonalIntelligence}
+      onRetry={onRetry}
+    />
+  );
+});
+MessageItemRow.displayName = "MessageItemRow";
+
 export function ChatWorkspace({
   language = "en",
   messages,
@@ -132,6 +179,23 @@ export function ChatWorkspace({
 }: ChatWorkspaceProps) {
   const chatScrollRef = useRef<HTMLDivElement | null>(null);
   const handleEdit = onEditUserMessage || onEditMessage;
+
+  // Stable callback references to prevent ChatComposer re-renders during high-frequency SSE streaming
+  const onSelectModelRef = useRef(onSelectModel);
+  useEffect(() => {
+    onSelectModelRef.current = onSelectModel;
+  });
+  const handleSelectModelStable = React.useCallback((m: ModelOption) => {
+    onSelectModelRef.current?.(m);
+  }, []);
+
+  const onFocusChangeRef = useRef(onFocusChange);
+  useEffect(() => {
+    onFocusChangeRef.current = onFocusChange;
+  });
+  const handleFocusChangeStable = React.useCallback((focused: boolean) => {
+    onFocusChangeRef.current?.(focused);
+  }, []);
 
   // Auto-scroll to bottom of chat when messages, stream tokens, generation status, or errors update
   useEffect(() => {
@@ -166,14 +230,14 @@ export function ChatWorkspace({
                   onRetry={onRetry}
                 />
               ) : (
-                <MessageItem
+                <MessageItemRow
                   key={msg.id}
+                  msg={msg}
                   language={language}
-                  message={msg}
-                  onRegenerate={onRegenerate ? () => onRegenerate(msg.id) : undefined}
-                  onEdit={handleEdit ? (newText) => handleEdit(msg.id, newText) : undefined}
+                  onRegenerate={onRegenerate}
+                  onEdit={handleEdit}
                   onFeedback={onFeedback}
-                  onRemember={onRememberMessage}
+                  onRememberMessage={onRememberMessage}
                   onOpenPersonalIntelligence={onOpenPersonalIntelligence}
                   onRetry={onRetry}
                 />
@@ -285,9 +349,9 @@ export function ChatWorkspace({
             onStop={onStop}
             isGenerating={isGenerating}
             selectedModel={selectedModel}
-            onSelectModel={onSelectModel}
+            onSelectModel={handleSelectModelStable}
             enterToSend={enterToSend}
-            onFocusChange={onFocusChange}
+            onFocusChange={handleFocusChangeStable}
           />
         </div>
 
