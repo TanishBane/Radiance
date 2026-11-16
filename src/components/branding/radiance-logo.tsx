@@ -118,11 +118,11 @@ export function RadianceLogo({
   const wordmarkContent = (
     <span
       className={cn(
-        "font-serif tracking-[0.035em] font-bold select-none gradient-text-brand",
+        "font-serif tracking-[0.12em] font-bold select-none gradient-text-brand",
         cfg.text
       )}
     >
-      RADIANCE
+      ADIANCE
     </span>
   );
 

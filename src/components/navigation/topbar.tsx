@@ -76,9 +76,14 @@ export function Topbar({
           </button>
         )}
 
-        {/* On Mobile: Compact brand lockup */}
-        <div className="md:hidden flex items-center gap-2">
-          <RadianceLogo variant="lockup" size="sm" onClick={onNewChat} />
+        {/* On Mobile: Compact brand lockup with narrow-screen (<380px) symbol fallback to prevent overflow */}
+        <div className="md:hidden flex items-center">
+          <RadianceLogo
+            variant="lockup"
+            size="sm"
+            onClick={onNewChat}
+            className="[&>span]:hidden xs:[&>span]:inline"
+          />
         </div>
       </div>
 

@@ -11,6 +11,7 @@ import {
 import { getMotionTransition } from "@/lib/motion/presets";
 import { uiText, type UiLanguage } from "@/lib/i18n/ui";
 import { safeVibrate } from "@/lib/mobile/haptics";
+import { cn } from "@/lib/utils/cn";
 
 export interface MobileBottomNavProps {
   language?: UiLanguage;
@@ -33,16 +34,19 @@ export function MobileBottomNav({
 }: MobileBottomNavProps) {
   const prefersReducedMotion = useReducedMotion() ?? false;
 
-  // When composer is focused on mobile (virtual keyboard active), hide bottom nav so composer has 100% space
-  if (isComposerFocused) {
-    return null;
-  }
-
+  // Hardware-accelerated CSS translation when virtual keyboard is active (prevents CLS and DOM re-creation)
   return (
     <nav
       aria-label={uiText(language, "Mobile Navigation")}
       role="navigation"
-      className="md:hidden shrink-0 z-30 w-full bg-[var(--void)]/90 backdrop-blur-2xl border-t border-[var(--border)] px-2 pb-[max(0.5rem,env(safe-area-inset-bottom,0px))] pt-1 select-none transition-all duration-200"
+      aria-hidden={isComposerFocused}
+      className={cn(
+        "md:hidden shrink-0 z-30 w-full bg-[var(--void)]/90 backdrop-blur-2xl border-t border-[var(--border)] px-2 select-none",
+        "transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] will-change-transform",
+        isComposerFocused
+          ? "translate-y-full opacity-0 pointer-events-none max-h-0 overflow-hidden border-t-transparent pb-0 pt-0"
+          : "translate-y-0 opacity-100 pointer-events-auto max-h-[80px] pb-[max(0.5rem,env(safe-area-inset-bottom,0px))] pt-1"
+      )}
     >
       <div className="flex items-center justify-around max-w-md mx-auto h-[50px] relative">
         {/* 1. Chat Workspace */}

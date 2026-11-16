@@ -177,7 +177,7 @@ export function HeroProductStage() {
         <h2 className="hero-stage-title">
           Hello, I Am <span className="hero-stage-brand-lockup" role="img" aria-label="Radiance">
             <RadianceLogo variant="symbol" size="md" showWordmark={false} className="hero-stage-brand-symbol [&>svg]:!w-full [&>svg]:!h-full" aria-hidden />
-            <span className="hero-stage-radiance-gradient">adiance</span>
+            <span className="hero-stage-radiance-gradient">ADIANCE</span>
           </span>
         </h2>
 

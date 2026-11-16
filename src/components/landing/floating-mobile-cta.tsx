@@ -36,10 +36,10 @@ export function FloatingMobileCTA() {
       <Link
         href="/chat"
         onClick={() => safeVibrate("tap")}
-        className="flex items-center justify-between px-4 py-3 rounded-full bg-[#0d0915]/95 border border-[var(--border-accent)] shadow-[0_8px_32px_rgba(0,0,0,0.7),0_0_20px_var(--accent-g)] backdrop-blur-2xl text-xs font-semibold text-[var(--txt)] active:scale-95 transition-all touch-target"
+        className="flex items-center justify-between px-4 py-3 rounded-full bg-[#0d0915]/95 border border-[var(--border-accent)] shadow-[0_8px_32px_rgba(0,0,0,0.7),0_0_20px_var(--accent-g)] backdrop-blur-2xl text-xs font-semibold text-[var(--txt)] active:scale-95 transition-all touch-target min-h-[44px]"
       >
         <div className="flex items-center gap-2">
-          <Sparkles className="w-3.5 h-3.5 text-[var(--accent-b)] animate-pulse" />
+          <Sparkles className="w-3.5 h-3.5 text-[var(--accent-b)] animate-pulse motion-reduce:animate-none" />
           <span>Chat with Radiance</span>
         </div>
         <div className="flex items-center gap-1 text-[var(--accent-b)]">

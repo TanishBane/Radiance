@@ -240,6 +240,20 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
   scroll-snap-align: center;
 }
 
+/* ══ FOLDABLE & TABLET TOUCH POSTURE SUPPORT ══ */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .touch-target-tablet {
+    min-height: 48px;
+    min-width: 48px;
+  }
+}
+
+@media (horizontal-viewport-segments: 2) {
+  :root {
+    --fold-width: env(viewport-segment-width 0 0);
+  }
+}
+
 /* ══ HIGH-CRAFT GLASSMORPHISM SURFACES & RESTRAINED ELEVATION ══ */
 .glass-panel {
   background: var(--surface-raised);
@@ -929,19 +943,44 @@ li {
 
 @keyframes radiance-settings-mobile-in { from { opacity: 0; transform: scale(0.995); } to { opacity: 1; transform: scale(1); } }
 
+/* ══ 120 FPS HIGH-REFRESH COMPOSITING & DOUBLE-TRANSITION PREVENTION ══ */
+.radiance-dialog-overlay,
+.radiance-dialog-right,
+.radiance-dialog-center {
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+}
+
+/* Guard against CSS transitions fighting Framer Motion spring transforms */
+[data-motion-element],
+.motion-spring-target {
+  transition-property: color, background-color, border-color, box-shadow, opacity;
+}
+
 @media (prefers-reduced-motion: reduce) {
   :root {
-    --motion-feedback: 1ms;
-    --motion-interaction: 1ms;
-    --motion-entrance: 1ms;
+    --motion-feedback: 0.01ms;
+    --motion-interaction: 0.01ms;
+    --motion-entrance: 0.01ms;
+  }
+
+  html {
+    scroll-behavior: auto !important;
   }
 
   *,
   *::before,
   *::after {
     scroll-behavior: auto !important;
-    animation-duration: 1ms !important;
+    animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
-    transition-duration: 1ms !important;
+    animation-delay: 0ms !important;
+    transition-duration: 0.01ms !important;
+    transition-delay: 0ms !important;
+  }
+
+  .stream-cursor {
+    animation: none !important;
+    opacity: 1 !important;
   }
 }
