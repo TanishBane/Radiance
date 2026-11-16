@@ -1,9 +1,19 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { WifiOff } from "lucide-react";
+import { safeLocalStorage } from "@/lib/utils/storage";
 
 export function OfflineIndicator({ isOnline }: { isOnline: boolean }) {
+  const [hasSavedChats, setHasSavedChats] = useState(false);
+
+  useEffect(() => {
+    if (!isOnline) {
+      const chats = safeLocalStorage.listConversations();
+      setHasSavedChats(chats.length > 0);
+    }
+  }, [isOnline]);
+
   if (isOnline) return null;
 
   return (
@@ -15,7 +25,9 @@ export function OfflineIndicator({ isOnline }: { isOnline: boolean }) {
       <div className="w-2 h-2 rounded-full bg-[var(--warn)] animate-pulse shrink-0" />
       <WifiOff className="w-3.5 h-3.5 text-[var(--warn)] shrink-0" />
       <span className="font-medium">
-        Offline Mode — Saved chats and preferences are ready.
+        {hasSavedChats
+          ? "Offline Mode — Application shell and local chats available. Reconnect for AI inference."
+          : "Offline Mode — Application shell is available. Reconnect for AI inference."}
       </span>
     </aside>
   );

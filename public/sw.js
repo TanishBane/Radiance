@@ -1,8 +1,8 @@
 // Radiance Privacy-Safe Service Worker
-// Version: 1.0.0
-const CACHE_VERSION = 'radiance-v1';
-const PRECACHE_SHELL = 'radiance-shell-v1';
-const RUNTIME_CACHE = 'radiance-runtime-v1';
+// Version: 2.0.0
+const CACHE_VERSION = 'radiance-v2';
+const PRECACHE_SHELL = 'radiance-shell-v2';
+const RUNTIME_CACHE = 'radiance-runtime-v2';
 
 // Static App Shell assets precached on install
 const PRECACHE_MANIFEST = [
@@ -16,13 +16,16 @@ const PRECACHE_MANIFEST = [
   '/brand/radiance-lockup.svg',
 ];
 
-// Sensitive or dynamic routes that MUST NEVER BE CACHED
+// Sensitive or dynamic routes that MUST NEVER BE CACHED under any circumstances
 const NON_CACHEABLE_PATTERNS = [
   /\/api\//i,
   /\/auth\//i,
   /supabase\.co/i,
   /analytics/i,
   /speed-insights/i,
+  /token/i,
+  /session/i,
+  /profile/i,
 ];
 
 self.addEventListener('install', (event) => {
@@ -51,8 +54,15 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('message', (event) => {
-  if (event.data && event.data.type === 'SKIP_WAITING') {
+  if (!event.data) return;
+
+  if (event.data.type === 'SKIP_WAITING') {
     self.skipWaiting();
+  }
+
+  // Account switching / logout security: purge all runtime caches immediately
+  if (event.data.type === 'PURGE_USER_DATA' || event.data.type === 'CLEAR_CACHES') {
+    caches.delete(RUNTIME_CACHE).catch(() => {});
   }
 });
 
@@ -60,18 +70,19 @@ self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
 
-  // 1. STRICT PRIVACY GUARD: Bypass all non-GET, API routes, and auth requests
-  if (
-    request.method !== 'GET' ||
-    request.headers.has('authorization') ||
-    NON_CACHEABLE_PATTERNS.some((pattern) => pattern.test(url.pathname) || pattern.test(url.hostname))
-  ) {
+  // 1. STRICT PRIVACY GUARD: Bypass all non-GET, API routes, tokens, and authenticated requests
+  const hasAuthHeader = request.headers.has('authorization') || request.headers.has('cookie');
+  const matchesNonCacheable = NON_CACHEABLE_PATTERNS.some(
+    (pattern) => pattern.test(url.pathname) || pattern.test(url.hostname) || pattern.test(url.search)
+  );
+
+  if (request.method !== 'GET' || hasAuthHeader || matchesNonCacheable) {
     if (url.pathname.startsWith('/api/chat') || url.pathname.startsWith('/api/image')) {
       event.respondWith(
         fetch(request).catch(() => {
           return new Response(
             JSON.stringify({
-              error: 'Offline Mode: AI inference requires an active internet connection. Your local conversation history remains safe.',
+              error: 'Offline Mode: AI inference requires an active internet connection. Application shell is available offline.',
               code: 'OFFLINE_DISCONNECTED',
             }),
             {
@@ -83,7 +94,7 @@ self.addEventListener('fetch', (event) => {
       );
       return;
     }
-    // Normal pass-through for other non-cacheable requests
+    // Normal network pass-through for other non-cacheable requests; zero cache writes
     return;
   }
 
@@ -132,19 +143,26 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // 4. HTML Navigation Requests (App Shell): Network-First with Fallback
+  // 4. HTML Navigation Requests (App Shell): Network-First with Safe Fallback
   if (request.mode === 'navigate') {
+    // If navigation URL contains sensitive auth tokens, never store in cache
+    const hasSensitiveParams = url.searchParams.has('code') ||
+      url.searchParams.has('token') ||
+      url.searchParams.has('access_token') ||
+      url.searchParams.has('refresh_token');
+
     event.respondWith(
       fetch(request)
         .then((response) => {
-          if (response && response.status === 200) {
+          if (response && response.status === 200 && !hasSensitiveParams) {
             const clone = response.clone();
-            caches.open(PRECACHE_SHELL).then((cache) => cache.put(request, clone));
+            // Cache by clean pathname only (e.g. /chat, /) without query parameters
+            caches.open(PRECACHE_SHELL).then((cache) => cache.put(url.pathname, clone));
           }
           return response;
         })
         .catch(async () => {
-          const cachedNavigate = await caches.match(request);
+          const cachedNavigate = await caches.match(url.pathname);
           if (cachedNavigate) return cachedNavigate;
           // Fallback to cached /chat workspace or /offline page
           const cachedChat = await caches.match('/chat');

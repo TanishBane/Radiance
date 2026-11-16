@@ -5,7 +5,7 @@ import { WifiOff, MessageSquare } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Offline | RADIANCE",
-  description: "Radiance is currently offline. Your local conversation history remains accessible.",
+  description: "Radiance is currently offline. The application shell is available offline.",
 };
 
 export default function OfflinePage() {
@@ -26,7 +26,7 @@ export default function OfflinePage() {
         </h1>
 
         <p className="text-sm text-[var(--txt-dim)] leading-relaxed mb-6 max-w-sm">
-          Live multi-provider inference is paused while disconnected. You can continue reading previously saved conversations and editing personal notes.
+          Live multi-provider AI inference is paused while disconnected. The application shell and local preferences are cached. Reconnect to the internet to resume AI reasoning.
         </p>
 
         <Link
@@ -34,7 +34,7 @@ export default function OfflinePage() {
           className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium bg-[var(--accent)] text-white hover:brightness-110 active:scale-95 transition-all shadow-[0_0_20px_var(--accent-g)] min-h-[44px] touch-target"
         >
           <MessageSquare className="w-4 h-4" />
-          Browse Saved Chats
+          Open Chat Workspace
         </Link>
       </div>
     </main>
