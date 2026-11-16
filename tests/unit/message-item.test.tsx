@@ -1,7 +1,7 @@
 import React from "react";
 import { render, screen, fireEvent, act } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { MessageItem } from "@/components/chat/message-item";
+import { MessageItem, areMessageItemPropsEqual } from "@/components/chat/message-item";
 import { ChatMessage } from "@/lib/types/chat";
 
 // Mock SpeechSynthesis
@@ -403,6 +403,106 @@ describe("MessageItem Component & Action Menus Specifications", () => {
       expect(screen.queryByText("Synthesized Flux Visual")).toBeNull();
       const dangerousAnchor = container.querySelector('a[href^="javascript:"]');
       expect(dangerousAnchor).toBeNull();
+    });
+  });
+
+  describe("10. Memoization Invariants & areMessageItemPropsEqual Verification", () => {
+    it("returns true when props and message state are identical", () => {
+      const propsA = {
+        language: "en" as const,
+        message: baseAssistantMessage,
+        isStreaming: false,
+        onRegenerate,
+        onEdit,
+        onFeedback,
+        onRetry,
+      };
+      const propsB = {
+        ...propsA,
+      };
+
+      expect(areMessageItemPropsEqual(propsA, propsB)).toBe(true);
+    });
+
+    it("returns false when message content or id updates", () => {
+      const propsA = { message: baseAssistantMessage };
+      const propsB = { message: { ...baseAssistantMessage, content: "Updated content here." } };
+      const propsC = { message: { ...baseAssistantMessage, id: "msg_asst_diff" } };
+
+      expect(areMessageItemPropsEqual(propsA, propsB)).toBe(false);
+      expect(areMessageItemPropsEqual(propsA, propsC)).toBe(false);
+    });
+
+    it("returns false when message error state or error details change", () => {
+      const propsA = { message: baseAssistantMessage };
+      const propsB = { message: { ...baseAssistantMessage, isError: true, errorDetails: "Network timeout" } };
+      const propsC = { message: { ...baseAssistantMessage, isError: true, errorDetails: "Server 500" } };
+
+      expect(areMessageItemPropsEqual(propsA, propsB)).toBe(false);
+      expect(areMessageItemPropsEqual(propsB, propsC)).toBe(false);
+    });
+
+    it("returns false when feedback rating is updated", () => {
+      const propsA = { message: { ...baseAssistantMessage, feedback: null } };
+      const propsB = { message: { ...baseAssistantMessage, feedback: "positive" as const } };
+      const propsC = { message: { ...baseAssistantMessage, feedback: "negative" as const } };
+
+      expect(areMessageItemPropsEqual(propsA, propsB)).toBe(false);
+      expect(areMessageItemPropsEqual(propsB, propsC)).toBe(false);
+    });
+
+    it("returns false when attachments change (length, name, or metadata)", () => {
+      const att1 = { id: "a1", name: "doc.txt", type: "text" as const, mime: "text/plain", size: 100 };
+      const att2 = { id: "a2", name: "img.png", type: "image" as const, mime: "image/png", size: 200 };
+
+      const propsNone = { message: { ...baseAssistantMessage, attachments: [] } };
+      const propsOne = { message: { ...baseAssistantMessage, attachments: [att1] } };
+      const propsTwo = { message: { ...baseAssistantMessage, attachments: [att1, att2] } };
+      const propsModified = {
+        message: {
+          ...baseAssistantMessage,
+          attachments: [{ ...att1, name: "renamed_doc.txt" }],
+        },
+      };
+
+      expect(areMessageItemPropsEqual(propsNone, propsOne)).toBe(false);
+      expect(areMessageItemPropsEqual(propsOne, propsTwo)).toBe(false);
+      expect(areMessageItemPropsEqual(propsOne, propsModified)).toBe(false);
+    });
+
+    it("returns false when isStreaming or language changes", () => {
+      const propsA = { message: baseAssistantMessage, isStreaming: false, language: "en" as const };
+      const propsStreaming = { message: baseAssistantMessage, isStreaming: true, language: "en" as const };
+      const propsSpanish = { message: baseAssistantMessage, isStreaming: false, language: "es" as const };
+
+      expect(areMessageItemPropsEqual(propsA, propsStreaming)).toBe(false);
+      expect(areMessageItemPropsEqual(propsA, propsSpanish)).toBe(false);
+    });
+
+    it("returns false when follow-up suggestions change", () => {
+      const propsA = { message: baseAssistantMessage, followUps: ["Question 1"] };
+      const propsB = { message: baseAssistantMessage, followUps: ["Question 1", "Question 2"] };
+      const propsC = { message: baseAssistantMessage, followUps: ["Different question"] };
+      const propsIdentical = { message: baseAssistantMessage, followUps: ["Question 1"] };
+
+      expect(areMessageItemPropsEqual(propsA, propsB)).toBe(false);
+      expect(areMessageItemPropsEqual(propsA, propsC)).toBe(false);
+      expect(areMessageItemPropsEqual(propsA, propsIdentical)).toBe(true);
+    });
+
+    it("returns false when callbacks are updated to prevent stale closures", () => {
+      const cb1 = vi.fn();
+      const cb2 = vi.fn();
+
+      const base = { message: baseAssistantMessage };
+
+      expect(areMessageItemPropsEqual({ ...base, onFeedback: cb1 }, { ...base, onFeedback: cb2 })).toBe(false);
+      expect(areMessageItemPropsEqual({ ...base, onRetry: cb1 }, { ...base, onRetry: cb2 })).toBe(false);
+      expect(areMessageItemPropsEqual({ ...base, onRegenerate: cb1 }, { ...base, onRegenerate: cb2 })).toBe(false);
+      expect(areMessageItemPropsEqual({ ...base, onEdit: cb1 }, { ...base, onEdit: cb2 })).toBe(false);
+      expect(areMessageItemPropsEqual({ ...base, onRemember: cb1 }, { ...base, onRemember: cb2 })).toBe(false);
+      expect(areMessageItemPropsEqual({ ...base, onSelectFollowUp: cb1 }, { ...base, onSelectFollowUp: cb2 })).toBe(false);
+      expect(areMessageItemPropsEqual({ ...base, onOpenPersonalIntelligence: cb1 }, { ...base, onOpenPersonalIntelligence: cb2 })).toBe(false);
     });
   });
 });

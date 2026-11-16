@@ -2,10 +2,13 @@ import { describe, expect, it } from "vitest";
 import { 
   getMotionTransition, 
   motionDurations, 
+  mobileMotionDurations,
   motionEasing, 
   motionDistances, 
   motionSprings, 
-  getRevealMotion 
+  getRevealMotion,
+  damp,
+  dampLambdas,
 } from "@/lib/motion/presets";
 
 describe("motion presets", () => {
@@ -58,5 +61,37 @@ describe("motion presets", () => {
       duration: motionDurations.entrance,
       ease: motionEasing.entrance,
     });
+  });
+
+  it("calculates frame-rate independent exponential damping with damp()", () => {
+    // Zero delta time should not change value
+    expect(damp(10, 20, dampLambdas.smooth, 0)).toBe(10);
+
+    // Delta time approaching infinity should approach target
+    expect(damp(10, 20, dampLambdas.smooth, 0.1)).toBeCloseTo(13.1, 1);
+
+    // 120Hz frame step (8.33ms) applied twice should match 60Hz step (16.67ms)
+    const step60 = damp(0, 100, dampLambdas.smooth, 1 / 60);
+    const step120_1 = damp(0, 100, dampLambdas.smooth, 1 / 120);
+    const step120_2 = damp(step120_1, 100, dampLambdas.smooth, 1 / 120);
+    expect(step120_2).toBeCloseTo(step60, 4);
+  });
+
+  it("provides calibrated mobile-first touch and swipe springs", () => {
+    expect(motionSprings.touch).toEqual({
+      type: "spring",
+      stiffness: 500,
+      damping: 30,
+      mass: 0.6,
+    });
+    expect(motionSprings.swipe).toEqual({
+      type: "spring",
+      stiffness: 400,
+      damping: 35,
+      mass: 0.8,
+    });
+    expect(mobileMotionDurations.tap).toBe(0.1);
+    expect(mobileMotionDurations.feedback).toBe(0.12);
+    expect(mobileMotionDurations.drawer).toBe(0.22);
   });
 });

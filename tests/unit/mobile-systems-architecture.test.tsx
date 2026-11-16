@@ -2,20 +2,25 @@ import React from "react";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import fs from "fs";
 import path from "path";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { render, screen, fireEvent, renderHook, act } from "@testing-library/react";
 
 import { safeVibrate } from "@/lib/mobile/haptics";
 import { shareContent } from "@/lib/mobile/share";
 import {
+  detectClientCapabilities,
+  getVisualQualityTier,
   resolveVisualQualityTier,
   VISUAL_TIER_CONFIGS,
   type ClientCapabilities,
 } from "@/lib/performance/adaptive-quality";
+import { useVisualViewport } from "@/lib/mobile/use-visual-viewport";
 import { OfflineIndicator } from "@/components/ui/offline-indicator";
 import { PWAInstallBanner } from "@/components/ui/pwa-install-banner";
 import { FloatingMobileCTA } from "@/components/landing/floating-mobile-cta";
 import { ChatComposer } from "@/components/chat/chat-composer";
 import { MessageItem } from "@/components/chat/message-item";
+import { viewport } from "@/app/layout";
+import { safeLocalStorage } from "@/lib/utils/storage";
 import type { ChatMessage } from "@/lib/types/chat";
 
 describe("Radiance Mobile Systems & PWA Architecture Invariants", () => {
@@ -61,6 +66,7 @@ describe("Radiance Mobile Systems & PWA Architecture Invariants", () => {
       expect(swCode).toContain("OFFLINE_DISCONNECTED");
       expect(swCode).toContain("skipWaiting");
       expect(swCode).toContain("clients.claim");
+      expect(swCode).toContain("PURGE_USER_DATA");
     });
   });
 
@@ -111,6 +117,48 @@ describe("Radiance Mobile Systems & PWA Architecture Invariants", () => {
 
       expect(resolveVisualQualityTier(flagshipDesktop)).toBe("high");
     });
+
+    it("safely falls back to sensible tier when hardware APIs are missing (Safari/Firefox)", () => {
+      const missingApisDevice: Partial<ClientCapabilities> = {
+        isMobile: true,
+        hardwareConcurrency: 6,
+        deviceMemory: undefined,
+        batteryLevel: undefined,
+        isDischarging: undefined,
+        effectiveType: undefined,
+        webglSupported: true,
+        saveData: false,
+        prefersReducedMotion: false,
+      };
+
+      // Capable mobile with 6 cores falls back gracefully to balanced tier
+      expect(resolveVisualQualityTier(missingApisDevice)).toBe("balanced");
+    });
+
+    it("detects mobile via touch capability and coarse pointer even without mobile UA string", () => {
+      vi.stubGlobal("navigator", {
+        userAgent: "CustomTabletBrowser/1.0",
+        maxTouchPoints: 5,
+        hardwareConcurrency: 4,
+      });
+
+      vi.spyOn(window, "matchMedia").mockImplementation((query) => ({
+        matches: query.includes("pointer: coarse"),
+        media: query,
+        onchange: null,
+        addListener: vi.fn(),
+        removeListener: vi.fn(),
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+        dispatchEvent: vi.fn(),
+      }));
+
+      // Set window width to compact mobile/tablet width
+      window.innerWidth = 600;
+
+      const caps = detectClientCapabilities();
+      expect(caps.isMobile).toBe(true);
+    });
   });
 
   describe("3. Mobile Haptic Feedback & Reduced-Motion Safety", () => {
@@ -148,6 +196,12 @@ describe("Radiance Mobile Systems & PWA Architecture Invariants", () => {
       const res = safeVibrate("tap");
       expect(res).toBe(false);
       expect(vibrateMock).not.toHaveBeenCalled();
+    });
+
+    it("handles platforms without navigator.vibrate safely without error", () => {
+      vi.stubGlobal("navigator", {});
+      const res = safeVibrate("tap");
+      expect(res).toBe(false);
     });
   });
 
@@ -197,7 +251,9 @@ describe("Radiance Mobile Systems & PWA Architecture Invariants", () => {
   });
 
   describe("5. Mobile UI Components: OfflineIndicator & PWAInstallBanner", () => {
-    it("renders OfflineIndicator when isOnline is false", () => {
+    it("renders OfflineIndicator when isOnline is false with truthful shell message", () => {
+      vi.spyOn(safeLocalStorage, "listConversations").mockReturnValue([]);
+
       const { rerender } = render(<OfflineIndicator isOnline={true} />);
       expect(screen.queryByRole("status")).toBeNull();
 
@@ -205,6 +261,17 @@ describe("Radiance Mobile Systems & PWA Architecture Invariants", () => {
       const alert = screen.getByRole("status");
       expect(alert).toBeDefined();
       expect(alert.textContent).toContain("Offline Mode");
+      expect(alert.textContent).toContain("Application shell is available");
+    });
+
+    it("truthfully announces local chats availability when saved conversations exist", () => {
+      vi.spyOn(safeLocalStorage, "listConversations").mockReturnValue([
+        { id: "c1", title: "Local Chat", createdAt: 1, updatedAt: 2, pinned: false, messages: [] },
+      ]);
+
+      render(<OfflineIndicator isOnline={false} />);
+      const alert = screen.getByRole("status");
+      expect(alert.textContent).toContain("local chats available");
     });
 
     it("renders PWAInstallBanner with finger-friendly >=44x44px touch targets", () => {
@@ -232,13 +299,11 @@ describe("Radiance Mobile Systems & PWA Architecture Invariants", () => {
     });
 
     it("renders FloatingMobileCTA with thumb-zone touch target ergonomics", () => {
-      // Mock IntersectionObserver
       const observeMock = vi.fn();
       const disconnectMock = vi.fn();
       vi.stubGlobal(
         "IntersectionObserver",
         vi.fn().mockImplementation((callback) => {
-          // Immediately trigger callback as intersecting = false
           callback([{ isIntersecting: false }]);
           return {
             observe: observeMock,
@@ -247,7 +312,6 @@ describe("Radiance Mobile Systems & PWA Architecture Invariants", () => {
         })
       );
 
-      // Create a dummy section in DOM
       const dummySec = document.createElement("section");
       dummySec.id = "hero";
       document.body.appendChild(dummySec);
@@ -301,6 +365,62 @@ describe("Radiance Mobile Systems & PWA Architecture Invariants", () => {
       const shareBtn = screen.getByTestId("share-message-button");
       expect(shareBtn).toBeDefined();
       expect(shareBtn.getAttribute("aria-label")).toContain("Share message");
+    });
+  });
+
+  describe("7. VisualViewport & Virtual Keyboard Resizing Invariants", () => {
+    it("tracks keyboard appearance and sets --keyboard-height via VisualViewport API", () => {
+      const listeners: Record<string, () => void> = {};
+      const mockVisualViewport = {
+        height: 500,
+        offsetTop: 0,
+        addEventListener: vi.fn((event: string, cb: () => void) => {
+          listeners[event] = cb;
+        }),
+        removeEventListener: vi.fn(),
+      };
+
+      Object.defineProperty(window, "visualViewport", {
+        value: mockVisualViewport,
+        writable: true,
+        configurable: true,
+      });
+
+      Object.defineProperty(window, "innerHeight", {
+        value: 800,
+        writable: true,
+        configurable: true,
+      });
+
+      const { result } = renderHook(() => useVisualViewport());
+
+      // Initial state with 300px keyboard difference
+      expect(result.current.keyboardHeight).toBe(300);
+      expect(result.current.isKeyboardOpen).toBe(true);
+
+      // Simulate keyboard collapse (viewport height expands to full innerHeight)
+      mockVisualViewport.height = 800;
+      act(() => {
+        listeners["resize"]?.();
+      });
+
+      expect(result.current.keyboardHeight).toBe(0);
+      expect(result.current.isKeyboardOpen).toBe(false);
+    });
+
+    it("preserves accessibility zoom by never setting user-scalable=no in layout viewport", () => {
+      expect((viewport as Record<string, unknown>).userScalable).toBeUndefined();
+      expect((viewport as Record<string, unknown>).maximumScale).toBeUndefined();
+      expect(viewport.initialScale).toBe(1);
+      expect(viewport.width).toBe("device-width");
+    });
+  });
+
+  describe("8. Pull-to-Refresh & Overscroll Containment Invariants", () => {
+    it("verifies chat scroll container has overscroll containment and touch pan-y in globals.css", () => {
+      const css = fs.readFileSync(path.resolve(__dirname, "../../src/app/globals.css"), "utf-8");
+      expect(css).toContain("overscroll-behavior-y: contain");
+      expect(css).toContain("touch-action: pan-y");
     });
   });
 });

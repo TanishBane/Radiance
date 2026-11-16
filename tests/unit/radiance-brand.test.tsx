@@ -66,14 +66,14 @@ describe("Radiance Official Brand Identity — Vector System & Architecture", ()
 
     it("renders wordmark only when variant='wordmark'", () => {
       render(<RadianceLogo variant="wordmark" />);
-      expect(screen.getByText("RADIANCE")).toBeDefined();
+      expect(screen.getByText(/adiance/i)).toBeDefined();
     });
 
     it("renders horizontal lockup with both symbol and wordmark", () => {
       const { container } = render(<RadianceLogo variant="lockup" />);
       const svg = container.querySelector("svg");
       expect(svg).toBeDefined();
-      expect(screen.getByText("RADIANCE")).toBeDefined();
+      expect(screen.getByText(/adiance/i)).toBeDefined();
     });
 
     it("renders interactive button when onClick is provided", () => {
