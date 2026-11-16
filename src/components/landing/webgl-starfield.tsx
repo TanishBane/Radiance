@@ -13,8 +13,10 @@ import {
   getVisualQualityTier,
   getVisualTierConfig,
   isWebGLSupported,
+  recordFrameLatency,
   type VisualQualityTier,
 } from "@/lib/performance/adaptive-quality";
+import { damp, dampLambdas } from "@/lib/motion/presets";
 
 export interface ChatbotThemePreset {
   id: string;
@@ -159,6 +161,11 @@ export function WebGLStarfield({ tier: propTier }: WebGLStarfieldProps = {}) {
     let geometry: THREE.BufferGeometry | null = null;
     let starMaterial: THREE.ShaderMaterial | null = null;
     let dummyHalo: THREE.DataTexture | null = null;
+    let torusComposer: EffectComposer | null = null;
+    let bloomComposer: EffectComposer | null = null;
+    let finalComposer: EffectComposer | null = null;
+    let torusBloomPass: UnrealBloomPass | null = null;
+    let bloomPass: UnrealBloomPass | null = null;
 
     let isTabVisible = typeof document !== "undefined" ? !document.hidden : true;
     let isCanvasInView = true;
@@ -252,10 +259,11 @@ export function WebGLStarfield({ tier: propTier }: WebGLStarfieldProps = {}) {
           colorCVec: hexToVec3(t.colorC),
         }));
 
-        // Clamp devicePixelRatio on mobile to protect mobile GPUs from thermal throttling
+        // Dynamic devicePixelRatio scaling: capable mobile flagships in ultra/high/smooth support up to 2.0 DPR
         const rawDpr = window.devicePixelRatio || 1;
-        const mobileDprCap = activeTier === "high" ? 1.25 : 1.0;
-        const maxDpr = isMobileDevice ? Math.min(tierConfig.maxDpr, mobileDprCap) : tierConfig.maxDpr;
+        const isCapableTier = activeTier === "high" || tierConfig.maxDpr >= 1.5;
+        const mobileDprCap = isCapableTier ? Math.min(tierConfig.maxDpr, 2.0) : 1.0;
+        const maxDpr = isMobileDevice ? mobileDprCap : tierConfig.maxDpr;
         const dpr = Math.min(Math.max(rawDpr, 1), maxDpr);
 
         renderer = new THREE.WebGLRenderer({
@@ -290,19 +298,19 @@ export function WebGLStarfield({ tier: propTier }: WebGLStarfieldProps = {}) {
         const renderScene = new RenderPass(scene, camera);
 
         // 1. torusComposer
-        const torusComposer = new EffectComposer(renderer);
+        torusComposer = new EffectComposer(renderer);
         torusComposer.renderToScreen = false;
         torusComposer.addPass(renderScene);
         torusComposer.addPass(new ShaderPass(GammaCorrectionShader));
-        const torusBloomPass = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 0.22, 0.2, 0);
+        torusBloomPass = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 0.22, 0.2, 0);
         torusComposer.addPass(torusBloomPass);
         torusComposer.addPass(new ShaderPass(CopyShader));
 
         // 2. bloomComposer
-        const bloomComposer = new EffectComposer(renderer);
+        bloomComposer = new EffectComposer(renderer);
         bloomComposer.renderToScreen = false;
         bloomComposer.addPass(renderScene);
-        const bloomPass = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 0.4, 0.55, 0);
+        bloomPass = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 0.4, 0.55, 0);
         bloomComposer.addPass(bloomPass);
         bloomComposer.addPass(new ShaderPass(GammaCorrectionShader));
 
@@ -368,7 +376,7 @@ export function WebGLStarfield({ tier: propTier }: WebGLStarfieldProps = {}) {
           `
         };
 
-        const finalComposer = new EffectComposer(renderer);
+        finalComposer = new EffectComposer(renderer);
         finalComposer.addPass(renderScene);
         const finalPass = new ShaderPass(FinalPassShader);
         finalComposer.addPass(finalPass);
@@ -490,6 +498,9 @@ export function WebGLStarfield({ tier: propTier }: WebGLStarfieldProps = {}) {
           world: new THREE.Vector3(),
           activity: 0
         };
+        const vScratch = new THREE.Vector3();
+        const vTarget = new THREE.Vector3();
+        const vZero = new THREE.Vector3(0, 0, 0);
 
         mouseMoveListener = (e: MouseEvent) => {
           POINTER.ndc.x = (e.clientX / window.innerWidth) * 2 - 1;
@@ -681,36 +692,37 @@ export function WebGLStarfield({ tier: propTier }: WebGLStarfieldProps = {}) {
             );
           }
 
-          // World Cursor Void Repel
+          // World Cursor Void Repel (Zero allocations per frame)
+          const lerpAlpha = 1 - Math.exp(-dampLambdas.snappy * dt);
           if (active) {
-            const p = new THREE.Vector3(POINTER.ndc.x, POINTER.ndc.y, 0.5);
-            p.unproject(camera);
-            const dir = p.sub(camera.position).normalize();
+            vScratch.set(POINTER.ndc.x, POINTER.ndc.y, 0.5);
+            vScratch.unproject(camera);
+            const dir = vScratch.sub(camera.position).normalize();
             if (Math.abs(dir.z) > 1e-4) {
               const tIntersect = -camera.position.z / dir.z;
               if (tIntersect > 0 && isFinite(tIntersect)) {
-                const target = camera.position.clone().add(dir.multiplyScalar(tIntersect));
-                POINTER.world.lerp(target, 0.12);
+                vTarget.copy(camera.position).addScaledVector(dir, tIntersect);
+                POINTER.world.lerp(vTarget, lerpAlpha);
               }
             }
           } else {
-            POINTER.world.lerp(new THREE.Vector3(0, 0, 0), 0.12);
+            POINTER.world.lerp(vZero, lerpAlpha);
           }
 
           const idleSec = (now - lastMove) / 1000;
           const want = active && idleSec < 3 ? 1 : 0;
-          POINTER.activity += (want - POINTER.activity) * 0.06;
+          POINTER.activity = damp(POINTER.activity, want, dampLambdas.smooth, dt);
 
           if (starMaterial) {
             starMaterial.uniforms.uCursor.value.copy(POINTER.world);
             starMaterial.uniforms.uActivity.value = POINTER.activity;
           }
 
-          // Double-Damped Scroll Smoothing
-          scrollSmooth += (scrollTarget - scrollSmooth) * 0.1;
-          scrollCurrent += (scrollSmooth - scrollCurrent) * 0.06;
-          mouseSmooth.x += (POINTER.ndc.x - mouseSmooth.x) * 0.06;
-          mouseSmooth.y += (POINTER.ndc.y - mouseSmooth.y) * 0.06;
+          // Double-Damped Scroll Smoothing (frame-rate independent 60/90/120Hz)
+          scrollSmooth = damp(scrollSmooth, scrollTarget, dampLambdas.responsive, dt);
+          scrollCurrent = damp(scrollCurrent, scrollSmooth, dampLambdas.smooth, dt);
+          mouseSmooth.x = damp(mouseSmooth.x, POINTER.ndc.x, dampLambdas.smooth, dt);
+          mouseSmooth.y = damp(mouseSmooth.y, POINTER.ndc.y, dampLambdas.smooth, dt);
 
           const scroll = scrollCurrent;
           const m = mouseSmooth;
@@ -736,7 +748,9 @@ export function WebGLStarfield({ tier: propTier }: WebGLStarfieldProps = {}) {
           finalPass.uniforms.iTime.value = t;
 
           // Render Composers
-          if (tierConfig.enableBloom) {
+          if (!finalComposer) return;
+
+          if (tierConfig.enableBloom && torusComposer && bloomComposer) {
             camera.layers.set(LAYERS.TORUS_SCENE);
             torusComposer.render();
             camera.layers.set(LAYERS.BLOOM_SCENE);
@@ -752,6 +766,8 @@ export function WebGLStarfield({ tier: propTier }: WebGLStarfieldProps = {}) {
 
           camera.layers.set(LAYERS.ENTIRE_SCENE);
           finalComposer.render();
+
+          recordFrameLatency(dt * 1000, tierConfig.frameBudgetMs);
         }
 
         // Initialize render loop via adaptive lifecycle controller
@@ -762,8 +778,9 @@ export function WebGLStarfield({ tier: propTier }: WebGLStarfieldProps = {}) {
           const w = Math.max(window.innerWidth, 1);
           const h = Math.max(window.innerHeight, 1);
           const currentIsMobile = w <= 768 || capabilities.isMobile;
-          const currentMobileCap = activeTier === "high" ? 1.25 : 1.0;
-          const currentMaxDpr = currentIsMobile ? Math.min(tierConfig.maxDpr, currentMobileCap) : tierConfig.maxDpr;
+          const currentIsCapable = activeTier === "high" || tierConfig.maxDpr >= 1.5;
+          const currentMobileCap = currentIsCapable ? Math.min(tierConfig.maxDpr, 2.0) : 1.0;
+          const currentMaxDpr = currentIsMobile ? currentMobileCap : tierConfig.maxDpr;
           const currentDpr = Math.min(Math.max(window.devicePixelRatio || 1, 1), currentMaxDpr);
 
           renderer.setPixelRatio(currentDpr);
@@ -771,16 +788,22 @@ export function WebGLStarfield({ tier: propTier }: WebGLStarfieldProps = {}) {
           camera.aspect = w / h;
           camera.updateProjectionMatrix();
 
-          torusComposer.setPixelRatio(currentDpr);
-          torusComposer.setSize(w, h);
-          torusBloomPass.resolution.set(w, h);
+          if (torusComposer && torusBloomPass) {
+            torusComposer.setPixelRatio(currentDpr);
+            torusComposer.setSize(w, h);
+            torusBloomPass.resolution.set(w, h);
+          }
 
-          bloomComposer.setPixelRatio(currentDpr);
-          bloomComposer.setSize(w, h);
-          bloomPass.resolution.set(w, h);
+          if (bloomComposer && bloomPass) {
+            bloomComposer.setPixelRatio(currentDpr);
+            bloomComposer.setSize(w, h);
+            bloomPass.resolution.set(w, h);
+          }
 
-          finalComposer.setPixelRatio(currentDpr);
-          finalComposer.setSize(w, h);
+          if (finalComposer) {
+            finalComposer.setPixelRatio(currentDpr);
+            finalComposer.setSize(w, h);
+          }
 
           const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
           scrollTarget = maxScroll > 0 ? Math.min(Math.max(window.scrollY / maxScroll, 0), 1) : 0;
@@ -808,6 +831,12 @@ export function WebGLStarfield({ tier: propTier }: WebGLStarfieldProps = {}) {
       if (themeToggleListener) window.removeEventListener("radiance:theme-toggle-pause", themeToggleListener);
       if (contextLostListener && canvas) canvas.removeEventListener("webglcontextlost", contextLostListener);
       if (contextRestoredListener && canvas) canvas.removeEventListener("webglcontextrestored", contextRestoredListener);
+
+      if (torusBloomPass) torusBloomPass.dispose();
+      if (bloomPass) bloomPass.dispose();
+      if (torusComposer) torusComposer.dispose();
+      if (bloomComposer) bloomComposer.dispose();
+      if (finalComposer) finalComposer.dispose();
 
       if (geometry) geometry.dispose();
       if (starMaterial) starMaterial.dispose();

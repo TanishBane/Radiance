@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef } from "react";
+import { damp, dampLambdas } from "@/lib/motion/presets";
 
 interface Particle {
   x: number;
@@ -40,11 +41,23 @@ export function AtmosphericParticles() {
 
     let prefersReducedMotion = motionQuery ? motionQuery.matches : false;
 
-    let width = (canvas.width = window.innerWidth);
-    let height = (canvas.height = window.innerHeight);
+    let width = window.innerWidth;
+    let height = window.innerHeight;
     const isMobile = width < 768 || (typeof navigator !== "undefined" && /Android|iPhone|iPad/i.test(navigator.userAgent));
-    const minFrameInterval = isMobile ? 33.3 : 16.6; // 30 FPS cap on mobile
-    let lastMobileFrameTime = 0;
+
+    const resizeCanvas = () => {
+      if (!canvas || !ctx || isDisposed) return;
+      width = window.innerWidth;
+      height = window.innerHeight;
+      const dpr = Math.min(window.devicePixelRatio || 1, 2.0);
+      canvas.width = Math.round(width * dpr);
+      canvas.height = Math.round(height * dpr);
+      canvas.style.width = `${width}px`;
+      canvas.style.height = `${height}px`;
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.scale(dpr, dpr);
+    };
+    resizeCanvas();
 
     // Mouse tracking with smooth lerp
     const targetMouse = { x: 0, y: 0 };
@@ -90,18 +103,20 @@ export function AtmosphericParticles() {
       if (!ctx) return;
       ctx.clearRect(0, 0, width, height);
 
-      // Smooth lerp mouse parallax
+      // Smooth lerp mouse parallax (frame-rate independent 60/90/120Hz)
       if (!prefersReducedMotion) {
-        currentMouse.x += (targetMouse.x - currentMouse.x) * 0.04;
-        currentMouse.y += (targetMouse.y - currentMouse.y) * 0.04;
+        currentMouse.x = damp(currentMouse.x, targetMouse.x, dampLambdas.pointer, dt);
+        currentMouse.y = damp(currentMouse.y, targetMouse.y, dampLambdas.pointer, dt);
       }
+
+      const dtScale = dt * 60; // Normalize velocity progression to 60 FPS baseline
 
       for (let i = 0; i < particles.length; i++) {
         const p = particles[i];
 
         if (!prefersReducedMotion) {
-          p.x += p.vx;
-          p.y += p.vy;
+          p.x += p.vx * dtScale;
+          p.y += p.vy * dtScale;
 
           // Wrap boundaries smoothly
           if (p.x < -10) p.x = width + 10;
@@ -153,13 +168,7 @@ export function AtmosphericParticles() {
         return;
       }
 
-      if (isMobile && now - lastMobileFrameTime < minFrameInterval) {
-        animId = requestAnimationFrame(render);
-        return;
-      }
-      lastMobileFrameTime = now;
-
-      const dt = Math.min((now - lastTime) / 1000, 0.1);
+      const dt = Math.min((now - lastTime) / 1000, 0.05);
       lastTime = now;
 
       drawParticles(dt);
@@ -169,8 +178,7 @@ export function AtmosphericParticles() {
 
     const handleResize = () => {
       if (!canvas || isDisposed) return;
-      width = canvas.width = window.innerWidth;
-      height = canvas.height = window.innerHeight;
+      resizeCanvas();
       if (prefersReducedMotion) {
         drawParticles(0);
       }

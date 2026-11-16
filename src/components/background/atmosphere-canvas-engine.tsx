@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef } from "react";
 import { ColorTheme, GradientStyle } from "@/lib/types/theme";
+import { damp, dampLambdas } from "@/lib/motion/presets";
 
 interface AtmosphereCanvasEngineProps {
   theme: ColorTheme;
@@ -52,7 +53,7 @@ export function AtmosphereCanvasEngine({ theme, engine }: AtmosphereCanvasEngine
     if (!ctx) return;
 
     // High-DPI Retina resolution calibration
-    const dpr = Math.min(typeof window !== "undefined" ? window.devicePixelRatio || 1 : 1, 2);
+    let dpr = Math.min(typeof window !== "undefined" ? window.devicePixelRatio || 1 : 1, 2);
     let width = window.innerWidth;
     let height = window.innerHeight;
 
@@ -60,6 +61,7 @@ export function AtmosphereCanvasEngine({ theme, engine }: AtmosphereCanvasEngine
       if (!canvas) return;
       width = window.innerWidth;
       height = window.innerHeight;
+      dpr = Math.min(typeof window !== "undefined" ? window.devicePixelRatio || 1 : 1, 2);
       canvas.width = Math.floor(width * dpr);
       canvas.height = Math.floor(height * dpr);
       canvas.style.width = `${width}px`;
@@ -175,7 +177,7 @@ export function AtmosphereCanvasEngine({ theme, engine }: AtmosphereCanvasEngine
       phase: Math.random() * Math.PI * 2,
     }));
 
-    const drawMeteorShower = (t: number) => {
+    const drawMeteorShower = (t: number, dtScale: number = 1) => {
       ctx.fillStyle = theme.bloomColors[0];
       ctx.fillRect(0, 0, width, height);
 
@@ -190,8 +192,8 @@ export function AtmosphereCanvasEngine({ theme, engine }: AtmosphereCanvasEngine
 
       // Meteors
       meteors.forEach((m) => {
-        m.x += cosM * m.speed;
-        m.y += sinM * m.speed;
+        m.x += cosM * m.speed * dtScale;
+        m.y += sinM * m.speed * dtScale;
 
         // Respawn when out of screen bounds
         if (m.x < -200 || m.y > height + 200) {
@@ -364,13 +366,13 @@ export function AtmosphereCanvasEngine({ theme, engine }: AtmosphereCanvasEngine
       radius: Math.random() * 2 + 1,
     }));
 
-    const drawQuantumField = () => {
+    const drawQuantumField = (dtScale: number = 1) => {
       ctx.fillStyle = theme.bloomColors[0];
       ctx.fillRect(0, 0, width, height);
 
       quantumNodes.forEach((n) => {
-        n.x += n.vx;
-        n.y += n.vy;
+        n.x += n.vx * dtScale;
+        n.y += n.vy * dtScale;
         if (n.x < 0 || n.x > width) n.vx *= -1;
         if (n.y < 0 || n.y > height) n.vy *= -1;
 
@@ -409,27 +411,28 @@ export function AtmosphereCanvasEngine({ theme, engine }: AtmosphereCanvasEngine
       vy: number;
       r: number;
       color: string;
+      fadeColor: string;
     }
     const moltenBlobs: MoltenBlob[] = [
-      { x: width * 0.3, y: height * 0.4, vx: 0.35, vy: 0.25, r: 170, color: `rgba(${r1}, ${g1}, ${b1}, 0.26)` },
-      { x: width * 0.7, y: height * 0.6, vx: -0.28, vy: -0.32, r: 200, color: `rgba(${r2}, ${g2}, ${b2}, 0.22)` },
-      { x: width * 0.5, y: height * 0.8, vx: 0.18, vy: -0.25, r: 150, color: `rgba(${r3}, ${g3}, ${b3}, 0.24)` },
-      { x: width * 0.2, y: height * 0.7, vx: -0.18, vy: 0.18, r: 130, color: `rgba(${r1}, ${g1}, ${b1}, 0.20)` },
+      { x: width * 0.3, y: height * 0.4, vx: 0.35, vy: 0.25, r: 170, color: `rgba(${r1}, ${g1}, ${b1}, 0.26)`, fadeColor: `rgba(${r1}, ${g1}, ${b1}, 0.07)` },
+      { x: width * 0.7, y: height * 0.6, vx: -0.28, vy: -0.32, r: 200, color: `rgba(${r2}, ${g2}, ${b2}, 0.22)`, fadeColor: `rgba(${r2}, ${g2}, ${b2}, 0.07)` },
+      { x: width * 0.5, y: height * 0.8, vx: 0.18, vy: -0.25, r: 150, color: `rgba(${r3}, ${g3}, ${b3}, 0.24)`, fadeColor: `rgba(${r3}, ${g3}, ${b3}, 0.07)` },
+      { x: width * 0.2, y: height * 0.7, vx: -0.18, vy: 0.18, r: 130, color: `rgba(${r1}, ${g1}, ${b1}, 0.20)`, fadeColor: `rgba(${r1}, ${g1}, ${b1}, 0.07)` },
     ];
 
-    const drawLiquidLava = () => {
+    const drawLiquidLava = (dtScale: number = 1) => {
       ctx.fillStyle = theme.bloomColors[0];
       ctx.fillRect(0, 0, width, height);
 
       moltenBlobs.forEach((b) => {
-        b.x += b.vx;
-        b.y += b.vy;
+        b.x += b.vx * dtScale;
+        b.y += b.vy * dtScale;
         if (b.x - b.r < 0 || b.x + b.r > width) b.vx *= -1;
         if (b.y - b.r < 0 || b.y + b.r > height) b.vy *= -1;
 
         const grad = ctx.createRadialGradient(b.x, b.y, 0, b.x, b.y, b.r);
         grad.addColorStop(0, b.color);
-        grad.addColorStop(0.7, b.color.replace(/[\d\.]+\)$/, "0.07)"));
+        grad.addColorStop(0.7, b.fadeColor);
         grad.addColorStop(1, "transparent");
 
         ctx.fillStyle = grad;
@@ -471,6 +474,10 @@ export function AtmosphereCanvasEngine({ theme, engine }: AtmosphereCanvasEngine
     // ═════════════════════════════════════════════════════════════════════════
     // ── 8. SILK RIBBONS: Multi-Layered Undulating Harmonic Silk Wave Flow
     // ═════════════════════════════════════════════════════════════════════════
+    const MAX_CREST_STEPS = 512;
+    const crestXs = new Float32Array(MAX_CREST_STEPS);
+    const crestYs = new Float32Array(MAX_CREST_STEPS);
+
     const drawSilkRibbons = (t: number) => {
       // Stratified dark base backdrop
       ctx.fillStyle = theme.bloomColors[0];
@@ -492,7 +499,7 @@ export function AtmosphereCanvasEngine({ theme, engine }: AtmosphereCanvasEngine
 
       ribbonLayers.forEach((layer, idx) => {
         const cy = height * layer.baseY + mouseBiasY * (0.3 + idx * 0.15);
-        const crestPoints: { x: number; y: number }[] = [];
+        let crestCount = 0;
 
         ctx.beginPath();
         ctx.moveTo(-40, height + 40);
@@ -503,7 +510,11 @@ export function AtmosphereCanvasEngine({ theme, engine }: AtmosphereCanvasEngine
           const wave2 = Math.cos(x * 0.0018 - t * 0.22 + layer.phase * 0.5) * (layer.amp * 0.45);
           const wave3 = Math.sin((x + mouseBiasX) * 0.0012 + t * 0.12) * 18;
           const y = cy + wave1 + wave2 + wave3;
-          crestPoints.push({ x, y });
+          if (crestCount < MAX_CREST_STEPS) {
+            crestXs[crestCount] = x;
+            crestYs[crestCount] = y;
+            crestCount++;
+          }
           ctx.lineTo(x, y);
         }
 
@@ -521,11 +532,11 @@ export function AtmosphereCanvasEngine({ theme, engine }: AtmosphereCanvasEngine
         ctx.fill();
 
         // Lustrous specular sheen stroke along the silk ribbon crest
-        if (crestPoints.length > 1) {
+        if (crestCount > 1) {
           ctx.beginPath();
-          ctx.moveTo(crestPoints[0].x, crestPoints[0].y);
-          for (let p = 1; p < crestPoints.length; p++) {
-            ctx.lineTo(crestPoints[p].x, crestPoints[p].y);
+          ctx.moveTo(crestXs[0], crestYs[0]);
+          for (let p = 1; p < crestCount; p++) {
+            ctx.lineTo(crestXs[p], crestYs[p]);
           }
           ctx.strokeStyle = idx % 2 === 0 ? "rgba(255, 255, 255, 0.35)" : `${c3}99`;
           ctx.lineWidth = 1.6;
@@ -580,7 +591,7 @@ export function AtmosphereCanvasEngine({ theme, engine }: AtmosphereCanvasEngine
       alpha: Math.random() * 0.5 + 0.3,
     }));
 
-    const drawSolarCorona = (t: number) => {
+    const drawSolarCorona = (t: number, dtScale: number = 1) => {
       ctx.fillStyle = theme.bloomColors[0];
       ctx.fillRect(0, 0, width, height);
 
@@ -641,7 +652,7 @@ export function AtmosphereCanvasEngine({ theme, engine }: AtmosphereCanvasEngine
 
       // Floating coronal plasma motes
       flares.forEach((f) => {
-        f.dist += f.speed;
+        f.dist += f.speed * dtScale;
         if (f.dist > 180) {
           f.dist = Math.random() * 20;
           f.angle = -Math.PI * 0.95 + Math.random() * Math.PI * 0.9;
@@ -686,13 +697,13 @@ export function AtmosphereCanvasEngine({ theme, engine }: AtmosphereCanvasEngine
       alpha: Math.random() * 0.16 + 0.06,
     }));
 
-    const drawBokehBlur = () => {
+    const drawBokehBlur = (dtScale: number = 1) => {
       ctx.fillStyle = theme.bloomColors[0];
       ctx.fillRect(0, 0, width, height);
 
       bokehs.forEach((b) => {
-        b.x += b.vx;
-        b.y += b.vy;
+        b.x += b.vx * dtScale;
+        b.y += b.vy * dtScale;
         if (b.x < -b.r) b.x = width + b.r;
         if (b.x > width + b.r) b.x = -b.r;
         if (b.y < -b.r) b.y = height + b.r;
@@ -757,7 +768,7 @@ export function AtmosphereCanvasEngine({ theme, engine }: AtmosphereCanvasEngine
       ridgePoints.push([rx, ry]);
     }
 
-    const drawStarChase = (t: number) => {
+    const drawStarChase = (t: number, dtScale: number = 1) => {
       // 1. Deep celestial violet/night void wash
       ctx.fillStyle = theme.bloomColors[0] || "#040011";
       ctx.fillRect(0, 0, width, height);
@@ -795,8 +806,8 @@ export function AtmosphereCanvasEngine({ theme, engine }: AtmosphereCanvasEngine
 
       // 4. Chasing diagonal meteors (Star Chase)
       starChaseMeteors.forEach((m) => {
-        m.x += cosSC * m.speed;
-        m.y += sinSC * m.speed;
+        m.x += cosSC * m.speed * dtScale;
+        m.y += sinSC * m.speed * dtScale;
 
         if (m.x < -150 || m.y > height * 0.8) {
           m.x = Math.random() * (width + 300) + 150;
@@ -871,33 +882,44 @@ export function AtmosphereCanvasEngine({ theme, engine }: AtmosphereCanvasEngine
     }
 
     const start = performance.now();
+    let lastTickTime = start;
+    let matrixRainAccumulator = 0;
+    const MATRIX_FRAME_STEP = 1 / 30;
+
     const tick = (now: number) => {
       if (!isRunning) return;
+      const dt = Math.min((now - lastTickTime) / 1000, 0.05);
+      lastTickTime = now;
       const t = (now - start) / 1000;
+      const dtScale = dt * 60;
       frame++;
 
-      // Smooth mouse interpolation
-      smoothMouse.x += (mousePos.x - smoothMouse.x) * 0.04;
-      smoothMouse.y += (mousePos.y - smoothMouse.y) * 0.04;
+      // Smooth mouse interpolation (frame-rate independent 60/90/120Hz)
+      smoothMouse.x = damp(smoothMouse.x, mousePos.x, dampLambdas.pointer, dt);
+      smoothMouse.y = damp(smoothMouse.y, mousePos.y, dampLambdas.pointer, dt);
 
       switch (engine) {
         case "aurora-curtains":
           drawAuroraCurtains(t);
           break;
         case "meteor-shower":
-          drawMeteorShower(t);
+          drawMeteorShower(t, dtScale);
           break;
         case "radiant-grid":
           drawRadiantGrid(t);
           break;
         case "quantum-field":
-          drawQuantumField();
+          drawQuantumField(dtScale);
           break;
         case "liquid-lava":
-          drawLiquidLava();
+          drawLiquidLava(dtScale);
           break;
         case "matrix-rain":
-          if (frame % 2 === 0) drawMatrixRain();
+          matrixRainAccumulator += dt;
+          while (matrixRainAccumulator >= MATRIX_FRAME_STEP) {
+            drawMatrixRain();
+            matrixRainAccumulator -= MATRIX_FRAME_STEP;
+          }
           break;
         case "silk-ribbons":
           drawSilkRibbons(t);
@@ -906,13 +928,13 @@ export function AtmosphereCanvasEngine({ theme, engine }: AtmosphereCanvasEngine
           drawRadialPulse(t);
           break;
         case "solar-corona":
-          drawSolarCorona(t);
+          drawSolarCorona(t, dtScale);
           break;
         case "bokeh-blur":
-          drawBokehBlur();
+          drawBokehBlur(dtScale);
           break;
         case "star-chase":
-          drawStarChase(t);
+          drawStarChase(t, dtScale);
           break;
       }
 
@@ -928,6 +950,7 @@ export function AtmosphereCanvasEngine({ theme, engine }: AtmosphereCanvasEngine
       } else {
         if (!isRunning) {
           isRunning = true;
+          lastTickTime = performance.now();
           rafIdRef.current = requestAnimationFrame(tick);
         }
       }

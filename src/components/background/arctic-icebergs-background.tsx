@@ -355,20 +355,49 @@ export function ArcticIcebergsBackground({ className }: ArcticIcebergsBackground
       "start",
     ];
 
-    const updateFades = () => {
-      if (isDisposed) return;
-      const vh = window.innerHeight;
-      const startFade = vh * 0.92;
-      const endFade = vh * 0.22;
-      const fadeDist = startFade - endFade;
+    // Pre-cached section vertical offsets to eliminate synchronous layout thrashing during scroll
+    const cachedSectionTops: (number | null)[] = new Array(sectionIds.length).fill(null);
+    let cachedVh = typeof window !== "undefined" ? window.innerHeight : 800;
 
-      const rawFades: number[] = new Array(10).fill(0);
-
+    const measureSections = () => {
+      if (isDisposed || typeof window === "undefined") return;
+      cachedVh = window.innerHeight;
+      const scrollY = window.scrollY || window.pageYOffset || 0;
       for (let i = 0; i < sectionIds.length; i++) {
         const el = document.getElementById(sectionIds[i]);
         if (el) {
           const rect = el.getBoundingClientRect();
-          const raw = Math.max(0, Math.min(1, (startFade - rect.top) / fadeDist));
+          cachedSectionTops[i] = rect.top + scrollY;
+        } else {
+          cachedSectionTops[i] = null;
+        }
+      }
+    };
+
+    const updateFades = () => {
+      if (isDisposed) return;
+      const vh = cachedVh;
+      const startFade = vh * 0.92;
+      const endFade = vh * 0.22;
+      const fadeDist = startFade - endFade;
+      const scrollY = typeof window !== "undefined" ? (window.scrollY || window.pageYOffset || 0) : 0;
+
+      const rawFades: number[] = new Array(10).fill(0);
+
+      for (let i = 0; i < sectionIds.length; i++) {
+        let sectionTop = cachedSectionTops[i];
+        if (sectionTop === null) {
+          // Fallback if section was not mounted when initial measure occurred
+          const el = document.getElementById(sectionIds[i]);
+          if (el) {
+            const rect = el.getBoundingClientRect();
+            sectionTop = rect.top + scrollY;
+            cachedSectionTops[i] = sectionTop;
+          }
+        }
+        if (sectionTop !== null) {
+          const relativeTop = sectionTop - scrollY;
+          const raw = Math.max(0, Math.min(1, (startFade - relativeTop) / fadeDist));
           rawFades[i] = raw * raw * (3 - 2 * raw);
         }
       }
@@ -420,6 +449,7 @@ export function ArcticIcebergsBackground({ className }: ArcticIcebergsBackground
 
     const onResize = () => {
       allLayers.forEach((l) => l?.resize());
+      measureSections();
       onScroll();
     };
 
@@ -452,7 +482,8 @@ export function ArcticIcebergsBackground({ className }: ArcticIcebergsBackground
       motionQuery.addEventListener("change", onMotionChange);
     }
 
-    // Initial activation pass
+    // Initial section layout caching & activation pass
+    measureSections();
     updateFades();
 
     return () => {

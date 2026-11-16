@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef } from "react";
 import * as THREE from "three";
+import { damp, dampLambdas } from "@/lib/motion/presets";
 
 interface AmbientCanvasProps {
   accentColor?: string;
@@ -48,7 +49,7 @@ export function AmbientCanvas({ accentColor = "#7c5cff" }: AmbientCanvasProps) {
       const w = window.innerWidth;
       const h = window.innerHeight;
       const isMobile = w < 768;
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, isMobile ? 1.0 : 2));
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2.0));
       renderer.setSize(w, h, false);
       camera.aspect = w / h;
       camera.updateProjectionMatrix();
@@ -96,8 +97,8 @@ export function AmbientCanvas({ accentColor = "#7c5cff" }: AmbientCanvasProps) {
       { pos: [-2.6, -2.2, -3] as const, scale: 1.7, speed: 1.0, amp: 0.25 },
     ];
 
+    const sharedBlobGeo = new THREE.IcosahedronGeometry(1, 4);
     blobConfigs.forEach((cfg, i) => {
-      const geo = new THREE.IcosahedronGeometry(1, 4);
       const mat = new THREE.ShaderMaterial({
         vertexShader: blobVert,
         fragmentShader: blobFrag,
@@ -112,7 +113,7 @@ export function AmbientCanvas({ accentColor = "#7c5cff" }: AmbientCanvasProps) {
         depthWrite: false,
       });
 
-      const mesh = new THREE.Mesh(geo, mat);
+      const mesh = new THREE.Mesh(sharedBlobGeo, mat);
       mesh.position.set(cfg.pos[0], cfg.pos[1], cfg.pos[2]);
       mesh.scale.setScalar(cfg.scale);
       mesh.userData.speed = cfg.speed;
@@ -232,8 +233,8 @@ export function AmbientCanvas({ accentColor = "#7c5cff" }: AmbientCanvasProps) {
         b.rotation.x += dt * 0.015 * motionScale;
       });
 
-      smooth.x += (pointer.x - smooth.x) * 0.02;
-      smooth.y += (pointer.y - smooth.y) * 0.02;
+      smooth.x = damp(smooth.x, pointer.x, dampLambdas.smooth, dt);
+      smooth.y = damp(smooth.y, pointer.y, dampLambdas.smooth, dt);
       camera.position.x = smooth.x * 0.6;
       camera.position.y = -smooth.y * 0.4;
       camera.lookAt(0, 0, -3);
@@ -299,8 +300,8 @@ export function AmbientCanvas({ accentColor = "#7c5cff" }: AmbientCanvasProps) {
       document.removeEventListener("visibilitychange", handleVisibility);
       motionQuery.removeEventListener("change", handleMotionPreference);
       renderer.dispose();
+      sharedBlobGeo.dispose();
       blobs.forEach((b) => {
-        b.geometry.dispose();
         b.material.dispose();
       });
       flareGeo.dispose();
